@@ -677,8 +677,6 @@ These are keywords only within a I<parsing unit subject>:
     :<
     :>
     :>.
-    -->
-    <--
 
 These are keyword-like value literals only within a I<parsing unit subject>:
 
@@ -1714,7 +1712,7 @@ Grammar:
 
 I<TODO.>
 
-I<Also TODO is adding things like -->? and -->! etc to test if something
+I<OBSOLETE... Also TODO is adding things like -->? and -->! etc to test if something
 is invokable or indicate a result if one isn't invokable.>
 
 =head2 Generic Function Invocation Expressions
@@ -1722,16 +1720,12 @@ is invokable or indicate a result if one isn't invokable.>
 Grammar:
 
     <generic_func_invo_expr> ::=
-        <long_arrowed_func_invo_expr> | <postcircumfixed_func_invo_expr>
+        <primed_func_invo_expr> | <postcircumfixed_func_invo_expr>
 
-    <long_arrowed_func_invo_expr> ::=
-          [<generic_func_args> <sp> '-->' <sp> <generic_func_call>]
-        | [<generic_func_call> <sp> '<--' <sp> <generic_func_args>]
+    <primed_func_invo_expr> ::=
+        evaluates <sp> <primed_func_call>
 
-    <generic_func_call> ::=
-        <expr>
-
-    <generic_func_args> ::=
+    <primed_func_call> ::=
         <expr>
 
     <postcircumfixed_func_invo_expr> ::=
@@ -1739,18 +1733,13 @@ Grammar:
 
 I<TODO.>
 
-A C<< <generic_func_call> >> denotes a C<Function_Call> value, which pairs
+A C<< <primed_func_call> >> denotes a C<Function_Call> value, which pairs
 a C<Function_Name> (C<Identity_Identifier>) value naming a function
 with a C<Tuple> value giving arguments to pass to it; typically this
 is defined either with a C<< <Function_Call> >> selector expression or with
-an inline-defined C<function>; the C<< <generic_func_args> >> gives more args.
+an inline-defined C<function>.
 
-Note that explicitly passing a nullary tuple will also match a singleton type definer,
-and explicitly passing a unary tuple with a positional argument will also
-match a type.  I<TODO: Update this concerning type definers.>
-
-I<< TODO: DON'T FORGET TO INCLUDE THE COMMON CASE OF -->/<-- WHERE THE FUNCTION
-OR (INTERNALLY RECURSIVE) SINGLETON TYPE DEFINER IS DECLARED INLINE WITH ITS CALL! >>
+I<TODO: Also define the \foo::(...) and \(...) and \[...] syntaxes for "Routine_Call" type.>
 
 A C<< <postcircumfixed_func_invo_expr> >> is subject to the additional rule
 that, iff its C<< <generic_func_name> >> element has no C<::> within
@@ -1787,7 +1776,7 @@ Say that it is just syntactic sugar for a specific foundation func invo
 but we special-case it because we don't want "=" to change based on what
 packages are in scope, same as ":=" etc don't change.
 Note, this only affects '=' when called like an infix op syntactically;
-calling it as -->"=" or "="::() gets the reg func if exists.>
+calling it as `evaluates \"="::(x,y)` or `"="::(x,y)` gets the reg func if exists.>
 
 I<Generic allow multi-level or quoted identifiers,
 fixed allows only single-level unquoted identifiers.>
@@ -1905,17 +1894,18 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
     N - terms - base literals or delimited anything or special selector syntax,
         including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or \foo::(...)
-    L - "literal" expression prefix
+    N - "literal" expression prefix
     L - special symbolic accessor post/infix :. :< :> :>.
-    L - generic universal routine call infix: args --> rtn or rtn <-- args or args \--> rtn etc
     L - symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     L - alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
+    N - "evaluates" generic universal function call prefix
     R - conditional binaries or ternaries or n-aries or guards:
         and_then / or_else / if-then-else / given-when-default / guard
     R - why-expr-binding infix 'note'
     R - expression factor declaring infix ::=
     N - "returns" expression prefix
     R - assignment infix := and assignment meta-op :=foo and proc foo()
+    N - "performs" generic universal procedure call prefix
     R - why-stmt-binding infix 'note'
     R - block labelling infix 'block'
     L - list separators ; , :

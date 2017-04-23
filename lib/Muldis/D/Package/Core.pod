@@ -103,7 +103,7 @@ consists of exactly zero values.  It can not have any default value.
             returns : \@Boolean,
             matches : (\@Any, \@Any),
             is_commutative : True,
-            evaluates : (args --> \foundation::same::()),
+            evaluates : (evaluates args --> \foundation::same()),
         )),
 
         "=" : (\Alias : ( of : \@same )),
@@ -145,13 +145,13 @@ or I<=\=>.
         is_a : (\Function : (
             returns : \@Boolean,
             matches : (\@Any, \@Signature),
-            evaluates : ((args:.\0,) --> Signature_to_Function_Call_But_0::(args:.\1)),
+            evaluates : (evaluates (args:.\0,) --> Signature_to_Function_Call_But_0::(args:.\1)),
         )),
 
 The function C<is_a> results in C<True> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<False> otherwise.
 Note that the idiomatic syntax for simply testing if a given value C<v> is
-a member of a type named C<T> is C<T v> or C<T::(v)> or C<\T::() <-- (v,)>
+a member of a type named C<T> is C<T v> or C<T::(v)> or C<evaluates \T::() <-- (v,)>
 and no generic testing operator is used for the purpose.  And so, the prime
 operator name C<is_a> is freed up for its current higher-level use, such
 that the type specifier it takes has more of a template format suitable in
@@ -774,7 +774,7 @@ it results in C<False>.
             is_type_definer : True,
             composes : {\@Bicessable, \@Boolable},
             provides_default_for : {\@Boolable},
-            evaluates : \foundation::is_a_Boolean::(),
+            evaluates : \foundation::is_a_Boolean(),
             default : False,
         )),
 
@@ -1307,7 +1307,7 @@ identity element> value of a number zero.
         "-" : (\Function : (
             returns : \@Numerical,
             matches : {(\@Numerical), (\@Numerical, \@Numerical)},
-            evaluates : (args --> (if degree::(args) = 1 then \opposite::() else \minus::())),
+            evaluates : (evaluates args --> (if degree::(args) = 1 then \opposite::() else \minus::())),
         )),
 
         Unicode_Aliases::"−" : (\Alias : ( of : "-" )),
@@ -1673,7 +1673,7 @@ otherwise.
             is_type_definer : True,
             composes : {\@Integral},
             provides_default_for : {\@Integral},
-            evaluates : \foundation::is_a_Integer::(),
+            evaluates : \foundation::is_a_Integer(),
             default : 0,
         )),
 
@@ -1714,7 +1714,7 @@ value is C<1>; it has no maximum value.
             returns : \@Boolean,
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Integer_in_order::()),
+            evaluates : (evaluates args --> \foundation::Integer_in_order()),
         )),
 
 The function C<in_order::Integer> implements the C<Orderable> virtual
@@ -1791,7 +1791,7 @@ C<Integer>.
             returns : \@Integer,
             matches : (\@Integer),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Integer_opposite::()),
+            evaluates : (evaluates args --> \foundation::Integer_opposite()),
         )),
 
 The function C<opposite::Integer> implements the C<Numerical> virtual
@@ -1817,7 +1817,7 @@ C<Integer>.
             returns : \@Integer::NN,
             matches : (\@Integer),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Integer_modulus::()),
+            evaluates : (evaluates args --> \foundation::Integer_modulus()),
         )),
 
 The function C<modulus::Integer> implements the C<Numerical>
@@ -1833,7 +1833,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
             is_commutative : True,
             identity : 0,
             repeater : \@times::Integer,
-            evaluates : (args --> \foundation::Integer_plus::()),
+            evaluates : (evaluates args --> \foundation::Integer_plus()),
         )),
 
 The function C<plus::Integer> implements the C<Numerical>
@@ -1846,7 +1846,7 @@ virtual function C<plus> aka C<+> for the composing type C<Integer>.
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
             right_identity : 0,
-            evaluates : (args --> \foundation::Integer_minus::()),
+            evaluates : (evaluates args --> \foundation::Integer_minus()),
         )),
 
 The function C<minus::Integer> implements the C<Numerical> virtual function
@@ -1862,7 +1862,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
             is_commutative : True,
             identity : 1,
             repeater : \@integral_nn_power::Integer,
-            evaluates : (args --> \foundation::Integer_times::()),
+            evaluates : (evaluates args --> \foundation::Integer_times()),
         )),
 
 The function C<times::Integer> implements the C<Numerical> virtual function
@@ -1875,7 +1875,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
             evaluates : (if args:.\1 = 0 then Excuse::Div_By_Zero()
-                else guard args --> \foundation::Integer_multiple_of::()),
+                else guard evaluates args --> \foundation::Integer_multiple_of()),
         )),
 
 The function C<multiple_of::Integer> implements the C<Numerical>
@@ -1935,8 +1935,7 @@ the composing type C<Integer>.
 
                 e2 ::= (
                     real_q_is_neg ::= dividend < 0 xor divisor < 0;
-                    rtz_quotient  ::= \foundation::Integer_divided_by_rtz::()
-                        <-- (dividend, divisor);
+                    rtz_quotient  ::= foundation::Integer_divided_by_rtz(dividend, divisor);
                     rtz_remainder ::= dividend - (divisor * rtz_quotient);
 
                     returns if rtz_remainder = 0 then rtz_quotient else e3;
@@ -1967,7 +1966,7 @@ the composing type C<Integer>.
                     ' exactly one-half so we decide how to round that.';
 
                 e4 ::= (
-                    q ::= \foundation::Integer_divided_by_rtz::() <-- (abs::(rtz_quotient),2)
+                    q ::= foundation::Integer_divided_by_rtz(abs::(rtz_quotient),2)
                     r ::= abs::(rtz_quotient) - (2 * q);
                     rtz_quotient_is_even ::= r = 0;
 
@@ -2010,7 +2009,7 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
             matches : (\@Integer, \@Integer::NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 = 0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
-                else guard args --> \foundation::Integer_nn_power::()),
+                else guard evaluates args --> \foundation::Integer_nn_power()),
         )),
 
 The function C<integral_nn_power::Integer> implements the C<Numerical>
@@ -2036,7 +2035,7 @@ the composing type C<Integer>.
             returns : \@Integer::P,
             matches : (\@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Integer_factorial::()),
+            evaluates : (evaluates args --> \foundation::Integer_factorial()),
         )),
 
 The function C<factorial::Integer> implements the C<Integral> virtual
@@ -2166,9 +2165,9 @@ default and minmum value is C<0.0>; it has no maximum value.
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
             evaluates : (
-                <-- if(denominator args:.\0) = (denominator args:.\1)
+                if (denominator args:.\0) = (denominator args:.\1)
                     then in_order::(numerator args:.\0, numerator args:.\1)
-                 else
+                else
                   (
                     common_d ::= lcm::(denominator args:.\0, denominator args:.\1);
                     returns in_order::(
@@ -2259,9 +2258,9 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
             identity : 0.0,
             repeater : \@times::Fraction_Integer,
             evaluates : (
-                <-- if (denominator args:.\0) = (denominator args:.\1)
+                if (denominator args:.\0) = (denominator args:.\1)
                     then (numerator args:.\0) + (numerator args:.\1) / (denominator args:.\0)
-                 else
+                else
                   (
                     common_d ::= lcm::(denominator args:.\0, denominator args:.\1);
                     returns ((numerator args:.\0) * div::(common_d, denominator args:.\0, RM::(\To_Zero)))
@@ -2371,7 +2370,7 @@ C<Fraction>.
             returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
             matches : (\@Fraction, \@Integer),
             implements : \@folder::"",
-            evaluates : (\integral_nn_power::()
+            evaluates : (evaluates \integral_nn_power::()
                 <-- (if args:.\1 >= 0 then args else (reciprocal::(args:.\0), -args:.\1))),
         )),
 
@@ -3482,11 +3481,11 @@ I<TODO.  Note, still have to define that Excuse.>
                         when 1 then guard
                             src_octets
                                 map \(if args:.\0 in 0..127 then args:.\0 else args:.\1)
-                                    \<-- (1 : repl_chars.0,)
+                                    <-- (1 : repl_chars.0,)
                         default
                             src_octets
                                 map \(if args:.\0 in 0..127 then [args:.\0] else args:.\1)
-                                    \<-- (1 : repl_chars,)
+                                    <-- (1 : repl_chars,)
                                 reduce \catenate::()
                     ;
                 returns Text_from_ASCII_Chars result_chars;
@@ -4540,9 +4539,9 @@ I<TODO.>
         Unicode_Aliases::"σ" : (\Alias : ( of : \@where )),
 
 I<TODO.  The function-call is expected to be a Capsule with 2 attributes
-named 'func' and 'args', which are a Function_Name and a Tuple respectively.
+named 'call' and 'args', which are a Function_Name and a Tuple respectively.
 The 'args' can be any Tuple that doesn't have a '0' attr.
-The function referenced by 'func' is expected to take a Tuple argument
+The function referenced by 'call' is expected to take a Tuple argument
 whose '0' attr is a member of the collection and whose other attrs match
 those given in 'args'.>
 I<Ruby calls its version "select" (returns list) and a "keep_if" (mutates).>
@@ -4597,16 +4596,18 @@ for more esoteric things perhaps resembling a common meaning of "fold".
 The next paragraph is partly obsoleted by this.>
 
 I<TODO.  The function-call is expected to be a Capsule with 2 attributes
-named 'func' and 'args', which are a Function_Name and a Tuple respectively.
+named 'call' and 'args', which are a Function_Name and a Tuple respectively.
 The 'args' can be any Tuple that doesn't have either '0' or '1' attrs.
-The function referenced by 'func' is expected to take a Tuple argument
+The function referenced by 'call' is expected to take a Tuple argument
 whose '0' and '1' attrs are members of the collection and whose other attrs match
 those given in 'args'.
 Depending on the collection subtype, order of 0,1 may or may not be significant.
-If collection is unordered, func must be both associative and commutative,
+If collection is unordered, 'call' must be both associative and commutative,
 and reduce can always be parallelized.
-If collection is ordered, reduce can be parallelized if func is associative;
+If collection is ordered, reduce can be parallelized if 'call' is associative;
 otherwise the reduce is a serial operation, at least naively.>
+
+I<TODO.  Also define related Excuse::No_Identity_Element type.>
 
 =head1 DISCRETE DATA TYPES
 
@@ -5265,7 +5266,7 @@ I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as 
             is_type_definer : True,
             composes : {\@Positional},
             provides_default_for : {\@Positional},
-            evaluates : \foundation::is_a_Array::(),
+            evaluates : \foundation::is_a_Array(),
             default : [],
         )),
 
@@ -5377,7 +5378,7 @@ aka C<∅> for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array, \@Array),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_substring_of::()),
+            evaluates : (evaluates args --> \foundation::Array_substring_of()),
         )),
 
 The function C<substring_of::Array> results in C<True> iff the sequence of
@@ -5393,7 +5394,7 @@ composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : (args --> \foundation::Array_overlaps_string::()),
+            evaluates : (evaluates args --> \foundation::Array_overlaps_string()),
         )),
 
 The function C<overlaps_string::Array> results in C<True> iff, given I<X>
@@ -5412,7 +5413,7 @@ virtual function C<overlaps_string> for the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : (args --> \foundation::Array_disjoint_string::()),
+            evaluates : (evaluates args --> \foundation::Array_disjoint_string()),
         )),
 
 The function C<disjoint_string::Array> results in C<True> iff the sequence
@@ -5431,7 +5432,7 @@ C<disjoint_string> for the composing type C<Array>.
             is_associative : True,
             identity : [],
             repeater : \@replicate::Array,
-            evaluates : (args --> \foundation::Array_catenate::()),
+            evaluates : (evaluates args --> \foundation::Array_catenate()),
         )),
 
 The function C<catenate::Array> results in the catenation of its 2
@@ -5446,7 +5447,7 @@ C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_replicate::()),
+            evaluates : (evaluates args --> \foundation::Array_replicate()),
         )),
 
 The function C<replicate::Array> results in the catenation of N instances
@@ -5461,7 +5462,7 @@ for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_has_n::()),
+            evaluates : (evaluates args --> \foundation::Array_has_n()),
         )),
 
 The function C<has_n::Array> results in C<True> iff its C<0> argument has
@@ -5476,7 +5477,7 @@ C<has_n> for the composing type C<Array>.
             returns : \@Integer::NN,
             matches : (\@Array, \@Any),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_multiplicity::()),
+            evaluates : (evaluates args --> \foundation::Array_multiplicity()),
         )),
 
 The function C<multiplicity::Array> results in the integral count
@@ -5490,7 +5491,7 @@ function C<multiplicity> for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_all_unique::()),
+            evaluates : (evaluates args --> \foundation::Array_all_unique()),
         )),
 
 The function C<all_unique::Array> results in C<True> iff its C<0> argument
@@ -5504,7 +5505,7 @@ the composing type C<Array>.
             returns : \@Array,
             matches : (\@Array),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_unique::()),
+            evaluates : (evaluates args --> \foundation::Array_unique()),
         )),
 
 The function C<unique::Array> results in the C<Array> value that has, for
@@ -5520,7 +5521,7 @@ virtual function C<unique> for the composing type C<Array>.
             returns : \@Boolean,
             matches : (\@Array, \@Signature),
             implements : \@folder::"",
-            evaluates : ((args:.\0, Signature_to_Function_Call_But_0::(args:.\1)) --> \foundation::Array_any::()),
+            evaluates : (foundation::Array_any(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -5531,7 +5532,7 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_insert_n::()),
+            evaluates : (evaluates args --> \foundation::Array_insert_n()),
         )),
 
 The function C<insert_n::Array> results in the C<Array> value that has all
@@ -5548,7 +5549,7 @@ C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_remove_n::()),
+            evaluates : (evaluates args --> \foundation::Array_remove_n()),
         )),
 
 The function C<remove_n::Array> results in the C<Array> value that has all
@@ -5566,7 +5567,7 @@ C<remove_n> for the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             right_identity : [],
-            evaluates : (args --> \foundation::Array_except::()),
+            evaluates : (evaluates args --> \foundation::Array_except()),
         )),
 
 The function C<except::Array> results in the I<multiset difference> between
@@ -5585,7 +5586,7 @@ C<except> aka C<∖> for the composing type C<Array>.
             implements : \@folder::"",
             is_associative : True,
             is_idempotent : True,
-            evaluates : (args --> \foundation::Array_intersect::()),
+            evaluates : (evaluates args --> \foundation::Array_intersect()),
         )),
 
 The function C<intersect::Array> results in the I<multiset intersection> of
@@ -5605,7 +5606,7 @@ aka C<∩> for the composing type C<Array>.
             implements : \@folder::"",
             is_idempotent : True,
             identity : [],
-            evaluates : (args --> \foundation::Array_union::()),
+            evaluates : (evaluates args --> \foundation::Array_union()),
         )),
 
 The function C<union::Array> results in the I<multiset union> of its 2
@@ -5625,7 +5626,7 @@ C<union> aka C<∪> for the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             identity : [],
-            evaluates : (args --> \foundation::Array_exclusive::()),
+            evaluates : (evaluates args --> \foundation::Array_exclusive()),
         )),
 
 The function C<exclusive::Array> results in the I<multiset symmetric
@@ -5646,7 +5647,7 @@ C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
             matches : (\@Array),
             implements : \@folder::"",
             accepts : (...),
-            evaluates : (args --> \foundation::Array_nest::()),
+            evaluates : (evaluates args --> \foundation::Array_nest()),
         )),
 
 I<TODO.>
@@ -5658,7 +5659,7 @@ I<TODO.>
             matches : (\@Array),
             implements : \@folder::"",
             accepts : (...),
-            evaluates : (args --> \foundation::Array_unnest::()),
+            evaluates : (evaluates args --> \foundation::Array_unnest()),
         )),
 
 I<TODO.>
@@ -5669,8 +5670,7 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array, \@Signature),
             implements : \@folder::"",
-            evaluates : ((args:.\0, Signature_to_Function_Call_But_0::(args:.\1))
-                --> \foundation::Array_where::()),
+            evaluates : (foundation::Array_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -5681,7 +5681,7 @@ I<TODO.>
             returns : \@Array,
             matches : (\@Array, \@Function_Call_But_0),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_map::()),
+            evaluates : (evaluates args --> \foundation::Array_map()),
         )),
 
 I<TODO.>
@@ -5692,7 +5692,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Array, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_reduce::()),
+            evaluates : (evaluates args --> \foundation::Array_reduce()),
         )),
 
 I<TODO.>
@@ -5718,7 +5718,7 @@ C<Array>.
             returns : \@Bag,
             matches : (\@Array),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_to_Bag::()),
+            evaluates : (evaluates args --> \foundation::Array_to_Bag()),
         )),
 
 The function C<to_Bag::Array> results in the C<Bag> value that has all of
@@ -5732,7 +5732,7 @@ C<Array>.
             returns : \@Integer::NN,
             matches : (\@Array),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_count::()),
+            evaluates : (evaluates args --> \foundation::Array_count()),
         )),
 
 The function C<count::Array> results in the integral count of the members
@@ -5746,7 +5746,7 @@ C<Array>.
             returns : \@Array,
             matches : (\@Array, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Array_order_using::()),
+            evaluates : (evaluates args --> \foundation::Array_order_using()),
         )),
 
 The function C<order_using::Array> results in the C<Array> value that
@@ -5763,7 +5763,7 @@ type C<Array>.
             matches : (\@Array, \@Integer::NN),
             implements : \@folder::"",
             accepts : (args:.\0 .? args:.\1),
-            evaluates : (args --> \foundation::Array_at::()),
+            evaluates : (evaluates args --> \foundation::Array_at()),
         )),
 
 The function C<at::Array> results in the member value of its C<0> argument
@@ -5805,7 +5805,7 @@ C<first_possible_ord_pos> for the composing type C<Array>.
             matches : (\@Array, \@NN_Integer, \@NN_Integer),
             implements : \@folder::"",
             accepts : (args:.\1 + args:.\2 <= #args:.\0),
-            evaluates : (args --> \foundation::Array_slice_n::()),
+            evaluates : (evaluates args --> \foundation::Array_slice_n()),
         )),
 
 The function C<slice_n::Array> results in the C<Array> value that has
@@ -5825,7 +5825,7 @@ the composing type C<Array>.
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : (args --> \foundation::Array_ord_pos_succ_all_matches::()),
+            evaluates : (evaluates args --> \foundation::Array_ord_pos_succ_all_matches()),
         )),
 
 I<TODO.  While conceivably implementable at a higher level, make low level
@@ -6324,7 +6324,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
         Bag::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Discrete},
-            evaluates : \foundation::is_a_Bag::(),
+            evaluates : \foundation::is_a_Bag(),
             default : {0:0},
         )),
 
@@ -6382,7 +6382,7 @@ aka C<∅> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_singular::()),
+            evaluates : (evaluates args --> \foundation::Bag_singular()),
         )),
 
 The function C<singular::Bag> results in C<True> iff its C<0> argument has
@@ -6397,7 +6397,7 @@ composing type C<Bag>.
             matches : (\@Bag),
             implements : \@folder::"",
             accepts : (singular args:.\0),
-            evaluates : (args --> \foundation::Bag_only_member::()),
+            evaluates : (evaluates args --> \foundation::Bag_only_member()),
         )),
 
 The function C<only_member::Bag> results in its C<0> argument's only
@@ -6412,7 +6412,7 @@ C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_has_n::()),
+            evaluates : (evaluates args --> \foundation::Bag_has_n()),
         )),
 
 The function C<has_n::Bag> results in C<True> iff its C<0> argument has at
@@ -6427,7 +6427,7 @@ composing type C<Bag>.
             returns : \@Integer::NN,
             matches : (\@Bag, \@Any),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_multiplicity::()),
+            evaluates : (evaluates args --> \foundation::Bag_multiplicity()),
         )),
 
 The function C<multiplicity::Bag> results in the integral count
@@ -6441,7 +6441,7 @@ function C<multiplicity> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_all_unique::()),
+            evaluates : (evaluates args --> \foundation::Bag_all_unique()),
         )),
 
 The function C<all_unique::Bag> results in C<True> iff its C<0> argument
@@ -6455,7 +6455,7 @@ the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_unique::()),
+            evaluates : (evaluates args --> \foundation::Bag_unique()),
         )),
 
 The function C<unique::Bag> results in the C<Bag> value that has, for every
@@ -6469,7 +6469,7 @@ C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_subset_of::()),
+            evaluates : (evaluates args --> \foundation::Bag_subset_of()),
         )),
 
 The function C<subset_of::Bag> results in C<True> iff the multiset of
@@ -6501,7 +6501,7 @@ function C<same_members> for the composing type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : (args --> \foundation::Bag_overlaps_members::()),
+            evaluates : (evaluates args --> \foundation::Bag_overlaps_members()),
         )),
 
 The function C<overlaps_members::Bag> results in C<True> iff, given
@@ -6519,7 +6519,7 @@ C<overlaps_members> for the composing type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : (args --> \foundation::Bag_disjoint_members::()),
+            evaluates : (evaluates args --> \foundation::Bag_disjoint_members()),
         )),
 
 The function C<disjoint_members::Bag> results in C<True> iff the
@@ -6534,7 +6534,7 @@ C<disjoint_members> for the composing type C<Bag>.
             returns : \@Boolean,
             matches : (\@Bag, \@Signature),
             implements : \@folder::"",
-            evaluates : ((args:.\0, Signature_to_Function_Call_But_0::(args:.\1)) --> \foundation::Bag_any::()),
+            evaluates : (foundation::Bag_any(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -6545,7 +6545,7 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_insert_n::()),
+            evaluates : (evaluates args --> \foundation::Bag_insert_n()),
         )),
 
 The function C<insert_n::Bag> results in the C<Bag> value that has all of
@@ -6560,7 +6560,7 @@ C<insert_n> for the composing type C<Bag>.
             returns : \@Bag,
             matches : (\@Bag, \@Any, \@Integer::NN),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_remove_n::()),
+            evaluates : (evaluates args --> \foundation::Bag_remove_n()),
         )),
 
 The function C<remove_n::Bag> results in the C<Bag> value that has all of
@@ -6579,7 +6579,7 @@ C<remove_n> for the composing type C<Bag>.
             is_associative : True,
             is_commutative : True,
             identity : {0:0},
-            evaluates : (args --> \foundation::Bag_member_plus::()),
+            evaluates : (evaluates args --> \foundation::Bag_member_plus()),
         )),
 
 The function C<member_plus::Bag> results in the I<multiset sum> of its 2
@@ -6595,7 +6595,7 @@ function C<member_plus> aka C<⊎> for the composing type C<Bag>.
             matches : (\@Bag, \@Bag),
             implements : \@folder::"",
             right_identity : {0:0},
-            evaluates : (args --> \foundation::Bag_except::()),
+            evaluates : (evaluates args --> \foundation::Bag_except()),
         )),
 
 The function C<except::Bag> results in the I<multiset difference> between
@@ -6614,7 +6614,7 @@ for the composing type C<Bag>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            evaluates : (args --> \foundation::Bag_intersect::()),
+            evaluates : (evaluates args --> \foundation::Bag_intersect()),
         )),
 
 The function C<intersect::Bag> results in the I<multiset intersection> of
@@ -6633,7 +6633,7 @@ function C<intersect> aka C<∩> for the composing type C<Bag>.
             is_commutative : True,
             is_idempotent : True,
             identity : {0:0},
-            evaluates : (args --> \foundation::Bag_union::()),
+            evaluates : (evaluates args --> \foundation::Bag_union()),
         )),
 
 The function C<union::Bag> results in the I<multiset union> of its 2
@@ -6651,7 +6651,7 @@ virtual function C<union> aka C<∪> for the composing type C<Bag>.
             is_associative : True,
             is_commutative : True,
             identity : {0:0},
-            evaluates : (args --> \foundation::Bag_exclusive::()),
+            evaluates : (evaluates args --> \foundation::Bag_exclusive()),
         )),
 
 The function C<exclusive::Bag> results in the I<multiset symmetric
@@ -6668,7 +6668,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
             matches : (\@Bag),
             implements : \@folder::"",
             accepts : (...),
-            evaluates : (args --> \foundation::Bag_nest::()),
+            evaluates : (evaluates args --> \foundation::Bag_nest()),
         )),
 
 I<TODO.>
@@ -6680,7 +6680,7 @@ I<TODO.>
             matches : (\@Bag),
             implements : \@folder::"",
             accepts : (...),
-            evaluates : (args --> \foundation::Bag_unnest::()),
+            evaluates : (evaluates args --> \foundation::Bag_unnest()),
         )),
 
 I<TODO.>
@@ -6691,7 +6691,7 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag, \@Signature),
             implements : \@folder::"",
-            evaluates : ((args:.\0, Signature_to_Function_Call_But_0::(args:.\1)) --> \foundation::Bag_where::()),
+            evaluates : (foundation::Bag_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -6702,7 +6702,7 @@ I<TODO.>
             returns : \@Bag,
             matches : (\@Bag, \@Function_Call_But_0),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_map::()),
+            evaluates : (evaluates args --> \foundation::Bag_map()),
         )),
 
 I<TODO.>
@@ -6713,7 +6713,7 @@ I<TODO.>
             returns : \@Any,
             matches : (\@Bag, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_reduce::()),
+            evaluates : (evaluates args --> \foundation::Bag_reduce()),
         )),
 
 I<TODO.>
@@ -6752,7 +6752,7 @@ C<+|> for the composing type C<Bag>.
             returns : \@Integer::NN,
             matches : (\@Bag),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_count::()),
+            evaluates : (evaluates args --> \foundation::Bag_count()),
         )),
 
 The function C<count::Bag> results in the integral count of the members
@@ -6765,7 +6765,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
             returns : \@Integer::NN,
             matches : (\@Bag),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_unique_count::()),
+            evaluates : (evaluates args --> \foundation::Bag_unique_count()),
         )),
 
 The function C<unique_count::Bag> results in the integral count of the
@@ -6778,7 +6778,7 @@ C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
             returns : \@Array,
             matches : (\@Bag, \@Function_Call_But_0_1),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Bag_order_using::()),
+            evaluates : (evaluates args --> \foundation::Bag_order_using()),
         )),
 
 The function C<order_using::Bag> results in the C<Array> value that represents
@@ -6945,7 +6945,7 @@ that their headings can be reasoned about in isolation from their bodies.
         subheading_of : (\Function : (
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_subheading_of::()),
+            evaluates : (foundation::Tuple_subheading_of(@args:.\0, @args:.\1)),
         )),
 
         Unicode_Aliases::"⊆@" : (\Alias : ( of : \@subheading_of )),
@@ -7020,7 +7020,7 @@ of its other argument; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_overlaps_heading::()),
+            evaluates : (foundation::Tuple_overlaps_heading(@args:.\0, @args:.\1)),
         )),
 
 The function C<overlaps_heading> results in C<True> iff, given I<X> as the
@@ -7035,7 +7035,7 @@ that the other doesn't have; otherwise it results in C<False>.
             returns : \@Boolean,
             matches : (\@Attributive, \@Attributive),
             is_commutative : True,
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_disjoint_heading::()),
+            evaluates : (foundation::Tuple_disjoint_heading(@args:.\0, @args:.\1)),
         )),
 
 The function C<disjoint_heading> results in C<True> iff the heading of its
@@ -7047,7 +7047,7 @@ argument; otherwise it results in C<False>.
         except_heading : (\Function : (
             returns : \@Heading,
             matches : (\@Attributive, \@Attributive),
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_except_heading::()),
+            evaluates : (foundation::Tuple_except_heading(@args:.\0, @args:.\1)),
         )),
 
         Unicode_Aliases::"∖@" : (\Alias : ( of : \@except_heading )),
@@ -7066,7 +7066,7 @@ but not in the heading of its C<1> argument.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_intersect_heading::()),
+            evaluates : (foundation::Tuple_intersect_heading(@args:.\0, @args:.\1)),
         )),
 
         Unicode_Aliases::"∩@" : (\Alias : ( of : \@intersect_heading )),
@@ -7087,7 +7087,7 @@ infinite number of attribute names.
             is_commutative : True,
             is_idempotent : True,
             identity : (),
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_union_heading::()),
+            evaluates : (foundation::Tuple_union_heading(@args:.\0, @args:.\1)),
         )),
 
         Unicode_Aliases::"∪@" : (\Alias : ( of : \@union_heading )),
@@ -7105,7 +7105,7 @@ the headings of the function's C<0> and C<1> arguments.
             is_associative : True,
             is_commutative : True,
             identity : (),
-            evaluates : ((@args:.\0, @args:.\1) --> \foundation::Tuple_exclusive_heading::()),
+            evaluates : (foundation::Tuple_exclusive_heading(@args:.\0, @args:.\1)),
         )),
 
         symm_diff_heading : (\Alias : ( of : \@exclusive_heading )),
@@ -7565,7 +7565,7 @@ be treated abstractly as sets of attributes with minimal effort.
             is_type_definer : True,
             composes : {\@Structural},
             provides_default_for : {\@Structural},
-            evaluates : \foundation::is_a_Tuple::(),
+            evaluates : \foundation::is_a_Tuple(),
             default : (),
         )),
 
@@ -7620,7 +7620,7 @@ has just the attribute with the name C<0> and asset value of C<False>.
         D1 : (\Function : (
             returns : \@Tuple::D1,
             matches : (\@Attr_Name, \@Any),
-            evaluates : (args --> \foundation::Tuple_D1_select::()),
+            evaluates : (evaluates args --> \foundation::Tuple_D1_select()),
         )),
 
 The function C<D1> results in the C<Tuple::D1> value whose sole attribute's
@@ -7674,7 +7674,7 @@ C<Tuple>.
             returns : \@Integer::NN,
             matches : (\@Tuple),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Tuple_degree::()),
+            evaluates : (evaluates args --> \foundation::Tuple_degree()),
         )),
 
 The function C<degree::Tuple> results in the integral count of the
@@ -7688,7 +7688,7 @@ C<Tuple>.
             returns : \@Heading,
             matches : (\@Tuple),
             implements : \@folder::"",
-            evaluates : (args --> \foundation::Tuple_heading::()),
+            evaluates : (evaluates args --> \foundation::Tuple_heading()),
         )),
 
 The function C<heading::Tuple> results in the relational I<heading> of its
@@ -7703,7 +7703,7 @@ composing type C<Tuple>.
             matches : (\@Tuple, \@Renaming),
             implements : \@folder::"",
             accepts : (...),
-            evaluates : (args --> \foundation::Tuple_rename::()),
+            evaluates : (evaluates args --> \foundation::Tuple_rename()),
         )),
 
 The function C<rename::Tuple> results results in the I<relational rename>
@@ -7727,7 +7727,7 @@ C<rename> aka C<@:=> aka C<ρ> for the composing type C<Tuple>.
             matches : (\@Tuple, \@Heading),
             implements : \@folder::"",
             accepts : (args:.\0 @? args:.\1),
-            evaluates : (args --> \foundation::Tuple_on::()),
+            evaluates : (evaluates args --> \foundation::Tuple_on()),
         )),
 
 The function C<on::Tuple> results in the I<relational projection> of its
@@ -7747,7 +7747,7 @@ the composing type C<Tuple>.
             matches : (\@Tuple, \@Tuple),
             implements : \@folder::"",
             accepts : (args:.\0 @? args:.\1),
-            evaluates : (args --> \foundation::Tuple_update::()),
+            evaluates : (evaluates args --> \foundation::Tuple_update()),
         )),
 
 The function C<update::Tuple> results in a C<Tuple> value that has all of
@@ -7771,7 +7771,7 @@ C<Tuple>.
             is_associative : True,
             is_commutative : True,
             identity : (),
-            evaluates : (args --> \foundation::Tuple_extend::()),
+            evaluates : (evaluates args --> \foundation::Tuple_extend()),
         )),
 
 The function C<extend::Tuple> results in the I<relational extension> of its
@@ -7822,8 +7822,7 @@ for the composing type C<Tuple>.
         any_attrs : (\Function : (
             returns : \@Boolean,
             matches : (\@Tuple, \@Signature),
-            evaluates : ((args:.\0, Signature_to_Function_Call_But_0::(args:.\1))
-                --> \foundation::Tuple_any_attrs::()),
+            evaluates : (foundation::Tuple_any_attrs(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -7859,8 +7858,8 @@ I<TODO.>
         all_attr_assets : (\Function : (
             returns : \@Boolean,
             matches : (\@Tuple, \@Signature),
-            evaluates : (args:.\0 all_attrs \(args:.\1 <-- (args:.\0.\asset,))
-                \<-- (1 : Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (args:.\0 all_attrs \(evaluates args:.\1 <-- (args:.\0.\asset,))
+                <-- (1 : Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -7870,8 +7869,7 @@ I<TODO.>
         attrs_where : (\Function : (
             returns : \@Tuple,
             matches : (\@Tuple, \@Signature),
-            evaluates : ((args:.\0, Signature_to_Function_Call_But_0::(args:.\1))
-                --> \foundation::Tuple_attrs_where::()),
+            evaluates : (foundation::Tuple_attrs_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 I<TODO.>
@@ -7881,7 +7879,7 @@ I<TODO.>
         attrs_map : (\Function : (
             returns : \@Tuple,
             matches : (\@Tuple, \@Function_Call_But_0),
-            evaluates : (args --> \foundation::Tuple_attrs_map::()),
+            evaluates : (evaluates args --> \foundation::Tuple_attrs_map()),
         )),
 
 I<TODO.>
@@ -7891,7 +7889,7 @@ I<TODO.>
         attrs_reduce : (\Function : (
             returns : \@Any,
             matches : (\@Tuple, \@Function_Call_But_0_1),
-            evaluates : (args --> \foundation::Tuple_attrs_reduce::()),
+            evaluates : (evaluates args --> \foundation::Tuple_attrs_reduce()),
         )),
 
 I<TODO.>
@@ -8475,7 +8473,7 @@ C<Relational>.
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
             evaluates : (args:.\0 @? args:.\1
-                and_then guard |args:.\0 all \(args:.\0 %= @args:.\1 = args:.\1) \<-- (1 : args:.\1,)),
+                and_then guard |args:.\0 all \(args:.\0 %= @args:.\1 = args:.\1) <-- (1 : args:.\1,)),
         )),
 
 The function C<can_project_matching::Relational> results in C<True> iff the
@@ -8622,7 +8620,7 @@ types that restrict their possible headings at the type level.>
                         heading : \Heading::(),
                         body : [\Array::(), \all::( 1: \Tuple::() )],
                     ),
-                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) \<-- (1: args:.\0:.\heading,)),
+                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
             )),
             default : (~%@()),
@@ -8717,7 +8715,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
                         heading : \Heading::(),
                         body : [\Set::(), \all::( 1: \Tuple::() )],
                     ),
-                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) \<-- (1: args:.\0:.\heading,)),
+                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
             )),
             default : (?%@()),
@@ -8804,7 +8802,7 @@ function C<select_Relational> for the composing type C<Relation>.
                         heading : \Heading::(),
                         body : [\Bag::(), \all::( 1: \Tuple::() )],
                     ),
-                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) \<-- (1: args:.\0:.\heading,)),
+                    \(args:.\0:.\body all \(@args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
             )),
             default : (+%@()),
@@ -8996,7 +8994,7 @@ I<TODO.>
 
         Capsule : (\Function : (
             is_type_definer : True,
-            evaluates : \foundation::is_a_Capsule::(),
+            evaluates : \foundation::is_a_Capsule(),
             default : (False : ()),
         )),
 
@@ -9029,8 +9027,8 @@ expression node types and concrete syntax (and Foundation functions).
 
         Handle : (\Function : (
             is_type_definer : True,
-            evaluates : \foundation::is_a_Handle::(),
-            default : () --> \foundation::default_Handle::(),
+            evaluates : \foundation::is_a_Handle(),
+            default : foundation::default_Handle(),
         )),
 
 The selection type definer C<Handle> represents the infinite Muldis D
@@ -9055,8 +9053,8 @@ I<TODO.>
 
         Variable : (\Function : (
             is_type_definer : True,
-            evaluates : \foundation::is_a_Variable::(),
-            default : () --> \foundation::default_Variable::(),
+            evaluates : \foundation::is_a_Variable(),
+            default : foundation::default_Variable(),
         )),
 
 The selection type definer C<Variable> represents the infinite Muldis D
@@ -9133,8 +9131,8 @@ that this points to to hold the value of its right-hand argument.>>
 
         Process : (\Function : (
             is_type_definer : True,
-            evaluates : \foundation::is_a_Process::(),
-            default : () --> \foundation::default_Process::(),
+            evaluates : \foundation::is_a_Process(),
+            default : foundation::default_Process(),
         )),
 
 The selection type definer C<Process> represents the infinite Muldis D
@@ -9166,8 +9164,8 @@ for a remote execution, is done by the I<database owner> Muldis D process.
 
         Stream : (\Function : (
             is_type_definer : True,
-            evaluates : \foundation::is_a_Stream::(),
-            default : () --> \foundation::default_Stream::(),
+            evaluates : \foundation::is_a_Stream(),
+            default : foundation::default_Stream(),
         )),
 
 The selection type definer C<Stream> represents the infinite Muldis D
@@ -9179,8 +9177,8 @@ data such as from/to user I/O or the filesystem or network services etc.
 
         External::"" : (\Function : (
             is_type_definer : True,
-            evaluates : \foundation::is_a_External::(),
-            default : () --> \foundation::default_External::(),
+            evaluates : \foundation::is_a_External(),
+            default : foundation::default_External(),
         )),
 
 The selection type definer C<External> represents the infinite Muldis D
@@ -9205,7 +9203,7 @@ Other programming languages may name their corresponding types I<extern>
         External::call_function : (\Function : (
             returns : \@Any,
             matches : (\@Any),
-            evaluates : (\foundation::External_call_function::() <-- args),
+            evaluates : (evaluates \foundation::External_call_function() <-- args),
         )),
 
 The function C<External::call_function> is a proxy for invoking a function
@@ -10009,39 +10007,52 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Function_Call
+=head2 Routine_Call
 
-        Function_Call : (\Function : (
+        Routine_Call : (\Function : (
             is_type_definer : True,
             evaluates : (\@Signature::Capsule_Match : (
                 label : \@material,
                 asset : (
-                    func : {\Local_Name::(), \Function::()},
+                    call : {\Local_Name::(), \Identity_Identifier::(), \Function::(), \Procedure::()},
                     args : \Tuple::(),
                 ),
             )),
-            default : (\@material : (
-                func : (\Function : (evaluates : (False))),
-                args : (),
-            )),
+            default : \foundation::False(),
+        )),
+
+I<TODO.  This represents a specification of a function or procedure invocation,
+and names or defines the function or procedure to invoke and
+also defines the arguments to pass to said function or procedure while invoking it,
+written in Plain_Text with special syntax example `\foo::()` or `\(...)` or `\[...]`.>
+
+I<TODO.  See also and update the documentation or bodies of Homogeneous or
+Unionable or etc other operators to more explicitly take/use Routine_Call
+where they have better knowledge of its structure now that its more nailed
+down than before.>
+
+I<TODO.  Consider whether Routine_Call needs to be stricter eg requiring
+Absolute_Name rather than Local_Name, or whether or not it needs any extra
+attributes for caller context.  But to avoid over-engineering, don't worry
+about those / assume they are not needed here, until such time we actually
+are trying to make the code execute.  Users shouldn't have to be writing
+such manually anyhow, the runtime environment should fill them in as needed.>
+
+=head2 Function_Call
+
+        Function_Call : (\Function : (
+            is_type_definer : True,
+            evaluates : [
+                \Routine_Call::(),
+                \(args:.\0:>.\asset:.\call is_a {\Local_Name::(), \Identity_Identifier::(), \Function::()}),
+            ],
+            default : \(False),
         )),
 
 I<TODO.  This represents a specification of a function invocation,
 and names or defines the function to invoke and
 also defines the arguments to pass to said function while invoking it,
 written in Plain_Text with special syntax example `\foo::()` or `\(...)`.>
-
-I<TODO.  See also and update the documentation or bodies of Homogeneous or
-Unionable or etc other operators to more explicitly take/use Function_Call
-where they have better knowledge of its structure now that its more nailed
-down than before.>
-
-I<TODO.  Consider whether Function_Call needs to be stricter eg requiring
-Absolute_Name rather than Local_Name, or whether or not it needs any extra
-attributes for caller context.  But to avoid over-engineering, don't worry
-about those / assume they are not needed here, until such time we actually
-are trying to make the code execute.  Users shouldn't have to be writing
-such manually anyhow, the runtime environment should fill them in as needed.>
 
 =head2 Function_Call_But_0
 
@@ -10065,28 +10076,19 @@ I<TODO.>
 
 =head2 Procedure_Call
 
-        Procedure_Call : (\Procedure : (
+        Procedure_Call : (\Function : (
             is_type_definer : True,
-            evaluates : (\@Signature::Capsule_Match : (
-                label : \@material,
-                asset : (
-                    proc : {\Local_Name::(), \Procedure::()},
-                    args : \Tuple::(),
-                ),
-            )),
-            default : (\@material : (
-                proc : (\Procedure : (performs : [])),
-                args : (),
-            )),
+            evaluates : [
+                \Routine_Call::(),
+                \(args:.\0:>.\asset:.\call is_a {\Local_Name::(), \Identity_Identifier::(), \Procedure::()}),
+            ],
+            default : \[],
         )),
 
 I<TODO.  This represents a specification of a procedure invocation,
 and names or defines the procedure to invoke and
 also defines the arguments to pass to said procedure while invoking it,
-written in Plain_Text with special syntax example `\&foo::()` or `\[...]`.>
-
-I<TODO.  Consider whether Procedure_Call needs to be stricter in similar
-ways to how Function_Call does.>
+written in Plain_Text with special syntax example `\foo::()` or `\[...]`.>
 
 =head2 Key_Asset_Pair
 
@@ -10097,6 +10099,33 @@ ways to how Function_Call does.>
         )),
 
 I<TODO.  Note, this type currently isn't used anywhere.>
+
+=head2 with_args
+
+        with_args : (\Function : (
+            returns : \@Routine_Call,
+            matches : (\@Routine_Call, \@Tuple),
+            evaluates : (\@Routine_Call : (
+                call : args:.\0:>.\call,
+                args : args:.\0:>.\args %+ args:.\1,
+            ),
+        )),
+
+        "<--" : (\Alias : ( of : \@with_args )),
+
+I<TODO.  This adds to the list of arguments for routine call.  It is
+functionally equivalent to "priming" or "partial function application".
+A Perl 6 corresponding operator has the name "assuming".>
+
+=head2 priming
+
+        priming : (\Function : (
+            commutes : \@assuming,
+        )),
+
+        "-->" : (\Alias : ( of : \@priming )),
+
+I<TODO.  This also adds to the list of arguments for a routine call.>
 
 =head2 Signature_to_Function_Call_But_0
 
@@ -10115,13 +10144,13 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                             returns empty::(conj_sig)
                                 or_else guard topic is_a first::(conj_sig)
                                 and_then guard topic is_a nonfirst::(conj_sig)
-                        ) \<-- (:sig,)
+                        ) <-- (:sig,)
                     else if Signature::Disjunction sig then guard
                         \(
                             topic    ::= args:.\0;
                             disj_sig ::= args:.\sig;
-                            returns disj_sig any \(args:.\topic is_a args:.\0) \<-- (:topic,)
-                        ) \<-- (:sig,)
+                            returns disj_sig any \(args:.\topic is_a args:.\0) <-- (:topic,)
+                        ) <-- (:sig,)
                     else if Signature::Tuple_Attrs_Match_Simple sig then guard
                         \(
                             topic     ::= args:.\0;
@@ -10134,8 +10163,8 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                                         attr_sig ::= args:.\0:.\asset;
                                         topic    ::= args:.\topic;
                                         returns topic.name is_a attr_sig;
-                                    ) \<-- (:topic,)
-                        ) \<-- (:sig,)
+                                    ) <-- (:topic,)
+                        ) <-- (:sig,)
                     else if Signature::Tuple_Attrs_Match sig then guard
                         \(
                             topic     ::= args:.\0;
@@ -10153,8 +10182,8 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                                             then guard topic.name is_a attr_sig
                                             else attr_sig.?\optional
                                         ;
-                                    ) \<-- (:topic,))
-                        ) \<-- (:sig,)
+                                    ) <-- (:topic,))
+                        ) <-- (:sig,)
                     else if Signature::Capsule_Match sig then guard
                         \(
                             topic       ::= args:.\0;
@@ -10162,7 +10191,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
                             returns Capsule topic
                                 and_then guard topic:< = capsule_sig:.\label
                                 and_then guard topic:> is_a capsule_sig:.\asset
-                        ) \<-- (:sig,)
+                        ) <-- (:sig,)
                     else
                         fail  `We should never get here.`
                     ;
