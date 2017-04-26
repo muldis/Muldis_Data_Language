@@ -9047,7 +9047,10 @@ subtypes can only be distinguised using Foundation type definers.  It is
 possible that these subtypes may overlap if the same entity is capable of
 multiple relevant behaviors / can process applicable messages.
 
-I<TODO.>
+Note that C<Handle> are allowed to participate in reference cycles, for
+example that the current value of a C<Variable> is itself, however the
+intentional use of cycles is strongly discouraged.  Optional hints may be
+associated with C<Handle> by users to help the system manage such cycles.
 
 =head2 Variable
 
@@ -9588,6 +9591,9 @@ I<TODO.>
                 \@Guard,
                 \@Factorization,
                 \@Expansion,
+                \@Vars,
+                \@New,
+                \@Current,
             },
             default : (\@Literal : (False,)),
         )),
@@ -9767,6 +9773,12 @@ When one (less commonly) wants to simply name an expression factor not
 conceptually part of a compound expression, the alternate Plain Text syntax
 example `foo ::= 42` is shorthand for `(foo ::= 42; returns foo)`.>
 
+I<TODO.  Consider provision for declaring standalone factors where
+procedure statements are allowed, which would normally look a lot like an
+assignment statement or be confused for such; in the meantime, procedure
+factors may only be declared in sub-expressions of statements though they
+can be re-used in other statements.>
+
 =head2 Expansion
 
         Expansion : (\Function : (
@@ -9786,24 +9798,101 @@ as an unqualified alphanumeric or quoted identifier example `foo`.
 Note that it is an error for a factor to contain any Expansion referring
 to itself, either directly or indirectly (except via a routine call).>
 
+=head2 Vars
+
+        Vars : (\Function : (
+            is_type_definer : True,
+            constant : \@material,
+        )),
+
+I<TODO.  This represents a procedure expression that evaluates to a
+Variable whose current value is a Tuple whose attributes are intended to be
+used as procedure body lexical variables.  Written in Plain_Text with the
+token `vars`.  On entry to a procedure call a new Variable is created for
+"vars" and given the nullary Tuple as its initial current value; this
+Variable is usually destroyed when that procedure exits, unless some other
+Variable has been made to reference it directly or indirectly meanwhile.>
+
+=head2 New
+
+        New : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
+                    0 : \Expression::(),
+                )
+            )),
+            default : (\@material : ((\@Literal : (False,)),)),
+        )),
+
+I<TODO.  This represents a procedure expression that evaluates to a newly
+created "Variable" whose initial current value is given by evaluating its
+sub-expression.  Written in Plain_Text with syntax example `new foo`.>
+
+=head2 Current
+
+        Current : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
+                    0 : \Expression::(),
+                ),
+            )),
+            default : (\@material : ((\@New : ((\@Literal : (False,)),)),)),
+        )),
+
+I<< TODO.  This represents a procedure expression that evaluates to the
+"current value" of the "Variable" that its sub-expression evaluates to.
+Written in Plain_Text with syntax example `current bar` or `bar:&`.
+Note that C<Current> is designed to mirror C<New>, so the identity
+C<x = (new x):& = current new x> should hold for any value of C<x>. >>
+
 =head2 Statement
 
         Statement : (\Function : (
             is_type_definer : True,
             evaluates : {
+                \@Declare,
                 \@Performs,
                 \@If_Then_Else_Stmt,
                 \@Given_When_Default_Stmt,
                 \@Block,
                 \@Leave,
                 \@Iterate,
-                \@Declare,
             },
             default : (\@Block : ([],)),
         )),
 
 I<TODO.  This represents a generic statement to be performed at a future date.
 Its lexical scope and `args` context is the innermost Procedure (trait) containing it.>
+
+=head2 Declare
+
+        Declare : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                asset : (
+                    vars : [\Tuple::(), \all_attr_assets::( 1: \Expression::() )],
+                ),
+            )),
+            default : (\@material : (vars : (),)),
+        )),
+
+I<TODO.  This represents a procedure body statement that declares 0..N
+lexically labelled expression factors, each of which is intended to be a
+convenient shorthand for referring to a procedure body lexical variable.
+To be specific, using Plain_Text syntax examples, the statement
+`declare (foo:42, bar:'Hello', baz:{})` is strictly a shorthand for
+`vars := vars:& %+ (foo ::= vars:&.\foo; bar ::= vars:&.\bar; baz ::= vars:&.\baz;
+returns (foo : new 42, bar : new 'Hello', baz : new {}))`.
+Or, the parens may be omitted for singles, for example `declare foo:42`.
+Note that in theory the fact this is a shorthand means that `declare` might
+best just exist as a Plain_Text feature and be rendered in its longhand
+at this core data types level; on the other hand we have types for And_Then
+plus Or_Else and justified keeping them; its a similar situation.>
 
 =head2 Performs
 
@@ -9885,7 +9974,7 @@ written in Plain_Text with special syntax example
 I<TODO.  This represents an optionally labelled statement block, which
 consists of an ordered list of 0..N statements, which optionally may be
 iterated, written in Plain_Text with special syntax example
-`[declare x; x := 42; print(x);]` or `do_work block [foo(); bar();]`.>
+`[declare x: 42; print(x:&);]` or `do_work block [foo(); bar();]`.>
 
 =head2 Leave
 
@@ -9926,26 +10015,6 @@ specified parent Block node; if an explicit label is given, the ancestor
 Block with that label is the one iterated, and otherwise the most immediate
 parent Block is the one; written in Plain_Text
 with special syntax examples `iterate` or `iterate do_work`.>
-
-=head2 Declare
-
-        Declare : (\Function : (
-            is_type_definer : True,
-            evaluates : (\@Signature::Capsule_Match : (
-                label : \@material,
-                asset : (
-                    0 : \Attr_Name::(),
-                ),
-            )),
-            default : (\@material : (\"",)),
-        )),
-
-I<TODO.  This represents a lexically labelled variable reference declaration
-which can then be bound to one or more variables to facilitate work with
-those variables.  Either this or another thing might be for binding to
-other things such handles to processes or whatever.  A generic paradigm
-is that one uses message passing to talk to anything with a handle.
-written in Plain_Text with special syntax example `declare foo`.>
 
 =head2 Heading
 
@@ -10108,7 +10177,7 @@ I<TODO.  Note, this type currently isn't used anywhere.>
             evaluates : (\@Routine_Call : (
                 call : args:.\0:>.\call,
                 args : args:.\0:>.\args %+ args:.\1,
-            ),
+            )),
         )),
 
         "<--" : (\Alias : ( of : \@with_args, )),

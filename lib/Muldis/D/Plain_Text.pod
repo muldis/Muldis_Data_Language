@@ -592,7 +592,7 @@ other doesn't have that character then C<< <sp> >> is allowed to be empty.
 
 =item *
 
-Otherwise, if C<< <foo> >> is C<:=> then C<< <sp> >> is allowed to be empty.
+OBSOLETE: Otherwise, if C<< <foo> >> is C<:=> then C<< <sp> >> is allowed to be empty.
 
 =item *
 
@@ -653,6 +653,7 @@ These are keywords only within a I<parsing unit subject>:
     and_then
     args
     block
+    current
     declare
     default
     else
@@ -664,19 +665,22 @@ These are keywords only within a I<parsing unit subject>:
     iterate
     leave
     literal
+    new
     note
     or_else
     performs
     pipe
     returns
     then
+    vars
     when
     ::=
-    :=
     :.
     :<
     :>
     :>.
+    :&
+    :&.
 
 These are keyword-like value literals only within a I<parsing unit subject>:
 
@@ -1612,7 +1616,7 @@ Grammar:
         ['\\%' <sp>]? '(' <sp> <attr_commalist> <sp> ')'
 
     <attr_commalist> ::=
-        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | ''] % [<sp> ',' <sp>]
+        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | ''] % [<sp> ',' <sp>]
 
     <anon_attr> ::=
         <attr_asset_expr>
@@ -1625,6 +1629,9 @@ Grammar:
 
     <same_named_attr> ::=
         ':' <sp> <attr_name>
+
+    <same_named_var> ::=
+        ':&' <sp> <attr_name>
 
     <attr_asset_expr> ::=
         <expr>
@@ -1687,6 +1694,8 @@ Grammar:
         | <Capsule_label>
         | <Capsule_attrs>
         | <Capsule_at>
+        | <Variable_current>
+        | <Variable_at>
 
     <Tuple_at> ::=
         <expr> <sp> ':.' <sp> <expr>
@@ -1699,6 +1708,12 @@ Grammar:
 
     <Capsule_at> ::=
         <expr> <sp> ':>.' <sp> <expr>
+
+    <Variable_current> ::=
+        <expr> <sp> ':&'
+
+    <Variable_at> ::=
+        <expr> <sp> ':&.' <sp> <expr>
 
 I<TODO.>
 
@@ -1775,6 +1790,7 @@ I<TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
 Say that it is just syntactic sugar for a specific foundation func invo
 but we special-case it because we don't want "=" to change based on what
 packages are in scope, same as ":=" etc don't change.
+UPDATE: ":=" is actually a regular procedure now, not special syntax, same as "=".
 Note, this only affects '=' when called like an infix op syntactically;
 calling it as `evaluates \"="::(x,y)` or `"="::(x,y)` gets the reg func if exists.>
 
@@ -1873,8 +1889,7 @@ A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
     % - heterogeneous collections / tuples or homos of tuples (relations and tuple-bags and tuple-arrays)
     @ - attr names or headings (and chain-identifiers and renamings)
     \ - value literal or selector (or source attr accessor)
-    & - OBSOLETE: subject-to-update parameter/etc or procedure
-    * - OBSOLETE?: wildcard or "any" or "all"
+    & - variables
     ! - booleans or excuses
     . - collection item accessor or existence test
     = - association of 2 things, either for comparison or binding or assignment
@@ -1893,21 +1908,25 @@ or ?| is set, +| is bag while ~| is array.
 I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
     N - terms - base literals or delimited anything or special selector syntax,
-        including inline func/type/etc decls, or foo::bar::etc or func foo::(...) or \foo::(...)
+        including inline func/type/etc decls, or foo::bar::etc or foo::(...) or \foo::(...)
+        or `args` or `vars` tokens
     N - "literal" expression prefix
-    L - special symbolic accessor post/infix :. :< :> :>.
+    L - special symbolic accessor post/infix :. :< :> :>. :& :&.
     L - symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     L - alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
     N - "evaluates" generic universal function call prefix
+        or `new` or `current` pseudo-function call prefix
     R - conditional binaries or ternaries or n-aries or guards:
         and_then / or_else / if-then-else / given-when-default / guard
-    R - why-expr-binding infix 'note'
+    R - expression annotating infix 'note'
     R - expression factor declaring infix ::=
     N - "returns" expression prefix
-    R - assignment infix := and assignment meta-op :=foo and proc foo()
-    N - "performs" generic universal procedure call prefix
-    R - why-stmt-binding infix 'note'
-    R - block labelling infix 'block'
+    N - every kind of procedure statement, including postcircumfix foo::()
+        or symbolic/alpha pre/in/postfix (bareword) (postfix indicated with 'pipe' keyword)
+        procedure calls, "performs" generic universal procedure call prefix,
+        `declare` statement, conditional if-then-else / given-when-default,
+        block with or without leading 'block' infix, `leave` and `iterate`
+    R - statement annotating infix 'note'
     L - list separators ; , :
 
 I<TODO.  Loosely speaking, "L" means left-associative,
@@ -2050,7 +2069,6 @@ Grammar:
           ','
         | '::='
         | '::'
-        | ':='
         | ':'
         | ';'
         | '\\'
