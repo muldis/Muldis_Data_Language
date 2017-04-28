@@ -9028,7 +9028,6 @@ expression node types and concrete syntax (and Foundation functions).
         Handle : (\Function : (
             is_type_definer : True,
             evaluates : \foundation::is_a_Handle(),
-            default : foundation::default_Handle(),
         )),
 
 The selection type definer C<Handle> represents the infinite Muldis D
@@ -9039,7 +9038,9 @@ that otherwise has the potential to mutate in a way visible to the current
 Muldis D process either due to or independent of the actions of said
 process.  In the general case, the current Muldis D process employs
 I<message passing> to interact with the entity such that the C<Handle>
-serves as its uniform resource identifier.
+serves as its uniform resource identifier.  In notable contrast to other
+type definers, except C<None>, no C<Handle> type definer has a C<default>
+trait, since it doesn't make sense for a C<Handle> to be a default value.
 
 C<Handle> has multiple specialized subtypes including: C<Variable>,
 C<Process>, C<Stream>, C<External>.  Given that C<Handle> is opaque, its
@@ -9057,7 +9058,6 @@ associated with C<Handle> by users to help the system manage such cycles.
         Variable : (\Function : (
             is_type_definer : True,
             evaluates : \foundation::is_a_Variable(),
-            default : foundation::default_Variable(),
         )),
 
 The selection type definer C<Variable> represents the infinite Muldis D
@@ -9074,8 +9074,7 @@ variable will be destroyed automatically when that C<Variable> value is no
 longer in use by the program.  Only a procedure may use a C<Variable> to
 access (read or mutate) the latter's variable; a function may only pass
 around a C<Variable> it is given or compare two (that they point to the
-same variable or not), and can not access the variable behind it.  The
-default value of C<Variable> is implementation-defined.
+same variable or not), and can not access the variable behind it.
 
 As a function only can perceive a C<Variable> as a generic identifier, it
 doesn't make sense to subtype or constrain a C<Variable> as if it were the
@@ -9110,8 +9109,8 @@ EXCLUSIVE DOMAIN OF PROCEDURES THAN WE REALLY NEED TO. So something we
 could do is NOT add the function variant, but supply a set of special
 purpose foundational procedures for the common reasons we might want them.
 FOR EXAMPLE, JUST CREATE A FOUNDATION 'SNAPSHOT' PROCEDURE WHICH WILL
-RECURSIVELY FOLLOW A STRUCTURE AND REPLACE ALL HANDLES WITH THE VALUES OF
-THEIR VARIABLES AT THAT TIME (THIS OP SHOULD BE CHEAP).  Regular deref
+RECURSIVELY FOLLOW A STRUCTURE AND REPLACE ALL HANDLES WITH THE CURRENT VALUES OF
+THEIR VARIABLES AT THAT TIME (THIS OP SHOULD BE CHEAP).  Regular "current"/":&" deref
 keyword would work for the typical single level fine, give value of a
 variable to a function say.  Likewise, a proc to fetch a set of randoms.>
 
@@ -9121,12 +9120,11 @@ the referenced variable is itself readonly, but if it or any of its
 elements is a Variable, then via that indirection one can have an
 arbitrarily complex graph of memory that is subject-to-update, and hence
 any programming language or hardware having the concept of memory pointers
-can be emulated or interfaced without too much indirection.  The default
-value of C<Variable> is one that explicitly doesn't point to any variable.
+can be emulated or interfaced without too much indirection.
 A I<variable> itself also has meta-data such as its declared type (a
 type definer) or registered stimulus-response rules etc.  Typically,
 externally-interfacing resources such as file or network streams are
-represented by C<Variable> values.  The generic assignment syntax C<:=>
+represented by C<Variable> values.  The generic assignment procedure C<:=>
 takes a C<Variable> as its left-hand argument and updates the variable
 that this points to to hold the value of its right-hand argument.>>
 
@@ -9135,7 +9133,6 @@ that this points to to hold the value of its right-hand argument.>>
         Process : (\Function : (
             is_type_definer : True,
             evaluates : \foundation::is_a_Process(),
-            default : foundation::default_Process(),
         )),
 
 The selection type definer C<Process> represents the infinite Muldis D
@@ -9168,7 +9165,6 @@ for a remote execution, is done by the I<database owner> Muldis D process.
         Stream : (\Function : (
             is_type_definer : True,
             evaluates : \foundation::is_a_Stream(),
-            default : foundation::default_Stream(),
         )),
 
 The selection type definer C<Stream> represents the infinite Muldis D
@@ -9181,15 +9177,13 @@ data such as from/to user I/O or the filesystem or network services etc.
         External::"" : (\Function : (
             is_type_definer : True,
             evaluates : \foundation::is_a_External(),
-            default : foundation::default_External(),
         )),
 
 The selection type definer C<External> represents the infinite Muldis D
 Foundation type C<foundation::External>.  An C<External> value is an opaque and
 transient reference to an entity that is defined and managed externally to
 the Muldis D language environment, either internally to the Muldis D host
-implementation or in some peer language that it mediates.  Its default
-value is implementation-defined.
+implementation or in some peer language that it mediates.
 
 As C<External> values are black boxes to Muldis D, it is the responsibility
 of their external manager to at the very least implement the C<same>
