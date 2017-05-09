@@ -9579,6 +9579,11 @@ I<TODO.>
                 \@Literal,
                 \@Args,
                 \@Evaluates,
+                \@Array_Selector,
+                \@Set_Selector,
+                \@Bag_Selector,
+                \@Tuple_Selector,
+                \@Capsule_Selector,
                 \@If_Then_Else_Expr,
                 \@And_Then,
                 \@Or_Else,
@@ -9655,6 +9660,110 @@ where X denotes a Function_Call value.>
 
 I<Note: Visual Basic has the "Nothing" keyword that represents the default
 value of the type of the variable it is assigned to.>
+
+=head2 Array_Selector
+
+        Array_Selector : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                attrs : (
+                    0 : [\Array::(), \all::( 1: (
+                        0 : \Expression::(),  `member value`
+                        1 : \Expression::(),  `multiplicity`
+                    ) )],
+                ),
+            )),
+            default : (\@material : ([],)),
+        )),
+
+I<TODO.  This represents a selection of an Array value in terms of a list
+of multiplied members; each member value and its given multiplicity comes
+from a child expression.  Written in Plain_Text like `['hello':3,-5:2]`.
+This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
+
+=head2 Set_Selector
+
+        Set_Selector : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                attrs : (
+                    0 : [\Bag::(), \all::( 1: (
+                        0 : \Expression::(),  `member value`
+                        1 : \Expression::(),  `multiplicity`
+                    ) )],
+                ),
+            )),
+            default : (\@material : ({0:0},)),
+        )),
+
+I<TODO.  This represents a selection of an Set value in terms of a list
+of multiplied members; each member value and its given multiplicity comes
+from a child expression.  Written in Plain_Text like `{'hello',-5}`.
+While Sets have no duplicate values, Set_Selector has common syntax with
+Array_Selector and Bag_Selector in allowing one to specify a multiplicity
+to support greater code reuse, including explicitly specifying one vs zero.
+This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
+
+=head2 Bag_Selector
+
+        Bag_Selector : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                attrs : (
+                    0 : [\Bag::(), \all::( 1: (
+                        0 : \Expression::(),  `member value`
+                        1 : \Expression::(),  `multiplicity`
+                    ) )],
+                ),
+            )),
+            default : (\@material : ({0:0},)),
+        )),
+
+I<TODO.  This represents a selection of an Bag value in terms of a list
+of multiplied members; each member value and its given multiplicity comes
+from a child expression.  Written in Plain_Text like `{'hello':3,-5:2}`.
+This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
+
+=head2 Tuple_Selector
+
+        Tuple_Selector : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                attrs : (
+                    0 : [\Tuple::(), \all_attr_assets::( 1: \Expression::() )],
+                ),
+            )),
+            default : (\@material : (())),
+        )),
+
+I<TODO.  This represents a selection of a Tuple value in terms of a list
+of attributes; each attribute name is specified directly, each attribute asset comes
+from a child expression.  Written in Plain_Text like `(name:'Jo',age:7)`.
+This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
+
+=head2 Capsule_Selector
+
+        Capsule_Selector : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \@material,
+                attrs : (
+                    0 : \Expression::(),  `label`
+                    1 : \Expression::(),  `attributes`
+                ),
+            )),
+            default : (\@material : ((\@folder::Literal : (\"",)),
+                (\@folder::Literal : ()))),
+        )),
+
+I<TODO.  This represents a selection of a Capsule value in terms of a
+label plus a list of attributes, each of which comes from a child
+expression.  Written in Plain_Text like `(\Person:(name:'Jo',age:7))`.
+This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 
 =head2 If_Then_Else_Expr
 
