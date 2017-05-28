@@ -613,7 +613,7 @@ I<MoveNext>.
         nth_succ::"" : (\Function : (
             virtual : True,
             returns : {\@Successable, \@Excuse::After_All_Others},
-            matches : (\@Successable, \@Integer::NN),
+            matches : (\@Successable, \@Integer_NN),
         )),
 
 The virtual function C<nth_succ> results in the Nth I<successor> value of
@@ -689,7 +689,7 @@ I<previous>.
         nth_pred::"" : (\Function : (
             virtual : True,
             returns : {\@Bicessable, \@Excuse::Before_All_Others},
-            matches : (\@Bicessable, \@Integer::NN),
+            matches : (\@Bicessable, \@Integer_NN),
         )),
 
 The virtual function C<nth_pred> results in the Nth I<predecessor> value of
@@ -842,7 +842,7 @@ the composing type C<Boolean>.
 
         nth_pred::Boolean : (\Function : (
             returns : {\@False, \@Excuse::Before_All_Others},
-            matches : (\@Boolean, \@Integer::NN),
+            matches : (\@Boolean, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and args:.\0 then False else Excuse::Before_All_Others()),
         )),
@@ -854,7 +854,7 @@ function C<nth_pred> for the composing type C<Boolean>.
 
         nth_succ::Boolean : (\Function : (
             returns : {\@True, \@Excuse::After_All_Others},
-            matches : (\@Boolean, \@Integer::NN),
+            matches : (\@Boolean, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then True else Excuse::After_All_Others()),
         )),
@@ -1065,12 +1065,12 @@ and its C<1> argument is C<True>, and C<False> otherwise.
 
 =head2 Round_Meth
 
-        Round_Meth::"" : (\Function : (
+        Round_Meth : (\Function : (
             is_type_definer : True,
             evaluates : (\@Signature::Capsule_Match : (
                 label : \@material,
                 attrs : (
-                    0 : \Round_Meth::Attr_Name(),
+                    0 : \Round_Meth_Attr_Name::(),
                 ),
             )),
             default : (\@material : (\To_Zero,)),
@@ -1103,9 +1103,9 @@ The default value of C<Round_Meth> is C<To_Zero>, which is the simplest.
 Other programming languages may name their corresponding types
 I<RoundingMode> (Java) or I<MidpointRounding> (C#).
 
-=head2 Round_Meth::Attr_Name
+=head2 Round_Meth_Attr_Name
 
-        Round_Meth::Attr_Name : (\Function : (
+        Round_Meth_Attr_Name : (\Function : (
             is_type_definer : True,
             evaluates : [\Attr_Name::(), \"⊆@"::( 1:
                 \@(Down,Up,To_Zero,To_Inf
@@ -1115,7 +1115,7 @@ I<RoundingMode> (Java) or I<MidpointRounding> (C#).
             default : \To_Zero,
         )),
 
-The selection type definer C<Round_Meth::Attr_Name> represents the finite type
+The selection type definer C<Round_Meth_Attr_Name> represents the finite type
 consisting just of the C<Attr_Name> values that are valid Capsule attribute
 assets of C<Round_Meth> values.
 
@@ -1123,7 +1123,7 @@ assets of C<Round_Meth> values.
 
         RM : (\Function : (
             returns : \@Round_Meth,
-            matches : (\@Round_Meth::Attr_Name,),
+            matches : (\@Round_Meth_Attr_Name,),
             evaluates : ((\@Round_Meth : (args:.\0,))),
         )),
 
@@ -1495,7 +1495,7 @@ programming languages may name their corresponding operators I<exp> or I<^>.
         integral_nn_power::"" : (\Function : (
             virtual : True,
             returns : {\@Numerical, \@Excuse::Zero_To_The_Zero},
-            matches : (\@Numerical, \@Integral::NN),
+            matches : (\@Numerical, \@Integral_NN),
         )),
 
         power : (\Alias : ( of : \@integral_nn_power, )),
@@ -1535,29 +1535,29 @@ generally mean that.  In the general case, C<Integral> has no minimum or
 maximum value, but often a type that is C<Integral> will have them.
 C<Integral> is composed by C<Integer>.
 
-=head2 Integral::NN
+=head2 Integral_NN
 
-        Integral::NN : (\Function : (
+        Integral_NN : (\Function : (
             is_type_definer : True,
             evaluates : (Integral args:.\0 and_then guard
                 args:.\0 >= zero::(args:.\0)),
         )),
 
-The selection type definer C<Integral::NN> represents the infinite type
+The selection type definer C<Integral_NN> represents the infinite type
 consisting just of the C<Integral> values that are non-negative.  Its
 default and minmum value is C<0>; it has no maximum value.
 
-=head2 Integral::P
+=head2 Integral_P
 
-        Integral::P : (\Function : (
+        Integral_P : (\Function : (
             is_type_definer : True,
-            evaluates : (Integral::NN::(args:.\0) and_then guard
+            evaluates : (Integral_NN::(args:.\0) and_then guard
                 args:.\0 > zero::(args:.\0)),
             default : (succ::(Integral::())),
         )),
 
-The selection type definer C<Integral::P> represents the infinite type
-consisting just of the C<Integral::NN> values that are positive.  Its
+The selection type definer C<Integral_P> represents the infinite type
+consisting just of the C<Integral_NN> values that are positive.  Its
 default and minmum value is C<1>; it has no maximum value.
 
 =head2 --
@@ -1605,8 +1605,8 @@ C<Integral> types, just dealing with the latter for storage.
 
         factorial::"" : (\Function : (
             virtual : True,
-            returns : \@Integral::P,
-            matches : (\@Integral::NN,),
+            returns : \@Integral_P,
+            matches : (\@Integral_NN,),
         )),
 
 The virtual function C<factorial> results in the integral numeric
@@ -1618,8 +1618,8 @@ this operator in postfix like I<n!>.
 =head2 gcd greatest_common_divisor
 
         gcd : (\Function : (
-            returns : \@Integral::P,
-            matches : (\@Integral::NN, \@Integral::NN),
+            returns : \@Integral_P,
+            matches : (\@Integral_NN, \@Integral_NN),
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
@@ -1637,8 +1637,8 @@ I<TODO: Look into generalizing it to take negative integer arguments too.>
 =head2 lcm least_common_multiple
 
         lcm : (\Function : (
-            returns : \@Integral::NN,
-            matches : (\@Integral::NN, \@Integral::NN),
+            returns : \@Integral_NN,
+            matches : (\@Integral_NN, \@Integral_NN),
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
@@ -1685,27 +1685,27 @@ cardinal nor ordinal nor nominal.  Its default value is C<0>.  C<Integer>
 is both C<Orderable> and C<Bicessable>; it has no minimum or maximum value.
 Other programming languages may name their corresponding types I<BigInt>.
 
-=head2 Integer::NN
+=head2 Integer_NN
 
-        Integer::NN : (\Function : (
+        Integer_NN : (\Function : (
             is_type_definer : True,
             evaluates : [\Integer::(), \">="::( 1: 0 )],
         )),
 
-The selection type definer C<Integer::NN> represents the infinite type
+The selection type definer C<Integer_NN> represents the infinite type
 consisting just of the C<Integer> values that are non-negative.  Its
 default and minmum value is C<0>; it has no maximum value.
 
-=head2 Integer::P
+=head2 Integer_P
 
-        Integer::P : (\Function : (
+        Integer_P : (\Function : (
             is_type_definer : True,
-            evaluates : [\Integer::NN(), \">"::( 1: 0 )],
+            evaluates : [\Integer_NN::(), \">"::( 1: 0 )],
             default : 1,
         )),
 
-The selection type definer C<Integer::P> represents the infinite type consisting
-just of the C<Integer::NN> values that are positive.  Its default and minmum
+The selection type definer C<Integer_P> represents the infinite type consisting
+just of the C<Integer_NN> values that are positive.  Its default and minmum
 value is C<1>; it has no maximum value.
 
 =head2 in_order (Integer)
@@ -1737,7 +1737,7 @@ the composing type C<Integer>.
 
         nth_pred::Integer : (\Function : (
             returns : \@Integer,
-            matches : (\@Integer, \@Integer::NN),
+            matches : (\@Integer, \@Integer_NN),
             implements : \@folder::Integral,
             evaluates : (args:.\0 - args:.\1),
         )),
@@ -1749,7 +1749,7 @@ virtual function C<nth_pred> for the composing type C<Integer>.
 
         nth_succ::Integer : (\Function : (
             returns : \@Integer,
-            matches : (\@Integer, \@Integer::NN),
+            matches : (\@Integer, \@Integer_NN),
             implements : \@folder::Integral,
             repeater : \@plus::Integer,
             evaluates : (args:.\0 + args:.\1),
@@ -1814,7 +1814,7 @@ C<Integer>.
 =head2 modulus (Integer)
 
         modulus::Integer : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Integer,),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Integer_modulus()),
@@ -2006,7 +2006,7 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
 
         integral_nn_power::Integer : (\Function : (
             returns : {\@Integer, \@Excuse::Zero_To_The_Zero},
-            matches : (\@Integer, \@Integer::NN),
+            matches : (\@Integer, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 = 0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
                 else guard evaluates args --> \foundation::Integer_nn_power()),
@@ -2032,8 +2032,8 @@ the composing type C<Integer>.
 =head2 factorial (Integer)
 
         factorial::Integer : (\Function : (
-            returns : \@Integer::P,
-            matches : (\@Integer::NN,),
+            returns : \@Integer_P,
+            matches : (\@Integer_NN,),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Integer_factorial()),
         )),
@@ -2066,15 +2066,15 @@ positive infinity.  In the general case it is not C<Bicessable> nor does it
 have a minimum or maximum value, but sometimes a type that is C<Fractional>
 will have either of those.  C<Fractional> is composed by C<Fraction>.
 
-=head2 Fractional::NN
+=head2 Fractional_NN
 
-        Fractional::NN : (\Function : (
+        Fractional_NN : (\Function : (
             is_type_definer : True,
             evaluates : (Fractional args:.\0 and_then guard
                 args:.\0 >= zero::(args:.\0)),
         )),
 
-The selection type definer C<Fractional::NN> represents the infinite type
+The selection type definer C<Fractional_NN> represents the infinite type
 consisting just of the C<Fractional> values that are non-negative.  Its
 default and minmum value is C<0.0>; it has no maximum value.
 
@@ -2109,7 +2109,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
         denominator::"" : (\Function : (
             virtual : True,
-            returns : \@Integral::P,
+            returns : \@Integral_P,
             matches : (\@Fractional,),
         )),
 
@@ -2130,7 +2130,7 @@ I<denominator> pair of C<Integral> whose I<denominator> is positive.
                 attrs : [
                     (
                         numerator : \Integer::(),
-                        denominator : \Integer::P(),
+                        denominator : \Integer_P::(),
                     ),
                     \(args:.\0:.\numerator coprime args:.\0:.\denominator),
                 ],
@@ -2147,14 +2147,14 @@ particular, neither cardinal nor ordinal nor nominal.  Its default value is
 C<0.0>.  C<Fraction> is C<Orderable>; it has no minimum or maximum value.
 Other programming languages may name their corresponding types I<BigRat>.
 
-=head2 Fraction::NN
+=head2 Fraction_NN
 
-        Fraction::NN : (\Function : (
+        Fraction_NN : (\Function : (
             is_type_definer : True,
             evaluates : [\Fraction::(), \">="::( 1: 0.0 )],
         )),
 
-The selection type definer C<Fraction::NN> represents the infinite type
+The selection type definer C<Fraction_NN> represents the infinite type
 consisting just of the C<Fraction> values that are non-negative.  Its
 default and minmum value is C<0.0>; it has no maximum value.
 
@@ -2238,7 +2238,7 @@ C<Fraction>.
 =head2 modulus (Fraction)
 
         modulus::Fraction : (\Function : (
-            returns : \@Fraction::NN,
+            returns : \@Fraction_NN,
             matches : (\@Fraction,),
             implements : \@folder::"",
             evaluates : (abs::(numerator args:.\0) / (denominator args:.\0)),
@@ -2381,7 +2381,7 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
 
         integral_nn_power::Fraction : (\Function : (
             returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
-            matches : (\@Fraction, \@Integer::NN),
+            matches : (\@Fraction, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 = 0.0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
                 else guard ((numerator args:.\0) ** args:.\1) / ((denominator args:.\0) ** args:.\1)),
@@ -2418,7 +2418,7 @@ function C<numerator> for the composing type C<Fraction>.
 =head2 denominator (Fraction)
 
         denominator::Fraction : (\Function : (
-            returns : \@Integer::P,
+            returns : \@Integer_P,
             matches : (\@Fraction,),
             evaluates : (args:.\0:>.\denominator),
         )),
@@ -2655,7 +2655,7 @@ which logically does the same thing without an explicit operator.
         replicate::"" : (\Function : (
             virtual : True,
             returns : \@Stringy,
-            matches : (\@Stringy, \@Integer::NN),
+            matches : (\@Stringy, \@Integer_NN),
         )),
 
         "~#" : (\Alias : ( of : \@replicate, )),
@@ -2802,7 +2802,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 
         replicate::Bits : (\Function : (
             returns : \@Bits,
-            matches : (\@Bits, \@Integer::NN),
+            matches : (\@Bits, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (Bits_from_String_Bits::((Bits_to_String_Bits args:.\0) ~# args:.\1)),
         )),
@@ -2964,7 +2964,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
 
         replicate::Blob : (\Function : (
             returns : \@Blob,
-            matches : (\@Blob, \@Integer::NN),
+            matches : (\@Blob, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~# args:.\1)),
         )),
@@ -3269,7 +3269,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
 
         replicate::Text : (\Function : (
             returns : \@Text,
-            matches : (\@Text, \@Integer::NN),
+            matches : (\@Text, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args:.\0) ~# args:.\1)),
         )),
@@ -3981,7 +3981,7 @@ otherwise it results in C<False>.
         has_n::"" : (\Function : (
             virtual : True,
             returns : \@Boolean,
-            matches : (\@Homogeneous, \@Any, \@Integer::NN),
+            matches : (\@Homogeneous, \@Any, \@Integer_NN),
         )),
 
 The virtual function C<has_n> results in C<True> iff its C<0> argument has
@@ -3995,7 +3995,7 @@ C<0> argument will always result in C<False>.
 
         multiplicity::"" : (\Function : (
             virtual : True,
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Homogeneous, \@Any),
         )),
 
@@ -4309,7 +4309,7 @@ to use assignment syntax.
         insert_n::"" : (\Function : (
             virtual : True,
             returns : \@Unionable,
-            matches : (\@Unionable, \@Any, \@Integer::NN),
+            matches : (\@Unionable, \@Any, \@Integer_NN),
         )),
 
 The virtual function C<insert_n> results in the value of its C<0>
@@ -4341,7 +4341,7 @@ programming languages may name their corresponding operators I<delete>.
         remove_n::"" : (\Function : (
             virtual : True,
             returns : \@Unionable,
-            matches : (\@Unionable, \@Any, \@Integer::NN),
+            matches : (\@Unionable, \@Any, \@Integer_NN),
         )),
 
 The virtual function C<remove_n> results in the value of its C<0>
@@ -4665,7 +4665,7 @@ multiplicity possibly is significant but order isn't.
 
         count::"" : (\Function : (
             virtual : True,
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Discrete,),
         )),
 
@@ -4680,7 +4680,7 @@ have the same member value, every member counts as 1 towards the total.
 
         unique_count::"" : (\Function : (
             virtual : True,
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Discrete,),
         )),
 
@@ -4885,7 +4885,7 @@ type C<Positional>.
 =head2 unique_count (Positional)
 
         unique_count::Positional : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Positional,),
             implements : \@folder::"",
             evaluates : (count::(to_Set args:.\0)),
@@ -5262,7 +5262,7 @@ I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as 
 
 =head2 Array
 
-        Array::"" : (\Function : (
+        Array : (\Function : (
             is_type_definer : True,
             composes : {\@Positional},
             provides_default_for : {\@Positional},
@@ -5308,16 +5308,16 @@ or octet arrays with names like I<byte[]> or I<bytea>, or character
 arrays with names like I<string> or I<text> or I<varchar>, or types like
 I<string> that may represent either octets or characters.
 
-=head2 Array::Empty ~∅
+=head2 Array_C0 ~∅
 
-        Array::Empty : (\Function : (
+        Array_C0 : (\Function : (
             is_type_definer : True,
             constant : [],
         )),
 
-        Unicode_Aliases::"~∅" : (\Alias : ( of : \@Array::Empty, )),
+        Unicode_Aliases::"~∅" : (\Alias : ( of : \@Array_C0, )),
 
-The singleton type definer C<Array::Empty> aka C<~∅> represents the only zero-member
+The singleton type definer C<Array_C0> aka C<~∅> represents the only zero-member
 C<Array> value, C<[]>.
 
 =head2 in_order (Array)
@@ -5445,7 +5445,7 @@ C<Array>.
 
         replicate::Array : (\Function : (
             returns : \@Array,
-            matches : (\@Array, \@Integer::NN),
+            matches : (\@Array, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Array_replicate()),
         )),
@@ -5460,7 +5460,7 @@ for the composing type C<Array>.
 
         has_n::Array : (\Function : (
             returns : \@Boolean,
-            matches : (\@Array, \@Any, \@Integer::NN),
+            matches : (\@Array, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Array_has_n()),
         )),
@@ -5474,7 +5474,7 @@ C<has_n> for the composing type C<Array>.
 =head2 multiplicity (Array)
 
         multiplicity::Array : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Array, \@Any),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Array_multiplicity()),
@@ -5530,7 +5530,7 @@ I<TODO.>
 
         insert_n::Array : (\Function : (
             returns : \@Array,
-            matches : (\@Array, \@Any, \@Integer::NN),
+            matches : (\@Array, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Array_insert_n()),
         )),
@@ -5547,7 +5547,7 @@ C<Array>.
 
         remove_n::Array : (\Function : (
             returns : \@Array,
-            matches : (\@Array, \@Any, \@Integer::NN),
+            matches : (\@Array, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Array_remove_n()),
         )),
@@ -5729,7 +5729,7 @@ C<Array>.
 =head2 count (Array)
 
         count::Array : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Array,),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Array_count()),
@@ -5760,7 +5760,7 @@ type C<Array>.
 
         at::Array : (\Function : (
             returns : \@Any,
-            matches : (\@Array, \@Integer::NN),
+            matches : (\@Array, \@Integer_NN),
             implements : \@folder::"",
             accepts : (args:.\0 .? args:.\1),
             evaluates : (evaluates args --> \foundation::Array_at()),
@@ -5788,7 +5788,7 @@ C<~|> for the composing type C<Array>.
 =head2 first_possible_ord_pos (Array)
 
         first_possible_ord_pos::Array : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Array,),
             implements : \@folder::"",
             evaluates : (0),
@@ -5821,7 +5821,7 @@ the composing type C<Array>.
 =head2 ord_pos_succ_all_matches (Array)
 
         ord_pos_succ_all_matches::Array : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Array, \@Array),
             implements : \@folder::"",
             is_commutative : True,
@@ -5850,7 +5850,7 @@ C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
 =head2 Set
 
-        Set::"" : (\Function : (
+        Set : (\Function : (
             is_type_definer : True,
             composes : {\@Discrete, \@Setty},
             provides_default_for : {\@Setty},
@@ -5870,16 +5870,16 @@ particular, and is simply the sum of its members.  A C<Set> ensures that no
 2 of its members are the same value.  The default value of C<Set> is C<{}>,
 the only zero-member C<Set> value.
 
-=head2 Set::Empty ?∅
+=head2 Set_C0 ?∅
 
-        Set::Empty : (\Function : (
+        Set_C0 : (\Function : (
             is_type_definer : True,
             constant : {},
         )),
 
-        Unicode_Aliases::"?∅" : (\Alias : ( of : \@Set::Empty, )),
+        Unicode_Aliases::"?∅" : (\Alias : ( of : \@Set_C0, )),
 
-The singleton type definer C<Set::Empty> aka C<?∅> represents the only zero-member
+The singleton type definer C<Set_C0> aka C<?∅> represents the only zero-member
 C<Set> value, C<{}>.
 
 =head2 to_Boolean (Set)
@@ -5942,7 +5942,7 @@ C<only_member> for the composing type C<Set>.
 
         has_n::Set : (\Function : (
             returns : \@Boolean,
-            matches : (\@Set, \@Any, \@Integer::NN),
+            matches : (\@Set, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (has_n::(args:.\0:>.\members, args:.\1, args:.\2)),
         )),
@@ -5956,7 +5956,7 @@ type C<Set>.
 =head2 multiplicity (Set)
 
         multiplicity::Set : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Set, \@Any),
             implements : \@folder::"",
             evaluates : (args:.\0:>.\members multiplicity args:.\1),
@@ -6073,7 +6073,7 @@ I<TODO.>
 
         insert_n::Set : (\Function : (
             returns : \@Set,
-            matches : (\@Set, \@Any, \@Integer::NN),
+            matches : (\@Set, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 has args:.\1 or args:.\2 = 0 then args:.\0
                 else (\Set : (members : insert_n::(args:.\0:>.\members, args:.\1, 1),))),
@@ -6089,7 +6089,7 @@ function C<insert_n> for the composing type C<Set>.
 
         remove_n::Set : (\Function : (
             returns : \@Set,
-            matches : (\@Set, \@Any, \@Integer::NN),
+            matches : (\@Set, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : ((\Set : (members : remove_n::(args:.\0:>.\members, args:.\1, args:.\2),))),
         )),
@@ -6278,7 +6278,7 @@ C<Set>.
 =head2 count (Set)
 
         count::Set : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Set,),
             implements : \@folder::"",
             evaluates : (count args:.\0:>.\members),
@@ -6291,7 +6291,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 =head2 unique_count (Set)
 
         unique_count::Set : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Set,),
             implements : \@folder::"",
             evaluates : (count args:.\0),
@@ -6321,7 +6321,7 @@ C<Discrete> virtual function C<order_using> for the composing type C<Set>.
 
 =head2 Bag
 
-        Bag::"" : (\Function : (
+        Bag : (\Function : (
             is_type_definer : True,
             composes : {\@Discrete},
             evaluates : \foundation::is_a_Bag(),
@@ -6337,16 +6337,16 @@ the same value.  The default value of C<Bag> is C<{0:0}>, the only
 zero-member C<Bag> value.  Other programming languages may name their
 corresponding types I<Multiset>.
 
-=head2 Bag::Empty +∅
+=head2 Bag_C0 +∅
 
-        Bag::Empty : (\Function : (
+        Bag_C0 : (\Function : (
             is_type_definer : True,
             constant : {0:0},
         )),
 
-        Unicode_Aliases::"+∅" : (\Alias : ( of : \@Bag::Empty, )),
+        Unicode_Aliases::"+∅" : (\Alias : ( of : \@Bag_C0, )),
 
-The singleton type definer C<Bag::Empty> aka C<+∅> represents the only zero-member
+The singleton type definer C<Bag_C0> aka C<+∅> represents the only zero-member
 C<Bag> value, C<{0:0}>.
 
 =head2 to_Boolean (Bag)
@@ -6410,7 +6410,7 @@ C<Bag>.
 
         has_n::Bag : (\Function : (
             returns : \@Boolean,
-            matches : (\@Bag, \@Any, \@Integer::NN),
+            matches : (\@Bag, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Bag_has_n()),
         )),
@@ -6424,7 +6424,7 @@ composing type C<Bag>.
 =head2 multiplicity (Bag)
 
         multiplicity::Bag : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Bag, \@Any),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Bag_multiplicity()),
@@ -6543,7 +6543,7 @@ I<TODO.>
 
         insert_n::Bag : (\Function : (
             returns : \@Bag,
-            matches : (\@Bag, \@Any, \@Integer::NN),
+            matches : (\@Bag, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Bag_insert_n()),
         )),
@@ -6558,7 +6558,7 @@ C<insert_n> for the composing type C<Bag>.
 
         remove_n::Bag : (\Function : (
             returns : \@Bag,
-            matches : (\@Bag, \@Any, \@Integer::NN),
+            matches : (\@Bag, \@Any, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Bag_remove_n()),
         )),
@@ -6749,7 +6749,7 @@ C<+|> for the composing type C<Bag>.
 =head2 count (Bag)
 
         count::Bag : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Bag,),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Bag_count()),
@@ -6762,7 +6762,7 @@ function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 =head2 unique_count (Bag)
 
         unique_count::Bag : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Bag,),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Bag_unique_count()),
@@ -6914,7 +6914,7 @@ has exactly 1 attribute, and C<False> otherwise.
 
         degree::"" : (\Function : (
             virtual : True,
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Attributive,),
         )),
 
@@ -7593,37 +7593,37 @@ value of C<Tuple> is C<()>, the only zero-attribute C<Tuple> value.  Other
 programming languages may name their corresponding types I<Capture> or
 I<Stash> or I<record> or I<struct> or I<row> or I<DataRow> or I<Hash>.
 
-=head2 Tuple::D0
+=head2 Tuple_D0
 
-        Tuple::D0 : (\Function : (
+        Tuple_D0 : (\Function : (
             is_type_definer : True,
             constant : (),
         )),
 
-The singleton type definer C<Tuple::D0> represents the only zero-attribute
+The singleton type definer C<Tuple_D0> represents the only zero-attribute
 C<Tuple> value.
 
-=head2 Tuple::D1
+=head2 Tuple_D1
 
-        Tuple::D1 : (\Function : (
+        Tuple_D1 : (\Function : (
             is_type_definer : True,
             evaluates : [\Tuple::(), \is_unary::()],
             default : (False,),
         )),
 
-The selection type definer C<Tuple::D1> represents the infinite type consisting
+The selection type definer C<Tuple_D1> represents the infinite type consisting
 just of the C<Tuple> values having exactly 1 attribute.  Its default value
 has just the attribute with the name C<0> and asset value of C<False>.
 
 =head2 D1
 
         D1 : (\Function : (
-            returns : \@Tuple::D1,
+            returns : \@Tuple_D1,
             matches : (\@Attr_Name, \@Any),
             evaluates : (evaluates args --> \foundation::Tuple_D1_select()),
         )),
 
-The function C<D1> results in the C<Tuple::D1> value whose sole attribute's
+The function C<D1> results in the C<Tuple_D1> value whose sole attribute's
 name is is specified in its C<0> argument and that attribute's value is
 specified in its C<1> argument.
 
@@ -7671,7 +7671,7 @@ C<Tuple>.
 =head2 degree (Tuple)
 
         degree::Tuple : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Tuple,),
             implements : \@folder::"",
             evaluates : (evaluates args --> \foundation::Tuple_degree()),
@@ -7975,7 +7975,7 @@ virtual function C<only_member> for the composing type C<Relational>.
 
         has_n::Relational : (\Function : (
             returns : {\@Boolean, \@Excuse::Not_Same_Heading},
-            matches : (\@Relational, \@Structural, \@Integer::NN),
+            matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard has_n::(|args:.\0, args:.\1, args:.\2)
                 else Excuse::Not_Same_Heading),
@@ -7994,7 +7994,7 @@ function C<has_n> for the composing type C<Relational>.
 =head2 multiplicity (Relational)
 
         multiplicity::Relational : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Relational, \@Structural),
             implements : \@folder::"",
             evaluates : (|args:.\0 multiplicity args:.\1),
@@ -8134,7 +8134,7 @@ I<TODO.>
 
         insert_n::Relational : (\Function : (
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
-            matches : (\@Relational, \@Structural, \@Integer::NN),
+            matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: insert_n::(|args:.\0, args:.\1, args:.\2) )
@@ -8159,7 +8159,7 @@ C<Relational>.
 
         remove_n::Relational : (\Function : (
             returns : {\@Relational, \@Excuse::Not_Same_Heading},
-            matches : (\@Relational, \@Structural, \@Integer::NN),
+            matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: remove_n::(|args:.\0, args:.\1, args:.\2) )
@@ -8428,7 +8428,7 @@ composing type C<Relational>.
 =head2 degree (Relational)
 
         degree::Relational : (\Function : (
-            returns : \@Integer::NN,
+            returns : \@Integer_NN,
             matches : (\@Relational,),
             implements : \@folder::"",
             evaluates : (degree @args:.\0),
@@ -8610,7 +8610,7 @@ types that restrict their possible headings at the type level.>
 
 =head2 Tuple_Array
 
-        Tuple_Array::"" : (\Function : (
+        Tuple_Array : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Positional},
             evaluates : (\@Signature::Capsule_Match : (
@@ -8637,24 +8637,24 @@ since we don't want to infect the generic Tuple with all the Orderable ops.>
 I<Note: This type structurally resembles a spreadsheet or a .Net DataTable,
 or a subtype of it does.>
 
-=head2 Tuple_Array::D0C0
+=head2 Tuple_Array_D0C0
 
-        Tuple_Array::D0C0 : (\Function : (
+        Tuple_Array_D0C0 : (\Function : (
             is_type_definer : True,
             constant : ~%@(),
         )),
 
-The singleton type definer C<Tuple_Array::D0C0> represents the only zero-attribute,
+The singleton type definer C<Tuple_Array_D0C0> represents the only zero-attribute,
 zero-tuple C<Tuple_Array> value.
 
-=head2 Tuple_Array::D0C1
+=head2 Tuple_Array_D0C1
 
-        Tuple_Array::D0C1 : (\Function : (
+        Tuple_Array_D0C1 : (\Function : (
             is_type_definer : True,
             constant : ~%[()],
         )),
 
-The singleton type definer C<Tuple_Array::D0C1> represents the only zero-attribute,
+The singleton type definer C<Tuple_Array_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Array> value.
 
 =head2 heading (Tuple_Array)
@@ -8704,7 +8704,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
 =head2 Relation
 
-        Relation::"" : (\Function : (
+        Relation : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Discrete, \@Setty},
             provides_default_for : {\@Relational},
@@ -8723,25 +8723,25 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
 
-=head2 Relation::D0C0
+=head2 Relation_D0C0
 
-        Relation::D0C0 : (\Function : (
+        Relation_D0C0 : (\Function : (
             is_type_definer : True,
             constant : ?%@(),
         )),
 
-The singleton type definer C<Relation::D0C0> represents the only
+The singleton type definer C<Relation_D0C0> represents the only
 zero-attribute, zero-tuple C<Relation> value.  Note that I<The Third
 Manifesto> also refers to this value by the special name I<TABLE_DUM>.
 
-=head2 Relation::D0C1
+=head2 Relation_D0C1
 
-        Relation::D0C1 : (\Function : (
+        Relation_D0C1 : (\Function : (
             is_type_definer : True,
             constant : ?%{()},
         )),
 
-The singleton type definer C<Relation::D0C1> represents the only
+The singleton type definer C<Relation_D0C1> represents the only
 zero-attribute, single-tuple C<Relation> value.  Note that I<The Third
 Manifesto> also refers to this value by the special name I<TABLE_DEE>.
 
@@ -8792,7 +8792,7 @@ function C<select_Relational> for the composing type C<Relation>.
 
 =head2 Tuple_Bag
 
-        Tuple_Bag::"" : (\Function : (
+        Tuple_Bag : (\Function : (
             is_type_definer : True,
             composes : {\@Relational, \@Discrete},
             evaluates : (\@Signature::Capsule_Match : (
@@ -8810,24 +8810,24 @@ function C<select_Relational> for the composing type C<Relation>.
 
 I<TODO.>
 
-=head2 Tuple_Bag::D0C0
+=head2 Tuple_Bag_D0C0
 
-        Tuple_Bag::D0C0 : (\Function : (
+        Tuple_Bag_D0C0 : (\Function : (
             is_type_definer : True,
             constant : +%@(),
         )),
 
-The singleton type definer C<Tuple_Bag::D0C0> represents the only zero-attribute,
+The singleton type definer C<Tuple_Bag_D0C0> represents the only zero-attribute,
 zero-tuple C<Tuple_Bag> value.
 
-=head2 Tuple_Bag::D0C1
+=head2 Tuple_Bag_D0C1
 
-        Tuple_Bag::D0C1 : (\Function : (
+        Tuple_Bag_D0C1 : (\Function : (
             is_type_definer : True,
             constant : +%{()},
         )),
 
-The singleton type definer C<Tuple_Bag::D0C1> represents the only zero-attribute,
+The singleton type definer C<Tuple_Bag_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Bag> value.
 
 =head2 heading (Tuple_Bag)
@@ -8889,21 +8889,21 @@ I<TODO.>
 
 =head2 Interval
 
-        Interval::"" : (\Function : (
+        Interval : (\Function : (
             is_type_definer : True,
             composes : {\@Intervalish, \@Setty},
             evaluates : (\@Signature::Capsule_Match : (
                 label : \Interval,
-                attrs : \Interval::Attrs(),
+                attrs : \Interval_Attrs::(),
             )),
             default : (Excuse::Before_All_Others()..Excuse::After_All_Others()),
         )),
 
 I<TODO.>
 
-=head2 Interval::Attrs
+=head2 Interval_Attrs
 
-        Interval::Attrs : (\Function : (
+        Interval_Attrs : (\Function : (
             is_type_definer : True,
             evaluates : [\Tuple::(), ...],
         )),
