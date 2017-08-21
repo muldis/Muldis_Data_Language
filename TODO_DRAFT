@@ -14,6 +14,95 @@ resources of everyone else.
 
 ----------
 
+* Updated conceptions 2017-7-2:
+- Merge Function_Call into Function and Procedure_Call into Procedure and
+Alias into both.
+- An Evaluates/Performs now takes 2 separate things each, a Function+Tuple
+or Procedure+Tuple respectively, not a *Call that combines both;
+the full-grammar generic call syntax will probably become an infix rather
+than a prefix, or both, similar to "if", like this:
+    apply f to (29,95)
+Eg:
+    apply (\Function : (applies : \@plus)) to (29,95)
+Or:
+    f applied_to (29,95)
+Eg:
+    plus::(29,95)
+Also:
+    perform p with (x,y);
+Or:
+    p performed_with (x,y);
+Eg:
+    p::(x,y);
+- Simply invoking a routine by name still involves wrapping that call in
+another function, but to avoid infinite regress or otherwise keep it simple
+to call built-ins etc, a Function/Procedure will gain a trait specificly
+for this, perhaps called "aliases" and used like "negates" or "commutes" etc;
+moreover, the full grammar syntax like foo::(...) will produce this.
+- The action of partially applying a function will take a Function as input
+and yield another Function taking fewer arguments where typically the latter
+simply calls the former giving it some arguments from its own arguments and
+giving it some others as constants; this may also use a new Function trait
+or two used in combination with "aliases".
+- Ooh, oooooh, MAYBE name the trait "applies" rather than "aliases".
+- See https://medium.com/javascript-scene/curry-or-partial-application-8150044c78b8 also.
+- More generally, we want some way to declaratively distinguish between
+arguments that, when a function is applied to a collection say, are unchanging
+for all invocations versus ones that change per invocation; the former are
+the ones typically applied to first, and potentially an implementation could
+rewrite the function body to JIT constant-fold those unchanging ones away.
+Supporting this is part of the reason for this refactoring, besides making
+other things nicer.
+
+* Updated conceptions 2017-6-17:
+- The primary feature group that Foundation doesn't natively have and which
+is bootstrapped in pure Muldis D, is operator overloading plus any other
+features whose primary reason to exist is to support operator overloading.
+- Foundation DOES recognize the Package type but minus a few features;
+it also DOES recognize the Function and Procedure types minus a few features.
+- Foundation does NOT recognize the "floating" Local_Name but does the
+other kinds; any reference it understands can only resolve to exactly 1
+thing, which is known at compile time without requring any search traversals.
+- Foundation does NOT recognize the "is_generalization" trait of type definer
+functions, nor "composes" nor "provides_default_for".
+- Foundation does NOT recognize the "virtual" and "implements" traits of
+regular functions and procedures.
+- Foundation does NOT recognize declarations of interface type definers
+nor references to interface type definers in eg routine signatures etc.
+- What Foundation does not recognize involves either search traversals to
+resolve what to actually call or apply, or it involves single actual
+declarations that effectively declare a multiplicity of things, an example
+being that a function defined with a signature of an interface type causes
+a function for every composing type to also be declared in their namespaces.
+- The Plain Text parser function built-in to the Foundation only supports the
+"foundational" subset of the grammar and not the full grammar, and it does
+not create any new decoration nodes reflecting relevant actual code formatting.
+A main beneficiary of the operator overloading features that Foundation lacks
+is the non-foundational parts of the Plain Text grammar such as infix operator
+calls, or prefix etc, especially bare symbolic ones, and these are typically
+overloaded operators.
+- The Core package mainly differentiates itself from the Foundation in that
+it declares all the interface types used conceptually by the Foundation types
+and formally declares the latter's composition of the former, and also Core
+adds aliases or shims to the Foundation operators that exploit overloading,
+and fleshes out the complement of related operators that didn't make sense
+to explicitly declare at the Foundation level to keep the quantities down.
+- The Core package generally doesn't add anything except shims or trivially
+simple new operators while the meat of their functionality is in Foundation.
+- Other Muldis D packages named (probably) Core::Plain_Text and Core::Executor
+are written in the Plain Text foundational subset such that Executor is
+more or less the "main program" that the .Net/Perl/etc Foundation implementations
+run and Executor+Plain_Text in turn parse the "Core" package which is written
+in the full grammar as well as any user code.  Executor would implement the
+aforementioned Muldis D features that the Foundation lacks, the stuff
+centered around operator overloading and interface types, translating any
+code using those things to equivalent code that doesn't, for Foundation to run.
+Plain_Text would parse/generate the whole grammar and would/can generate
+decoration nodes reflecting the exact source code syntax used.  Basically
+the higher-level language tricky bits are written in Muldis D so they only
+have to be written once across all .Net/Perl/etc and are easier for users
+to change to or swap out for something else if they want.
+
 * When implementing, start with the low-level foundational procedural stuff and then
 work the way up to functions and types a bit later; this means we can
 actually start execute and test things with the minimum implementation possible.

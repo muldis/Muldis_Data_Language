@@ -14,7 +14,7 @@ This document is Muldis::D::Package::Core version 0.201.0.-9.
 =head1 SYNOPSIS
 
  Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'
- meta script 'Unicode 9.0 UTF-8'
+ meta script 'Unicode 10.0 UTF-8'
  (\Package : (
     identity : (
         package_base_name : [\My_App],
@@ -52,7 +52,7 @@ Standard Library> specification, of which this document is a part.
 =head1 PACKAGE
 
  Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'
- meta script 'Unicode 9.0 UTF-8'
+ meta script 'Unicode 10.0 UTF-8'
  (\Package : (
     identity : (
         package_base_name : [\Core],
@@ -3029,7 +3029,8 @@ large complexity, such as most of the details of Unicode, in contrast with
 a lot of the more modern languages of its time.  The Muldis D Foundation
 and C<Core> package are strictly limited in their knowledge of Unicode;
 they know that a codepoint of the Unicode repertoire is just in the integer
-range C<0..0x10FFFF>, and that the leading subset C<0..127> is also 7-bit
+set C<{0..0xD7FF,0xE000..0x10FFFF}>,
+and that the leading subset C<0..127> is also 7-bit
 ASCII, and they know how to read and write the fairly simple and stable
 C<UTF-8> binary encoding for Unicode text, which is a proper superset of
 7-bit ASCII encoding and is CPU endian-agnostic.  In contrast, anything to
@@ -3063,9 +3064,11 @@ purpose of C<to_Text> is to canonicalize C<Textual> values so they can be
 compared or worked with as character strings in a manner agnostic to things
 like national collations or fixed-size types.
 
+I<TODO: Add an Excuse for when the source type has non-Unicode characters.>
+
 =head1 TEXT DATA TYPES
 
-=head2 Text
+=head2 Text Text::Unicode
 
         Text::"" : (\Function : (
             is_type_definer : True,
@@ -3074,19 +3077,22 @@ like national collations or fixed-size types.
             evaluates : (\@Signature::Capsule_Match : (
                 label : \Text,
                 attrs : (
-                    maximal_chars : \String::Maximal_Chars(),
+                    unicode_codes : \String::Unicode_Codes(),
                 ),
             )),
             default : '',
         )),
 
-The selection type definer C<Text> is infinite.  A C<Text> value is an
-arbitrarily-long sequence of abstract I<characters> where each character is
-a member of an infinite-size proprietary abstract character repertoire
-named I<maximal>.  A C<Text> value is canonically defined in terms of a
-C<String> value named C<Maximal_Chars>, where each member C<Integer> of the
-latter represents an abstract character I<codepoint>, with each unique
-integer corresponding to a unique character.  The default value of C<Text>
+        Text::Unicode : (\Alias : ( of : \@Text, )),
+
+The selection type definer C<Text> is infinite.  A C<Text> value is
+characterized by an arbitrarily-long sequence of Unicode 10.0 standard
+I<character codepoints>, where each distinct codepoint corresponds to a
+distinct integer in the set C<{0..0xD7FF,0xE000..0x10FFFF}>.  Each
+character is taken from a finite repertoire having 0x10F7FF members, but
+C<Text> imposes no limit on the length of each character sequence.  C<Text>
+has its own canonical representation in terms of a C<String> value named
+C<Unicode_Codes>.  The default value of C<Text>
 is C<''> (the empty character string).  C<Text> is C<Orderable>; its
 minimum value is the same C<''> as its default value; it has no maximum
 value; its ordering algorithm corresponds directly to that of C<String>,
@@ -3094,48 +3100,21 @@ pairwise as integer sequences.  Other programming languages may name their
 corresponding types I<Str> or I<string> or I<varchar> or I<char>.
 
 There are many defined character sets in the computing world that map
-agreed upon sets of symbols to integers, and Muldis D is designed to be
-implicitly compatible with all of them.  Officially speaking, C<Text>
-values are just sequences of integers and any mapping between these
-integers and commonly well-understood symbols is done externally to the
-C<Text> type.  While the canonical C<Maximal_Chars> representation does
-formally map symbols to integers in a well-defined way, this mapping is
-proprietary, intended only for internal usage, and is subject to change
-with different Muldis D versions.  All normal user interaction with the
-internals of a C<Text> should just be done in terms of explicit mappings
-with well-known public character sets such as 7-bit ASCII or Unicode.  As
-it happens, C<Maximal_Chars> is formally a proper superset of Unicode 9.0,
-itself a proper superset of 7-bit ASCII, so their corresponding codepoints
-are identical, but for other character sets such as ISO Latin 1 or EBCDIC
-or ISO/IEC 2022 or Mojikyo or HKSCS or others, they may not be.
-
-=head2 String::Maximal_Chars
-
-        String::Maximal_Chars : (\Alias : ( of : \@String, )),
-
-The selection type definer C<String::Maximal_Chars> is an alias of C<String>
-which exists for convenient self-documentation of C<Text>-related code.
-
-=head2 Text::Unicode
-
-        Text::Unicode : (\Function : (
-            is_type_definer : True,
-            evaluates : (Text args:.\0 and_then guard
-                String::Unicode_Codes::(Text_from_Maximal_Chars args:.\0)),
-        )),
-
-The selection type definer C<Text::Unicode> represents the infinite type
-consisting just of the C<Text> values for which every one of their member
-characters is a member of the 0x10F7FF-character repertoire of Unicode.
-This C<Text> subtype has is own canonical representation in terms of a
-C<String> value named C<Unicode_Codes> where each member codepoint matches
-the standard Unicode codepoints for the same symbols.
+agreed upon sets of symbols to integers.  For those character repertoires
+that are a subset of Unicode, such as 7-bit ASCII or ISO Latin 1 or EBCDIC,
+the C<Text> type should map with character strings using them in a simple
+and well-defined way, although the integers used to represent the same
+logical characters may be different.  But for other character sets that are
+not a subset of Unicode, such as ISO/IEC 2022 or Mojikyo or HKSCS, a
+C<Text> value can not directly represent all possible character strings
+that they can, and so other C<Textual>-composing types should be used
+instead for such character strings.
 
 =head2 String::Unicode_Codes
 
         String::Unicode_Codes : (\Function : (
             is_type_definer : True,
-            evaluates : [\String::Maximal_Chars(),
+            evaluates : [\String::(),
                 \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )],
         )),
 
@@ -3154,7 +3133,7 @@ integers is in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 The selection type definer C<Text::ASCII> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
 characters is a member of the 128-character repertoire of 7-bit ASCII.
-This C<Text> subtype has is own canonical representation in terms of a
+This C<Text> subtype has its own canonical representation in terms of a
 C<String> value named C<ASCII_Chars> where each member codepoint matches
 the standard ASCII codes for the same symbols.
 
@@ -3175,7 +3154,7 @@ integers is in the range 0..127 inclusive.
             returns : \@Boolean,
             matches : (\@Text, \@Text),
             implements : \@folder::"",
-            evaluates : ((Text_to_Maximal_Chars args:.\0) in_order (Text_to_Maximal_Chars args:.\1)),
+            evaluates : ((Text_to_Unicode_Codes args:.\0) in_order (Text_to_Unicode_Codes args:.\1)),
         )),
 
 The function C<in_order::Text> implements the C<Orderable> virtual
@@ -3214,8 +3193,8 @@ type C<Text>.
             returns : \@Boolean,
             matches : (\@Text, \@Text),
             implements : \@folder::"",
-            evaluates : ((Text_to_Maximal_Chars args:.\0)
-                substring_of (Text_to_Maximal_Chars args:.\1)),
+            evaluates : ((Text_to_Unicode_Codes args:.\0)
+                substring_of (Text_to_Unicode_Codes args:.\1)),
         )),
 
 The function C<substring_of::Text> implements the C<Stringy> virtual
@@ -3228,8 +3207,8 @@ function C<substring_of> for the composing type C<Text>.
             matches : (\@Text, \@Text),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : ((Text_to_Maximal_Chars args:.\0)
-                overlaps_string (Text_to_Maximal_Chars args:.\1)),
+            evaluates : ((Text_to_Unicode_Codes args:.\0)
+                overlaps_string (Text_to_Unicode_Codes args:.\1)),
         )),
 
 The function C<overlaps_string::Text> implements the C<Stringy> virtual
@@ -3242,8 +3221,8 @@ function C<overlaps_string> for the composing type C<Text>.
             matches : (\@Text, \@Text),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : ((Text_to_Maximal_Chars args:.\0)
-                disjoint_string (Text_to_Maximal_Chars args:.\1)),
+            evaluates : ((Text_to_Unicode_Codes args:.\0)
+                disjoint_string (Text_to_Unicode_Codes args:.\1)),
         )),
 
 The function C<disjoint_string::Text> implements the C<Stringy> virtual
@@ -3258,8 +3237,8 @@ function C<disjoint_string> for the composing type C<Text>.
             is_associative : True,
             identity : '',
             repeater : \@replicate::Text,
-            evaluates : (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args:.\0)
-                ~ (Text_to_Maximal_Chars args:.\1))),
+            evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0)
+                ~ (Text_to_Unicode_Codes args:.\1))),
         )),
 
 The function C<catenate::Text> implements the C<Stringy> virtual function
@@ -3271,7 +3250,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
             returns : \@Text,
             matches : (\@Text, \@Integer_NN),
             implements : \@folder::"",
-            evaluates : (Text_from_Maximal_Chars::((Text_to_Maximal_Chars args:.\0) ~# args:.\1)),
+            evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0) ~# args:.\1)),
         )),
 
 The function C<replicate::Text> implements the C<Stringy> virtual function
@@ -3290,36 +3269,12 @@ The function C<to_Text::Text> simply results in its C<0> argument.
 This function implements the C<Textual> virtual function C<to_Text>
 for the composing type C<Text>.
 
-=head2 Text_from_Maximal_Chars
-
-        Text_from_Maximal_Chars : (\Function : (
-            returns : \@Text,
-            matches : (\@String::Maximal_Chars,),
-            evaluates : ((\Text : (maximal_chars : args:.\0,))),
-        )),
-
-The function C<Text_from_Maximal_Chars> results in the C<Text> value
-selected in terms of an integer sequence in the proprietary
-C<Maximal_Chars> character mapping of its C<0> argument.
-
-=head2 Text_to_Maximal_Chars
-
-        Text_to_Maximal_Chars : (\Function : (
-            returns : \@String::Maximal_Chars,
-            matches : (\@Text,),
-            evaluates : (args:.\0:>.\maximal_chars),
-        )),
-
-The function C<Text_to_Maximal_Chars> results in an integer sequence in the
-proprietary C<Maximal_Chars> character mapping that corresponds to its
-C<Text>-typed C<0> argument.
-
 =head2 Text_from_Unicode_Codes
 
         Text_from_Unicode_Codes : (\Function : (
-            returns : \@Text::Unicode,
+            returns : \@Text,
             matches : (\@String::Unicode_Codes,),
-            evaluates : (Text_from_Maximal_Chars args:.\0),
+            evaluates : ((\Text : (unicode_codes : args:.\0,))),
         )),
 
 The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
@@ -3330,8 +3285,8 @@ mapping of its C<0> argument.
 
         Text_to_Unicode_Codes : (\Function : (
             returns : \@String::Unicode_Codes,
-            matches : (\@Text::Unicode,),
-            evaluates : (Text_to_Maximal_Chars args:.\0),
+            matches : (\@Text,),
+            evaluates : (args:.\0:>.\unicode_codes),
         )),
 
 The function C<Text_to_Unicode_Codes> results in an integer sequence in the
@@ -6821,9 +6776,11 @@ by which it can be looked up.  An C<Attributive> value has a I<heading>
 which is a set of distinct attribute names; corresponding to this, an
 C<Attributive> value has a I<body> which has the zero or more other values
 that can be looked up using the attribute names.  Each attribute then is
-conceptually a name-asset pair.  An I<attribute name> is isomorphic to a
-C<String> value and is conceptually a character string that is not a
-C<Text> value.  More precisely, an I<attribute name> is an unqualified
+conceptually a name-asset pair.  An I<attribute name> is characterized by
+an arbitrarily-long sequence of Unicode 10.0 standard I<character
+codepoints> but it is not a C<Text> value; every distinct I<attribute name>
+is represented canonically in the type system by a distinct
+C<Attr_Name> value.  More precisely, an I<attribute name> is an unqualified
 program identifier and forms the basis for Muldis D identifiers.
 
 If an C<Attributive> value is also C<Structural>, it has exactly 1 member,
@@ -7577,8 +7534,9 @@ which explicitly does not represent any kind of thing in particular, and is
 simply the sum of its attributes.  An attribute is conceptually a
 name-asset pair, the name being used to look up the attribute in a
 C<Tuple>.  An I<attribute name> is an unqualified program identifier,
-isomorphic to a C<String> value, and is conceptually a character string
-that is not a C<Text> value; it forms the basis for Muldis D identifiers.
+characterized by an arbitrarily-long sequence of Unicode 10.0 standard
+I<character codepoints> but it is not a
+C<Text> value; it forms the basis for Muldis D identifiers.
 In the general case each attribute of a tuple is of a distinct data type,
 though multiple attributes often have the same type.  The set of attribute
 names of a C<Tuple> is called its I<heading>, and the corresponding
