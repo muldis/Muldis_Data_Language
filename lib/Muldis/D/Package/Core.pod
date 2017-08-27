@@ -324,7 +324,7 @@ C<Orderable> is composed, directly or indirectly, by:
 C<Excuse::Before_All_Others>, C<Excuse::After_All_Others>, C<Bicessable>,
 C<Boolean>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>, C<Positional>, C<Array>,
-C<String>, C<Tuple_Array>.
+C<Tuple_Array>.
 
 =head2 Excuse::Before_All_Others
 
@@ -725,7 +725,7 @@ C<Boolable> is composed, directly or indirectly, by: C<Boolean>,
 C<Numerical>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Emptyable>, C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>,
 C<Homogeneous>, C<Unionable>, C<Discrete>, C<Positional>, C<Array>,
-C<String>, C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>, C<Relation>,
+C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>, C<Relation>,
 C<Tuple_Bag>, C<Intervalish>, C<Interval>, C<Unionable_Intervalish>,
 C<Interval_Set>, C<Interval_Bag>.
 
@@ -2445,7 +2445,7 @@ The default value of C<Emptyable> is the C<Bits> value with zero members.
 
 C<Emptyable> is composed, directly or indirectly, by: C<Stringy>, C<Bits>,
 C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Unionable>, C<Discrete>,
-C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
+C<Positional>, C<Array>, C<Set>, C<Bag>, C<Relational>,
 C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>, C<Interval>,
 C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
@@ -2539,7 +2539,7 @@ orderable (but that some C<Positional> are only conditionally so), and
 idiomatically that is done by some kind of pairwise comparison of members.
 
 C<Stringy> is composed, directly or indirectly, by: C<Bits>, C<Blob>,
-C<Textual>, C<Text>, C<Positional>, C<Array>, C<String>, C<Tuple_Array>.
+C<Textual>, C<Text>, C<Positional>, C<Array>, C<Tuple_Array>.
 
 =head2 substring_of
 
@@ -2573,7 +2573,7 @@ rather than a boolean.
 
         proper_substring_or_superstring : (\Function : (
             returns : \@Boolean,
-            matches : (\@String, \@String),
+            matches : (\@Stringy, \@Stringy),
             is_commutative : True,
             evaluates : (args:.\0 != args:.\1 and (args:.\0 substring_or_superstring args:.\1)),
         )),
@@ -2587,7 +2587,7 @@ results in C<False>.
 
         substring_or_superstring : (\Function : (
             returns : \@Boolean,
-            matches : (\@String, \@String),
+            matches : (\@Stringy, \@Stringy),
             is_commutative : True,
             evaluates : ((args:.\0 substring_of args:.\1) or (args:.\0 superstring_of args:.\1)),
         )),
@@ -2602,7 +2602,7 @@ C<False>.
         overlaps_string::"" : (\Function : (
             virtual : True,
             returns : \@Boolean,
-            matches : (\@String, \@String),
+            matches : (\@Stringy, \@Stringy),
             is_commutative : True,
         )),
 
@@ -2619,7 +2619,7 @@ otherwise it results in C<False>.
         disjoint_string::"" : (\Function : (
             virtual : True,
             returns : \@Boolean,
-            matches : (\@String, \@String),
+            matches : (\@Stringy, \@Stringy),
             is_commutative : True,
         )),
 
@@ -2677,7 +2677,7 @@ languages may name their corresponding operators I<x>.
             evaluates : (\@Signature::Capsule_Match : (
                 label : \Bits,
                 attrs : (
-                    bits : \String::Bits(),
+                    bits : \Array::Bits(),
                 ),
             )),
             default : \~?'',
@@ -2688,20 +2688,20 @@ arbitrarily-long sequence of I<bits> where each bit is represented by
 an C<Integer> in the range 0..1.  The default value of C<Bits> is
 C<\~?''> (the empty bit string).  C<Bits> is C<Orderable>; its minimum
 value is the same C<\~?''> as its default value; it has no maximum value;
-its ordering algorithm corresponds directly to that of C<String>, pairwise
+its ordering algorithm corresponds directly to that of C<Array>, pairwise
 as integer sequences.  Other programming languages may name their
 corresponding types I<bit> or I<bit varying>.
 
-=head2 String::Bits
+=head2 Array::Bits
 
-        String::Bits : (\Function : (
+        Array::Bits : (\Function : (
             is_type_definer : True,
-            evaluates : [\String::(), \all::( 1: \in::( 1: 0..1 ) )],
+            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..1 ) )],
         )),
 
-The selection type definer C<String::Bits> represents the infinite type
-consisting just of the C<String> values for which every one of their member
-integers is in the range 0..1 inclusive.
+The selection type definer C<Array::Bits> represents the infinite type
+consisting just of the C<Array> values for which every one of their member
+values is an integer in the range 0..1 inclusive.
 
 =head2 in_order (Bits)
 
@@ -2709,7 +2709,7 @@ integers is in the range 0..1 inclusive.
             returns : \@Boolean,
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
-            evaluates : ((Bits_to_String_Bits args:.\0) in_order (Bits_to_String_Bits args:.\1)),
+            evaluates : ((Bits_to_Array_Bits args:.\0) in_order (Bits_to_Array_Bits args:.\1)),
         )),
 
 The function C<in_order::Bits> implements the C<Orderable> virtual
@@ -2748,7 +2748,7 @@ type C<Bits>.
             returns : \@Boolean,
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
-            evaluates : ((Bits_to_String_Bits args:.\0) substring_of (Bits_to_String_Bits args:.\1)),
+            evaluates : ((Bits_to_Array_Bits args:.\0) substring_of (Bits_to_Array_Bits args:.\1)),
         )),
 
 The function C<substring_of::Bits> implements the C<Stringy> virtual
@@ -2761,8 +2761,8 @@ function C<substring_of> for the composing type C<Bits>.
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : ((Bits_to_String_Bits args:.\0)
-                overlaps_string (Bits_to_String_Bits args:.\1)),
+            evaluates : ((Bits_to_Array_Bits args:.\0)
+                overlaps_string (Bits_to_Array_Bits args:.\1)),
         )),
 
 The function C<overlaps_string::Bits> implements the C<Stringy> virtual
@@ -2775,8 +2775,8 @@ function C<overlaps_string> for the composing type C<Bits>.
             matches : (\@Bits, \@Bits),
             implements : \@folder::"",
             is_commutative : True,
-            evaluates : ((Bits_to_String_Bits args:.\0)
-                disjoint_string (Bits_to_String_Bits args:.\1)),
+            evaluates : ((Bits_to_Array_Bits args:.\0)
+                disjoint_string (Bits_to_Array_Bits args:.\1)),
         )),
 
 The function C<disjoint_string::Bits> implements the C<Stringy> virtual
@@ -2791,8 +2791,8 @@ function C<disjoint_string> for the composing type C<Bits>.
             is_associative : True,
             identity : \~?'',
             repeater : \@replicate::Bits,
-            evaluates : (Bits_from_String_Bits::((Bits_to_String_Bits args:.\0)
-                ~ (Bits_to_String_Bits args:.\1))),
+            evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0)
+                ~ (Bits_to_Array_Bits args:.\1))),
         )),
 
 The function C<catenate::Bits> implements the C<Stringy> virtual function
@@ -2804,32 +2804,32 @@ C<catenate> aka C<~> for the composing type C<Bits>.
             returns : \@Bits,
             matches : (\@Bits, \@Integer_NN),
             implements : \@folder::"",
-            evaluates : (Bits_from_String_Bits::((Bits_to_String_Bits args:.\0) ~# args:.\1)),
+            evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0) ~# args:.\1)),
         )),
 
 The function C<replicate::Bits> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Bits>.
 
-=head2 Bits_from_String_Bits
+=head2 Bits_from_Array_Bits
 
-        Bits_from_String_Bits : (\Function : (
+        Bits_from_Array_Bits : (\Function : (
             returns : \@Bits,
-            matches : (\@String::Bits,),
+            matches : (\@Array::Bits,),
             evaluates : ((\Bits : (bits : args:.\0,))),
         )),
 
-The function C<Bits_from_String_Bits> results in the C<Bits> value selected
+The function C<Bits_from_Array_Bits> results in the C<Bits> value selected
 in terms of the integer sequence of its C<0> argument.
 
-=head2 Bits_to_String_Bits
+=head2 Bits_to_Array_Bits
 
-        Bits_to_String_Bits : (\Function : (
-            returns : \@String::Bits,
+        Bits_to_Array_Bits : (\Function : (
+            returns : \@Array::Bits,
             matches : (\@Bits,),
             evaluates : (args:.\0:>.\bits),
         )),
 
-The function C<Bits_to_String_Bits> results in an integer sequence defining
+The function C<Bits_to_Array_Bits> results in an integer sequence defining
 the bits of its C<Bits>-typed C<0> argument.
 
 =head1 BLOB DATA TYPES
@@ -2842,7 +2842,7 @@ the bits of its C<Bits>-typed C<0> argument.
             evaluates : (\@Signature::Capsule_Match : (
                 label : \Blob,
                 attrs : (
-                    octets : \String::Octets(),
+                    octets : \Array::Octets(),
                 ),
             )),
             default : \~+'',
@@ -2853,20 +2853,20 @@ arbitrarily-long sequence of I<octets> where each octet is represented by
 an C<Integer> in the range 0..255.  The default value of C<Blob> is
 C<\~+''> (the empty octet string).  C<Blob> is C<Orderable>; its minimum
 value is the same C<\~+''> as its default value; it has no maximum value;
-its ordering algorithm corresponds directly to that of C<String>, pairwise
+its ordering algorithm corresponds directly to that of C<Array>, pairwise
 as integer sequences.  Other programming languages may name their
 corresponding types I<Buf> or I<byte[]> or I<bytea>.
 
-=head2 String::Octets
+=head2 Array::Octets
 
-        String::Octets : (\Function : (
+        Array::Octets : (\Function : (
             is_type_definer : True,
-            evaluates : [\String::(), \all::( 1: \in::( 1: 0..255 ) )],
+            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..255 ) )],
         )),
 
-The selection type definer C<String::Octets> represents the infinite type
-consisting just of the C<String> values for which every one of their member
-integers is in the range 0..255 inclusive.
+The selection type definer C<Array::Octets> represents the infinite type
+consisting just of the C<Array> values for which every one of their member
+values is an integer in the range 0..255 inclusive.
 
 =head2 in_order (Blob)
 
@@ -2976,7 +2976,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
 
         Blob_from_Octets : (\Function : (
             returns : \@Blob,
-            matches : (\@String::Octets,),
+            matches : (\@Array::Octets,),
             evaluates : ((\Blob : (octets : args:.\0,))),
         )),
 
@@ -2986,7 +2986,7 @@ terms of the integer sequence of its C<0> argument.
 =head2 Blob_to_Octets
 
         Blob_to_Octets : (\Function : (
-            returns : \@String::Octets,
+            returns : \@Array::Octets,
             matches : (\@Blob,),
             evaluates : (args:.\0:>.\octets),
         )),
@@ -3077,7 +3077,7 @@ I<TODO: Add an Excuse for when the source type has non-Unicode characters.>
             evaluates : (\@Signature::Capsule_Match : (
                 label : \Text,
                 attrs : (
-                    unicode_codes : \String::Unicode_Codes(),
+                    unicode_codes : \Array::Unicode_Codes(),
                 ),
             )),
             default : '',
@@ -3091,11 +3091,12 @@ I<character codepoints>, where each distinct codepoint corresponds to a
 distinct integer in the set C<{0..0xD7FF,0xE000..0x10FFFF}>.  Each
 character is taken from a finite repertoire having 0x10F7FF members, but
 C<Text> imposes no limit on the length of each character sequence.  C<Text>
-has its own canonical representation in terms of a C<String> value named
-C<Unicode_Codes>.  The default value of C<Text>
+has its own canonical representation in terms of an C<Array> value named
+C<Unicode_Codes>.  A C<Text> value is isomorphic to an C<Attr_Name> value.
+The default value of C<Text>
 is C<''> (the empty character string).  C<Text> is C<Orderable>; its
 minimum value is the same C<''> as its default value; it has no maximum
-value; its ordering algorithm corresponds directly to that of C<String>,
+value; its ordering algorithm corresponds directly to that of C<Array>,
 pairwise as integer sequences.  Other programming languages may name their
 corresponding types I<Str> or I<string> or I<varchar> or I<char>.
 
@@ -3110,43 +3111,43 @@ C<Text> value can not directly represent all possible character strings
 that they can, and so other C<Textual>-composing types should be used
 instead for such character strings.
 
-=head2 String::Unicode_Codes
+=head2 Array::Unicode_Codes
 
-        String::Unicode_Codes : (\Function : (
+        Array::Unicode_Codes : (\Function : (
             is_type_definer : True,
-            evaluates : [\String::(),
+            evaluates : [\Array::(),
                 \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )],
         )),
 
-The selection type definer C<String::Unicode_Codes> represents the infinite type
-consisting just of the C<String> values for which every one of their member
-integers is in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
+The selection type definer C<Array::Unicode_Codes> represents the infinite type
+consisting just of the C<Array> values for which every one of their member
+values is an integer in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
 =head2 Text::ASCII
 
         Text::ASCII : (\Function : (
             is_type_definer : True,
             evaluates : (Text::Unicode::(args:.\0) and_then guard
-                String::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
+                Array::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
         )),
 
 The selection type definer C<Text::ASCII> represents the infinite type
 consisting just of the C<Text> values for which every one of their member
 characters is a member of the 128-character repertoire of 7-bit ASCII.
-This C<Text> subtype has its own canonical representation in terms of a
-C<String> value named C<ASCII_Chars> where each member codepoint matches
+This C<Text> subtype has its own canonical representation in terms of an
+C<Array> value named C<ASCII_Chars> where each member codepoint matches
 the standard ASCII codes for the same symbols.
 
-=head2 String::ASCII_Chars
+=head2 Array::ASCII_Chars
 
-        String::ASCII_Chars : (\Function : (
+        Array::ASCII_Chars : (\Function : (
             is_type_definer : True,
-            evaluates : [\String::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )],
+            evaluates : [\Array::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )],
         )),
 
-The selection type definer C<String::ASCII_Chars> represents the infinite type
-consisting just of the C<String> values for which every one of their member
-integers is in the range 0..127 inclusive.
+The selection type definer C<Array::ASCII_Chars> represents the infinite type
+consisting just of the C<Array> values for which every one of their member
+values is an integer in the range 0..127 inclusive.
 
 =head2 in_order (Text)
 
@@ -3273,7 +3274,7 @@ for the composing type C<Text>.
 
         Text_from_Unicode_Codes : (\Function : (
             returns : \@Text,
-            matches : (\@String::Unicode_Codes,),
+            matches : (\@Array::Unicode_Codes,),
             evaluates : ((\Text : (unicode_codes : args:.\0,))),
         )),
 
@@ -3284,7 +3285,7 @@ mapping of its C<0> argument.
 =head2 Text_to_Unicode_Codes
 
         Text_to_Unicode_Codes : (\Function : (
-            returns : \@String::Unicode_Codes,
+            returns : \@Array::Unicode_Codes,
             matches : (\@Text,),
             evaluates : (args:.\0:>.\unicode_codes),
         )),
@@ -3297,7 +3298,7 @@ C<Text>-typed C<0> argument.
 
         Text_from_ASCII_Chars : (\Function : (
             returns : \@Text::ASCII,
-            matches : (\@String::ASCII_Chars,),
+            matches : (\@Array::ASCII_Chars,),
             evaluates : (Text_from_Unicode_Codes args:.\0),
         )),
 
@@ -3308,7 +3309,7 @@ mapping of its C<0> argument.
 =head2 Text_to_ASCII_Chars
 
         Text_to_ASCII_Chars : (\Function : (
-            returns : \@String::ASCII_Chars,
+            returns : \@Array::ASCII_Chars,
             matches : (\@Text::ASCII,),
             evaluates : (Text_to_Unicode_Codes args:.\0),
         )),
@@ -3401,7 +3402,7 @@ pairs and out of range etc stuff.>
         Blob_is_ASCII : (\Function : (
             returns : \@Boolean,
             matches : (\@Blob,),
-            evaluates : (String::ASCII_Chars(Blob_to_Octets args:.\0)),
+            evaluates : (Array::ASCII_Chars(Blob_to_Octets args:.\0)),
         )),
 
 I<TODO.>
@@ -3413,7 +3414,7 @@ I<TODO.>
             matches : (\@Blob,),
             evaluates : (
                 octets ::= Blob_to_Octets args:.\0;
-                returns if String::ASCII_Chars(octets)
+                returns if Array::ASCII_Chars(octets)
                     then guard Text_from_ASCII_Chars octets
                     else Excuse::ASCII::High_Bit_Not_Zero();
             ),
@@ -3592,7 +3593,7 @@ inserting or removing slots besides key uniqueness, but typically don't.
 
 The default value of C<Accessible> is the C<Tuple> value with zero
 attributes, C<()>.  C<Accessible> is composed, directly or indirectly, by:
-C<Positional>, C<Array>, C<String>, C<Tuple_Array>, C<Structural>, C<Tuple>.
+C<Positional>, C<Array>, C<Tuple_Array>, C<Structural>, C<Tuple>.
 I<TODO: Also composed by Dictionary.>
 
 Note that this interface type definer could have as easily been mamed
@@ -3822,7 +3823,7 @@ is also C<Setty>, all of its members are guaranteed to be distinct values;
 otherwise, duplication of values may occur amongst members.
 
 C<Homogeneous> is composed, directly or indirectly, by: C<Unionable>,
-C<Discrete>, C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>,
+C<Discrete>, C<Positional>, C<Array>, C<Set>, C<Bag>,
 C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>,
 C<Interval>, C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
@@ -4238,7 +4239,7 @@ collection.  The default value of C<Unionable> is the C<Array> value with
 zero members, C<[]>.
 
 C<Unionable> is composed, directly or indirectly, by: C<Discrete>,
-C<Positional>, C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>,
+C<Positional>, C<Array>, C<Set>, C<Bag>, C<Relational>,
 C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Unionable_Intervalish>,
 C<Interval_Set>, C<Interval_Bag>.  A key type that composes C<Homogeneous>
 but not C<Unionable> is C<Interval>; use C<Interval_Set> instead for its
@@ -4581,7 +4582,7 @@ individuals and counted.  The default value of C<Discrete> is the C<Array>
 value with zero members, C<[]>.
 
 C<Discrete> is composed, directly or indirectly, by: C<Positional>,
-C<Array>, C<String>, C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>,
+C<Array>, C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>,
 C<Relation>, C<Tuple_Bag>.
 
 =head2 to_Set ?|
@@ -4711,7 +4712,7 @@ ordinal position; iff C<Positional> value X is a leading sub-sequence of C<Posit
 value Y, then X is ordered before Y; otherwise, the mutual ordering of the
 lowest-ordinal-positioned non-matching members of X and Y determines that the ordering
 of X and Y as a whole are the same as said members.  C<Positional> is
-composed, directly or indirectly, by: C<Array>, C<String>, C<Tuple_Array>.
+composed, directly or indirectly, by: C<Array>, C<Tuple_Array>.
 
 =head2 Excuse::No_Such_Ord_Pos
 
@@ -5217,7 +5218,7 @@ I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as 
 
 =head2 Array
 
-        Array : (\Function : (
+        Array::"" : (\Function : (
             is_type_definer : True,
             composes : {\@Positional},
             provides_default_for : {\@Positional},
@@ -5239,29 +5240,6 @@ only zero-member C<Array> value.  C<Array> is C<Orderable>; its minimum
 value is the same C<[]> as its default value; it has no maximum value; its
 ordering algorithm is defined by C<Positional>.  Other programming
 languages may name their corresponding types I<List>.
-
-=head2 String
-
-        String::"" : (\Function : (
-            is_type_definer : True,
-            evaluates : [\Array::(), \all::( 1: \Integer::() )],
-        )),
-
-The selection type definer C<String> represents the infinite type consisting
-just of the C<Array> values having just C<Integer> members.  A C<String>
-value is a general purpose integer string, which explicitly does not
-represent any kind of thing in particular, neither octets nor characters
-nor anything else, simply an arbitrarily-long ordered sequence of generic
-integers.  A C<String> value is isomorphic to an C<Attr_Name> value, and
-values of proper subtypes of C<String> are isomorphic to C<Bits> and
-C<Blob> and C<Text> values.
-
-Other programming languages don't necessarily have a dedicated type
-representing a string of generic integers, but rather they may have generic
-arrays, or bit arrays with names like I<bit> or I<bit varying>,
-or octet arrays with names like I<byte[]> or I<bytea>, or character
-arrays with names like I<string> or I<text> or I<varchar>, or types like
-I<string> that may represent either octets or characters.
 
 =head2 Array_C0 ~∅
 
