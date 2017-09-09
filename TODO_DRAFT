@@ -111,18 +111,18 @@ A main beneficiary of the operator overloading features that Foundation lacks
 is the non-foundational parts of the Plain Text grammar such as infix operator
 calls, or prefix etc, especially bare symbolic ones, and these are typically
 overloaded operators.
-- The Core package mainly differentiates itself from the Foundation in that
+- The System package mainly differentiates itself from the Foundation in that
 it declares all the interface types used conceptually by the Foundation types
-and formally declares the latter's composition of the former, and also Core
+and formally declares the latter's composition of the former, and also System
 adds aliases or shims to the Foundation operators that exploit overloading,
 and fleshes out the complement of related operators that didn't make sense
 to explicitly declare at the Foundation level to keep the quantities down.
-- The Core package generally doesn't add anything except shims or trivially
+- The System package generally doesn't add anything except shims or trivially
 simple new operators while the meat of their functionality is in Foundation.
-- Other Muldis D packages named (probably) Core::Plain_Text and Core::Executor
+- Other Muldis D packages named (probably) System::Plain_Text and System::Executor
 are written in the Plain Text foundational subset such that Executor is
 more or less the "main program" that the .Net/Perl/etc Foundation implementations
-run and Executor+Plain_Text in turn parse the "Core" package which is written
+run and Executor+Plain_Text in turn parse the "System" package which is written
 in the full grammar as well as any user code.  Executor would implement the
 aforementioned Muldis D features that the Foundation lacks, the stuff
 centered around operator overloading and interface types, translating any
@@ -535,7 +535,7 @@ etc.  A type is in this list if and only if it is either a Foundation type
 or it is a system-defined Capsule type whose wrapper is just an Attr_Name
 rather than being package-qualified, or maybe a few special cases.  So, we
 DO now declare Text, Blob, etc in Foundation this way.  Part of the idea
-also is to make the Core package more of a luxury than a necessity.  The
+also is to make the System package more of a luxury than a necessity.  The
 Foundation still does NOT declare eg Text-specific operators in general,
 one still does longhand with Capsule pack/unpack plus Foundation Array ops.
 - Structural vs nominal vs duck vs algebraic typing... metamodel...
@@ -597,7 +597,7 @@ precedence goes.
 
 * Notes for 2016-10-16:
 - Rewrite part of Foundation.pod declaring the Foundation types/routines so
-it looks more like Core.pod, but providing pseudo-source-code (conforming
+it looks more like System.pod, but providing pseudo-source-code (conforming
 to Muldis D Plain Text with foundational clause) that may illustrate more
 concisely than descriptive text the definitions of the types/routines that
 Foundation understands.
@@ -615,7 +615,7 @@ strictly higher level things that would desugar to a "function"; also the
 Foundation function/procedure is actually just an expression/statement with
 an args context; any "matches/excepts" is explicitly defined in the body.
 - The declared Foundation entities would have matching names with their
-correspondents in the Core package where applicable; for example, FDN would
+correspondents in the System package where applicable; for example, FDN would
 have a "function" just named "Integer" which takes a tuple of degree 1
 and returns a Boolean.  Niladics for default/special values are different funcs.
 - Regular package entities would be allowed to alias Foundation entities,
@@ -635,8 +635,8 @@ direct component of a context-free type, and thus defining this as a type
 at all is merely for the purpose of code factoring, more or less.
 - Idiomatically, a context-dependent type should be named in a namespace
 beneath the context-free type it exists to serve, such as Package::Identity
-to go with Package.  Generally every type directly in Core:: or
-Core::Source_Code:: should either be an alias of a Foundation type, or it
+to go with Package.  Generally every type directly in System:: or
+System::Source_Code:: should either be an alias of a Foundation type, or it
 should be an Interface, or it should be a context-free type.
 - Interfaces and virtual routines are conveniences for factoring code in
 context of the full Muldis D environment, but at the Foundation level
@@ -703,11 +703,11 @@ namespace for the chain as a whole (quoting them makes them not-keywords):
         used:: - any meaning?
         used::foo - root folder of the used package linked under that short name
         used::My_App::main - possible long name of main proc from POV of the My_App package
-        used::MD::Integer - possible long name of Core Integer from POV of some other package using it
+        used::MD::Integer - possible long name of System Integer from POV of some other package using it
     - package - the innermost/only package definition declaring the referant
         package:: - the root folder of that package
         package::foo - a folder or material immediately inside that
-        package::Integer - an absolute reference by anything in the Core package to the Integer type
+        package::Integer - an absolute reference by anything in the System package to the Integer type
     - folder - the folder that is the immediate parent of the referant (material)
         folder:: - the folder itself, which might be the same thing as package::
             - this obsoletes 1::
@@ -946,10 +946,10 @@ Plain Text would execute, and thus with the language bootstrapped we can
 save implementation of as much as possible such that as much as possible
 reasonably can be written in Muldis D itself.
 - The host language version of the Plain Text parser only needs to be able
-to handle UTF-8, the encoding of the Core files, and then any support for
+to handle UTF-8, the encoding of the System files, and then any support for
 other encodings can just be implemented by Muldis D code.  And so on.
 - Start by making a simple Perl script that extracts a .mdpt file from a
-.pod file like with Core.pod etc; it may just process STDIN to STDOUT.
+.pod file like with System.pod etc; it may just process STDIN to STDOUT.
 
 * Notes on 20160820:
 - The Foundation should be formally simplified to know practically nothing
@@ -1008,26 +1008,26 @@ in Muldis D itself, or specifically the proper subset the Foundation knows.
 OR, what we may actually have here is a single self-contained Muldis D
 package written in said subset which consists of a "main program" runtime
 plus parser etc, and it is actually THIS which is what is used to parse and
-interpret/compile/etc the normal Core.mdpt and other full grammar code.
+interpret/compile/etc the normal System.mdpt and other full grammar code.
 - Probably the Foundational grammar/mini-plain-text would be limited to
 ASCII, although strings would still be "any integer", and the bootstrapped
-Muldis-D-mini code that would parse the regular Core.mdpt would implement
+Muldis-D-mini code that would parse the regular System.mdpt would implement
 UTF-8 whatever.
 - At the simpler Foundational level, anything which counts as optional
 hints for performance eg indexes is realized as optional explicit arguments
 to the operators at hand, eg ones that output a Bag, and the effects of the
 hints would then propagate internally as useful; hints are of-course
 (presumably) write-only in the interest of portable determinism.
-- Maybe call the thing that parses/etc Core.mdpt for the first time
+- Maybe call the thing that parses/etc System.mdpt for the first time
 Bootstrap, especially if it is used as a compiler that converts the more
 detailed Muldis D code into that simpler variant, which then the
 Foundation's built-in just runs directly in place of that Bootstrap.  In
 theory/practice this Bootstrap could run another main program written in
-full Muldis D, namely "Core" plus "Core::*" plus things which may implement
+full Muldis D, namely "System" plus "System::*" plus things which may implement
 compilers/etc of various kinds.  Users could choose whether their compilers
 are hand-written in the full Muldis D or in the minimal variant, same as
 users of MoarVM/etc can write in either NQP or full Perl 6.
-- Maybe "Core::Bootstrap" is what this bootstrap package should be named.
+- Maybe "System::Bootstrap" is what this bootstrap package should be named.
 
 * Notes on 20160819:
 - Have some explicit concurrency management features out of the gate, such
