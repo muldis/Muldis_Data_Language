@@ -167,127 +167,6 @@ particular routine input and output signatures.
 The function C<not_is_a> results in C<False> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<True> otherwise.
 
-=head1 EXCUSE DATA TYPES
-
-=head2 Excuse
-
-        Excuse::"" : (\Function : (
-            is_type_definer : True,
-            evaluates : (\@Signature::Capsule_Match : (
-                label : \Excuse,
-                attrs : (
-                    0 : \Any(),
-                ),
-            )),
-            default : (\Excuse : (\@Excuse::No_Reason,)),
-        )),
-
-The selection type definer C<Excuse> is infinite.  An C<Excuse> value is an
-explicitly stated reason for why, given some particular problem domain, a
-value is not being used that is ordinary for that domain.  For example, the
-typical integer division operation is not defined to give an integer result
-when the divisor is zero, and so a Muldis D function for integer division
-could be defined to result in an C<Excuse> value rather than throw an
-exception in that case.  For another example, an C<Excuse> value could be
-used to declare that the information we are storing about a person is
-missing certain details and why those are missing, such as because the
-person left the birthdate field blank on their application form.  Its
-default value is C<Excuse::No_Reason>.  An C<Excuse> is isomorphic to an
-C<Exception> but that use of the former is not meant to terminate execution
-of code early unlike the latter which is.  Other programming languages that
-have typed exceptions are analogous.
-
-I<TODO:  To be more specific, an Excuse value only should denote a
-categorical reason for a normal value not being provided, and all possible
-values of Excuse should be considered hard-coded.  They should not be
-possible to vary based on user input; for example, a key out of range error
-should not specify the attempted key.  Instead, other types that include an
-Excuse as a component, such as an Exception, can include details that vary
-on the specific user input, or include stack traces and such.>
-
-I<TODO:  Generally speaking, criteria for when it is better to use an
-Excuse result value rather than exception is like this.  In a function, any
-result which is non-determinisitic must always be as an exception; in a
-function it should generally not be possible to cause non-determinisim on
-purpose (except perhaps memory exhaustion), so such a failure would
-originate in the runtime environment and truly be exceptional.  Otherwise,
-in a function, Excuses should be used by default in most circumstances,
-typically where it is reasonable to expect a fraction of inputs may be bad
-and we are purposefully letting the function determine which is which and
-tell us (such as parsers say), or situations where it is reasonable to
-propagate errors while continuing to process good parts; in contrast,
-exceptions should be reserved for situations where the caller should easily
-have known better to either invoke it with correct inputs and doing
-otherwise is obviously wrong code the caller should fix.  In a procedure,
-the non-determinism factor categorically doesn't require an exception.  In
-general, exceptions are for exceptional circumstances that we shouldn't
-have to expect to account for within the normal code paths, where
-cancelling whole blocks of code is ok, while returning Excuses is for when
-we do expect to handle these things within the normal code flow and/or not
-automatically halt blocks of code.>
-
-=head2 Excuse::No_Reason
-
-        Excuse::No_Reason : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::No_Reason> represents the C<Excuse> value which
-simply says that an ordinary value for any given domain is missing and that
-there is simply no excuse that has been given for this; in other words,
-something has gone wrong without the slightest hint of an explanation.
-This is conceptually the most generic C<Excuse> value there is and it can
-be used by lazy programmers as a fallback for when they don't have even a
-semblance of a better explanation for why an ordinary value is missing.
-Other programming languages may name their corresponding values or
-quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
-I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
-
-=head2 coalesce ??
-
-        coalesce : (\Function : (
-            returns : \@Any,
-            matches : (\@Any, \@Any),
-            is_associative : True,
-            is_idempotent : True,
-            left_identity : (Excuse::No_Reason()),
-            evaluates : (if Excuse args:.\0 then args:.\1 else args:.\0),
-        )),
-
-        "??" : (\Alias : ( of : \@coalesce, )),
-
-The function C<coalesce> aka C<??> results in its C<0> argument iff the
-latter is not an C<Excuse>, and results in its C<1> argument otherwise.
-This function is designed to be chained for any number of sequenced values
-in order to pick the first non-C<Excuse> in a list.
-This function has analogous stop-or-continue behavior to the Muldis D
-special syntax C<or_else> where any C<Excuse> or non-C<Excuse> stands in
-for C<False> and C<True> respectively but it has the opposite associativity.
-Other programming languages may name their corresponding I<null coalescing>
-operators I<?:> or I<//> or I<NVL> or I<ISNULL>.
-
-=head2 anticoalesce !!
-
-        anticoalesce : (\Function : (
-            returns : \@Any,
-            matches : (\@Any, \@Any),
-            is_associative : True,
-            is_idempotent : True,
-            left_identity : True,
-            evaluates : (if Excuse args:.\0 then args:.\0 else args:.\1),
-        )),
-
-        "!!" : (\Alias : ( of : \@anticoalesce, )),
-
-The function C<anticoalesce> aka C<!!> results in its C<0> argument iff the
-latter is an C<Excuse>, and results in its C<1> argument otherwise.
-This function is designed to be chained for any number of sequenced values
-in order to pick the first C<Excuse> in a list.
-This function has analogous stop-or-continue behavior to the Muldis D
-special syntax C<and_then> where any C<Excuse> or non-C<Excuse> stands in
-for C<False> and C<True> respectively but it has the opposite associativity.
-
 =head1 ORDERABLE DATA TYPES
 
 =head2 Orderable
@@ -325,38 +204,6 @@ C<Excuse::Before_All_Others>, C<Excuse::After_All_Others>, C<Bicessable>,
 C<Boolean>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>, C<Positional>, C<Array>,
 C<Tuple_Array>.
-
-=head2 Excuse::Before_All_Others
-
-        Excuse::Before_All_Others : (\Function : (
-            is_type_definer : True,
-            composes : {\@Orderable},
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::Before_All_Others> represents a type-agnostic
-analogy of negative infinity, an C<Orderable> value that sorts I<before>
-all other values in the Muldis D type system, and that is its only meaning.
-This value is expressly I<not> meant to represent any specific mathematical
-or physical concept of I<infinity> or I<∞> (of which there are many),
-including those of the IEEE floating-point standards; such things should be
-defined in other, not-C<System>, Muldis D packages for the relevant domains.
-
-=head2 Excuse::After_All_Others
-
-        Excuse::After_All_Others : (\Function : (
-            is_type_definer : True,
-            composes : {\@Orderable},
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::After_All_Others> represents a type-agnostic
-analogy of positive infinity, an C<Orderable> value that sorts I<after>
-all other values in the Muldis D type system, and that is its only meaning.
-This value is expressly I<not> meant to represent any specific mathematical
-or physical concept of I<infinity> or I<∞> (of which there are many),
-including those of the IEEE floating-point standards; such things should be
-defined in other, not-C<System>, Muldis D packages for the relevant domains.
 
 =head2 in_order
 
@@ -1164,29 +1011,6 @@ Muldis D packages such as L<System::Math|Muldis::D::Package::System::Math>;
 these include types for irrational or algebraic or complex numbers or
 quaternions or rational types with a fixed precision or scale or
 floating-point types and so on.
-
-=head2 Excuse::Div_By_Zero
-
-        Excuse::Div_By_Zero : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::Div_By_Zero> represents the I<undefined> result of
-attempting to divide a simple number by a simple, unsigned, number zero.
-Note that IEEE floating-point standards define a negative or positive
-infinity result value when dividing by an explicitly signed (negative or
-positive) zero, but the Muldis D C<System> package lacks those concepts.
-
-=head2 Excuse::Zero_To_The_Zero
-
-        Excuse::Zero_To_The_Zero : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
-of attempting to exponentiate a number zero to the power of a number zero.
 
 =head2 to_Boolean (Numerical)
 
@@ -2448,17 +2272,6 @@ C<Blob>, C<Textual>, C<Text>, C<Homogeneous>, C<Unionable>, C<Discrete>,
 C<Positional>, C<Array>, C<Set>, C<Bag>, C<Relational>,
 C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>, C<Interval>,
 C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
-
-=head2 Excuse::No_Empty_Value
-
-        Excuse::No_Empty_Value : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::No_Empty_Value> represents the I<undefined> result
-of attempting to request the value with zero members of some collection
-type that doesn't have a value with zero members.
 
 =head2 to_Boolean (Emptyable) has_any_members
 
@@ -4714,17 +4527,6 @@ lowest-ordinal-positioned non-matching members of X and Y determines that the or
 of X and Y as a whole are the same as said members.  C<Positional> is
 composed, directly or indirectly, by: C<Array>, C<Tuple_Array>.
 
-=head2 Excuse::No_Such_Ord_Pos
-
-        Excuse::No_Such_Ord_Pos : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::No_Such_Ord_Pos> represents the I<undefined> result of
-attempting to use a member ordinal position I<P> of C<Positional> value I<V> while
-assuming incorrectly that I<V> already has a member whose ordinal position is I<P>.
-
 =head2 singular (Positional)
 
         singular::Positional : (\Function : (
@@ -6771,30 +6573,6 @@ C<Tuple>; otherwise, that may not be the case.
 
 C<Attributive> is composed, directly or indirectly, by: C<Structural>,
 C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
-
-=head2 Excuse::No_Such_Attr_Name
-
-        Excuse::No_Such_Attr_Name : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::No_Such_Attr_Name> represents the I<undefined>
-result of attempting to use an attribute named I<N> of C<Attributive> value
-I<V> while assuming incorrectly that I<V> already has an attribute whose
-name is I<N>.
-
-=head2 Excuse::Not_Same_Heading
-
-        Excuse::Not_Same_Heading : (\Function : (
-            is_type_definer : True,
-            constant : (\Excuse : (\@material,)),
-        )),
-
-The singleton type definer C<Excuse::Not_Same_Heading> represents the I<undefined> result
-of attempting to perform an operation that takes 2 C<Attributive> inputs
-and requires them to have the same relational I<heading> but the actual 2
-inputs have different headings.
 
 =head2 has_any_attrs ?@
 
@@ -9146,6 +8924,228 @@ environment.  Muldis D will assume said function is completely
 deterministic, and there would likely be problems if it isn't.  Using
 C<External::call_function> as a foundation, it is possible to define an
 arbitrarily complex type graph involving C<External> values.
+
+=head1 EXCUSE DATA TYPES
+
+=head2 Excuse
+
+        Excuse::"" : (\Function : (
+            is_type_definer : True,
+            evaluates : (\@Signature::Capsule_Match : (
+                label : \Excuse,
+                attrs : (
+                    0 : \Any(),
+                ),
+            )),
+            default : (\Excuse : (\@Excuse::No_Reason,)),
+        )),
+
+The selection type definer C<Excuse> is infinite.  An C<Excuse> value is an
+explicitly stated reason for why, given some particular problem domain, a
+value is not being used that is ordinary for that domain.  For example, the
+typical integer division operation is not defined to give an integer result
+when the divisor is zero, and so a Muldis D function for integer division
+could be defined to result in an C<Excuse> value rather than throw an
+exception in that case.  For another example, an C<Excuse> value could be
+used to declare that the information we are storing about a person is
+missing certain details and why those are missing, such as because the
+person left the birthdate field blank on their application form.  Its
+default value is C<Excuse::No_Reason>.  An C<Excuse> is isomorphic to an
+C<Exception> but that use of the former is not meant to terminate execution
+of code early unlike the latter which is.  Other programming languages that
+have typed exceptions are analogous.
+
+I<TODO:  To be more specific, an Excuse value only should denote a
+categorical reason for a normal value not being provided, and all possible
+values of Excuse should be considered hard-coded.  They should not be
+possible to vary based on user input; for example, a key out of range error
+should not specify the attempted key.  Instead, other types that include an
+Excuse as a component, such as an Exception, can include details that vary
+on the specific user input, or include stack traces and such.>
+
+I<TODO:  Generally speaking, criteria for when it is better to use an
+Excuse result value rather than exception is like this.  In a function, any
+result which is non-determinisitic must always be as an exception; in a
+function it should generally not be possible to cause non-determinisim on
+purpose (except perhaps memory exhaustion), so such a failure would
+originate in the runtime environment and truly be exceptional.  Otherwise,
+in a function, Excuses should be used by default in most circumstances,
+typically where it is reasonable to expect a fraction of inputs may be bad
+and we are purposefully letting the function determine which is which and
+tell us (such as parsers say), or situations where it is reasonable to
+propagate errors while continuing to process good parts; in contrast,
+exceptions should be reserved for situations where the caller should easily
+have known better to either invoke it with correct inputs and doing
+otherwise is obviously wrong code the caller should fix.  In a procedure,
+the non-determinism factor categorically doesn't require an exception.  In
+general, exceptions are for exceptional circumstances that we shouldn't
+have to expect to account for within the normal code paths, where
+cancelling whole blocks of code is ok, while returning Excuses is for when
+we do expect to handle these things within the normal code flow and/or not
+automatically halt blocks of code.>
+
+=head2 Excuse::No_Reason
+
+        Excuse::No_Reason : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::No_Reason> represents the C<Excuse> value which
+simply says that an ordinary value for any given domain is missing and that
+there is simply no excuse that has been given for this; in other words,
+something has gone wrong without the slightest hint of an explanation.
+This is conceptually the most generic C<Excuse> value there is and it can
+be used by lazy programmers as a fallback for when they don't have even a
+semblance of a better explanation for why an ordinary value is missing.
+Other programming languages may name their corresponding values or
+quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
+I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
+
+=head2 Excuse::Before_All_Others
+
+        Excuse::Before_All_Others : (\Function : (
+            is_type_definer : True,
+            composes : {\@Orderable},
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::Before_All_Others> represents a type-agnostic
+analogy of negative infinity, an C<Orderable> value that sorts I<before>
+all other values in the Muldis D type system, and that is its only meaning.
+This value is expressly I<not> meant to represent any specific mathematical
+or physical concept of I<infinity> or I<∞> (of which there are many),
+including those of the IEEE floating-point standards; such things should be
+defined in other, not-C<System>, Muldis D packages for the relevant domains.
+
+=head2 Excuse::After_All_Others
+
+        Excuse::After_All_Others : (\Function : (
+            is_type_definer : True,
+            composes : {\@Orderable},
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::After_All_Others> represents a type-agnostic
+analogy of positive infinity, an C<Orderable> value that sorts I<after>
+all other values in the Muldis D type system, and that is its only meaning.
+This value is expressly I<not> meant to represent any specific mathematical
+or physical concept of I<infinity> or I<∞> (of which there are many),
+including those of the IEEE floating-point standards; such things should be
+defined in other, not-C<System>, Muldis D packages for the relevant domains.
+
+=head2 Excuse::Div_By_Zero
+
+        Excuse::Div_By_Zero : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::Div_By_Zero> represents the I<undefined> result of
+attempting to divide a simple number by a simple, unsigned, number zero.
+Note that IEEE floating-point standards define a negative or positive
+infinity result value when dividing by an explicitly signed (negative or
+positive) zero, but the Muldis D C<System> package lacks those concepts.
+
+=head2 Excuse::Zero_To_The_Zero
+
+        Excuse::Zero_To_The_Zero : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
+of attempting to exponentiate a number zero to the power of a number zero.
+
+=head2 Excuse::No_Empty_Value
+
+        Excuse::No_Empty_Value : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::No_Empty_Value> represents the I<undefined> result
+of attempting to request the value with zero members of some collection
+type that doesn't have a value with zero members.
+
+=head2 Excuse::No_Such_Ord_Pos
+
+        Excuse::No_Such_Ord_Pos : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::No_Such_Ord_Pos> represents the I<undefined> result of
+attempting to use a member ordinal position I<P> of C<Positional> value I<V> while
+assuming incorrectly that I<V> already has a member whose ordinal position is I<P>.
+
+=head2 Excuse::No_Such_Attr_Name
+
+        Excuse::No_Such_Attr_Name : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::No_Such_Attr_Name> represents the I<undefined>
+result of attempting to use an attribute named I<N> of C<Attributive> value
+I<V> while assuming incorrectly that I<V> already has an attribute whose
+name is I<N>.
+
+=head2 Excuse::Not_Same_Heading
+
+        Excuse::Not_Same_Heading : (\Function : (
+            is_type_definer : True,
+            constant : (\Excuse : (\@material,)),
+        )),
+
+The singleton type definer C<Excuse::Not_Same_Heading> represents the I<undefined> result
+of attempting to perform an operation that takes 2 C<Attributive> inputs
+and requires them to have the same relational I<heading> but the actual 2
+inputs have different headings.
+
+=head2 coalesce ??
+
+        coalesce : (\Function : (
+            returns : \@Any,
+            matches : (\@Any, \@Any),
+            is_associative : True,
+            is_idempotent : True,
+            left_identity : (Excuse::No_Reason()),
+            evaluates : (if Excuse args:.\0 then args:.\1 else args:.\0),
+        )),
+
+        "??" : (\Alias : ( of : \@coalesce, )),
+
+The function C<coalesce> aka C<??> results in its C<0> argument iff the
+latter is not an C<Excuse>, and results in its C<1> argument otherwise.
+This function is designed to be chained for any number of sequenced values
+in order to pick the first non-C<Excuse> in a list.
+This function has analogous stop-or-continue behavior to the Muldis D
+special syntax C<or_else> where any C<Excuse> or non-C<Excuse> stands in
+for C<False> and C<True> respectively but it has the opposite associativity.
+Other programming languages may name their corresponding I<null coalescing>
+operators I<?:> or I<//> or I<NVL> or I<ISNULL>.
+
+=head2 anticoalesce !!
+
+        anticoalesce : (\Function : (
+            returns : \@Any,
+            matches : (\@Any, \@Any),
+            is_associative : True,
+            is_idempotent : True,
+            left_identity : True,
+            evaluates : (if Excuse args:.\0 then args:.\0 else args:.\1),
+        )),
+
+        "!!" : (\Alias : ( of : \@anticoalesce, )),
+
+The function C<anticoalesce> aka C<!!> results in its C<0> argument iff the
+latter is an C<Excuse>, and results in its C<1> argument otherwise.
+This function is designed to be chained for any number of sequenced values
+in order to pick the first C<Excuse> in a list.
+This function has analogous stop-or-continue behavior to the Muldis D
+special syntax C<and_then> where any C<Excuse> or non-C<Excuse> stands in
+for C<False> and C<True> respectively but it has the opposite associativity.
 
 =head1 SOURCE CODE BEHAVIOURAL DATA TYPES
 
