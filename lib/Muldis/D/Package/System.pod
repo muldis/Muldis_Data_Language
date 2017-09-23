@@ -189,18 +189,18 @@ programming languages may name their corresponding types I<IComparable> or
 I<Ord> or I<ordered> or I<ordinal>.
 
 The default value of C<Orderable> is the C<Integer> value C<0>.  The
-minimum and maximum values of C<Orderable> are C<Excuse::Before_All_Others>
-and C<Excuse::After_All_Others>, respectively; these 2 C<Excuse> values are
+minimum and maximum values of C<Orderable> are C<Before_All_Others>
+and C<After_All_Others>, respectively; these 2 C<Excuse> values are
 canonically considered to be before and after, respectively, I<every> other
 value of the Muldis D type system, regardless of whether those values are
 members a type for which an C<Orderable>-composing type definer exists.  The
-primary reason for having these values C<Excuse::Before_All_Others> and
-C<Excuse::After_All_Others> is so Muldis D has an easy consistent way to
+primary reason for having these values C<Before_All_Others> and
+C<After_All_Others> is so Muldis D has an easy consistent way to
 define an C<Interval> that is partially or completely unbounded, and to use
 as I<two-sided identity element> values for chained order-comparisons.
 
 C<Orderable> is composed, directly or indirectly, by:
-C<Excuse::Before_All_Others>, C<Excuse::After_All_Others>, C<Bicessable>,
+C<Before_All_Others>, C<After_All_Others>, C<Bicessable>,
 C<Boolean>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>, C<Positional>, C<Array>,
 C<Tuple_Array>.
@@ -234,32 +234,32 @@ partly to keep its core type system simpler (it would have gone the
 enumeration route) and partly because the logic for doing sorting or
 comparisons or validation is typically much simpler with this foundation.
 
-=head2 in_order (Excuse::Before_All_Others, Excuse::After_All_Others)
+=head2 in_order (Before_All_Others, After_All_Others)
 
         in_order::Before_All_Others_L : (\Function : (
             returns : \@Boolean,
-            matches : (\@Excuse::Before_All_Others, \@Orderable),
+            matches : (\@Before_All_Others, \@Orderable),
             implements : \@folder::"",
             evaluates : (True),
         )),
 
         in_order::Before_All_Others_R : (\Function : (
             returns : \@Boolean,
-            matches : (\@Orderable, \@Excuse::Before_All_Others),
+            matches : (\@Orderable, \@Before_All_Others),
             implements : \@folder::"",
             evaluates : (args:.\0 = args:.\1),
         )),
 
         in_order::After_All_Others_L : (\Function : (
             returns : \@Boolean,
-            matches : (\@Excuse::After_All_Others, \@Orderable),
+            matches : (\@After_All_Others, \@Orderable),
             implements : \@folder::"",
             evaluates : (args:.\0 = args:.\1),
         )),
 
         in_order::After_All_Others_R : (\Function : (
             returns : \@Boolean,
-            matches : (\@Orderable, \@Excuse::After_All_Others),
+            matches : (\@Orderable, \@After_All_Others),
             implements : \@folder::"",
             evaluates : (True),
         )),
@@ -267,8 +267,8 @@ comparisons or validation is typically much simpler with this foundation.
 The 4 functions {C<in_order::Before_All_Others_L>,
 C<in_order::Before_All_Others_R>, C<in_order::After_All_Others_L>,
 C<in_order::After_All_Others_R>} implement the C<Orderable> virtual
-function C<in_order> for the composing types C<Excuse::Before_All_Others>
-and C<Excuse::After_All_Others>, specifically for comparing either value
+function C<in_order> for the composing types C<Before_All_Others>
+and C<After_All_Others>, specifically for comparing either value
 with any C<Orderable>.
 
 =head2 before <
@@ -331,7 +331,7 @@ name this operator I<ge>.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            identity : (Excuse::After_All_Others()),
+            identity : (After_All_Others::()),
             evaluates : (if args:.\0 in_order args:.\1 then args:.\0 else args:.\1),
         )),
 
@@ -348,7 +348,7 @@ I<before> all of the others.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            identity : (Excuse::Before_All_Others()),
+            identity : (Before_All_Others::()),
             evaluates : (if args:.\0 in_order args:.\1 then args:.\1 else args:.\0),
         )),
 
@@ -445,13 +445,13 @@ programming languages may name their corresponding operators I<Current>.
 =head2 succ
 
         succ : (\Function : (
-            returns : {\@Successable, \@Excuse::After_All_Others},
+            returns : {\@Successable, \@After_All_Others},
             matches : (\@Successable,),
             evaluates : (args:.\0 nth_succ 1),
         )),
 
 The function C<succ> results in the I<successor> value of its C<0>
-argument, or in C<Excuse::After_All_Others> if there is none.  Other
+argument, or in C<After_All_Others> if there is none.  Other
 programming languages may name their corresponding operators I<next> or
 I<MoveNext>.
 
@@ -459,13 +459,13 @@ I<MoveNext>.
 
         nth_succ::"" : (\Function : (
             virtual : True,
-            returns : {\@Successable, \@Excuse::After_All_Others},
+            returns : {\@Successable, \@After_All_Others},
             matches : (\@Successable, \@Integer_NN),
         )),
 
 The virtual function C<nth_succ> results in the Nth I<successor> value of
 its C<0> argument, where N is its C<1> argument, or in
-C<Excuse::After_All_Others> if there is none.
+C<After_All_Others> if there is none.
 
 =head1 BICESSABLE DATA TYPES
 
@@ -521,13 +521,13 @@ values and should not be conceptualized as mathematical operations.
 =head2 pred
 
         pred : (\Function : (
-            returns : {\@Bicessable, \@Excuse::Before_All_Others},
+            returns : {\@Bicessable, \@Before_All_Others},
             matches : (\@Bicessable,),
             evaluates : (args:.\0 nth_pred 1),
         )),
 
 The function C<pred> results in the I<predecessor> value of its C<0>
-argument, or in C<Excuse::Before_All_Others> if there is none.  Other
+argument, or in C<Before_All_Others> if there is none.  Other
 programming languages may name their corresponding operators I<prior> or
 I<previous>.
 
@@ -535,13 +535,13 @@ I<previous>.
 
         nth_pred::"" : (\Function : (
             virtual : True,
-            returns : {\@Bicessable, \@Excuse::Before_All_Others},
+            returns : {\@Bicessable, \@Before_All_Others},
             matches : (\@Bicessable, \@Integer_NN),
         )),
 
 The virtual function C<nth_pred> results in the Nth I<predecessor> value of
 its C<0> argument, where N is its C<1> argument, or in
-C<Excuse::Before_All_Others> if there is none.
+C<Before_All_Others> if there is none.
 
 =head1 BOOLABLE DATA TYPES
 
@@ -688,10 +688,10 @@ the composing type C<Boolean>.
 =head2 nth_pred (Boolean)
 
         nth_pred::Boolean : (\Function : (
-            returns : {\@False, \@Excuse::Before_All_Others},
+            returns : {\@False, \@Before_All_Others},
             matches : (\@Boolean, \@Integer_NN),
             implements : \@folder::"",
-            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and args:.\0 then False else Excuse::Before_All_Others()),
+            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and args:.\0 then False else Before_All_Others::()),
         )),
 
 The function C<nth_pred::Boolean> implements the C<Bicessable> virtual
@@ -700,10 +700,10 @@ function C<nth_pred> for the composing type C<Boolean>.
 =head2 nth_succ (Boolean)
 
         nth_succ::Boolean : (\Function : (
-            returns : {\@True, \@Excuse::After_All_Others},
+            returns : {\@True, \@After_All_Others},
             matches : (\@Boolean, \@Integer_NN),
             implements : \@folder::"",
-            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then True else Excuse::After_All_Others()),
+            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then True else After_All_Others::()),
         )),
 
 The function C<nth_succ::Boolean> implements the C<Successable> virtual
@@ -1067,7 +1067,7 @@ zero.  By definition, the sum of a number and its opposite is zero.
 
         reciprocal::"" : (\Function : (
             virtual : True,
-            returns : {\@Numerical, \@Excuse::Div_By_Zero},
+            returns : {\@Numerical, \@Div_By_Zero},
             matches : (\@Numerical,),
         )),
 
@@ -1182,7 +1182,7 @@ I<two-sided identity element> value of a number positive one.
 
         multiple_of::"" : (\Function : (
             virtual : True,
-            returns : {\@Boolean, \@Excuse::Div_By_Zero},
+            returns : {\@Boolean, \@Div_By_Zero},
             matches : (\@Numerical, \@Numerical),
         )),
 
@@ -1196,9 +1196,9 @@ corresponding operators I<%%>.
 =head2 nearest_multiple_of round
 
         nearest_multiple_of : (\Function : (
-            returns : {\@Numerical, \@Excuse::Div_By_Zero},
+            returns : {\@Numerical, \@Div_By_Zero},
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
-            evaluates : (if is_zero args:.\1 then Excuse::Div_By_Zero()
+            evaluates : (if is_zero args:.\1 then Div_By_Zero::()
                 else guard args:.\1 * (args:.\0 div args:.\1)),
         )),
 
@@ -1220,7 +1220,7 @@ other things, some of which would always round to a multiple of one.
 
         fractional_divided_by::"" : (\Function : (
             virtual : True,
-            returns : {\@Numerical, \@Excuse::Div_By_Zero},
+            returns : {\@Numerical, \@Div_By_Zero},
             matches : (\@Numerical, \@Numerical),
         )),
 
@@ -1244,7 +1244,7 @@ number positive one.
 
         integral_divided_by::"" : (\Function : (
             virtual : True,
-            returns : {\@Numerical, \@Excuse::Div_By_Zero},
+            returns : {\@Numerical, \@Div_By_Zero},
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
         )),
 
@@ -1265,9 +1265,9 @@ number positive one.
 =head2 modulo mod
 
         modulo : (\Function : (
-            returns : {\@Numerical, \@Excuse::Div_By_Zero},
+            returns : {\@Numerical, \@Div_By_Zero},
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
-            evaluates : (if is_zero args:.\1 then Excuse::Div_By_Zero()
+            evaluates : (if is_zero args:.\1 then Div_By_Zero::()
                 else guard args:.\0 - (args:.\0 nearest_multiple_of args:.\1)),
         )),
 
@@ -1286,7 +1286,7 @@ or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
 =head2 divided_by_and_modulo
 
         divided_by_and_modulo::"" : (\Function : (
-            returns : ({Numerical, Excuse::Div_By_Zero}, {Numerical, Excuse::Div_By_Zero}),
+            returns : ({Numerical, Div_By_Zero}, {Numerical, Div_By_Zero}),
             matches : (\@Numerical, \@Numerical, \@Round_Meth),
             evaluates : ((args:.\0 div args:.\1, args:.\0 mod args:.\1)),
         )),
@@ -1300,7 +1300,7 @@ same arguments.  This function is a shorthand for invoking the other two.
 
         integral_power::"" : (\Function : (
             virtual : True,
-            returns : {\@Numerical, \@Excuse::Zero_To_The_Zero},
+            returns : {\@Numerical, \@Zero_To_The_Zero},
             matches : (\@Numerical, \@Integral),
         )),
 
@@ -1318,7 +1318,7 @@ programming languages may name their corresponding operators I<exp> or I<^>.
 
         integral_nn_power::"" : (\Function : (
             virtual : True,
-            returns : {\@Numerical, \@Excuse::Zero_To_The_Zero},
+            returns : {\@Numerical, \@Zero_To_The_Zero},
             matches : (\@Numerical, \@Integral_NN),
         )),
 
@@ -1387,26 +1387,26 @@ default and minmum value is C<1>; it has no maximum value.
 =head2 --
 
         "--" : (\Function : (
-            returns : {\@Integral, \@Excuse::Before_All_Others},
+            returns : {\@Integral, \@Before_All_Others},
             matches : (\@Integral,),
             evaluates : (pred args:.\0),
         )),
 
 The function C<--> results in the I<predecessor> value of its C<0>
-argument, or in C<Excuse::Before_All_Others> if there is none.  It is an integral numeric
+argument, or in C<Before_All_Others> if there is none.  It is an integral numeric
 specific alias for the C<Bicessable> virtual function C<pred>.  Other
 programming languages may name their corresponding operators I<decrement>.
 
 =head2 ++
 
         "++" : (\Function : (
-            returns : {\@Integral, \@Excuse::After_All_Others},
+            returns : {\@Integral, \@After_All_Others},
             matches : (\@Integral,),
             evaluates : (succ args:.\0),
         )),
 
 The function C<++> results in the I<successor> value of its C<0> argument,
-or in C<Excuse::After_All_Others> if there is none.  It is an integral numeric specific
+or in C<After_All_Others> if there is none.  It is an integral numeric specific
 alias for the C<Successable> virtual function C<succ>.  Other programming
 languages may name their corresponding operators I<increment>.
 
@@ -1625,7 +1625,7 @@ for the composing type C<Integer>.
 =head2 reciprocal (Integer)
 
         reciprocal::Integer : (\Function : (
-            returns : {\@Fraction, \@Excuse::Div_By_Zero},
+            returns : {\@Fraction, \@Div_By_Zero},
             matches : (\@Integer,),
             implements : \@folder::"",
             evaluates : (1 / args:.\0),
@@ -1695,10 +1695,10 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
 =head2 multiple_of (Integer)
 
         multiple_of::Integer : (\Function : (
-            returns : {\@Boolean, \@Excuse::Div_By_Zero},
+            returns : {\@Boolean, \@Div_By_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            evaluates : (if args:.\1 = 0 then Excuse::Div_By_Zero()
+            evaluates : (if args:.\1 = 0 then Div_By_Zero::()
                 else guard evaluates args --> \foundation::Integer_multiple_of()),
         )),
 
@@ -1708,7 +1708,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
 =head2 fractional_divided_by (Integer)
 
         fractional_divided_by::Integer : (\Function : (
-            returns : {\@Fraction, \@Excuse::Div_By_Zero},
+            returns : {\@Fraction, \@Div_By_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
             right_identity : 1,
@@ -1716,7 +1716,7 @@ virtual function C<multiple_of> for the composing type C<Integer>.
                 n ::= args:.\0;
                 d ::= args:.\1;
 
-                returns if d = 0 then Excuse::Div_By_Zero() else guard q;
+                returns if d = 0 then Div_By_Zero::() else guard q;
 
                 q ::= (\Fraction : (
                     numerator   : div::((if d > 0 then n else -n), gcd, RM::(\To_Zero)),
@@ -1734,7 +1734,7 @@ the composing type C<Integer>.
 =head2 integral_divided_by (Integer)
 
         integral_divided_by::Integer : (\Function : (
-            returns : {\@Integer, \@Excuse::Div_By_Zero},
+            returns : {\@Integer, \@Div_By_Zero},
             matches : (\@Integer, \@Integer, \@Round_Meth),
             implements : \@folder::"",
             right_identity : 1,
@@ -1743,7 +1743,7 @@ the composing type C<Integer>.
                 divisor    ::= args:.\1;
                 round_meth ::= args:.\2;
 
-                returns if divisor = 0 then Excuse::Div_By_Zero() else guard e1;
+                returns if divisor = 0 then Div_By_Zero::() else guard e1;
 
                 e1 note 'This is the case where we are dividing by a non-zero.';
 
@@ -1816,10 +1816,10 @@ C<Integer>.
 =head2 integral_power (Integer)
 
         integral_power::Integer : (\Function : (
-            returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
+            returns : {\@Fraction, \@Zero_To_The_Zero},
             matches : (\@Integer, \@Integer),
             implements : \@folder::"",
-            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
+            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then Zero_To_The_Zero::()
                 else guard args:.\0 / 1 ** args:.\1),
         )),
 
@@ -1829,10 +1829,10 @@ function C<integral_power> aka C<**> for the composing type C<Integer>.
 =head2 integral_nn_power (Integer)
 
         integral_nn_power::Integer : (\Function : (
-            returns : {\@Integer, \@Excuse::Zero_To_The_Zero},
+            returns : {\@Integer, \@Zero_To_The_Zero},
             matches : (\@Integer, \@Integer_NN),
             implements : \@folder::"",
-            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
+            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then Zero_To_The_Zero::()
                 else guard evaluates args --> \foundation::Integer_nn_power()),
         )),
 
@@ -2048,10 +2048,10 @@ for the composing type C<Fraction>.
 =head2 reciprocal (Fraction)
 
         reciprocal::Fraction : (\Function : (
-            returns : {\@Fraction, \@Excuse::Div_By_Zero},
+            returns : {\@Fraction, \@Div_By_Zero},
             matches : (\@Fraction,),
             implements : \@folder::"",
-            evaluates : (if args:.\0 = 0.0 then Excuse::Div_By_Zero()
+            evaluates : (if args:.\0 = 0.0 then Div_By_Zero::()
                 else guard (denominator args:.\0) / (numerator args:.\0)),
         )),
 
@@ -2143,10 +2143,10 @@ specifically for multiplying one by an C<Integer>.
 =head2 multiple_of (Fraction)
 
         multiple_of::Fraction : (\Function : (
-            returns : {\@Boolean, \@Excuse::Div_By_Zero},
+            returns : {\@Boolean, \@Div_By_Zero},
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
-            evaluates : (if args:.\1 = 0.0 then Excuse::Div_By_Zero()
+            evaluates : (if args:.\1 = 0.0 then Div_By_Zero::()
                 else guard (args:.\0 mod args:.\1) = 0.0),
         )),
 
@@ -2156,11 +2156,11 @@ virtual function C<multiple_of> for the composing type C<Fraction>.
 =head2 fractional_divided_by (Fraction)
 
         fractional_divided_by::Fraction : (\Function : (
-            returns : {\@Fraction, \@Excuse::Div_By_Zero},
+            returns : {\@Fraction, \@Div_By_Zero},
             matches : (\@Fraction, \@Fraction),
             implements : \@folder::"",
             right_identity : 1.0,
-            evaluates : (if args:.\1 = 0.0 then Excuse::Div_By_Zero()
+            evaluates : (if args:.\1 = 0.0 then Div_By_Zero::()
                 else guard args:.\0 * reciprocal::(args:.\1)),
         )),
 
@@ -2171,7 +2171,7 @@ the composing type C<Fraction>.
 =head2 integral_divided_by (Fraction)
 
         integral_divided_by::Fraction : (\Function : (
-            returns : {\@Fraction, \@Excuse::Div_By_Zero},
+            returns : {\@Fraction, \@Div_By_Zero},
             matches : (\@Fraction, \@Fraction, \@Round_Meth),
             implements : \@folder::"",
             right_identity : 1.0,
@@ -2179,7 +2179,7 @@ the composing type C<Fraction>.
                 d ::= lcm::(denominator args:.\0, denominator args:.\1);
                 n0 ::= (numerator args:.\0) * div::(d, denominator args:.\0, RM::(\To_Zero));
                 n1 ::= (numerator args:.\1) * div::(d, denominator args:.\1, RM::(\To_Zero));
-                returns if args:.\1 = 0.0 then Excuse::Div_By_Zero()
+                returns if args:.\1 = 0.0 then Div_By_Zero::()
                     else guard div::(n0 * d, n1 * d, args:.\2) / 1;
             ),
         )),
@@ -2191,7 +2191,7 @@ C<Fraction>.
 =head2 integral_power (Fraction)
 
         integral_power::Fraction : (\Function : (
-            returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
+            returns : {\@Fraction, \@Zero_To_The_Zero},
             matches : (\@Fraction, \@Integer),
             implements : \@folder::"",
             evaluates : (evaluates \integral_nn_power::()
@@ -2204,10 +2204,10 @@ function C<integral_power> aka C<**> for the composing type C<Fraction>.
 =head2 integral_nn_power (Fraction)
 
         integral_nn_power::Fraction : (\Function : (
-            returns : {\@Fraction, \@Excuse::Zero_To_The_Zero},
+            returns : {\@Fraction, \@Zero_To_The_Zero},
             matches : (\@Fraction, \@Integer_NN),
             implements : \@folder::"",
-            evaluates : (if args:.\0 = 0.0 and args:.\1 = 0 then Excuse::Zero_To_The_Zero()
+            evaluates : (if args:.\0 = 0.0 and args:.\1 = 0 then Zero_To_The_Zero::()
                 else guard ((numerator args:.\0) ** args:.\1) / ((denominator args:.\0) ** args:.\1)),
         )),
 
@@ -2306,7 +2306,7 @@ Other programming languages may name their corresponding operators I<empty?>.
 
         empty::"" : (\Function : (
             virtual : True,
-            returns : {\@Emptyable, \@Excuse::No_Empty_Value},
+            returns : {\@Emptyable, \@No_Empty_Value},
             matches : (\@Emptyable,),
         )),
 
@@ -3152,7 +3152,7 @@ it is superfluous with simply trying to decode one and see if it succeeded.>
 =head2 Text_from_UTF_8_Blob
 
         Text_from_UTF_8_Blob : (\Function : (
-            returns : {\@Text::Unicode, \@Excuse::Unicode::..., ...},
+            returns : {\@Text::Unicode, \@Unicode::..., ...},
             matches : (\@Blob,),
             evaluates : (...),
         )),
@@ -3223,13 +3223,13 @@ I<TODO.>
 =head2 Text_from_ASCII_Blob
 
         Text_from_ASCII_Blob : (\Function : (
-            returns : {\@Text::ASCII, \@Excuse::ASCII::High_Bit_Not_Zero},
+            returns : {\@Text::ASCII, \@ASCII::High_Bit_Not_Zero},
             matches : (\@Blob,),
             evaluates : (
                 octets ::= Blob_to_Octets args:.\0;
                 returns if Array::ASCII_Chars(octets)
                     then guard Text_from_ASCII_Chars octets
-                    else Excuse::ASCII::High_Bit_Not_Zero();
+                    else ASCII::High_Bit_Not_Zero();
             ),
         )),
 
@@ -4376,7 +4376,7 @@ and reduce can always be parallelized.
 If collection is ordered, reduce can be parallelized if 'call' is associative;
 otherwise the reduce is a serial operation, at least naively.>
 
-I<TODO.  Also define related Excuse::No_Identity_Element type.>
+I<TODO.  Also define related No_Identity_Element type.>
 
 =head1 DISCRETE DATA TYPES
 
@@ -4710,7 +4710,7 @@ C<Positional>.
             returns : \@Any,
             matches : (\@Positional, \@Integer),
             implements : \@folder::"",
-            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else Excuse::No_Such_Ord_Pos()),
+            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else No_Such_Ord_Pos::()),
         )),
 
 The function C<maybe_at::Positional> results in the member value of its
@@ -7156,7 +7156,7 @@ type C<Structural>.
             returns : \@Any,
             matches : (\@Structural, \@Attr_Name),
             implements : \@folder::"",
-            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else Excuse::No_Such_Attr_Name()),
+            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else No_Such_Attr_Name::()),
         )),
 
 The function C<maybe_at::Structural> results in the attribute asset value
@@ -7688,11 +7688,11 @@ virtual function C<only_member> for the composing type C<Relational>.
 =head2 has_n (Relational)
 
         has_n::Relational : (\Function : (
-            returns : {\@Boolean, \@Excuse::Not_Same_Heading},
+            returns : {\@Boolean, \@Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard has_n::(|args:.\0, args:.\1, args:.\2)
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<has_n::Relational> results in C<True> iff its C<0> argument
@@ -7757,11 +7757,11 @@ composing type C<Relational>.
 =head2 subset_of (Relational)
 
         subset_of::Relational : (\Function : (
-            returns : {\@Boolean, \@Excuse::Not_Same_Heading},
+            returns : {\@Boolean, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard |args:.\0 subset_of |args:.\1
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<subset_of::Relational> results in C<True> iff the multiset
@@ -7774,12 +7774,12 @@ function C<subset_of> aka C<⊆> for the composing type C<Relational>.
 =head2 same_members (Relational)
 
         same_members::Relational : (\Function : (
-            returns : {\@Boolean, \@Excuse::Not_Same_Heading},
+            returns : {\@Boolean, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard |args:.\0 same_members |args:.\1
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<same_members::Relational> results in C<True> iff the
@@ -7796,12 +7796,12 @@ the composing type C<Relational>.
 =head2 overlaps_members (Relational)
 
         overlaps_members::Relational : (\Function : (
-            returns : {\@Boolean, \@Excuse::Not_Same_Heading},
+            returns : {\@Boolean, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard |args:.\0 overlaps_members |args:.\1
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<overlaps_members::Relational> results in C<True> iff, given
@@ -7817,12 +7817,12 @@ C<Relational>.
 =head2 disjoint_members (Relational)
 
         disjoint_members::Relational : (\Function : (
-            returns : {\@Boolean, \@Excuse::Not_Same_Heading},
+            returns : {\@Boolean, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_commutative : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard |args:.\0 disjoint_members |args:.\1
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<disjoint_members::Relational> results in C<True> iff the
@@ -7847,12 +7847,12 @@ I<TODO.>
 =head2 insert_n (Relational)
 
         insert_n::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: insert_n::(|args:.\0, args:.\1, args:.\2) )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<insert_n::Relational> results in the value of its C<0>
@@ -7872,12 +7872,12 @@ C<Relational>.
 =head2 remove_n (Relational)
 
         remove_n::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Structural, \@Integer_NN),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: remove_n::(|args:.\0, args:.\1, args:.\2) )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<remove_n::Relational> results in the value of its C<0>
@@ -7895,13 +7895,13 @@ composing type C<Relational>.
 =head2 member_plus (Relational)
 
         member_plus::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_associative : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: |args:.\0 member_plus |args:.\1 )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<member_plus::Relational> results in the I<multiset sum> of
@@ -7926,12 +7926,12 @@ C<Relational>.
 =head2 except (Relational)
 
         except::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: |args:.\0 except |args:.\1 )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<except::Relational> results in the I<multiset difference>
@@ -7952,14 +7952,14 @@ virtual function C<except> aka C<∖> for the composing type C<Relational>.
 =head2 intersect (Relational)
 
         intersect::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_associative : True,
             is_idempotent : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: |args:.\0 intersect |args:.\1 )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<intersect::Relational> results in the I<multiset
@@ -7980,13 +7980,13 @@ function C<intersect> aka C<∩> for the composing type C<Relational>.
 =head2 union (Relational)
 
         union::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_idempotent : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: |args:.\0 union |args:.\1 )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<union::Relational> results in the I<multiset union> of its 2
@@ -8009,14 +8009,14 @@ composing type C<Relational>.
 =head2 exclusive (Relational)
 
         exclusive::Relational : (\Function : (
-            returns : {\@Relational, \@Excuse::Not_Same_Heading},
+            returns : {\@Relational, \@Not_Same_Heading},
             matches : (\@Relational, \@Relational),
             implements : \@folder::"",
             is_associative : True,
             is_commutative : True,
             evaluates : (if args:.\0 =@ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: @args:.\0, body: |args:.\0 exclusive |args:.\1 )
-                else Excuse::Not_Same_Heading),
+                else Not_Same_Heading),
         )),
 
 The function C<exclusive::Relational> results in the I<multiset symmetric
@@ -8304,7 +8304,7 @@ typical C<Relational> value, and select that same value again.
 
         select_Relational::"" : (\Function : (
             virtual : True,
-            returns : {\@Relational, \@Excuse::...},
+            returns : {\@Relational, \@...},
             matches : (like : \@Relational, heading : \@Heading, body : \@Unionable),
         )),
 
@@ -8402,7 +8402,7 @@ composing type C<Tuple_Array>.
 =head2 select_Relational (Tuple_Array)
 
         select_Relational::Tuple_Array : (\Function : (
-            returns : {\@Relational, \@Excuse::...},
+            returns : {\@Relational, \@...},
             matches : (like : \@Tuple_Array, heading : \@Heading, body : \@Array),
             implements : \@folder::"",
             evaluates : ((\Tuple_Array : (args %= \@(heading,body)))),
@@ -8490,7 +8490,7 @@ composing type C<Relation>.
 =head2 select_Relational (Relation)
 
         select_Relational::Relation : (\Function : (
-            returns : {\@Relational, \@Excuse::...},
+            returns : {\@Relational, \@...},
             matches : (like : \@Relation, heading : \@Heading, body : \@Set),
             implements : \@folder::"",
             evaluates : ((\Relation : (args %= \@(heading,body)))),
@@ -8575,7 +8575,7 @@ composing type C<Tuple_Bag>.
 =head2 select_Relational (Tuple_Bag)
 
         select_Relational::Tuple_Bag : (\Function : (
-            returns : {\@Relational, \@Excuse::...},
+            returns : {\@Relational, \@...},
             matches : (like : \@Tuple_Bag, heading : \@Heading, body : \@Bag),
             implements : \@folder::"",
             evaluates : ((\Tuple_Bag : (args %= \@(heading,body)))),
@@ -8610,7 +8610,7 @@ I<TODO.>
                 label : \Interval,
                 attrs : \Interval_Attrs::(),
             )),
-            default : (Excuse::Before_All_Others()..Excuse::After_All_Others()),
+            default : (Before_All_Others::()..After_All_Others::()),
         )),
 
 I<TODO.>
@@ -8929,7 +8929,7 @@ arbitrarily complex type graph involving C<External> values.
 
 =head2 Excuse
 
-        Excuse::"" : (\Function : (
+        Excuse : (\Function : (
             is_type_definer : True,
             evaluates : (\@Signature::Capsule_Match : (
                 label : \Excuse,
@@ -8937,7 +8937,7 @@ arbitrarily complex type graph involving C<External> values.
                     0 : \Any(),
                 ),
             )),
-            default : (\Excuse : (\@Excuse::No_Reason,)),
+            default : (\Excuse : (\@No_Reason,)),
         )),
 
 The selection type definer C<Excuse> is infinite.  An C<Excuse> value is an
@@ -8950,7 +8950,7 @@ exception in that case.  For another example, an C<Excuse> value could be
 used to declare that the information we are storing about a person is
 missing certain details and why those are missing, such as because the
 person left the birthdate field blank on their application form.  Its
-default value is C<Excuse::No_Reason>.  An C<Excuse> is isomorphic to an
+default value is C<No_Reason>.  An C<Excuse> is isomorphic to an
 C<Exception> but that use of the former is not meant to terminate execution
 of code early unlike the latter which is.  Other programming languages that
 have typed exceptions are analogous.
@@ -8984,14 +8984,14 @@ cancelling whole blocks of code is ok, while returning Excuses is for when
 we do expect to handle these things within the normal code flow and/or not
 automatically halt blocks of code.>
 
-=head2 Excuse::No_Reason
+=head2 No_Reason
 
-        Excuse::No_Reason : (\Function : (
+        No_Reason : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::No_Reason> represents the C<Excuse> value which
+The singleton type definer C<No_Reason> represents the C<Excuse> value which
 simply says that an ordinary value for any given domain is missing and that
 there is simply no excuse that has been given for this; in other words,
 something has gone wrong without the slightest hint of an explanation.
@@ -9002,15 +9002,15 @@ Other programming languages may name their corresponding values or
 quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
 I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
-=head2 Excuse::Before_All_Others
+=head2 Before_All_Others
 
-        Excuse::Before_All_Others : (\Function : (
+        Before_All_Others : (\Function : (
             is_type_definer : True,
             composes : {\@Orderable},
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::Before_All_Others> represents a type-agnostic
+The singleton type definer C<Before_All_Others> represents a type-agnostic
 analogy of negative infinity, an C<Orderable> value that sorts I<before>
 all other values in the Muldis D type system, and that is its only meaning.
 This value is expressly I<not> meant to represent any specific mathematical
@@ -9018,15 +9018,15 @@ or physical concept of I<infinity> or I<∞> (of which there are many),
 including those of the IEEE floating-point standards; such things should be
 defined in other, not-C<System>, Muldis D packages for the relevant domains.
 
-=head2 Excuse::After_All_Others
+=head2 After_All_Others
 
-        Excuse::After_All_Others : (\Function : (
+        After_All_Others : (\Function : (
             is_type_definer : True,
             composes : {\@Orderable},
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::After_All_Others> represents a type-agnostic
+The singleton type definer C<After_All_Others> represents a type-agnostic
 analogy of positive infinity, an C<Orderable> value that sorts I<after>
 all other values in the Muldis D type system, and that is its only meaning.
 This value is expressly I<not> meant to represent any specific mathematical
@@ -9034,71 +9034,71 @@ or physical concept of I<infinity> or I<∞> (of which there are many),
 including those of the IEEE floating-point standards; such things should be
 defined in other, not-C<System>, Muldis D packages for the relevant domains.
 
-=head2 Excuse::Div_By_Zero
+=head2 Div_By_Zero
 
-        Excuse::Div_By_Zero : (\Function : (
+        Div_By_Zero : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::Div_By_Zero> represents the I<undefined> result of
+The singleton type definer C<Div_By_Zero> represents the I<undefined> result of
 attempting to divide a simple number by a simple, unsigned, number zero.
 Note that IEEE floating-point standards define a negative or positive
 infinity result value when dividing by an explicitly signed (negative or
 positive) zero, but the Muldis D C<System> package lacks those concepts.
 
-=head2 Excuse::Zero_To_The_Zero
+=head2 Zero_To_The_Zero
 
-        Excuse::Zero_To_The_Zero : (\Function : (
+        Zero_To_The_Zero : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::Zero_To_The_Zero> represents the I<undefined> result
+The singleton type definer C<Zero_To_The_Zero> represents the I<undefined> result
 of attempting to exponentiate a number zero to the power of a number zero.
 
-=head2 Excuse::No_Empty_Value
+=head2 No_Empty_Value
 
-        Excuse::No_Empty_Value : (\Function : (
+        No_Empty_Value : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::No_Empty_Value> represents the I<undefined> result
+The singleton type definer C<No_Empty_Value> represents the I<undefined> result
 of attempting to request the value with zero members of some collection
 type that doesn't have a value with zero members.
 
-=head2 Excuse::No_Such_Ord_Pos
+=head2 No_Such_Ord_Pos
 
-        Excuse::No_Such_Ord_Pos : (\Function : (
+        No_Such_Ord_Pos : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::No_Such_Ord_Pos> represents the I<undefined> result of
+The singleton type definer C<No_Such_Ord_Pos> represents the I<undefined> result of
 attempting to use a member ordinal position I<P> of C<Positional> value I<V> while
 assuming incorrectly that I<V> already has a member whose ordinal position is I<P>.
 
-=head2 Excuse::No_Such_Attr_Name
+=head2 No_Such_Attr_Name
 
-        Excuse::No_Such_Attr_Name : (\Function : (
+        No_Such_Attr_Name : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::No_Such_Attr_Name> represents the I<undefined>
+The singleton type definer C<No_Such_Attr_Name> represents the I<undefined>
 result of attempting to use an attribute named I<N> of C<Attributive> value
 I<V> while assuming incorrectly that I<V> already has an attribute whose
 name is I<N>.
 
-=head2 Excuse::Not_Same_Heading
+=head2 Not_Same_Heading
 
-        Excuse::Not_Same_Heading : (\Function : (
+        Not_Same_Heading : (\Function : (
             is_type_definer : True,
             constant : (\Excuse : (\@material,)),
         )),
 
-The singleton type definer C<Excuse::Not_Same_Heading> represents the I<undefined> result
+The singleton type definer C<Not_Same_Heading> represents the I<undefined> result
 of attempting to perform an operation that takes 2 C<Attributive> inputs
 and requires them to have the same relational I<heading> but the actual 2
 inputs have different headings.
@@ -9110,7 +9110,7 @@ inputs have different headings.
             matches : (\@Any, \@Any),
             is_associative : True,
             is_idempotent : True,
-            left_identity : (Excuse::No_Reason()),
+            left_identity : (No_Reason::()),
             evaluates : (if Excuse args:.\0 then args:.\1 else args:.\0),
         )),
 
