@@ -1343,7 +1343,10 @@ Grammar:
         '\\' <sp> <attr_name>
 
     <Heading> ::=
-        '\\@' <sp> '(' <sp> <attr_name_commalist> <sp> ')'
+        '\\@' <sp> <delim_attr_name_commalist>
+
+    <delim_attr_name_commalist> ::=
+        '(' <sp> <attr_name_commalist> <sp> ')'
 
     <attr_name_commalist> ::=
         [<attr_name> | <ord_attr_name_range> | ''] % [<sp> ',' <sp>]
@@ -1568,6 +1571,9 @@ Grammar:
         | <Set>
         | <Bag>
         | <Tuple>
+        | <Tuple_Array>
+        | <Relation>
+        | <Tuple_Bag>
         | <Capsule>
         | <Excuse>
         | <Function_Call>
@@ -1584,7 +1590,10 @@ other values.
 Grammar:
 
     <Array> ::=
-        ['\\~' <sp>]? '[' <sp> <member_commalist> <sp> ']'
+        ['\\~' <sp>]? <ord_member_commalist>
+
+    <ord_member_commalist> ::=
+        '[' <sp> <member_commalist> <sp> ']'
 
 An C<< <Array> >> node represents a value of the Muldis D
 C<Array> type, which is ...
@@ -1594,7 +1603,7 @@ C<Array> type, which is ...
 Grammar:
 
     <Set> ::=
-        ['\\?' <sp>]? '{' <sp> <member_commalist> <sp> '}'
+        ['\\?' <sp>]? <nonord_member_commalist>
 
 A C<< <Set> >> node represents a value of the Muldis D
 C<Set> type, which is ...
@@ -1609,7 +1618,10 @@ elements, or the C<< <Set> >> must have the C<\?> prefix, so that the C<<
 Grammar:
 
     <Bag> ::=
-        ['\\+' <sp>]? '{' <sp> <member_commalist> <sp> '}'
+        ['\\+' <sp>]? <nonord_member_commalist>
+
+    <nonord_member_commalist> ::=
+        '{' <sp> <member_commalist> <sp> '}'
 
     <member_commalist> ::=
         [<single_member> | <multiplied_member> | ''] % [<sp> ',' <sp>]
@@ -1672,6 +1684,51 @@ C<< <attr_commalist> >> has exactly 1 C<< <*_attr> >> element, either that
 element must have a leading or trailing comma, or the C<< <Tuple> >> must
 have the C<\%> prefix, so that the C<< <Tuple> >> can be distinguished from
 every possible C<< <Capsule> >> and C<< <delimiting_expr> >>.
+
+=head2 Tuple-Array Selectors
+
+Grammar:
+
+    <Tuple_Array> ::=
+        '\\~%' <sp> [<delim_attr_name_commalist> | <ord_member_commalist>]
+
+A C<< <Tuple_Array> >> node represents a value of the Muldis D
+C<Tuple_Array> type, which is ...
+
+A C<< <Tuple_Array> >> with an C<< <ord_member_commalist> >> is subject to
+the additional rule that its C<< <member_commalist> >> has at least 1 C<<
+<*_member> >> element; otherwise the C<< <Tuple_Array> >> must have a C<<
+<delim_attr_name_commalist> >>.
+
+=head2 Relation Selectors
+
+Grammar:
+
+    <Relation> ::=
+        '\\?%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
+
+A C<< <Relation> >> node represents a value of the Muldis D
+C<Relation> type, which is ...
+
+A C<< <Relation> >> with a C<< <nonord_member_commalist> >> is subject to
+the additional rule that its C<< <member_commalist> >> has at least 1 C<<
+<*_member> >> element; otherwise the C<< <Relation> >> must have a C<<
+<delim_attr_name_commalist> >>.
+
+=head2 Tuple-Bag Selectors
+
+Grammar:
+
+    <Tuple_Bag> ::=
+        '\\+%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
+
+A C<< <Tuple_Bag> >> node represents a value of the Muldis D
+C<Tuple_Bag> type, which is ...
+
+A C<< <Tuple_Bag> >> with a C<< <nonord_member_commalist> >> is subject to
+the additional rule that its C<< <member_commalist> >> has at least 1 C<<
+<*_member> >> element; otherwise the C<< <Tuple_Bag> >> must have a C<<
+<delim_attr_name_commalist> >>.
 
 =head2 Capsule Selectors
 
