@@ -4,23 +4,26 @@
 
 =head1 NAME
 
-Muldis::D::Plain_Text -
+Muldis::D::Entry_Notation -
 Muldis D concrete syntax for source code
 
 =head1 VERSION
 
-This document is Muldis::D::Plain_Text version 0.201.0.-9.
+This document is Muldis::D::Entry_Notation version 0.201.0.-9.
 
 =head1 DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the B<Muldis D Plain Text> (B<MDPT>) primary component of the B<Muldis D>
+the B<Muldis D Entry Notation> (B<MDEN>) primary component of the B<Muldis D>
 language.  The fully-qualified name of this document and the specification
-it contains is C<Muldis_D_Plain_Text 'http://muldis.com' '0.201.0.-9'>.
+it contains is C<Muldis_D_Entry_Notation 'http://muldis.com' '0.201.0.-9'>.
+
+I<TODO: This file is a rough first cut initially cloned from
+Muldis::D::Plain_Text and will need further cleanup and simplification.>
 
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
-The B<Muldis D Plain Text> specification defines the grammar of the official
+The B<Muldis D Entry Notation> specification defines the grammar of the official
 concrete Muldis D language syntax that every Muldis D implementation
 is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis D implementations.
@@ -38,7 +41,7 @@ language environments or SQL DBMSs.
 
 This document defines the grammar that all non-hosted plain-text Muldis D
 source code must conform to when it claims to be written in the
-C<Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'> (B<MDPT>) language.
+C<Muldis_D Entry_Notation 'http://muldis.com' '0.201.0.-9'> (B<MDEN>) language.
 
 This grammar is meant to be more illustrative to human readers than
 executable, as is typical for standards documents; you wouldn't likely be
@@ -70,9 +73,9 @@ in the same way as the system-defined ones, and are drop-in substitutable
 for them, rather than user-defined things being second-class citizens.  The
 design also means it is much easier to implement the Muldis D language
 itself, a large part of the langauge can be bootstrapped, and both parsers
-and generators of Muldis D Plain Text can be simple and easy to make.
+and generators of Muldis D Entry Notation can be simple and easy to make.
 
-Muldis D Plain Text has a I<linear syntax>, and is designed to be easily
+Muldis D Entry Notation has a I<linear syntax>, and is designed to be easily
 handled by a single-pass parser, or at least a single-pass lexer; all the
 context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code, or any required lookahead is
@@ -106,11 +109,11 @@ keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
 
 =head1 PARSING UNITS
 
-A I<parsing unit> of Muldis D Plain Text source code is composed of two
+A I<parsing unit> of Muldis D Entry Notation source code is composed of two
 main parts, the I<parsing unit subject> and the I<parsing unit predicate>,
 in this context abbreviated as I<subject> and I<predicate>.
 
-A I<parsing unit subject> is the meat-and-potatoes of Muldis D Plain Text
+A I<parsing unit subject> is the meat-and-potatoes of Muldis D Entry Notation
 source code, and generally takes the form in memory of a Muldis D C<Blob>
 or C<Text> value I<S>; parsing a well-formed I<S> results in some other
 Muldis D value I<N>.  Typically I<N> is a value of the C<Package> type and
@@ -122,7 +125,7 @@ the I<subject>, and generally takes the form in memory of a Muldis D
 C<Blob> or C<Text> value; it includes such details as a grammar version
 declaration and a text encoding declaration.
 
-When Muldis D Plain Text source code is kept in its own self-describing
+When Muldis D Entry Notation source code is kept in its own self-describing
 file, typically one with the C<.mdpt> standard filename extension, as per
 library or project conventions for typical general-purpose programming
 languages or structured data files, the entire I<parsing unit> is combined
@@ -130,18 +133,18 @@ into the single file, with the I<parsing unit predicate> appearing first as
 a file heading, and the I<parsing unit subject> following that.
 
 In this combined-file situation, a primary role of the I<predicate> is to
-serve as a "magic number" that identifies the file as being MDPT source
+serve as a "magic number" that identifies the file as being MDEN source
 code.  Its secondary role is to explicitly state the character encoding and
 similar details of the file so that the file can be correctly converted
 from octets (a C<Blob>) to character data (a C<Text>) which most of the
-MDPT grammar assumes it is taking as input; this means the parser does not
+MDEN grammar assumes it is taking as input; this means the parser does not
 have to rely on hueristics or other methods of determining encoding that
 could be wrong.  Its tertiary role is to explicitly state what versions of
-the MDPT grammar the author of the MDPT code believes it is known to be
+the MDEN grammar the author of the MDEN code believes it is known to be
 compatible or incompatible with, so that the grammar can be more free to
 evolve without that leading to parsers wrongly interpreting code.
 
-When Muldis D Plain Text source code is not kept in its own self-describing
+When Muldis D Entry Notation source code is not kept in its own self-describing
 file, typically when a source code repository is in use that provides
 context externally to each I<parsing unit subject> on how to interpret it,
 then the I<subject> and I<predicate> are typically given to the parser as
@@ -152,20 +155,20 @@ generated), such as a typical DBMS client application may do.  Such uses
 would be served by not having to provide the I<predicate> boilerplate every
 time they want to run I<subject> code, which often is very small itself.
 
-The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
+The root grammar token for Muldis D Entry Notation is C<< <MDEN> >>.
 
-The root grammar token for a Muldis D Plain Text self-describing file is
+The root grammar token for a Muldis D Entry Notation self-describing file is
 C<< <parsing_unit> >>.
 
-The root grammar token for a Muldis D Plain Text I<parsing_unit_predicate>
+The root grammar token for a Muldis D Entry Notation I<parsing_unit_predicate>
 in isolation is C<< <parsing_unit_predicate> >>.
 
-The root grammar token for a Muldis D Plain Text I<parsing_unit_subject>
+The root grammar token for a Muldis D Entry Notation I<parsing_unit_subject>
 in isolation is C<< <parsing_unit_subject> >>.
 
 Grammar:
 
-    <MDPT> ::=
+    <MDEN> ::=
         ^ <parsing_unit> | <parsing_unit_predicate> | <parsing_unit_subject> $
 
     <parsing_unit> ::=
@@ -190,11 +193,11 @@ Grammar:
 A C<< <shebang_line> >>, if it exists, must be the first characters of the
 text file, and consists of a magic number which expressed as ASCII or UTF-8
 is C<#!>, followed by a Unix-like interpreter directive or path to an
-executable that can interpret Muldis D Plain Text files.  When a Muldis D
-Plain Text file starts with a shebang line, it can be invoked directly as
+executable that can interpret Muldis D Entry Notation files.  When a Muldis D
+Entry Notation file starts with a shebang line, it can be invoked directly as
 if it were an executable on a Unix-like system.  The format of
 C<< <shebang_directive> >> isn't defined in this document; see the appropriate
-external Unix/etc documentation for that; however, the Muldis D Plain Text
+external Unix/etc documentation for that; however, the Muldis D Entry Notation
 file must have at least one line-breaking whitespace character of some kind
 following it, which is how we know where the Muldis D code begins.
 
@@ -227,7 +230,7 @@ Grammar:
         Muldis_D
 
     <ln_syntax_name> ::=
-        Plain_Text
+        Entry_Notation
 
     <ln_authority> ::=
         <Text_seg>
@@ -236,8 +239,8 @@ Grammar:
         <Text_seg>
 
 As per the VERSIONING section of L<Muldis::D>, every source code or data
-expression as Muldis D Plain Text must be accompanied by an explicit
-declaration that it is MDPT, and specify at least 1 version of the MDPT
+expression as Muldis D Entry Notation must be accompanied by an explicit
+declaration that it is MDEN, and specify at least 1 version of the MDEN
 standard that its author intends that it conforms with; this declaration is
 called a fully-qualified I<language name> and serves as a "magic number".
 
@@ -247,9 +250,9 @@ SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
 Examples:
 
-    Muldis_D Plain_Text 'http://muldis.com' '0.201.0.-9'
+    Muldis_D Entry_Notation 'http://muldis.com' '0.201.0.-9'
 
-    Muldis_D Plain_Text 'http://example.com' '42'
+    Muldis_D Entry_Notation 'http://example.com' '42'
 
 =head1 SCRIPT NAME
 
@@ -260,7 +263,7 @@ Grammar:
 
 The C<< <script_name> >> indicates the primary script of the Muldis D code,
 meaning is character repertoire and/or character encoding and/or character
-normalization.  Under the assumption that a C<Muldis_D Plain_Text> parser
+normalization.  Under the assumption that a C<Muldis_D Entry_Notation> parser
 might be reading the source code as binary data or otherwise as
 unnormalized character data, declaring the I<script name> makes it completely
 unambiguous as to what characters it is to be treating the input as.
@@ -268,7 +271,7 @@ unambiguous as to what characters it is to be treating the input as.
 For a simple example, a I<script name> of C<ASCII> says every literal source
 code character is a 7-bit ASCII character (and representing any non-ASCII
 characters is being done with escape sequences), and this is recommended
-for any C<Muldis_D Plain_Text> file that doesn't need to be something else.
+for any C<Muldis_D Entry_Notation> file that doesn't need to be something else.
 For various legacy 8-bit formats the I<script name> can tell us if we're using
 C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the I<script name> would
 have multiple parts, such as C<Unicode(10.0,UTF-8,canon)>, indicating
@@ -306,7 +309,11 @@ Grammar:
     <parsing_unit_subject> ::=
         <expr>
 
-See the section in this file named L</GENERIC EXPRESSIONS> for more details.
+    <expr> ::=
+        <opaque_literal_expr> | <collection_selector_expr>
+
+See the sections in this file named L</OPAQUE LITERAL EXPRESSIONS>
+and L</COLLECTION SELECTOR EXPRESSIONS> for more details.
 
 =head1 CHARACTER CLASSES
 
@@ -342,21 +349,8 @@ Grammar:
         ',' | ':' | ';' | '\\'
 
     <regular_symbolic_char> ::=
-        <regular_symbolic_char_ASCII> | <regular_symbolic_char_nonASCII>
-
-    <regular_symbolic_char_ASCII> ::=
           '!' | '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
         | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
-
-    <regular_symbolic_char_nonASCII> ::=
-          '¬' | '±' | '×' | '÷'
-        | 'π' | 'ρ' | 'σ'
-        | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
-        | '∀' | '∃' | '∄' | '∅' | '∆' | '∈' | '∉' | '∋' | '∌' | '−' | '∕'
-        | '∖' | '∞' | '∧' | '∨' | '∩' | '∪' | '≠' | '≤' | '≥' | '⊂' | '⊃'
-        | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊎' | '⊤' | '⊥' | '⊻' | '⊼'
-        | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
-        | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
 
     <whitespace_char> ::=
         <ws_unrestricted_char> | <ws_restricted_outside_char>
@@ -382,7 +376,7 @@ Grammar:
     <restricted_inside_char> ::=
         <-quoting_char -illegal_char -ws_restricted_outside_char>
 
-The Muldis D Plain Text grammar recognizes 7 distinct character codepoint
+The Muldis D Entry Notation grammar recognizes 7 distinct character codepoint
 (hereafter referred to as I<character>) classes,
 which are mutually disjoint proper subsets of the character repertoire
 identified by the I<script name>: I<alphanumeric>, I<quoting>, I<bracketing>,
@@ -393,13 +387,13 @@ The first 5 I<enumerated> classes (all but I<illegal>) are the more
 syntactically interesting ones and are generally what the grammar are
 defined in terms of.
 
-Broadly speaking, Muldis D Plain Text code is made up of 2 primary
+Broadly speaking, Muldis D Entry Notation code is made up of 2 primary
 grammatical contexts which are mutually disjoint and complementary; one of
 these is anywhere I<outside> all quoted strings, and its complement is
 anywhere I<inside> any quoted string; it is the I<quoting> characters that
 mark the transition between these 2 contexts.  Broadly speaking, all of the
 I<enumerated> classes (except I<illegal>) represent characters that are
-I<unrestricted> and may appear anywhere in Plain Text source code.  In
+I<unrestricted> and may appear anywhere in Entry Notation source code.  In
 contrast, I<nonenumerated> characters may only appear literally
 inside of a quoted string, and I<illegal> characters may not appear
 literally in source code at all.
@@ -421,7 +415,7 @@ in terms of character escape sequences, but only inside of a quoted string.
 
 Note that the primary reason most enumerated whitespace characters are
 generally restricted from being inside of a quoted string is so that the
-Muldis D Plain Text code is resilient to passage through environments that
+Muldis D Entry Notation code is resilient to passage through environments that
 might have different native line-breaking characters; the restriction
 guarantees that executing the code will produce logically identical values
 and behaviour for character string literals or quoted identifiers.  In
@@ -464,7 +458,7 @@ The meanings of the simple character escape sequences are:
 There is currently just one complex escape sequence, of the format C<<
 \c<...> >>, that supports specifying characters in terms of their Unicode
 abstract codepoint number.  One reason for this feature is to empower more
-elegant passing of Unicode-savvy Plain_Text source code through a
+elegant passing of Unicode-savvy Entry_Notation source code through a
 communications channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
@@ -477,7 +471,7 @@ Examples:
 
     \c<65>
 
-Note that Plain_Text eschews built-in support for a C<< \c<...> >> format
+Note that Entry_Notation eschews built-in support for a C<< \c<...> >> format
 that specifies characters in terms of their Unicode character name, for
 example C<< \c<LATIN SMALL LETTER OU> >>.  Instead, it is left to the
 domain of non-core Muldis D packages to support such a feature.  The main
@@ -500,7 +494,7 @@ Grammar:
 The primary function of I<dividing space>, represented by C<< <sp> >>, is
 to disambiguate the boundaries of otherwise-consecutive grammar tokens.
 
-Once Muldis D Plain Text code is parsed, any dividing space is just
+Once Muldis D Entry Notation code is parsed, any dividing space is just
 discardable non-semantic metadata for its wider context, but during a parse
 its presence is often critical to properly interpret the wider context.
 
@@ -579,7 +573,7 @@ Examples:
 
 =head1 KEYWORDS
 
-Muldis D Plain Text has a number of keywords, both alphanumeric and
+Muldis D Entry Notation has a number of keywords, both alphanumeric and
 symbolic, which have special meaning in certain contexts.  However, it does
 not have any reserved words so users can still define identifiers having
 any character string they want.
@@ -588,7 +582,7 @@ The keywords use a proper subset of the same syntax otherwise available for
 user-defined identifiers.  In any contexts where it would otherwise be
 ambiguous as to whether a term is a keyword versus the name of some entity,
 the parser will always take the keyword interpretation.  For all such
-cases, Muldis D Plain Text provides syntax options that explicitly
+cases, Muldis D Entry Notation provides syntax options that explicitly
 disambiguate in favor of the non-keyword choice.  Since every entity name
 C<foo> is allowed to be double-quoted anywhere it appears like C<"foo">,
 while all keywords only have a single syntax each which is non-quoted, a
@@ -598,43 +592,11 @@ will always favor the entity name.
 These are keywords only within a I<parsing unit predicate>:
 
     Muldis_D
-    Plain_Text
+    Entry_Notation
     meta
     script
 
-These are keywords only within a I<parsing unit subject>:
-
-    and_then
-    args
-    block
-    current
-    declare
-    default
-    else
-    evaluates
-    fail
-    given
-    guard
-    if
-    iterate
-    leave
-    literal
-    new
-    note
-    or_else
-    performs
-    pipe
-    returns
-    then
-    vars
-    when
-    ::=
-    :.
-    :<
-    :>
-    :>.
-    :&
-    :&.
+There are no keywords at all within a I<parsing unit subject>.
 
 These are keyword-like value literals only within a I<parsing unit subject>:
 
@@ -651,7 +613,7 @@ These are used as list/pair separators only within a I<parsing unit subject>:
 Finally, the backslash C<\> is used heavily to indicate value literals of
 many different kinds, disambiguating them from other things.
 
-Muldis D Plain Text purposefully keeps its set of keywords small, therefore
+Muldis D Entry Notation purposefully keeps its set of keywords small, therefore
 giving users the maximum amount of flexibility to effectively define
 whatever operator/etc names they want for use as barewords, and the full
 complement of system-defined types and operators are defined using the same
@@ -659,6 +621,8 @@ tools users have, so if you don't see something in the lists you would
 expect to be system-defined, i's likely they're defined in libraries.
 
 =head1 IDENTIFIERS
+
+I<TODO: This section needs to be stripped down.>
 
 Grammar:
 
@@ -755,151 +719,6 @@ A C<< <pkg_entity_name> >> is for use when either declaring or referencing
 package entities (types, singleton type definers, functions, procedures, aliases, etc)
 which live within a multi-level namespace.
 
-=head1 GENERIC EXPRESSIONS
-
-Grammar:
-
-    <expr> ::=
-        <expr_name> | <naming_expr> | <annotating_expr> | <anon_expr>
-
-    <naming_expr> ::=
-        <expr_name> <sp> '::=' <sp> <named_expr>
-
-    <named_expr> ::=
-        <expr>
-
-    <annotating_expr> ::=
-        <annotated_expr> note <annotation_expr>
-
-    <annotated_expr> ::=
-        <expr>
-
-    <annotation_expr> ::=
-        <expr>
-
-    <anon_expr> ::=
-          <delimiting_expr>
-        | <source_expr>
-        | <literal_expr>
-        | <opaque_literal_expr>
-        | <collection_selector_expr>
-        | <collection_accessor_expr>
-        | <invocation_expr>
-        | <conditional_expr>
-        | <fail_expr>
-        | ...
-
-    <delimiting_expr> ::=
-        '(' <sp> [
-            <naming_expr> | <result_expr> | ''
-        ] % [<sp> ';' <sp>] <sp> ')'
-
-    <result_expr> ::=
-          [returns <sp> <expr>]
-        | <expr_name>
-        | <annotating_expr>
-        | <anon_expr>
-
-    <source_expr> ::=
-        args
-
-    <literal_expr> ::=
-        literal <expr>
-
-    <fail_expr> ::=
-        fail
-
-An C<< <expr> >> is a Muldis D I<generic context value expression>, which
-can be used in any context that is expecting I<a> value but has no
-expectation that said value belongs to a specific data type.  In the
-general case, an expression denoting any value of the C<Any> type may
-be used where you see C<< <expr> >>, any further restrictions would be
-provided by the context.
-
-Iff an C<< <expr> >> is an C<< <expr_name> >>, then this means that an
-ancestor C<< <expr> >> is having at least one of its descendents declared
-with an explicit name/alias rather than being anonymous inline, and then
-the C<< <expr_name> >> is the invocation name of that child.
-
-Iff an C<< <expr> >> is a C<< <naming_expr> >>, then the C<< <named_expr>
->> element of the C<< <naming_expr> >> is being declared with an explicit
-name/alias, and the C<< <expr_name> >> element of the C<< <naming_expr> >>
-is that name/alias.  Any C<< <expr> >> not thusly named/aliased is
-anonymous; there is no name to refer to it by in the system and it only can
-be used in the one place where it is declared.
-
-Iff an C<< <expr> >> is an C<< <annotating_expr> >>, then the C<<
-<annotated_expr> >> element of the C<< <annotating_expr> >> is being given
-an explicit introspectable code annotation whose value is the C<<
-<annotation_expr> >> element.  Keep in mind that C<note> binds tighter than
-nearly anything, so you may have to use parenthesis when you want the
-annotation to associate with a non-leaf node.  The most typical kind of
-annotation is an internal code comment expressed as a C<Text> literal,
-or it may be a C<Tuple> of what would otherwise be individual annotations.
-
-An C<< <annotation_expr> >> is subject to the additional rule that it must
-be a completely foldable singleton type definer.  It may not contain a C<< <source_expr> >>.
-
-Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
-simply as if it were its child C<< <expr> >> element; the primary reason
-that the C<< <delimiting_expr> >> grammar element exists is to assist the
-parser in determining the boundaries of an C<< <expr> >> where code
-otherwise might be ambiguous or be interpreted differently than desired due
-to nesting precedence rules.
-
-A C<< <delimiting_expr> >> is subject to the additional rule that it must
-contain exactly one C<< <result_expr> >> element, which provides its value.
-
-Iff an C<< <expr> >> is a C<< <source_expr> >>, then it represents the value
-of the expression-containing routine's I<source> / read-only arguments.
-
-Iff an C<< <expr> >> is a C<< <literal_expr> >>, then its child C<< <expr> >>
-is treated as completely foldable to a C<Literal>
-value even if it otherwise wouldn't be, such as when a descendant C<< <expr> >>
-is an C<< <args_expr> >>; useful for nested routine definitions.
-
-Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
-to take that node's value will throw an exception, and so it should only
-appear as a child of a C<< <conditional_expr> >> node, one that is
-performing an assertion that its other inputs are reasonable.
-
-I<TODO: Add something like 'publish' or 'trace' etc which writes to a
-side-channel but has no local effect.  Such as these and maybe 'fail'
-should be documented in another sub-section perhaps.>
-
-See the sections in this file named L</OPAQUE LITERAL EXPRESSIONS>,
-L</COLLECTION SELECTOR EXPRESSIONS>, L</INVOCATION EXPRESSIONS>, and
-L</CONDITIONAL EXPRESSIONS> for more details.
-
-Examples:
-
-    `an expr_name node`
-    foo_expr
-
-    `a naming_expr node`
-    bar_expr ::= factorial::( foo_expr )
-
-    5 + 42 note 'this is an introspectable comment attached to the 42'
-
-    myfoo note 'this is a comment on the elsewhere-declared node named myfoo'
-
-    `a delimiting_expr node`
-    (x ::= y + 2; returns x * x)
-
-    `this uses one too`
-    (x + y) * z
-
-    `this is the routine's argument list`
-    args
-
-    `nested definition of function that adds 42 to its sole argument`
-    literal (\Function : (evaluates : (args:.\0 + 42)))
-
-    `some assertion failed`
-    fail
-
-I<TODO: ADD SIGNAL SENDING AND OTHER MISC EXPRESSIONS.>
-
 =head1 OPAQUE LITERAL EXPRESSIONS
 
 Grammar:
@@ -915,13 +734,10 @@ Grammar:
         | <Attr_Name>
         | <Heading>
         | <Local_Name>
-        | <Renaming>
-        | <Identifier>
-        | <Identity_Identifier>
 
 An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
 literal specific to some system-defined data type that has its own special
-Muldis D Plain Text selector syntax, and this literal syntax explicitly has
+Muldis D Entry Notation selector syntax, and this literal syntax explicitly has
 no child C<< <expr> >> nodes.  In conventional terms, one is typically for
 selecting scalar values, though many cases are also simple collections.
 
@@ -1039,7 +855,7 @@ where each pair of consecutive segments is separated by dividing space;
 this segmenting ability is provided to support code that contains very long
 numeric literals while still being well formatted (no extra long lines).
 
-Note that the general grammar rules of Muldis D Plain Text will treat all
+Note that the general grammar rules of Muldis D Entry Notation will treat all
 nonquoted symbolic characters {-,+,.,/} as I<fixed> operator invocations,
 and nonquoted digit sequences as positive integer literals.  However,
 nonquoted numeric literals have a special exception for {-,+,.,/} iff they
@@ -1049,7 +865,7 @@ that all values of the core numeric types can be written in a clean and
 concise manner while avoiding any risk of the meanings of the literals
 changing depending what Muldis D packages are in scope, which would be the
 case if the symbolics were parsed as operator calls.  When writing Muldis D
-Plain Text code with unquoted numeric literals, having dividing space
+Entry Notation code with unquoted numeric literals, having dividing space
 between any {-,+,.,/} and any C<< <num_char> >> should guarantee their
 interpretation as an operator call, while ensuring no dividing space
 between them should guarantee interpretation as part of the literal iff the
@@ -1413,104 +1229,6 @@ Examples:
     `Same thing.`
     \@Relation
 
-=head2 Attribute Renaming Specification Literals
-
-Grammar:
-
-    <Renaming> ::=
-        '\\@:' <sp> '(' <sp> <renaming_commalist> <sp> ')'
-
-    <renaming_commalist> ::=
-        [<anon_attr_rename> | <named_attr_rename> | ''] % [<sp> ',' <sp>]
-
-    <anon_attr_rename> ::=
-          ['->' <sp> <attr_name_after>]
-        | [<attr_name_after> <sp> '<-']
-        | [<attr_name_before> <sp> '->']
-        | ['<-' <sp> <attr_name_before>]
-
-    <named_attr_rename> ::=
-          [<attr_name_before> <sp> '->' <sp> <attr_name_after>]
-        | [<attr_name_after> <sp> '<-' <sp> <attr_name_before>]
-
-    <attr_name_before> ::=
-        <nonord_attr_name>
-
-    <attr_name_after> ::=
-        <nonord_attr_name>
-
-A C<< <Renaming> >> node represents a value of the Muldis D C<Renaming>
-type, which is an arbitrarily-large unordered collection of attribute
-renaming specifications.  Each attribute renaming specification is a pair
-of attribute names marked with a C<< -> >> or a C<< <- >> element; the
-associated C<< <attr_name_before> >> and C<< <attr_name_after> >> indicate
-the name that an attribute has I<before> and I<after> the renaming
-operation, respectively.  Iff the renaming specification is a C<<
-<anon_attr_rename> >> then either the I<before> or I<after> name is an
-ordered attribute name corresponding to the ordinal position of the
-renaming specification element in the C<< <renaming_commalist> >>, starting
-at zero.
-
-A C<< <renaming_commalist> >> is subject to the additional rule that no 2
-C<< <attr_name_before> >> may be the same attribute name and that no 2
-C<< <attr_name_after> >> may be the same attribute name.
-
-The C<Renaming> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Tuple> type, and all
-C<Renaming> values can be selected in terms of C<< <Tuple> >> grammar
-nodes.  However, C<< <Renaming> >> is the canonical grammar for all
-C<Renaming> values.
-
-Examples:
-
-    `Zero renamings, a no-op.`
-    \@:()
-
-    `Also a no-op.`
-    \@:(age->age)
-
-    `Rename one attribute.`
-    \@:(fname->first_name)
-
-    `Same thing.`
-    \@:(first_name<-fname)
-
-    `Swap 2 named attributes.`
-    \@:(foo->bar,foo<-bar)
-
-    `Convert ordered names to nonordered.`
-    \@:(->foo,->bar)
-
-    `Same thing.`
-    \@:(0->foo,1->bar)
-
-    `Convert nonordered names to ordered.`
-    \@:(<-foo,<-bar)
-
-    `Same thing.`
-    \@:(0<-foo,1<-bar)
-
-    `Swap 2 ordered attributes.`
-    \@:(0->1,0<-1)
-
-    `Same thing.`
-    \@:(->1,->0)
-
-    `Some attribute names can only appear quoted.`
-    \@:("First Name"->"Last Name")
-
-=head2 Identifier and Identity_Identifier Literals
-
-Grammar:
-
-    <Identifier> ::=
-        ...
-
-    <Identity_Identifier> ::=
-        ...
-
-I<TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.>
-
 =head1 COLLECTION SELECTOR EXPRESSIONS
 
 Grammar:
@@ -1525,11 +1243,10 @@ Grammar:
         | <Tuple_Bag>
         | <Capsule>
         | <Excuse>
-        | <Function_Call>
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
 value literal specific to some system-defined data type that has its own
-special Muldis D Plain Text selector syntax, and this literal syntax
+special Muldis D Entry Notation selector syntax, and this literal syntax
 explicitly does have child C<< <expr> >> nodes in the general case, as in
 conventional terms it is for selecting values representing collections of
 other values.
@@ -1605,7 +1322,7 @@ Grammar:
         ['\\%' <sp>]? '(' <sp> <attr_commalist> <sp> ')'
 
     <attr_commalist> ::=
-        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | ''] % [<sp> ',' <sp>]
+        [<anon_attr> | <named_attr> | <nested_named_attr> | ''] % [<sp> ',' <sp>]
 
     <anon_attr> ::=
         <attr_asset_expr>
@@ -1615,12 +1332,6 @@ Grammar:
 
     <nested_named_attr> ::=
         <nesting_attr_names> <sp> ':' <sp> <attr_asset_expr>
-
-    <same_named_attr> ::=
-        ':' <sp> <attr_name>
-
-    <same_named_var> ::=
-        ':&' <sp> <attr_name>
 
     <attr_asset_expr> ::=
         <expr>
@@ -1709,220 +1420,15 @@ Grammar:
 An C<< <Excuse> >> node represents a value of the Muldis D
 C<Excuse> type, which is ...
 
-=head2 Generic Function Call Specification Selectors
-
-Grammar:
-
-    <Function_Call> ::=
-        <long_arrowed_func_invo_sel> | <postcircumfixed_func_invo_sel>
-
-    <long_arrowed_func_invo_sel> ::=
-          [<generic_func_args> <sp> '\\-->' <sp> <generic_func_call>]
-        | [<generic_func_call> <sp> '\\<--' <sp> <generic_func_args>]
-
-    <postcircumfixed_func_invo_sel> ::=
-        '\\' <postcircumfixed_func_invo_expr>
-
-I<TODO.>
-I<Note that, yes, the generic_func_call input is also a Function_Call value,
-same type as the result of the Function_Call expression, so that is indeed
-recursively defined in the general case.  And so other syntax would be used
-to select the most-nested Function_Call value, often postcircumfixed_func_invo_expr.>
-
-=head1 COLLECTION ACCESSOR EXPRESSIONS
-
-Grammar:
-
-    <collection_accessor_expr> ::=
-          <Tuple_at>
-        | <Capsule_label>
-        | <Capsule_attrs>
-        | <Capsule_at>
-        | <Variable_current>
-        | <Variable_at>
-
-    <Tuple_at> ::=
-        <expr> <sp> ':.' <sp> <expr>
-
-    <Capsule_label> ::=
-        <expr> <sp> ':<'
-
-    <Capsule_attrs> ::=
-        <expr> <sp> ':>'
-
-    <Capsule_at> ::=
-        <expr> <sp> ':>.' <sp> <expr>
-
-    <Variable_current> ::=
-        <expr> <sp> ':&'
-
-    <Variable_at> ::=
-        <expr> <sp> ':&.' <sp> <expr>
-
-I<TODO.>
-
-=head1 INVOCATION EXPRESSIONS
-
-Grammar:
-
-    <invocation_expr> ::=
-          <generic_func_invo_expr>
-        | <fixed_func_invo_expr>
-
-I<TODO.>
-
-I<OBSOLETE... Also TODO is adding things like -->? and -->! etc to test if something
-is invokable or indicate a result if one isn't invokable.>
-
-=head2 Generic Function Invocation Expressions
-
-Grammar:
-
-    <generic_func_invo_expr> ::=
-        <primed_func_invo_expr> | <postcircumfixed_func_invo_expr>
-
-    <primed_func_invo_expr> ::=
-        evaluates <sp> <primed_func_call>
-
-    <primed_func_call> ::=
-        <expr>
-
-    <postcircumfixed_func_invo_expr> ::=
-        <generic_func_name> <sp> '::'? <sp> <Tuple>
-
-I<TODO.>
-
-A C<< <primed_func_call> >> denotes a C<Function_Call> value, which pairs
-a C<Function_Name> (C<Identity_Identifier>) value naming a function
-with a C<Tuple> value giving arguments to pass to it; typically this
-is defined either with a C<< <Function_Call> >> selector expression or with
-an inline-defined C<function>.
-
-I<TODO: Also define the \foo::(...) and \(...) and \[...] syntaxes for "Routine_Call" type.>
-
-A C<< <postcircumfixed_func_invo_expr> >> is subject to the additional rule
-that, iff its C<< <generic_func_name> >> element has no C<::> within
-itself, then that element must have a trailing C<::> element.
-
-A C<< <generic_func_name> >> may alternately be a singleton type definer name or a type
-name, and not just a function name, because those can be invoked like
-functions under certain circumstances.  When the C<< <attr_commalist> >>
-has exactly zero C<< <*_attr> >> elements, either a singleton type definer or a niladic
-function or a type (implicitly its default value) may be invoked; for
-exactly 1 C<< <*_attr> >> element which is positional, either a monadic
-function or a type (implicitly its membership predicate) may be invoked;
-for other arguments, only a function of corrisponding arity may be invoked.
-I<TODO: Update this concerning type definers.>
-
-=head2 Fixed Function Invocation Expressions
-
-Grammar:
-
-    <fixed_func_invo_expr> ::=
-        ...
-
-    <infix_func_invo_expr> ::=
-        ...
-
-    <infix_func_name_or_op_same> ::=
-        <special_infix_op_same> | <regular_infix_func_name>
-
-    <special_infix_op_same> ::=
-        '='
-
-I<TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
-Say that it is just syntactic sugar for a specific foundation func invo
-but we special-case it because we don't want "=" to change based on what
-packages are in scope, same as ":=" etc don't change.
-UPDATE: ":=" is actually a regular procedure now, not special syntax, same as "=".
-Note, this only affects '=' when called like an infix op syntactically;
-calling it as `evaluates \"="::(x,y)` or `"="::(x,y)` gets the reg func if exists.>
-
-I<Generic allow multi-level or quoted identifiers,
-fixed allows only single-level unquoted identifiers.>
-
-I<TODO.>
-
-I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
-
-=head1 CONDITIONAL EXPRESSIONS
-
-Grammar:
-
-    <conditional_expr> ::=
-          <if_else_expr>
-        | <and_then_expr>
-        | <or_else_expr>
-        | <given_when_def_expr>
-        | <guard_expr>
-
-=head2 If-Else Expressions
-
-    if P then X else Y
-
-I<TODO.  Make 'if' keyword optional/noiseword, or not.>
-
-=head2 And-Then Expressions
-
-This short-hand:
-
-    P and_then X
-
-Is semantically equivalent to:
-
-    if P then X else False
-
-It is functionally a generalized non-associative non-commutative logical
-"and" suited in particular for situations where X needs to be guarded based
-on P, but an explicit "guard" is still needed to actually have a guard.
-
-=head2 Or-Else Expressions
-
-This short-hand:
-
-    P or_else X
-
-Is semantically equivalent to:
-
-    if P then True else X
-
-It is functionally a generalized non-associative non-commutative logical
-"or" suited in particular for situations where X needs to be guarded based
-on P, but an explicit "guard" is still needed to actually have a guard.
-
-=head2 Given-When-Default Expressions
-
-I<TODO.  Make 'given' keyword optional/noiseword, or not.>
-
-=head2 Guard Expressions
-
-I<TODO.  A guard forces short-circuiting in an expression where otherwise an
-expression makes no guarantee as to whether anything is eager or lazy;
-in contrast, a conditional statement is implicitly always short-circuiting.>
-
-    if x != 0 then guard y/x else 42
-
-    Numeric x and_then guard x multiple_of 2
-
-    given #x when 0 then 'empty' when 1 then guard only_member x default 'too many'
-
-I<TODO.  Note that 'fail' is implicitly guarded.>
-
-=head1 GENERIC STATEMENTS
-
-I<TODO.>
-
 =head1 LANGUAGE MNEMONICS
 
-Muldis D Plain Text is designed to respect a variety of mnemonics that
+Muldis D Entry Notation is designed to respect a variety of mnemonics that
 bring it some self-similarity and an association between syntax and
 semantics so that it is easier to read and write Muldis D code.  Some of
 these mnemonics are more about self-similarity and others are more about
 shared traits with other languages.
 
 I<TODO.>
-
-A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
 
     : - key/asset separator in most pairwise collections
     ? - booleans or sets (and bits and relations) or some predicate eg for existence or non-excuses
@@ -1947,259 +1453,9 @@ show collection first as master and element next as subservient,
 so eg ?% is relation, +% is tuple-bag while ~+ is blob
 or ?| is set, +| is bag while ~| is array.
 
-=head1 NESTING PRECEDENCE RULES
-
-I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
-
-    N - terms - base literals or delimited anything or special selector syntax,
-        including inline func/type/etc decls, or foo::bar::etc or foo::(...) or \foo::(...)
-        or `args` or `vars` tokens
-    N - "literal" expression prefix
-    L - special symbolic accessor post/infix :. :< :> :>. :& :&.
-    L - symbolic in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
-    L - alpha in/pre/postfix (bareword) (postfix indicated with 'pipe' keyword)
-    N - "evaluates" generic universal function call prefix
-        or `new` or `current` pseudo-function call prefix
-    R - conditional binaries or ternaries or n-aries or guards:
-        and_then / or_else / if-then-else / given-when-default / guard
-    R - expression annotating infix 'note'
-    R - expression factor declaring infix ::=
-    N - "returns" expression prefix
-    N - every kind of procedure statement, including postcircumfix foo::()
-        or symbolic/alpha pre/in/postfix (bareword) (postfix indicated with 'pipe' keyword)
-        procedure calls, "performs" generic universal procedure call prefix,
-        `declare` statement, conditional if-then-else / given-when-default,
-        block with or without leading 'block' infix, `leave` and `iterate`
-    R - statement annotating infix 'note'
-    L - list separators ; , :
-
-I<TODO.  Loosely speaking, "L" means left-associative,
-"R" means right-associative, "N" means non-associative.>
-
 =head1 STRATEGIES FOR PARSING
 
-Muldis D Plain Text is designed to be easy to parse, where one can use a
-multi-stage pipeline with simple rules at each step, and typically the work
-of parsing can be done in a highly parallel fashion, where each part of the
-code can be parsed properly with very little or no knowledge of what came
-before or after it.
-
-In particular, earlier stages of the pipeline can complete successfully
-even in the face of syntax errors, as the latter would be caught in a later
-pipeline stage where more meaningful error messages can be given.
-
-For the purposes of this documentation section, we will assume that the
-source code has already been processed from any binary or other formats
-into a single character string token having a well-known
-character repertoire that is compatible with Unicode.  This may have
-involved scanning ahead for a C<< <language_name> >> or in particular a
-C<< <script_name> >> directive should that have been needed to resolve ambiguity.
-
-Note that it is assumed that all parsing stages following the above
-assumption are completely lossless, and that any stages which conceptually
-would lose information actually maintain all of it in (generally)
-C<Plain_Text>-specific metadata so the original source string could be
-reassembled from the parse form in all its details, including for example
-the exact character escape sequences and whitespace used.  Also maintained
-as useful for debugging is knowledge of what line numbers and character
-positions within a line each token ranged over in the original source.
-
-Note that it is assumed that every token indicated as being a I<character
-string> would in likely practice be some other type whose payload is the
-character string and it is tagged to say how the string was interpreted,
-so that tokens can more easily be further processed in isolation, the work
-to consider their wider context having already been done.
-
-=head2 Pipeline Stage 1
-
-Stage 1 in the parsing pipeline is to split off any leading C<< <shebang_line> >>
-that might prefix the code.  The primary output of stage 1 is a single
-character string token with the code itself, and any leading shebang is
-metadata.  Further stages below only consider this primary as their input.
-
-Grammar:
-
-    <ps1> ::=
-        ^ <shebang_line>? <ps2> $
-
-=head2 Pipeline Stage 2
-
-Broadly speaking, Muldis D Plain Text code is made up of 2 primary
-grammatical contexts which are mutually disjoint and complementary; one of
-these is anywhere outside all quoted strings, and its complement is
-anywhere inside any quoted string; quoted strings don't overlap or nest, or
-if they appear to, any inner ones are just regular string contents.
-
-Stage 2 in the parsing pipeline is to split the single input
-character string token on all transition points between those grammatical
-contexts.  The output of stage 2 is an array of character string tokens
-such that catenating them in order gives the input token.  Each output
-token is either one of the delimiters by itself, or is the characters
-between a delimiter pair, or is the characters between 2 delimited strings.
-Alternately, the output of stage 2 is an array of parse nodes where each
-node either represents a nonquoted context or a quoted context, the latter
-bundling up what its delimiters were.
-
-Note that any possible quoting character nesting is in a strict hierarchy.
-That is, backtick-quoted strings may contain literal single/double-quote
-characters, but single/double-quoted strings both may not have literal
-quote characters of any kind.  Therefore, it should be trivially easy to
-implement Stage 2 in a fully parallel fashion, at least if divided into 2
-similar sub-stages of parsing out backtick-quoted strings first and then
-single/double-quoted strings second; in either case, it is guaranteed that
-each pair of consecutive delimiters in well-formed source code is a whole
-quoted context and no serial examination of found delimiters is necessary.
-
-Grammar:
-
-    <ps2> ::=
-        <ps2_non_backtick_quoted> % <ps2_backtick_quoted>
-
-    <ps2_non_backtick_quoted> ::=
-        <ps2_nonquoted> % <ps2_double_or_single_quoted>
-
-    <ps2_nonquoted> ::=
-        <-quoting_char>*
-
-    <ps2_double_or_single_quoted> ::=
-        <ps2_double_quoted> | <ps2_single_quoted>
-
-    <ps2_double_quoted> ::=
-        '"' <-quoting_char>* '"'
-
-    <ps2_single_quoted> ::=
-        '\'' <-quoting_char>* '\''
-
-    <ps2_backtick_quoted> ::=
-        '`' <-[`]>* '`'
-
-=head3 Pipeline Stage 3
-
-Stage 3 in the parsing pipeline is to take any tokens from stage 2
-representing a nonquoted context, and for each one, split it into tokens by
-character class, that is just on the transition between any 2 characters
-not of the same one of the 5 character groups shown.  The output of stage 3
-is an array of character string tokens such that each output token is
-either the same as an input token or is a non-overlapping substring of one.
-Alternately, each parse node from stage 2 representing a nonquoted context
-has been replaced by an array of 1..N parse nodes, one per new substring.
-
-Grammar:
-
-    <ps3_nonquoted> ::=
-          <alphanumeric_char>
-        | <bracketing_char>
-        | <symbolic_char>
-        | <whitespace_char>
-
-=head3 Pipeline Stage 4
-
-Stage 4 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<< <bracketing_char> >> into multiple tokens such that
-each such individual character becomes its own token.  The output of stage
-4 is an array of character string tokens, or parse nodes, as per stage 3.
-
-=head3 Pipeline Stage 5
-
-Stage 5 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<< <symbolic_char> >> into multiple tokens where those
-tokens contain characters well-known to C<Plain_Text> for special uses such
-as meta-operator characters.  The output of stage 5 is an array of
-character string tokens, or parse nodes, as per stage 3.
-
-Grammar:
-
-    <ps5_nonquoted_symbolic_grouping> ::=
-          ','
-        | '::='
-        | '::'
-        | ':'
-        | ';'
-        | '\\'
-
-Where any of the shown symbolic character sequences exist, each sequence
-becomes its own token, and any runs of symbolics besides those each become
-their own token also.  When looking for sequences, evaluation is
-left-to-right and the longest match wins between multiple matches.
-
-Generally speaking, the parsing of nonquoted context symbolic character
-runs is complete following stage 5, and each remaining token is not likely
-to be split again or be merged with other tokens.
-
-=head3 Pipeline Stage 6
-
-Stages 6 and later in the parsing pipeline focus more on combining adjacent
-tokens or parse nodes of known kinds into subtrees of other node types,
-that progressively add more semantic meaning to the parse tree, and the
-syntax becomes metadata rather than something needed to execute the code.
-
-Stage 6 in the parsing pipeline is to collect any runs of consecutive
-tokens or parse nodes, where each represents either a backtick-quoted
-string or nonquoted C<< <whitespace> >>, beneath a parse node
-representing the run; this new node is logically treated as insignificant
-(other than for its role in separating otherwise adjacent things)
-dividing space, and becomes non-semantic metadata for its wider context.
-
-=head3 Pipeline Stage 7
-
-Stage 7 in the parsing pipeline is to collect any runs of consecutive
-(apart from any invervening dividing space) quoted context tokens or parse
-nodes of the same kind, specifically those delimited by either
-single-quotes or double-quotes, beneath a parse node representing the run.
-Such runs are logically a single contiguous quoted string (except possibly
-for matters of escape sequences) but were split for readability.
-
-=head3 Pipeline Stage 8
-
-Stage 8 in the parsing pipeline is to take any tokens from stage 2
-representing a single-quoted or double-quoted context, and for each one, if
-it contains any character escape sequences, to replace those escape
-sequences with the actual characters they represent.  Any C<'...'> or
-C<"..."> represent character data, either C<Text>
-literals or quoted identifiers, and the valid formats for both
-within the quoted contexts are identical.  Note that for a run, each
-individual quoted context is treated in isolation, as some may be formatted
-for escape sequences and some may not.  Also using single-quoted contexts
-for some or all of their literals are the C<Bits> (C<\~?'...'>) or C<Blob> (C<\~+'...'>) or
-C<Integer> or C<Fraction> (C<\+'...'> for both) and they have
-their own interpretation formats different from those of character strings.
-
-Grammar:
-
-    <ps8_quoted_sans_delimiters> ::=
-        <ps8_chars_nonescaped> | <ps8_chars_escaped>
-
-    <ps8_chars_nonescaped> ::=
-        [<-[\\]> .*]?
-
-    <ps8_chars_escaped> ::=
-        '\\' [<-[\\]> | <escaped_char>]*
-
-Note that the definition of C<< <escaped_char> >> includes an escape sequence
-each for a single-quote and a double-quote.
-
-=head3 Pipeline Stage 9
-
-Stage 9 in the parsing pipeline is to isolate any literals specific to
-certain numeric types, which are a particular run of
-C<< <alphanumeric_char> >> optionally with some C<< <symbolic_char> >>,
-and further optionally split (when long) using dividing space.
-
-Grammar:
-
-    <ps9_numeric> ::=
-        <ps9_nonquoted_numeric> | <ps9_quoted_numeric>
-
-    <ps9_nonquoted_numeric> ::=
-        <num_sign>? <digit_char> <alphanumeric_char>*
-            [<frac_div> <alphanumeric_char>]?
-
-    <ps9_quoted_numeric> ::=
-        '\\+' <sp> <ps2_single_quoted> % <sp>
-
-Note that the above actually allows invalid numeric literals, however
-anything matching the above pattern will be a syntax error if it doesn't
-otherwise match a stricter numeric definition.
+I<TODO.  Meanwhile see this section in Muldis D Plain Text.>
 
 =head1 SEE ALSO
 
@@ -2213,26 +1469,26 @@ Darren Duncan (C<darren@DarrenDuncan.net>)
 
 =head1 LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the B<Muldis D Plain Text>
-(B<MDPT>) primary component of the B<Muldis D> language specification.
+This file is part of the formal specification of the B<Muldis D Entry Notation>
+(B<MDEN>) primary component of the B<Muldis D> language specification.
 
-MDPT is Copyright © 2002-2017, Muldis Data Systems, Inc.
+MDEN is Copyright © 2002-2017, Muldis Data Systems, Inc.
 
 L<http://www.muldis.com/>
 
-MDPT is free documentation for software; you can redistribute it and/or
+MDEN is free documentation for software; you can redistribute it and/or
 modify it under the terms of the Artistic License version 2 (AL2) as
 published by the Perl Foundation (L<http://www.perlfoundation.org/>).  You
-should have received copies of the AL2 as part of the MDPT
+should have received copies of the AL2 as part of the MDEN
 distribution, in the file named "LICENSE/artistic-2_0.txt"; if not, see
 L<http://www.perlfoundation.org/attachment/legal/artistic-2_0.txt>.
 
-Any versions of MDPT that you modify and distribute must carry prominent
+Any versions of MDEN that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
 addition to preserving this original copyright notice and other credits.
 
-While it is by no means required, the copyright holder of MDPT would
-appreciate being informed any time you create a modified version of MDPT
+While it is by no means required, the copyright holder of MDEN would
+appreciate being informed any time you create a modified version of MDEN
 that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
 
