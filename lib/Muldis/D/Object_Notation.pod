@@ -4,26 +4,26 @@
 
 =head1 NAME
 
-Muldis::D::Entry_Notation -
+Muldis::D::Object_Notation -
 Muldis D concrete syntax for source code
 
 =head1 VERSION
 
-This document is Muldis::D::Entry_Notation version 0.201.0.-9.
+This document is Muldis::D::Object_Notation version 0.201.0.-9.
 
 =head1 DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the B<Muldis D Entry Notation> (B<MDEN>) primary component of the B<Muldis D>
+the B<Muldis D Object Notation> (B<MDON>) primary component of the B<Muldis D>
 language.  The fully-qualified name of this document and the specification
-it contains is C<Muldis_D_Entry_Notation 'http://muldis.com' '0.201.0.-9'>.
+it contains is C<Muldis_D_Object_Notation 'http://muldis.com' '0.201.0.-9'>.
 
 I<TODO: This file is a rough first cut initially cloned from
 Muldis::D::Plain_Text and will need further cleanup and simplification.>
 
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
-The B<Muldis D Entry Notation> specification defines the grammar of the official
+The B<Muldis D Object Notation> specification defines the grammar of the official
 concrete Muldis D language syntax that every Muldis D implementation
 is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis D implementations.
@@ -41,7 +41,7 @@ language environments or SQL DBMSs.
 
 This document defines the grammar that all non-hosted plain-text Muldis D
 source code must conform to when it claims to be written in the
-C<Muldis_D Entry_Notation 'http://muldis.com' '0.201.0.-9'> (B<MDEN>) language.
+C<Muldis_D Object_Notation 'http://muldis.com' '0.201.0.-9'> (B<MDON>) language.
 
 This grammar is meant to be more illustrative to human readers than
 executable, as is typical for standards documents; you wouldn't likely be
@@ -73,9 +73,9 @@ in the same way as the system-defined ones, and are drop-in substitutable
 for them, rather than user-defined things being second-class citizens.  The
 design also means it is much easier to implement the Muldis D language
 itself, a large part of the langauge can be bootstrapped, and both parsers
-and generators of Muldis D Entry Notation can be simple and easy to make.
+and generators of Muldis D Object Notation can be simple and easy to make.
 
-Muldis D Entry Notation has a I<linear syntax>, and is designed to be easily
+Muldis D Object Notation has a I<linear syntax>, and is designed to be easily
 handled by a single-pass parser, or at least a single-pass lexer; all the
 context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code, or any required lookahead is
@@ -109,11 +109,11 @@ keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
 
 =head1 PARSING UNITS
 
-A I<parsing unit> of Muldis D Entry Notation source code is composed of two
+A I<parsing unit> of Muldis D Object Notation source code is composed of two
 main parts, the I<parsing unit subject> and the I<parsing unit predicate>,
 in this context abbreviated as I<subject> and I<predicate>.
 
-A I<parsing unit subject> is the meat-and-potatoes of Muldis D Entry Notation
+A I<parsing unit subject> is the meat-and-potatoes of Muldis D Object Notation
 source code, and generally takes the form in memory of a Muldis D C<Blob>
 or C<Text> value I<S>; parsing a well-formed I<S> results in some other
 Muldis D value I<N>.  Typically I<N> is a value of the C<Package> type and
@@ -125,7 +125,7 @@ the I<subject>, and generally takes the form in memory of a Muldis D
 C<Blob> or C<Text> value; it includes such details as a grammar version
 declaration and a text encoding declaration.
 
-When Muldis D Entry Notation source code is kept in its own self-describing
+When Muldis D Object Notation source code is kept in its own self-describing
 file, typically one with the C<.mdpt> standard filename extension, as per
 library or project conventions for typical general-purpose programming
 languages or structured data files, the entire I<parsing unit> is combined
@@ -133,18 +133,18 @@ into the single file, with the I<parsing unit predicate> appearing first as
 a file heading, and the I<parsing unit subject> following that.
 
 In this combined-file situation, a primary role of the I<predicate> is to
-serve as a "magic number" that identifies the file as being MDEN source
+serve as a "magic number" that identifies the file as being MDON source
 code.  Its secondary role is to explicitly state the character encoding and
 similar details of the file so that the file can be correctly converted
 from octets (a C<Blob>) to character data (a C<Text>) which most of the
-MDEN grammar assumes it is taking as input; this means the parser does not
+MDON grammar assumes it is taking as input; this means the parser does not
 have to rely on hueristics or other methods of determining encoding that
 could be wrong.  Its tertiary role is to explicitly state what versions of
-the MDEN grammar the author of the MDEN code believes it is known to be
+the MDON grammar the author of the MDON code believes it is known to be
 compatible or incompatible with, so that the grammar can be more free to
 evolve without that leading to parsers wrongly interpreting code.
 
-When Muldis D Entry Notation source code is not kept in its own self-describing
+When Muldis D Object Notation source code is not kept in its own self-describing
 file, typically when a source code repository is in use that provides
 context externally to each I<parsing unit subject> on how to interpret it,
 then the I<subject> and I<predicate> are typically given to the parser as
@@ -155,20 +155,20 @@ generated), such as a typical DBMS client application may do.  Such uses
 would be served by not having to provide the I<predicate> boilerplate every
 time they want to run I<subject> code, which often is very small itself.
 
-The root grammar token for Muldis D Entry Notation is C<< <MDEN> >>.
+The root grammar token for Muldis D Object Notation is C<< <MDON> >>.
 
-The root grammar token for a Muldis D Entry Notation self-describing file is
+The root grammar token for a Muldis D Object Notation self-describing file is
 C<< <parsing_unit> >>.
 
-The root grammar token for a Muldis D Entry Notation I<parsing_unit_predicate>
+The root grammar token for a Muldis D Object Notation I<parsing_unit_predicate>
 in isolation is C<< <parsing_unit_predicate> >>.
 
-The root grammar token for a Muldis D Entry Notation I<parsing_unit_subject>
+The root grammar token for a Muldis D Object Notation I<parsing_unit_subject>
 in isolation is C<< <parsing_unit_subject> >>.
 
 Grammar:
 
-    <MDEN> ::=
+    <MDON> ::=
         ^ <parsing_unit> | <parsing_unit_predicate> | <parsing_unit_subject> $
 
     <parsing_unit> ::=
@@ -193,11 +193,11 @@ Grammar:
 A C<< <shebang_line> >>, if it exists, must be the first characters of the
 text file, and consists of a magic number which expressed as ASCII or UTF-8
 is C<#!>, followed by a Unix-like interpreter directive or path to an
-executable that can interpret Muldis D Entry Notation files.  When a Muldis D
-Entry Notation file starts with a shebang line, it can be invoked directly as
+executable that can interpret Muldis D Object Notation files.  When a Muldis D
+Object Notation file starts with a shebang line, it can be invoked directly as
 if it were an executable on a Unix-like system.  The format of
 C<< <shebang_directive> >> isn't defined in this document; see the appropriate
-external Unix/etc documentation for that; however, the Muldis D Entry Notation
+external Unix/etc documentation for that; however, the Muldis D Object Notation
 file must have at least one line-breaking whitespace character of some kind
 following it, which is how we know where the Muldis D code begins.
 
@@ -230,7 +230,7 @@ Grammar:
         Muldis_D
 
     <ln_syntax_name> ::=
-        Entry_Notation
+        Object_Notation
 
     <ln_authority> ::=
         <Text_seg>
@@ -239,8 +239,8 @@ Grammar:
         <Text_seg>
 
 As per the VERSIONING section of L<Muldis::D>, every source code or data
-expression as Muldis D Entry Notation must be accompanied by an explicit
-declaration that it is MDEN, and specify at least 1 version of the MDEN
+expression as Muldis D Object Notation must be accompanied by an explicit
+declaration that it is MDON, and specify at least 1 version of the MDON
 standard that its author intends that it conforms with; this declaration is
 called a fully-qualified I<language name> and serves as a "magic number".
 
@@ -250,9 +250,9 @@ SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
 Examples:
 
-    Muldis_D Entry_Notation 'http://muldis.com' '0.201.0.-9'
+    Muldis_D Object_Notation 'http://muldis.com' '0.201.0.-9'
 
-    Muldis_D Entry_Notation 'http://example.com' '42'
+    Muldis_D Object_Notation 'http://example.com' '42'
 
 =head1 SCRIPT NAME
 
@@ -263,7 +263,7 @@ Grammar:
 
 The C<< <script_name> >> indicates the primary script of the Muldis D code,
 meaning is character repertoire and/or character encoding and/or character
-normalization.  Under the assumption that a C<Muldis_D Entry_Notation> parser
+normalization.  Under the assumption that a C<Muldis_D Object_Notation> parser
 might be reading the source code as binary data or otherwise as
 unnormalized character data, declaring the I<script name> makes it completely
 unambiguous as to what characters it is to be treating the input as.
@@ -271,7 +271,7 @@ unambiguous as to what characters it is to be treating the input as.
 For a simple example, a I<script name> of C<ASCII> says every literal source
 code character is a 7-bit ASCII character (and representing any non-ASCII
 characters is being done with escape sequences), and this is recommended
-for any C<Muldis_D Entry_Notation> file that doesn't need to be something else.
+for any C<Muldis_D Object_Notation> file that doesn't need to be something else.
 For various legacy 8-bit formats the I<script name> can tell us if we're using
 C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the I<script name> would
 have multiple parts, such as C<Unicode(10.0,UTF-8,canon)>, indicating
@@ -376,7 +376,7 @@ Grammar:
     <restricted_inside_char> ::=
         <-quoting_char -illegal_char -ws_restricted_outside_char>
 
-The Muldis D Entry Notation grammar recognizes 7 distinct character codepoint
+The Muldis D Object Notation grammar recognizes 7 distinct character codepoint
 (hereafter referred to as I<character>) classes,
 which are mutually disjoint proper subsets of the character repertoire
 identified by the I<script name>: I<alphanumeric>, I<quoting>, I<bracketing>,
@@ -387,13 +387,13 @@ The first 5 I<enumerated> classes (all but I<illegal>) are the more
 syntactically interesting ones and are generally what the grammar are
 defined in terms of.
 
-Broadly speaking, Muldis D Entry Notation code is made up of 2 primary
+Broadly speaking, Muldis D Object Notation code is made up of 2 primary
 grammatical contexts which are mutually disjoint and complementary; one of
 these is anywhere I<outside> all quoted strings, and its complement is
 anywhere I<inside> any quoted string; it is the I<quoting> characters that
 mark the transition between these 2 contexts.  Broadly speaking, all of the
 I<enumerated> classes (except I<illegal>) represent characters that are
-I<unrestricted> and may appear anywhere in Entry Notation source code.  In
+I<unrestricted> and may appear anywhere in Object Notation source code.  In
 contrast, I<nonenumerated> characters may only appear literally
 inside of a quoted string, and I<illegal> characters may not appear
 literally in source code at all.
@@ -415,7 +415,7 @@ in terms of character escape sequences, but only inside of a quoted string.
 
 Note that the primary reason most enumerated whitespace characters are
 generally restricted from being inside of a quoted string is so that the
-Muldis D Entry Notation code is resilient to passage through environments that
+Muldis D Object Notation code is resilient to passage through environments that
 might have different native line-breaking characters; the restriction
 guarantees that executing the code will produce logically identical values
 and behaviour for character string literals or quoted identifiers.  In
@@ -458,7 +458,7 @@ The meanings of the simple character escape sequences are:
 There is currently just one complex escape sequence, of the format C<<
 \c<...> >>, that supports specifying characters in terms of their Unicode
 abstract codepoint number.  One reason for this feature is to empower more
-elegant passing of Unicode-savvy Entry_Notation source code through a
+elegant passing of Unicode-savvy Object_Notation source code through a
 communications channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
@@ -471,7 +471,7 @@ Examples:
 
     \c<65>
 
-Note that Entry_Notation eschews built-in support for a C<< \c<...> >> format
+Note that Object_Notation eschews built-in support for a C<< \c<...> >> format
 that specifies characters in terms of their Unicode character name, for
 example C<< \c<LATIN SMALL LETTER OU> >>.  Instead, it is left to the
 domain of non-core Muldis D packages to support such a feature.  The main
@@ -494,7 +494,7 @@ Grammar:
 The primary function of I<dividing space>, represented by C<< <sp> >>, is
 to disambiguate the boundaries of otherwise-consecutive grammar tokens.
 
-Once Muldis D Entry Notation code is parsed, any dividing space is just
+Once Muldis D Object Notation code is parsed, any dividing space is just
 discardable non-semantic metadata for its wider context, but during a parse
 its presence is often critical to properly interpret the wider context.
 
@@ -573,7 +573,7 @@ Examples:
 
 =head1 KEYWORDS
 
-Muldis D Entry Notation has a number of keywords, both alphanumeric and
+Muldis D Object Notation has a number of keywords, both alphanumeric and
 symbolic, which have special meaning in certain contexts.  However, it does
 not have any reserved words so users can still define identifiers having
 any character string they want.
@@ -582,7 +582,7 @@ The keywords use a proper subset of the same syntax otherwise available for
 user-defined identifiers.  In any contexts where it would otherwise be
 ambiguous as to whether a term is a keyword versus the name of some entity,
 the parser will always take the keyword interpretation.  For all such
-cases, Muldis D Entry Notation provides syntax options that explicitly
+cases, Muldis D Object Notation provides syntax options that explicitly
 disambiguate in favor of the non-keyword choice.  Since every entity name
 C<foo> is allowed to be double-quoted anywhere it appears like C<"foo">,
 while all keywords only have a single syntax each which is non-quoted, a
@@ -592,7 +592,7 @@ will always favor the entity name.
 These are keywords only within a I<parsing unit predicate>:
 
     Muldis_D
-    Entry_Notation
+    Object_Notation
     meta
     script
 
@@ -613,7 +613,7 @@ These are used as list/pair separators only within a I<parsing unit subject>:
 Finally, the backslash C<\> is used heavily to indicate value literals of
 many different kinds, disambiguating them from other things.
 
-Muldis D Entry Notation purposefully keeps its set of keywords small, therefore
+Muldis D Object Notation purposefully keeps its set of keywords small, therefore
 giving users the maximum amount of flexibility to effectively define
 whatever operator/etc names they want for use as barewords, and the full
 complement of system-defined types and operators are defined using the same
@@ -737,7 +737,7 @@ Grammar:
 
 An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
 literal specific to some system-defined data type that has its own special
-Muldis D Entry Notation selector syntax, and this literal syntax explicitly has
+Muldis D Object Notation selector syntax, and this literal syntax explicitly has
 no child C<< <expr> >> nodes.  In conventional terms, one is typically for
 selecting scalar values, though many cases are also simple collections.
 
@@ -855,7 +855,7 @@ where each pair of consecutive segments is separated by dividing space;
 this segmenting ability is provided to support code that contains very long
 numeric literals while still being well formatted (no extra long lines).
 
-Note that the general grammar rules of Muldis D Entry Notation will treat all
+Note that the general grammar rules of Muldis D Object Notation will treat all
 nonquoted symbolic characters {-,+,.,/} as I<fixed> operator invocations,
 and nonquoted digit sequences as positive integer literals.  However,
 nonquoted numeric literals have a special exception for {-,+,.,/} iff they
@@ -865,7 +865,7 @@ that all values of the core numeric types can be written in a clean and
 concise manner while avoiding any risk of the meanings of the literals
 changing depending what Muldis D packages are in scope, which would be the
 case if the symbolics were parsed as operator calls.  When writing Muldis D
-Entry Notation code with unquoted numeric literals, having dividing space
+Object Notation code with unquoted numeric literals, having dividing space
 between any {-,+,.,/} and any C<< <num_char> >> should guarantee their
 interpretation as an operator call, while ensuring no dividing space
 between them should guarantee interpretation as part of the literal iff the
@@ -1246,7 +1246,7 @@ Grammar:
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
 value literal specific to some system-defined data type that has its own
-special Muldis D Entry Notation selector syntax, and this literal syntax
+special Muldis D Object Notation selector syntax, and this literal syntax
 explicitly does have child C<< <expr> >> nodes in the general case, as in
 conventional terms it is for selecting values representing collections of
 other values.
@@ -1422,7 +1422,7 @@ C<Excuse> type, which is ...
 
 =head1 LANGUAGE MNEMONICS
 
-Muldis D Entry Notation is designed to respect a variety of mnemonics that
+Muldis D Object Notation is designed to respect a variety of mnemonics that
 bring it some self-similarity and an association between syntax and
 semantics so that it is easier to read and write Muldis D code.  Some of
 these mnemonics are more about self-similarity and others are more about
@@ -1469,26 +1469,26 @@ Darren Duncan (C<darren@DarrenDuncan.net>)
 
 =head1 LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the B<Muldis D Entry Notation>
-(B<MDEN>) primary component of the B<Muldis D> language specification.
+This file is part of the formal specification of the B<Muldis D Object Notation>
+(B<MDON>) primary component of the B<Muldis D> language specification.
 
-MDEN is Copyright © 2002-2017, Muldis Data Systems, Inc.
+MDON is Copyright © 2002-2017, Muldis Data Systems, Inc.
 
 L<http://www.muldis.com/>
 
-MDEN is free documentation for software; you can redistribute it and/or
+MDON is free documentation for software; you can redistribute it and/or
 modify it under the terms of the Artistic License version 2 (AL2) as
 published by the Perl Foundation (L<http://www.perlfoundation.org/>).  You
-should have received copies of the AL2 as part of the MDEN
+should have received copies of the AL2 as part of the MDON
 distribution, in the file named "LICENSE/artistic-2_0.txt"; if not, see
 L<http://www.perlfoundation.org/attachment/legal/artistic-2_0.txt>.
 
-Any versions of MDEN that you modify and distribute must carry prominent
+Any versions of MDON that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
 addition to preserving this original copyright notice and other credits.
 
-While it is by no means required, the copyright holder of MDEN would
-appreciate being informed any time you create a modified version of MDEN
+While it is by no means required, the copyright holder of MDON would
+appreciate being informed any time you create a modified version of MDON
 that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
 
