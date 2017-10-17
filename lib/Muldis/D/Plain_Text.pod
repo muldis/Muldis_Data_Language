@@ -20,10 +20,16 @@ it contains is C<Muldis_D_Plain_Text 'http://muldis.com' '0.201.0.-9'>.
 
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
-The B<Muldis D Plain Text> specification defines the grammar of the official
-concrete Muldis D language syntax that every Muldis D implementation
-is expected to support as an option.  It is intended to be a standard format
-of interchange of both code and data between all Muldis D implementations.
+The B<Muldis D Plain Text> specification defines the grammar of the
+larger of the two official concrete Muldis D language syntaxes that every
+non-trivial Muldis D implementation should reasonably support as options.
+However, B<Muldis D Plain Text> is the official syntax for which support by
+every Muldis D implementation is merely considered highly recommended
+rather than mandatory; this is justified partly by that any implementation
+that supports the mandatory B<Muldis D Object Notation> can bootstrap
+B<Muldis D Plain Text> support over it.  B<Muldis D Plain Text> is intended
+to be the secondary standard format of interchange of both code and data
+between all Muldis D implementations.
 It is also expected to be the syntax of choice for users to write Muldis D
 applications or database schemas in, having the most direct correspondance
 to the I<native> homoiconic Muldis D defined by B<Muldis D Foundation>, and
@@ -207,7 +213,8 @@ Examples:
 Grammar:
 
     <parsing_unit_predicate> ::=
-        <language_name> <sp>
+        <language_name>
+        <sp>
         <script_name>
 
 See the sections in this file named L</LANGUAGE NAME> and L</SCRIPT NAME>
@@ -219,9 +226,12 @@ Grammar:
 
     <language_name> ::=
         <ln_family_name>
-        <sp> <ln_syntax_name>
-        <sp> <ln_authority>
-        <sp> <ln_version_number>
+        <sp>
+        <ln_syntax_name>
+        <sp>
+        <ln_authority>
+        <sp>
+        <ln_version_number>
 
     <ln_family_name> ::=
         Muldis_D
@@ -283,15 +293,6 @@ times filtering by a variety of text encodings until it can read a Muldis D
 language name declaring the same encoding that the name is itself written
 in, and then from that point it would expect the whole file to be that
 declared encoding or it would consider the code invalid.
-
-Iff C<< <foundational_indicator> >> is present, then C<< <script_name> >>
-is absent, and the Muldis D code as binary data is expected to be valid
-UTF-8 according to the latest Unicode standard of the time, and it will be
-treated literally without applying any Unicode normalization.  In practice,
-such code will often just be ASCII, a proper subset of UTF-8, but it is not
-required to be so limited.  In practice, having a specific implied Unicode
-version not be fixed shouldn't be a problem, as the definition of UTF-8
-tends to be both simple and very stable over time.
 
 Examples:
 
@@ -1602,7 +1603,10 @@ idiomatic way to represent an empty C<Bag> is to have exactly 1 C<<
 Grammar:
 
     <Tuple> ::=
-        ['\\%' <sp>]? '(' <sp> <attr_commalist> <sp> ')'
+        ['\\%' <sp>]? <delim_attr_commalist>
+
+    <delim_attr_commalist> ::=
+        '(' <sp> <attr_commalist> <sp> ')'
 
     <attr_commalist> ::=
         [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | ''] % [<sp> ',' <sp>]
@@ -1704,7 +1708,7 @@ Examples:
 Grammar:
 
     <Excuse> ::=
-        '\\!' <sp> '(' <sp> <attr_commalist> <sp> ')'
+        '\\!' <sp> <delim_attr_commalist>
 
 An C<< <Excuse> >> node represents a value of the Muldis D
 C<Excuse> type, which is ...

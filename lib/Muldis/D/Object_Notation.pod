@@ -18,26 +18,19 @@ the B<Muldis D Object Notation> (B<MDON>) primary component of the B<Muldis D>
 language.  The fully-qualified name of this document and the specification
 it contains is C<Muldis_D_Object_Notation 'http://muldis.com' '0.201.0.-9'>.
 
-I<TODO: This file is a rough first cut initially cloned from
-Muldis::D::Plain_Text and will need further cleanup and simplification.>
-
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
-The B<Muldis D Object Notation> specification defines the grammar of the official
-concrete Muldis D language syntax that every Muldis D implementation
-is expected to support as an option.  It is intended to be a standard format
-of interchange of both code and data between all Muldis D implementations.
-It is also expected to be the syntax of choice for users to write Muldis D
-applications or database schemas in, having the most direct correspondance
-to the I<native> homoiconic Muldis D defined by B<Muldis D Foundation>, and
-is designed to have a similar level of conciseness and readability as what
-users get in both typical general purpose application programming languages
-as well as SQL.
-That being said, Muldis D is designed to empower a variety of alternate
-language syntaxes to be used in different areas of a program, either in
-support of user tastes, or for better host/peer language integration
-(including their ORMs), or as a method of emulating other programming
-language environments or SQL DBMSs.
+The B<Muldis D Object Notation> specification defines the grammar of the
+smaller of the two official concrete Muldis D language syntaxes that every
+non-trivial Muldis D implementation should reasonably support as options.
+However, B<Muldis D Object Notation> is the only syntax for which support by
+every Muldis D implementation is considered mandatory; this is justified by
+the syntax being relatively simple and easy to implement and by its grammar
+being much more likely to be stable over time.  B<Muldis D Object Notation>
+is intended to be the primary standard format of interchange of both code
+and data between all Muldis D implementations.  B<Muldis D Object Notation>
+is expressly a proper subset of the B<Muldis D Plain Text> syntax and the
+latter is expressly a proper superset of the former.
 
 This document defines the grammar that all non-hosted plain-text Muldis D
 source code must conform to when it claims to be written in the
@@ -55,57 +48,12 @@ context to interpret them with.  Filename extensions are more for the
 benefit of the operating system or command shell or users than for a Muldis
 D implementation, the latter just cares about the content of the file.
 
-I<TODO: Comment about resolving package names to package source files;
-the CompUnitRepo concept of Perl 6 would be a good precedent.
-That will probably go somewhere else in the spec rather than here.>
-
-A primary feature of Muldis D is a grammar that is small and simple while
-still being quite rich and expressive.  As much as possible of the language
-is defined in terms of ordinary packages, types and routines, in exactly
-the same manner as users write their own code in.  Therefore, a Muldis D
-grammar has no special knowledge of, or specific syntax for, the vast
-majority of the language, and mainly just concerns itself with the minimal
-syntactic framework for defining generic types and routines, generic
-expressions and statements, and has special handling for just a small
-number of data types or routines.  A key benefit of this is that it is very
-easy for users to extend the language with new features that look and work
-in the same way as the system-defined ones, and are drop-in substitutable
-for them, rather than user-defined things being second-class citizens.  The
-design also means it is much easier to implement the Muldis D language
-itself, a large part of the langauge can be bootstrapped, and both parsers
-and generators of Muldis D Object Notation can be simple and easy to make.
-
-Muldis D Object Notation has a I<linear syntax>, and is designed to be easily
-handled by a single-pass parser, or at least a single-pass lexer; all the
-context that one needs to know for how to parse or lex any arbitrary
-substring of code is provided by prior code, or any required lookahead is
-just by a few characters in general.  Therefore, a parser/lexer can easily
-work on a streaming input like a file-handle where you can't go back
-earlier in the stream.  Often this means a parser/lexer can work with
-little RAM.
-
-Also the grammar is designed that any amount of whitespace can be added or
-omitted next to most non-alphanumeric characters (which happen to be next
-to alphanumeric tokens) without that affecting the meaning of the code at
-all, except obviously for within character string literals.  And long
-binary or character or numeric or identifier strings can be split into
-arbitrary-size substrings, without affecting the meaning.  And many
-elements are identified by name rather than ordinal position, so to some
-degree the order they appear has no effect on the meaning.  So programmers
-can easily format (separate, indent, linewrap, order) code how they like,
-and making an automated code reformatter shouldn't be difficult.  Often,
-named elements can also be omitted entirely for brevity, in which case the
-parser would use context to supply default values for those elements.
-
-=head1 GRAMMAR INTERPRETATION
-
-I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
-keep in mind that the grammar is inspired by both EBNF and Perl 6 rules.>
-
-    About separator-defined repetitions:
-    - ** takes number or range on right
-    - % takes list item separator on right, eg allows "x,y" but not "x,y,"
-    - %% is like % but allows separator to end the list, eg allows "x,y,"
+The B<Muldis D Object Notation> specification prizes brevity more greatly
+than the other components of the B<Muldis D> language meta-specification.
+As such, it avoids explaining a lot of things directly, either because they
+are implied, or because the B<Muldis D Plain Text> superset specification
+can explain those things once for both official grammars; see
+L<Muldis::D::Plain_Text> for some further explanation when desired.
 
 =head1 PARSING UNITS
 
@@ -157,14 +105,14 @@ time they want to run I<subject> code, which often is very small itself.
 
 The root grammar token for Muldis D Object Notation is C<< <MDON> >>.
 
-The root grammar token for a Muldis D Object Notation self-describing file is
-C<< <parsing_unit> >>.
+The root grammar token for a Muldis D Object Notation self-describing file
+is C<< <parsing_unit> >>.
 
-The root grammar token for a Muldis D Object Notation I<parsing_unit_predicate>
-in isolation is C<< <parsing_unit_predicate> >>.
+The root grammar token for a Muldis D Object Notation
+I<parsing_unit_predicate> in isolation is C<< <parsing_unit_predicate> >>.
 
-The root grammar token for a Muldis D Object Notation I<parsing_unit_subject>
-in isolation is C<< <parsing_unit_subject> >>.
+The root grammar token for a Muldis D Object Notation
+I<parsing_unit_subject> in isolation is C<< <parsing_unit_subject> >>.
 
 Grammar:
 
@@ -210,7 +158,8 @@ Examples:
 Grammar:
 
     <parsing_unit_predicate> ::=
-        <language_name> <sp>
+        <language_name>
+        <sp>
         <script_name>
 
 See the sections in this file named L</LANGUAGE NAME> and L</SCRIPT NAME>
@@ -222,9 +171,12 @@ Grammar:
 
     <language_name> ::=
         <ln_family_name>
-        <sp> <ln_syntax_name>
-        <sp> <ln_authority>
-        <sp> <ln_version_number>
+        <sp>
+        <ln_syntax_name>
+        <sp>
+        <ln_authority>
+        <sp>
+        <ln_version_number>
 
     <ln_family_name> ::=
         Muldis_D
@@ -243,10 +195,6 @@ expression as Muldis D Object Notation must be accompanied by an explicit
 declaration that it is MDON, and specify at least 1 version of the MDON
 standard that its author intends that it conforms with; this declaration is
 called a fully-qualified I<language name> and serves as a "magic number".
-
-I<Note that the terminology "language name" might be renamed soon.>
-
-SEE ALSO http://design.perl6.org/S11.html#Versioning FOR GUIDANCE...
 
 Examples:
 
@@ -286,15 +234,6 @@ times filtering by a variety of text encodings until it can read a Muldis D
 language name declaring the same encoding that the name is itself written
 in, and then from that point it would expect the whole file to be that
 declared encoding or it would consider the code invalid.
-
-Iff C<< <foundational_indicator> >> is present, then C<< <script_name> >>
-is absent, and the Muldis D code as binary data is expected to be valid
-UTF-8 according to the latest Unicode standard of the time, and it will be
-treated literally without applying any Unicode normalization.  In practice,
-such code will often just be ASCII, a proper subset of UTF-8, but it is not
-required to be so limited.  In practice, having a specific implied Unicode
-version not be fixed shouldn't be a problem, as the definition of UTF-8
-tends to be both simple and very stable over time.
 
 Examples:
 
@@ -404,11 +343,9 @@ are the small number of non-printable ASCII characters named in C<<
 <whitespace_char> >>; all other (non-printable) ASCII characters are
 I<illegal>.
 
-The vast majority of non-ASCII Unicode characters are I<restricted> to
-appearing literally inside of a quoted string, loosely speaking the
-only exceptions being the small number named in C<< <symbolic_char> >> or
-C<< <whitespace_char> >>; any non-ASCII Unicode control characters not
-otherwise named are I<illegal>.
+All non-ASCII Unicode characters are I<restricted> to appearing literally
+inside of a quoted string, except that non-ASCII Unicode control characters
+are I<illegal>.
 
 Regardless of character class, all characters may be logically represented
 in terms of character escape sequences, but only inside of a quoted string.
@@ -421,16 +358,6 @@ guarantees that executing the code will produce logically identical values
 and behaviour for character string literals or quoted identifiers.  In
 contrast, changing the line-breaking whitespace outside of string literals
 is okay and doesn't change behavior, so code can be formatted with them.
-
-Note that the symbolic category is arbitrary in the trans-ASCII range and
-is highly subject to gain or lose characters over time.
-
-Note that, while in theory supporting bareword Greek letters may make math
-or logic expressions more pleasant, for now they aren't partly to avoid
-confusion with similar-looking ASCII letters, and because its hard to know
-where to draw the line if one wanted to include the whole un-accented Greek
-alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
-UPDATE: A select few Greek letters are supported bareword, enumerated above.
 
 =head1 ESCAPED CHARACTERS
 
@@ -541,15 +468,9 @@ other doesn't have that character then C<< <sp> >> is allowed to be empty.
 
 =item *
 
-OBSOLETE: Otherwise, if C<< <foo> >> is C<:=> then C<< <sp> >> is allowed to be empty.
-
-=item *
-
 Otherwise, C<< <sp> >> must be nonempty.
 
 =back
-
-I<TODO.  Some of the above points concerning ":" are outdated and need fixing.>
 
 The secondary function of I<dividing space> is to empower users to format
 their code for easier readability through appropriate linebreaks,
@@ -564,160 +485,12 @@ comment defined with backtick-quoted strings should just be used for the
 likes of visual dividers or less important comments or for when you want to
 quickly "comment out" some source code rather than deleting it.
 
-For more important comments that are introspectable as such, see the
-section in this file named L<... TODO ...>.
+For more important comments that are introspectable as such, they need to
+be written as regular value literals or selectors.
 
 Examples:
 
     `This does something.`
-
-=head1 KEYWORDS
-
-Muldis D Object Notation has a number of keywords, both alphanumeric and
-symbolic, which have special meaning in certain contexts.  However, it does
-not have any reserved words so users can still define identifiers having
-any character string they want.
-
-The keywords use a proper subset of the same syntax otherwise available for
-user-defined identifiers.  In any contexts where it would otherwise be
-ambiguous as to whether a term is a keyword versus the name of some entity,
-the parser will always take the keyword interpretation.  For all such
-cases, Muldis D Object Notation provides syntax options that explicitly
-disambiguate in favor of the non-keyword choice.  Since every entity name
-C<foo> is allowed to be double-quoted anywhere it appears like C<"foo">,
-while all keywords only have a single syntax each which is non-quoted, a
-non-quoted C<foo> will always favor the keyword while a quoted C<"foo">
-will always favor the entity name.
-
-These are keywords only within a I<parsing unit predicate>:
-
-    Muldis_D
-    Object_Notation
-    meta
-    script
-
-There are no keywords at all within a I<parsing unit subject>.
-
-These are keyword-like value literals only within a I<parsing unit subject>:
-
-    False
-    True
-
-These are used as list/pair separators only within a I<parsing unit subject>:
-
-    ::
-    :
-    ;
-    ,
-
-Finally, the backslash C<\> is used heavily to indicate value literals of
-many different kinds, disambiguating them from other things.
-
-Muldis D Object Notation purposefully keeps its set of keywords small, therefore
-giving users the maximum amount of flexibility to effectively define
-whatever operator/etc names they want for use as barewords, and the full
-complement of system-defined types and operators are defined using the same
-tools users have, so if you don't see something in the lists you would
-expect to be system-defined, i's likely they're defined in libraries.
-
-=head1 IDENTIFIERS
-
-I<TODO: This section needs to be stripped down.>
-
-Grammar:
-
-    <alphanumeric_name> ::=
-        <alpha_char> <alphanumeric_char>*
-
-    <symbolic_name> ::=
-        <symbolic_char>+
-
-    <quoted_name> ::=
-        <quoted_name_seg> % <sp>
-
-    <quoted_name_seg> ::=
-        '"' <qnots_content> '"'
-
-    <qnots_content> ::=
-        <qns_nonescaped_content> | <qns_escaped_content>
-
-    <qnots_nonescaped_content> ::=
-        [<restricted_inside_char-[\\]> <restricted_inside_char>*]?
-
-    <qnots_escaped_content> ::=
-        '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
-
-    <generic_name> ::=
-        <alphanumeric_name> | <quoted_name>
-
-    <fixed_name> ::=
-        <alphanumeric_name> | <symbolic_name>
-
-    <attr_name> ::=
-        <nonord_attr_name> | <ord_attr_name>
-
-    <nonord_attr_name> ::=
-        <generic_name>
-
-    <ord_attr_name> ::=
-        <digit_char>+
-
-    <nesting_attr_names> ::=
-        <attr_name> % [<sp> '::' <sp>]
-
-    <expr_name> ::=
-        <generic_name>
-
-    <var_name> ::=
-        <generic_name>
-
-    <stmt_name> ::=
-        <generic_name>
-
-    <pkg_entity_name> ::=
-          <absolute_name>
-        | <relative_name>
-        | <floating_name>
-
-    <absolute_name> ::=
-        '::' <sp> <floating_name>
-
-    <relative_name> ::=
-        <digit_char>+ [<sp> '::' <sp> <floating_name>]?
-
-    <floating_name> ::=
-        <generic_name> % [<sp> '::' <sp>]
-
-    <folder_name> ::=
-        <absolute_name>
-
-    <material_name> ::=
-        <absolute_name>
-
-    <generic_func_name> ::=
-        <pkg_entity_name>
-
-    <generic_proc_name> ::=
-        <pkg_entity_name>
-
-    <entry_point_rtn_name> ::=
-        <absolute_name>
-
-A C<< <generic_name> >> is a I<generic context entity name>, which can be
-used in any context that is expecting I<a> Muldis D entity name in the
-general sense, without restrictions.  Examples of use are when declaring
-any named entity or with general type/routine/etc invocation syntax that
-allows any entity of the respective kind, or for attr names.
-
-A C<< <fixed_name> >> is for use within value expressions with certain
-common cases of function invocations where an unqualified
-operator name appears next to its operands without any parenthesis to group
-the operands under the operator.  The I<fixed> name comes from such
-invocations being usually qualified as I<prefix> or I<infix> or I<postfix>.
-
-A C<< <pkg_entity_name> >> is for use when either declaring or referencing
-package entities (types, singleton type definers, functions, procedures, aliases, etc)
-which live within a multi-level namespace.
 
 =head1 OPAQUE LITERAL EXPRESSIONS
 
@@ -1319,7 +1092,10 @@ idiomatic way to represent an empty C<Bag> is to have exactly 1 C<<
 Grammar:
 
     <Tuple> ::=
-        ['\\%' <sp>]? '(' <sp> <attr_commalist> <sp> ')'
+        ['\\%' <sp>]? <delim_attr_commalist>
+
+    <delim_attr_commalist> ::=
+        '(' <sp> <attr_commalist> <sp> ')'
 
     <attr_commalist> ::=
         [<anon_attr> | <named_attr> | <nested_named_attr> | ''] % [<sp> ',' <sp>]
@@ -1335,6 +1111,39 @@ Grammar:
 
     <attr_asset_expr> ::=
         <expr>
+
+    <attr_name> ::=
+        <nonord_attr_name> | <ord_attr_name>
+
+    <nonord_attr_name> ::=
+        <generic_name>
+
+    <ord_attr_name> ::=
+        <digit_char>+
+
+    <nesting_attr_names> ::=
+        <attr_name> % [<sp> '::' <sp>]
+
+    <generic_name> ::=
+        <alphanumeric_name> | <quoted_name>
+
+    <alphanumeric_name> ::=
+        <alpha_char> <alphanumeric_char>*
+
+    <quoted_name> ::=
+        <quoted_name_seg> % <sp>
+
+    <quoted_name_seg> ::=
+        '"' <qnots_content> '"'
+
+    <qnots_content> ::=
+        <qns_nonescaped_content> | <qns_escaped_content>
+
+    <qnots_nonescaped_content> ::=
+        [<restricted_inside_char-[\\]> <restricted_inside_char>*]?
+
+    <qnots_escaped_content> ::=
+        '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
 
 A C<< <Tuple> >> node represents a value of the Muldis D
 C<Tuple> type, which is ...
@@ -1415,47 +1224,10 @@ Examples:
 Grammar:
 
     <Excuse> ::=
-        '\\!' <sp> '(' <sp> <attr_commalist> <sp> ')'
+        '\\!' <sp> <delim_attr_commalist>
 
 An C<< <Excuse> >> node represents a value of the Muldis D
 C<Excuse> type, which is ...
-
-=head1 LANGUAGE MNEMONICS
-
-Muldis D Object Notation is designed to respect a variety of mnemonics that
-bring it some self-similarity and an association between syntax and
-semantics so that it is easier to read and write Muldis D code.  Some of
-these mnemonics are more about self-similarity and others are more about
-shared traits with other languages.
-
-I<TODO.>
-
-    : - key/asset separator in most pairwise collections
-    ? - booleans or sets (and bits and relations) or some predicate eg for existence or non-excuses
-    + - numbers or bags (and octets and tuple-bags) or element insertion
-    - - numbers or element removal or set/interval exclusion
-    ~ - arrays (and text and bits and blob and tuple-arrays)
-    | - homogeneous collections of any type (arrays or sets or bags)
-    % - heterogeneous collections / tuples or homos of tuples (relations and tuple-bags and tuple-arrays)
-    @ - attr names or headings (and chain-identifiers and renamings)
-    \ - value literal or selector (or source attr accessor)
-    & - variables
-    ! - booleans or excuses
-    . - collection item accessor or existence test
-    = - association of 2 things, either for comparison or binding or assignment
-
-    [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
-    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+ordinal
-    () - heterogeneous aordered collection of attr - tuples - nominal+universal
-
-When combining symbols to represent both collection type and element type,
-show collection first as master and element next as subservient,
-so eg ?% is relation, +% is tuple-bag while ~+ is blob
-or ?| is set, +| is bag while ~| is array.
-
-=head1 STRATEGIES FOR PARSING
-
-I<TODO.  Meanwhile see this section in Muldis D Plain Text.>
 
 =head1 SEE ALSO
 
