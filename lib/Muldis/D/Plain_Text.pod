@@ -100,6 +100,48 @@ and making an automated code reformatter shouldn't be difficult.  Often,
 named elements can also be omitted entirely for brevity, in which case the
 parser would use context to supply default values for those elements.
 
+=head1 LANGUAGE MNEMONICS
+
+I<TODO: Rewrite this section.>
+
+Muldis D Plain Text is designed to respect a variety of mnemonics that
+bring it some self-similarity and an association between syntax and
+semantics so that it is easier to read and write Muldis D code.  Some of
+these mnemonics are more about self-similarity and others are more about
+shared traits with other languages.
+
+I<TODO.>
+
+A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
+
+    [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
+    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+cardinal
+    () - heterogeneous aordered collection of attr - tuples - nominal+universal
+
+    '' - stringy regular data values (and segmented numbers)
+    "" - quoted identifiers
+    `` - comments as dividing space
+
+    : - key/asset separator in most pairwise collections
+    ? - booleans or unordered sets (and bits and relations) or some predicate eg for existence or non-excuses
+    + - numbers or unordered bags (and octets and tuple-bags) or element insertion
+    - - numbers or element removal or set/interval exclusion
+    ~ - homogeneous ordered collections / arrays (and text and bits and blob and tuple-arrays)
+    | - homogeneous collections of any type (arrays or sets or bags)
+    % - heterogeneous aordered collections / tuples or homos of tuples (relations and tuple-bags and tuple-arrays)
+    @ - attr names or headings (and chain-identifiers and renamings)
+    \ - value literal or selector (or source attr accessor)
+    & - variables
+    ! - booleans or excuses
+    / - fractional numbers
+    . - fractional numbers or collection item accessor or existence test
+    = - association of 2 things, either for comparison or binding or assignment
+
+When combining symbols to represent both collection type and element type,
+show collection first as master and element next as subservient,
+so eg ?% is relation, +% is tuple-bag while ~+ is blob
+or ?| is set, +| is bag while ~| is array.
+
 =head1 GRAMMAR INTERPRETATION
 
 I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
@@ -447,7 +489,7 @@ Grammar:
           '\\q' | '\\a' | '\\g'
         | '\\b'
         | '\\t' | '\\n' | '\\r'
-        | ['\\c<' <asigned_int> '>']
+        | ['\\c<' <nonsigned_int> '>']
 
 The meanings of the simple character escape sequences are:
 
@@ -675,15 +717,6 @@ Grammar:
     <quoted_name_seg> ::=
         '"' <qnots_content> '"'
 
-    <qnots_content> ::=
-        <qns_nonescaped_content> | <qns_escaped_content>
-
-    <qnots_nonescaped_content> ::=
-        [<restricted_inside_char-[\\]> <restricted_inside_char>*]?
-
-    <qnots_escaped_content> ::=
-        '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
-
     <generic_name> ::=
         <alphanumeric_name> | <quoted_name>
 
@@ -697,7 +730,7 @@ Grammar:
         <generic_name>
 
     <ord_attr_name> ::=
-        <digit_char>+
+        <nonsigned_int>
 
     <nesting_attr_names> ::=
         <attr_name> % [<sp> '::' <sp>]
@@ -958,24 +991,6 @@ Grammar:
     <nonquoted_int> ::=
         ['\\+' <sp>]? <asigned_int>
 
-    <quoted_int> ::=
-        <qu_num_head> <qu_asigned_int> <qu_num_tail>
-
-    <qu_num_head> ::=
-        '\\+' <sp> '\''
-
-    <qu_asigned_int> ::=
-        <asigned_int> <qu_num_mid>?
-
-    <qu_num_mid> ::=
-        <num_seg> % <qu_num_sp>
-
-    <qu_num_sp> ::=
-        '\'' <sp> '\''
-
-    <qu_num_tail> ::=
-        '\''
-
     <asigned_int> ::=
         <num_sign>? <nonsigned_int>
 
@@ -1005,6 +1020,24 @@ Grammar:
 
     <nc16> ::=
         <[ 0..9 A..F _ a..f ]>
+
+    <quoted_int> ::=
+        <qu_num_head> <qu_asigned_int> <qu_num_tail>
+
+    <qu_num_head> ::=
+        '\\+' <sp> '\''
+
+    <qu_asigned_int> ::=
+        <asigned_int> <qu_num_mid>?
+
+    <qu_num_mid> ::=
+        <num_seg> % <qu_num_sp>
+
+    <qu_num_sp> ::=
+        '\'' <sp> '\''
+
+    <qu_num_tail> ::=
+        '\''
 
 An C<< <Integer> >> node represents a value of the Muldis D C<Integer>
 type, which is a general purpose exact integral number of any magnitude,
@@ -1089,11 +1122,11 @@ Grammar:
     <nonquoted_frac> ::=
         <nonquoted_int> <frac_div> <num_seg>
 
-    <quoted_frac> ::=
-        <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
-
     <frac_div> ::=
         '.' | '/'
+
+    <quoted_frac> ::=
+        <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
 
 A C<< <Fraction> >> node represents a value of the Muldis D C<Fraction>
 type, which is a general purpose exact rational number of any magnitude and
@@ -1235,6 +1268,15 @@ Grammar:
 
     <Text_seg> ::=
         '\'' <qnots_content> '\''
+
+    <qnots_content> ::=
+        <qns_nonescaped_content> | <qns_escaped_content>
+
+    <qnots_nonescaped_content> ::=
+        [<restricted_inside_char-[\\]> <restricted_inside_char>*]?
+
+    <qnots_escaped_content> ::=
+        '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
 
 A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
 is characterized by an arbitrarily-long sequence of Unicode 10.0 standard
@@ -1917,41 +1959,6 @@ I<TODO.  Note that 'fail' is implicitly guarded.>
 =head1 GENERIC STATEMENTS
 
 I<TODO.>
-
-=head1 LANGUAGE MNEMONICS
-
-Muldis D Plain Text is designed to respect a variety of mnemonics that
-bring it some self-similarity and an association between syntax and
-semantics so that it is easier to read and write Muldis D code.  Some of
-these mnemonics are more about self-similarity and others are more about
-shared traits with other languages.
-
-I<TODO.>
-
-A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
-
-    : - key/asset separator in most pairwise collections
-    ? - booleans or sets (and bits and relations) or some predicate eg for existence or non-excuses
-    + - numbers or bags (and octets and tuple-bags) or element insertion
-    - - numbers or element removal or set/interval exclusion
-    ~ - arrays (and text and bits and blob and tuple-arrays)
-    | - homogeneous collections of any type (arrays or sets or bags)
-    % - heterogeneous collections / tuples or homos of tuples (relations and tuple-bags and tuple-arrays)
-    @ - attr names or headings (and chain-identifiers and renamings)
-    \ - value literal or selector (or source attr accessor)
-    & - variables
-    ! - booleans or excuses
-    . - collection item accessor or existence test
-    = - association of 2 things, either for comparison or binding or assignment
-
-    [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
-    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+ordinal
-    () - heterogeneous aordered collection of attr - tuples - nominal+universal
-
-When combining symbols to represent both collection type and element type,
-show collection first as master and element next as subservient,
-so eg ?% is relation, +% is tuple-bag while ~+ is blob
-or ?| is set, +| is bag while ~| is array.
 
 =head1 NESTING PRECEDENCE RULES
 
