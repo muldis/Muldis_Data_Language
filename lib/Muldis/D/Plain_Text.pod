@@ -100,47 +100,163 @@ and making an automated code reformatter shouldn't be difficult.  Often,
 named elements can also be omitted entirely for brevity, in which case the
 parser would use context to supply default values for those elements.
 
-=head1 LANGUAGE MNEMONICS
+=head1 SYNTACTIC MNEMONICS
 
-I<TODO: Rewrite this section.>
-
-Muldis D Plain Text is designed to respect a variety of mnemonics that
-bring it some self-similarity and an association between syntax and
-semantics so that it is easier to read and write Muldis D code.  Some of
-these mnemonics are more about self-similarity and others are more about
+The syntax of Muldis D Plain Text, as well as the names of standard
+library routines of Muldis D, are designed around a variety of mnemonics
+that bring it some self-similarity and an association between syntax and
+semantics so that it is easier to read and write data and code in it.  Some
+of these mnemonics are more about self-similarity and others are more about
 shared traits with other languages.
 
-I<TODO.>
+The following table enumerates and explains the syntactic character
+mnemonics that Muldis D Plain Text itself has specific knowledge of
+and ascribes specific meanings to; where multiple characters are shown
+together that means they are used in pairs.
 
-A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
+    Chars | Generic Meaning        | Specific Use Cases
+    ------+------------------------+---------------------------------------
+    ""    | stringy identifiers    | * delimit quoted code identifiers/names
+    ------+------------------------+---------------------------------------
+    ''    | stringy user data      | * delimit quoted opaque regular literals
+          |                        | * delimit all Bits/Blob/Text literals
+          |                        | * delimit quoted Integer/Fraction literals
+    ------+------------------------+---------------------------------------
+    ``    | stringy comments       | * delimit expendable dividing space comments
+    ------+------------------------+---------------------------------------
+    \     | special contexts       | * indicates special contexts where
+          |                        |   typical meanings may not apply
+          |                        | * first char inside a quoted string
+          |                        |   to indicate it has escaped characters
+          |                        | * prefix for each escaped char in quoted string
+          |                        | * L0 of prefix for literals/selectors
+          |                        |   to disambiguate that they are lits/sels
+    ------+------------------------+---------------------------------------
+    []    | ordered collections    | * delimit homogeneous ordered collections
+          |                        |   of members, concept ordinal+asset pairs
+          |                        | * delimit Array selectors
+          |                        | * delimit nonempty-Tuple_Array selectors
+          |                        | * delimit statement blocks
+    ------+------------------------+---------------------------------------
+    {}    | nonordered collections | * delimit homogeneous nonordered collections
+          |                        |   of members, concept asset+cardinal pairs
+          |                        | * delimit Set/Bag selectors
+          |                        | * delimit nonempty-Relation/Tuple_Bag sels
+    ------+------------------------+---------------------------------------
+    ()    | aordered collections   | * delimit heterogeneous aordered collections
+          |                        |   of attributes, concept nominal+asset pairs
+          |                        | * delimit Tuple/Capsule/Excuse selectors
+          |                        | * delimit Heading literals
+          |                        | * delimit empty-Tuple_Array/Relation/Tuple_Bag lits
+          |                        | * generic delimiting expressions
+    ------+------------------------+---------------------------------------
+    :     | pairings               | * indicates a pairing context
+          |                        | * separates the 2 parts of a pair
+          |                        | * indicates selection of a pair
+          |                        | * optional pair separator in Array/Set/Bag sels
+          |                        | * optional pair separator in Tuple/Excuse sels
+          |                        | * optional pair separator in ne-TA/Rel/TB sels
+          |                        | * label/attributes separator in Capsule sel
+          |                        | * L1 of optional prefix for Capsule selectors
+          |                        | * disambiguate Bag sel from Set sel
+          |                        | * L2 of prefix for Renaming literals
+          |                        | * syntax for binding a name to something
+          |                        | * syntax for assigning a value to a variable
+    ------+------------------------+---------------------------------------
+    =     | associations           | * indicates that 2 things are associated
+          |                        | * name of standard equality test function
+          |                        | * syntax for binding a name to something
+          |                        | * syntax for assigning a value to a variable
+    ------+------------------------+---------------------------------------
+    ,     | list builders          | * separates collection elements
+          |                        | * separate members in Array/Set/Bag sels
+          |                        | * separate members in nonempty-TA/Rel/TB sels
+          |                        | * separate attributes in Tuple/Excuse sels
+          |                        | * separate attributes in Heading lits
+          |                        | * disambiguate unary named Tuple sels from Capsule sels
+          |                        | * disambiguate unary anon Tuple selectors
+          |                        |   from generic delimiting expressions
+    ------+------------------------+---------------------------------------
+    ;     | code block builders    | * separates code block elements, each
+          |                        | * of which is an expression or statement
+    ------+------------------------+---------------------------------------
+    ?     | qualifications/is?/so  | * indicates a qualifying/yes-or-no context
+          |                        | * L1 of optional prefix for Boolean literals
+          |                        | * L2 of prefix for Bits literals
+          |                        | * L1 of optional prefix for Set selectors
+          |                        | * L1 of prefix for Relation lits/sels
+          |                        | * predicate functions
+          |                        | * existential tests / mapping to Boolean
+          |                        | * non-Excuse values
+    ------+------------------------+---------------------------------------
+    +     | quantifications/count  | * indicates a quantifying/count context
+          |                        | * L1 of optional prefix for Integer/Fraction literals
+          |                        | * L2 of prefix for Blob literals
+          |                        | * L1 of optional prefix for Bag selectors
+          |                        | * L1 of prefix for Tuple_Bag lits/sels
+          |                        | * numeric addition
+          |                        | * collection element insertion
+    ------+------------------------+---------------------------------------
+    ~     | sequences/stitching    | * indicates a sequencing context
+          |                        | * L1 of prefix for Bits/Blob literals
+          |                        | * L1 of optional prefix for Text literals
+          |                        | * L1 of optional prefix for Array selectors
+          |                        | * L1 of prefix for Tuple_Array lits/sels
+          |                        | * catenation of ordered collections
+    ------+------------------------+---------------------------------------
+    %     | tuples/heterogeneous   | * indicates that tuples are featured
+          |                        | * L1 of optional prefix for Tuple selectors
+          |                        | * L2 of prefix for Tuple_Array/Relation/Tuple_Bag lits/sels
+          |                        | * in names of many tuple-related operators
+    ------+------------------------+---------------------------------------
+    !     | excuses/but/not        | * indicates that excuses are featured
+          |                        | * prefix for Excuse literals/selectors
+          |                        | * logical negation
+          |                        | * in names of functions that may result
+          |                        |   in Excuses rather than throw exceptions
+    ------+------------------------+---------------------------------------
+    @     | locators/at/headings   | * indicates identifiers/names are featured
+          |                        | * L1 of prefix for Heading/Attr_Name_List literals
+          |                        | * L1 of prefix for Renaming literals
+          |                        | * in names of functions about relational headings
+    ------+------------------------+---------------------------------------
+    |     | homogeneous/bodies     | * indicates non-tuple-specific homogeneous collections
+          |                        | * in names of functions about relational bodies
+    ------+------------------------+---------------------------------------
+    &     | variables/read+write   | * indicates a program variable is featured
+          |                        | * syntax for reading current value of variable
+          |                        | * syntax for updating variable to new current value
+    ------+------------------------+---------------------------------------
+    -     | subtraction            | * indicates negative-Integer/Fraction literal
+          |                        | * numeric subtraction
+          |                        | * collection element removal
+    ------+------------------------+---------------------------------------
+    /     | division               | * disambiguate Fraction lit from Integer lit
+    ------+------------------------+---------------------------------------
+    .     | radix point            | * disambiguate Fraction lit from Integer lit
+          | accessor/at            | * in names of collection item accessor functions
+    ------+------------------------+---------------------------------------
+    digit | number                 | * first char 0..9 in bareword indicates is a number
+    ------+------------------------+---------------------------------------
+    alpha | identifier             | * first char a..z/etc in bareword indicates is identifier
+    ------+------------------------+---------------------------------------
+    0b    | base-2                 | * indicates base-2/binary notation
+          |                        | * prefix for Integer/Fraction/Bits/Blob in base-2
+    ------+------------------------+---------------------------------------
+    0o    | base-8                 | * indicates base-8/octal notation
+          |                        | * prefix for Integer/Fraction/Bits in base-8
+    ------+------------------------+---------------------------------------
+    0d    | base-10                | * indicates base-10/decimal notation
+          |                        | * optional prefix for Integer/Fraction in base-10
+    ------+------------------------+---------------------------------------
+    0x    | base-16                | * indicates base-16/hexadecimal notation
+          |                        | * prefix for Integer/Fraction/Bits/Blob in base-16
+    ------+------------------------+---------------------------------------
 
-    [] - homogeneous ordered collection of element - arrays/statements/etc - ordinal+universal
-    {} - homogeneous nonordered collection of member - bags/sets/etc - universal+cardinal
-    () - heterogeneous aordered collection of attr - tuples - nominal+universal
-
-    '' - stringy regular data values (and segmented numbers)
-    "" - quoted identifiers
-    `` - comments as dividing space
-
-    : - key/asset separator in most pairwise collections
-    ? - booleans or unordered sets (and bits and relations) or some predicate eg for existence or non-excuses
-    + - numbers or unordered bags (and octets and tuple-bags) or element insertion
-    - - numbers or element removal or set/interval exclusion
-    ~ - homogeneous ordered collections / arrays (and text and bits and blob and tuple-arrays)
-    | - homogeneous collections of any type (arrays or sets or bags)
-    % - heterogeneous aordered collections / tuples or homos of tuples (relations and tuple-bags and tuple-arrays)
-    @ - attr names or headings (and chain-identifiers and renamings)
-    \ - value literal or selector (or source attr accessor)
-    & - variables
-    ! - booleans or excuses
-    / - fractional numbers
-    . - fractional numbers or collection item accessor or existence test
-    = - association of 2 things, either for comparison or binding or assignment
-
-When combining symbols to represent both collection type and element type,
-show collection first as master and element next as subservient,
-so eg ?% is relation, +% is tuple-bag while ~+ is blob
-or ?| is set, +| is bag while ~| is array.
+    When combining symbols in a \XY prefix (L0+L1+L2) to represent both
+    collection type and element type, the X and Y always indicate the
+    collection and element type respectively; the mnemonic is "X of Y", for
+    example, \?% says "set of tuple", or \~? says "string of boolean".
 
 =head1 GRAMMAR INTERPRETATION
 
@@ -1988,6 +2104,8 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
 I<TODO.  Loosely speaking, "L" means left-associative,
 "R" means right-associative, "N" means non-associative.>
+
+A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
 
 =head1 STRATEGIES FOR PARSING
 
