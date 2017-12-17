@@ -16,7 +16,7 @@ This document is Muldis::D::Object_Notation version 0.201.0.-9.
 This document is the human readable authoritative formal specification of
 the B<Muldis D Object Notation> (B<MDON>) primary component of the B<Muldis D>
 language.  The fully-qualified name of this document and the specification
-it contains is C<Muldis_D_Object_Notation 'http://muldis.com' '0.201.0.-9'>.
+it contains is C<Muldis_D_Object_Notation "http://muldis.com" "0.201.0.-9">.
 
 See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
 
@@ -34,7 +34,7 @@ latter is expressly a proper superset of the former.
 
 This document defines the grammar that all non-hosted plain-text Muldis D
 source code must conform to when it claims to be written in the
-C<Muldis_D Object_Notation 'http://muldis.com' '0.201.0.-9'> (B<MDON>) language.
+C<Muldis_D Object_Notation "http://muldis.com" "0.201.0.-9"> (B<MDON>) language.
 
 This grammar is meant to be more illustrative to human readers than
 executable, as is typical for standards documents; you wouldn't likely be
@@ -71,9 +71,9 @@ together that means they are used in pairs.
 
     Chars | Generic Meaning        | Specific Use Cases
     ------+------------------------+---------------------------------------
-    ""    | stringy identifiers    | * delimit quoted code identifiers/names
+    ''    | stringy identifiers    | * delimit quoted code identifiers/names
     ------+------------------------+---------------------------------------
-    ''    | stringy user data      | * delimit quoted opaque regular literals
+    ""    | stringy user data      | * delimit quoted opaque regular literals
           |                        | * delimit all Bits/Blob/Text literals
           |                        | * delimit quoted Integer/Fraction literals
     ------+------------------------+---------------------------------------
@@ -310,9 +310,9 @@ called a fully-qualified I<language name> and serves as a "magic number".
 
 Examples:
 
-    Muldis_D Object_Notation 'http://muldis.com' '0.201.0.-9'
+    Muldis_D Object_Notation "http://muldis.com" "0.201.0.-9"
 
-    Muldis_D Object_Notation 'http://example.com' '42'
+    Muldis_D Object_Notation "http://example.com" "42"
 
 =head1 SCRIPT NAME
 
@@ -349,9 +349,9 @@ declared encoding or it would consider the code invalid.
 
 Examples:
 
-    meta script 'ASCII'
+    meta script "ASCII"
 
-    meta script 'Unicode 10.0 UTF-8 canon'
+    meta script "Unicode 10.0 UTF-8 canon"
 
 =head1 PARSING UNIT SUBJECTS
 
@@ -486,8 +486,8 @@ The meanings of the simple character escape sequences are:
     Esc | Unicode   | Unicode         | Chr | Literal character used
     Seq | Codepoint | Character Name  | Lit | for when not escaped
     ----+-----------+-----------------+-----+------------------------------
-    \q  | 0x22      | QUOTATION MARK  | "   | delimit quoted names
-    \a  | 0x27      | APOSTROPHE      | '   | delimit Text/opaque literals
+    \q  | 0x22      | QUOTATION MARK  | "   | delimit Text/opaque literals
+    \a  | 0x27      | APOSTROPHE      | '   | delimit quoted names
     \g  | 0x60      | GRAVE ACCENT    | `   | delimit dividing space comments
     \b  | 0x5C      | REVERSE SOLIDUS | \   | no special meaning in non-escaped
     \t  | 0x9       | CHAR... TAB...  |     | control char horizontal tab
@@ -674,7 +674,7 @@ Grammar:
         <qu_num_head> <qu_asigned_int> <qu_num_tail>
 
     <qu_num_head> ::=
-        '\\+' <sp> '\''
+        '\\+' <sp> '"'
 
     <qu_asigned_int> ::=
         <asigned_int> <qu_num_mid>?
@@ -683,10 +683,10 @@ Grammar:
         <nonsigned_int> % <qu_num_sp>
 
     <qu_num_sp> ::=
-        '\'' <sp> '\''
+        '"' <sp> '"'
 
     <qu_num_tail> ::=
-        '\''
+        '"'
 
 An C<< <Integer> >> node represents a value of the Muldis D C<Integer>
 type, which is a general purpose exact integral number of any magnitude,
@@ -713,7 +713,7 @@ Examples:
 
     -3
 
-    \+'-3' '50_897'
+    \+"-3" "50_897"
 
     \+81
 
@@ -775,7 +775,7 @@ Examples:
 Grammar:
 
     <Bits> ::=
-        '\\~?' <sp> [['\'' <num_char_2>* '\''] % <sp>]
+        '\\~?' <sp> [['"' <num_char_2>* '"'] % <sp>]
 
     <num_char_2> ::=
         <[ 0..1 _ ]>
@@ -797,16 +797,16 @@ where each pair of consecutive segments is separated by dividing space.
 
 Examples:
 
-    \~?''
+    \~?""
 
-    \~?'00101110100010'
+    \~?"00101110100010"
 
 =head2 Blob Literals
 
 Grammar:
 
     <Blob> ::=
-        '\\~+' <sp> [['\'' <num_char_16>* '\''] % <sp>]
+        '\\~+' <sp> [['"' <num_char_16>* '"'] % <sp>]
 
     <num_char_16> ::=
         <[ 0..9 A..F _ a..f ]>
@@ -832,9 +832,9 @@ even multiple of 2.
 
 Examples:
 
-    \~+''
+    \~+""
 
-    \~+'A705E416'
+    \~+"A705E416"
 
 =head2 Text Literals
 
@@ -844,7 +844,7 @@ Grammar:
         ['\\~' <sp>]? [<Text_seg> % <sp>]
 
     <Text_seg> ::=
-        '\'' <qnots_content> '\''
+        '"' <qnots_content> '"'
 
     <qnots_content> ::=
         <qns_nonescaped_content> | <qns_escaped_content>
@@ -869,17 +869,17 @@ of consecutive segments is separated by dividing space.
 
 Examples:
 
-    'Ceres'
+    "Ceres"
 
-    'サンプル'
+    "サンプル"
 
-    ''
+    ""
 
-    '\This isn\at not escaped.\n'
+    "\This isn\at not escaped.\n"
 
-    '\\c<0x263A>\c<65>'
+    "\\c<0x263A>\c<65>"
 
-    \~'Green'
+    \~"Green"
 
 =head2 Simple Excuse Literals
 
@@ -959,13 +959,13 @@ Examples:
     \@(sales)
 
     `Same thing.`
-    \@("sales")
+    \@('sales')
 
     `One ordered attribute.`
     \0
 
     `Same thing.`
-    \"\\c<0>"
+    \'\\c<0>'
 
     `Three nonordered attributes.`
     \@(region,revenue,qty)
@@ -977,10 +977,10 @@ Examples:
     \@(1,age)
 
     `Some attribute names can only appear quoted.`
-    \"Street Address"
+    \'Street Address'
 
     `A non-Latin name.`
-    \"サンプル"
+    \'サンプル'
 
 =head2 Attribute Name List Literals
 
@@ -1150,7 +1150,7 @@ Grammar:
         <quoted_name_seg> % <sp>
 
     <quoted_name_seg> ::=
-        '"' <qnots_content> '"'
+        '\'' <qnots_content> '\''
 
     <ord_attr_name> ::=
         <nonsigned_int>
