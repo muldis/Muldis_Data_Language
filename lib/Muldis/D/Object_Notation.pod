@@ -169,73 +169,18 @@ See L<Muldis::D::Plain_Text/SYNTACTIC MNEMONICS> for some of that.
 
 =head1 PARSING UNITS
 
-A I<parsing unit> of Muldis D Object Notation source code is composed of two
-main parts, the I<parsing unit subject> and the I<parsing unit predicate>,
-in this context abbreviated as I<subject> and I<predicate>.
-
-A I<parsing unit subject> is the meat-and-potatoes of Muldis D Object Notation
-source code, and generally takes the form in memory of a Muldis D C<Blob>
-or C<Text> value I<S>; parsing a well-formed I<S> results in some other
-Muldis D value I<N>.  Typically I<N> is a value of the C<Package> type and
-thus comprises a Muldis D I<compilation unit>, but it might also be a value
-of some other type.
-
-A I<parsing unit predicate> is a guide for I<how> to unambiguously parse
-the I<subject>, and generally takes the form in memory of a Muldis D
-C<Blob> or C<Text> value; it includes such details as a grammar version
-declaration and a text encoding declaration.
-
-When Muldis D Object Notation source code is kept in its own self-describing
-file, typically one with the C<.mdpt> standard filename extension, as per
-library or project conventions for typical general-purpose programming
-languages or structured data files, the entire I<parsing unit> is combined
-into the single file, with the I<parsing unit predicate> appearing first as
-a file heading, and the I<parsing unit subject> following that.
-
-In this combined-file situation, a primary role of the I<predicate> is to
-serve as a "magic number" that identifies the file as being MDON source
-code.  Its secondary role is to explicitly state the character encoding and
-similar details of the file so that the file can be correctly converted
-from octets (a C<Blob>) to character data (a C<Text>) which most of the
-MDON grammar assumes it is taking as input; this means the parser does not
-have to rely on hueristics or other methods of determining encoding that
-could be wrong.  Its tertiary role is to explicitly state what versions of
-the MDON grammar the author of the MDON code believes it is known to be
-compatible or incompatible with, so that the grammar can be more free to
-evolve without that leading to parsers wrongly interpreting code.
-
-When Muldis D Object Notation source code is not kept in its own self-describing
-file, typically when a source code repository is in use that provides
-context externally to each I<parsing unit subject> on how to interpret it,
-then the I<subject> and I<predicate> are typically given to the parser as
-separate inputs.  This is particularly likely in situations where the
-virtual machine environment running the Muldis D code is a library of some
-host language that is feeding in Muldis D code piecemeal (possibly
-generated), such as a typical DBMS client application may do.  Such uses
-would be served by not having to provide the I<predicate> boilerplate every
-time they want to run I<subject> code, which often is very small itself.
-
 The root grammar token for Muldis D Object Notation is C<< <MDON> >>.
-
-The root grammar token for a Muldis D Object Notation self-describing file
-is C<< <parsing_unit> >>.
-
-The root grammar token for a Muldis D Object Notation
-I<parsing_unit_predicate> in isolation is C<< <parsing_unit_predicate> >>.
-
-The root grammar token for a Muldis D Object Notation
-I<parsing_unit_subject> in isolation is C<< <parsing_unit_subject> >>.
 
 Grammar:
 
     <MDON> ::=
-        ^ <parsing_unit> | <parsing_unit_predicate> | <parsing_unit_subject> $
+        ^ <parsing_unit> $
 
     <parsing_unit> ::=
-        <shebang_line>? <sp> <parsing_unit_predicate> <sp> <parsing_unit_subject>
+        <shebang_line>? <sp> <parsing_unit_subject>
 
-See the sections in this file named L<SHEBANG LINE>,
-L<PARSING UNIT PREDICATES>, and L</PARSING UNIT SUBJECTS> for more details.
+See the sections in this file named L<SHEBANG LINE>
+and L</PARSING UNIT SUBJECTS> for more details.
 
 =head1 SHEBANG LINE
 
@@ -264,94 +209,6 @@ following it, which is how we know where the Muldis D code begins.
 Examples:
 
     #!/usr/bin/env muldisdre
-
-=head1 PARSING UNIT PREDICATES
-
-Grammar:
-
-    <parsing_unit_predicate> ::=
-        <language_name>
-        <sp>
-        <script_name>
-
-See the sections in this file named L</LANGUAGE NAME> and L</SCRIPT NAME>
-for more details.
-
-=head1 LANGUAGE NAME
-
-Grammar:
-
-    <language_name> ::=
-        <ln_family_name>
-        <sp>
-        <ln_syntax_name>
-        <sp>
-        <ln_authority>
-        <sp>
-        <ln_version_number>
-
-    <ln_family_name> ::=
-        Muldis_D
-
-    <ln_syntax_name> ::=
-        Object_Notation
-
-    <ln_authority> ::=
-        <Text_seg>
-
-    <ln_version_number> ::=
-        <Text_seg>
-
-As per the VERSIONING section of L<Muldis::D>, every source code or data
-expression as Muldis D Object Notation must be accompanied by an explicit
-declaration that it is MDON, and specify at least 1 version of the MDON
-standard that its author intends that it conforms with; this declaration is
-called a fully-qualified I<language name> and serves as a "magic number".
-
-Examples:
-
-    Muldis_D Object_Notation http://muldis.com 0.201.0
-
-    Muldis_D Object_Notation "http://example.com" "42"
-
-=head1 SCRIPT NAME
-
-Grammar:
-
-    <script_name> ::=
-        meta script <Text_seg>
-
-The C<< <script_name> >> indicates the primary script of the Muldis D code,
-meaning is character repertoire and/or character encoding and/or character
-normalization.  Under the assumption that a C<Muldis_D Object_Notation> parser
-might be reading the source code as binary data or otherwise as
-unnormalized character data, declaring the I<script name> makes it completely
-unambiguous as to what characters it is to be treating the input as.
-
-For a simple example, a I<script name> of C<ASCII> says every literal source
-code character is a 7-bit ASCII character (and representing any non-ASCII
-characters is being done with escape sequences), and this is recommended
-for any C<Muldis_D Object_Notation> file that doesn't need to be something else.
-For various legacy 8-bit formats the I<script name> can tell us if we're using
-C<Latin1> or C<CP1252> or C<EBCDIC> etc.  For Unicode the I<script name> would
-have multiple parts, such as C<Unicode(10.0,UTF-8,canon)>, indicating
-expected repertoire, and encoding (useful more with ones lacking BOMs); but
-at the very least it is useful with normalization; if C<compat> is declared
-then the source code is folded before it is parsed so possibly distinct
-literal characters in the original code are seen as identical character
-strings by the main parser, while C<canon> would not do this folding.
-
-A Muldis D parser would possibly scan through the same source code multiple
-times filtering by a variety of text encodings until it can read a Muldis D
-language name declaring the same encoding that the name is itself written
-in, and then from that point it would expect the whole file to be that
-declared encoding or it would consider the code invalid.
-
-Examples:
-
-    meta script "ASCII"
-
-    meta script "Unicode 10.0 UTF-8 canon"
 
 =head1 PARSING UNIT SUBJECTS
 
