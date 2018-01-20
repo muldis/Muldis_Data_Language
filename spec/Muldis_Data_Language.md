@@ -5,7 +5,8 @@ Relational database application programming language
 
 # VERSION
 
-This document is Muldis Data Language version 0.201.0.
+The fully-qualified name of this document is
+`Muldis_Data_Language http://muldis.com 0.201.0`.
 
 # SYNOPSIS
 
@@ -18,7 +19,7 @@ This document is the human readable authoritative formal specification named
 The fully-qualified name of this document and specification is
 `Muldis_Data_Language http://muldis.com 0.201.0`.
 This is the official/original version by the authority Muldis Data Systems
-(`http://muldis.com`), version number `0.201.0` (matches the VERSION).
+(`http://muldis.com`), version number `0.201.0`.
 
 *TODO.*
 
