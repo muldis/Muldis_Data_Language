@@ -94,164 +94,6 @@ and making an automated code reformatter shouldn't be difficult.  Often,
 named elements can also be omitted entirely for brevity, in which case the
 parser would use context to supply default values for those elements.
 
-=head1 SYNTACTIC MNEMONICS
-
-The syntax of Muldis D Plain Text, as well as the names of standard
-library routines of Muldis D, are designed around a variety of mnemonics
-that bring it some self-similarity and an association between syntax and
-semantics so that it is easier to read and write data and code in it.  Some
-of these mnemonics are more about self-similarity and others are more about
-shared traits with other languages.
-
-The following table enumerates and explains the syntactic character
-mnemonics that Muldis D Plain Text itself has specific knowledge of
-and ascribes specific meanings to; where multiple characters are shown
-together that means they are used in pairs.
-
-    Chars | Generic Meaning        | Specific Use Cases
-    ------+------------------------+---------------------------------------
-    ''    | stringy identifiers    | * delimit quoted code identifiers/names
-    ------+------------------------+---------------------------------------
-    ""    | stringy user data      | * delimit quoted opaque regular literals
-          |                        | * delimit all Bits/Blob/Text literals
-          |                        | * delimit quoted Integer/Fraction literals
-    ------+------------------------+---------------------------------------
-    ``    | stringy comments       | * delimit expendable dividing space comments
-    ------+------------------------+---------------------------------------
-    \     | special contexts       | * indicates special contexts where
-          |                        |   typical meanings may not apply
-          |                        | * first char inside a quoted string
-          |                        |   to indicate it has escaped characters
-          |                        | * prefix for each escaped char in quoted string
-          |                        | * L0 of prefix for literals/selectors
-          |                        |   to disambiguate that they are lits/sels
-    ------+------------------------+---------------------------------------
-    []    | ordered collections    | * delimit homogeneous ordered collections
-          |                        |   of members, concept ordinal+asset pairs
-          |                        | * delimit Array selectors
-          |                        | * delimit nonempty-Tuple_Array selectors
-          |                        | * delimit statement blocks
-    ------+------------------------+---------------------------------------
-    {}    | nonordered collections | * delimit homogeneous nonordered collections
-          |                        |   of members, concept asset+cardinal pairs
-          |                        | * delimit Set/Bag selectors
-          |                        | * delimit nonempty-Relation/Tuple_Bag sels
-    ------+------------------------+---------------------------------------
-    ()    | aordered collections   | * delimit heterogeneous aordered collections
-          |                        |   of attributes, concept nominal+asset pairs
-          |                        | * delimit Tuple/Capsule/Excuse selectors
-          |                        | * delimit Heading literals
-          |                        | * delimit empty-Tuple_Array/Relation/Tuple_Bag lits
-          |                        | * generic delimiting expressions
-    ------+------------------------+---------------------------------------
-    :     | pairings               | * indicates a pairing context
-          |                        | * separates the 2 parts of a pair
-          |                        | * indicates selection of a pair
-          |                        | * optional pair separator in Array/Set/Bag sels
-          |                        | * optional pair separator in Tuple/Excuse sels
-          |                        | * optional pair separator in ne-TA/Rel/TB sels
-          |                        | * label/attributes separator in Capsule sel
-          |                        | * L1 of optional prefix for Capsule selectors
-          |                        | * disambiguate Bag sel from Set sel
-          |                        | * L2 of prefix for Renaming literals
-          |                        | * syntax for binding a name to something
-          |                        | * syntax for assigning a value to a variable
-    ------+------------------------+---------------------------------------
-    =     | associations           | * indicates that 2 things are associated
-          |                        | * name of standard equality test function
-          |                        | * syntax for binding a name to something
-          |                        | * syntax for assigning a value to a variable
-    ------+------------------------+---------------------------------------
-    ,     | list builders          | * separates collection elements
-          |                        | * separate members in Array/Set/Bag sels
-          |                        | * separate members in nonempty-TA/Rel/TB sels
-          |                        | * separate attributes in Tuple/Excuse sels
-          |                        | * separate attributes in Heading lits
-          |                        | * disambiguate unary named Tuple sels from Capsule sels
-          |                        | * disambiguate unary anon Tuple selectors
-          |                        |   from generic delimiting expressions
-    ------+------------------------+---------------------------------------
-    ;     | code block builders    | * separates code block elements, each
-          |                        | * of which is an expression or statement
-    ------+------------------------+---------------------------------------
-    ?     | qualifications/is?/so  | * indicates a qualifying/yes-or-no context
-          |                        | * L1 of optional prefix for Boolean literals
-          |                        | * L2 of prefix for Bits literals
-          |                        | * L1 of optional prefix for Set selectors
-          |                        | * L1 of prefix for Relation lits/sels
-          |                        | * predicate functions
-          |                        | * existential tests / mapping to Boolean
-          |                        | * non-Excuse values
-    ------+------------------------+---------------------------------------
-    +     | quantifications/count  | * indicates a quantifying/count context
-          |                        | * L1 of optional prefix for Integer/Fraction literals
-          |                        | * L2 of prefix for Blob literals
-          |                        | * L1 of optional prefix for Bag selectors
-          |                        | * L1 of prefix for Tuple_Bag lits/sels
-          |                        | * numeric addition
-          |                        | * collection element insertion
-    ------+------------------------+---------------------------------------
-    ~     | sequences/stitching    | * indicates a sequencing context
-          |                        | * L1 of prefix for Bits/Blob literals
-          |                        | * L1 of optional prefix for Text literals
-          |                        | * L1 of optional prefix for Array selectors
-          |                        | * L1 of prefix for Tuple_Array lits/sels
-          |                        | * catenation of ordered collections
-    ------+------------------------+---------------------------------------
-    %     | tuples/heterogeneous   | * indicates that tuples are featured
-          |                        | * L1 of optional prefix for Tuple selectors
-          |                        | * L2 of prefix for Tuple_Array/Relation/Tuple_Bag lits/sels
-          |                        | * in names of many tuple-related operators
-    ------+------------------------+---------------------------------------
-    !     | excuses/but/not        | * indicates that excuses are featured
-          |                        | * prefix for Excuse literals/selectors
-          |                        | * logical negation
-          |                        | * in names of functions that may result
-          |                        |   in Excuses rather than throw exceptions
-    ------+------------------------+---------------------------------------
-    @     | locators/at/headings   | * indicates identifiers/names are featured
-          |                        | * L1 of prefix for Heading/Attr_Name_List literals
-          |                        | * L1 of prefix for Renaming literals
-          |                        | * in names of functions about relational headings
-    ------+------------------------+---------------------------------------
-    |     | homogeneous/bodies     | * indicates non-tuple-specific homogeneous collections
-          |                        | * in names of functions about relational bodies
-    ------+------------------------+---------------------------------------
-    &     | variables/read+write   | * indicates a program variable is featured
-          |                        | * syntax for reading current value of variable
-          |                        | * syntax for updating variable to new current value
-    ------+------------------------+---------------------------------------
-    -     | subtraction            | * indicates negative-Integer/Fraction literal
-          |                        | * numeric subtraction
-          |                        | * collection element removal
-    ------+------------------------+---------------------------------------
-    /     | division               | * disambiguate Fraction lit from Integer lit
-    ------+------------------------+---------------------------------------
-    .     | radix point            | * disambiguate Fraction lit from Integer lit
-          | accessor/at            | * in names of collection item accessor functions
-    ------+------------------------+---------------------------------------
-    digit | number                 | * first char 0..9 in bareword indicates is a number
-    ------+------------------------+---------------------------------------
-    alpha | identifier             | * first char a..z/etc in bareword indicates is identifier
-    ------+------------------------+---------------------------------------
-    0b    | base-2                 | * indicates base-2/binary notation
-          |                        | * prefix for Integer/Fraction/Bits/Blob in base-2
-    ------+------------------------+---------------------------------------
-    0o    | base-8                 | * indicates base-8/octal notation
-          |                        | * prefix for Integer/Fraction/Bits in base-8
-    ------+------------------------+---------------------------------------
-    0d    | base-10                | * indicates base-10/decimal notation
-          |                        | * optional prefix for Integer/Fraction in base-10
-    ------+------------------------+---------------------------------------
-    0x    | base-16                | * indicates base-16/hexadecimal notation
-          |                        | * prefix for Integer/Fraction/Bits/Blob in base-16
-    ------+------------------------+---------------------------------------
-
-    When combining symbols in a \XY prefix (L0+L1+L2) to represent both
-    collection type and element type, the X and Y always indicate the
-    collection and element type respectively; the mnemonic is "X of Y", for
-    example, \?% says "set of tuple", or \~? says "string of boolean".
-
 =head1 GRAMMAR INTERPRETATION
 
 I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
@@ -915,6 +757,29 @@ Muldis D Plain Text selector syntax, and this literal syntax explicitly has
 no child C<< <expr> >> nodes.  In conventional terms, one is typically for
 selecting scalar values, though many cases are also simple collections.
 
+=head1 COLLECTION SELECTOR EXPRESSIONS
+
+Grammar:
+
+    <collection_selector_expr> ::=
+          <Array>
+        | <Set>
+        | <Bag>
+        | <Tuple>
+        | <Tuple_Array>
+        | <Relation>
+        | <Tuple_Bag>
+        | <Capsule>
+        | <Excuse>
+        | <Function_Call>
+
+A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
+value literal specific to some system-defined data type that has its own
+special Muldis D Plain Text selector syntax, and this literal syntax
+explicitly does have child C<< <expr> >> nodes in the general case, as in
+conventional terms it is for selecting values representing collections of
+other values.
+
 =head2 Boolean Literals
 
 Grammar:
@@ -1264,281 +1129,6 @@ Examples:
 
     \~"Green"
 
-=head2 Simple Excuse Literals
-
-Grammar:
-
-    <Simple_Excuse> ::=
-        '\\!' <sp> <attr_name>
-
-A C<< <Simple_Excuse> >> node represents a value of the Muldis D C<Excuse>
-type, and provides a terser alternative syntax to an C<< <Excuse> >> node
-for the common special case of C<Excuse> having just the C<0> attribute
-where that attribute is valued with an C<Attr_Name>, such as is the case
-for all typical Muldis D Foundation defined C<Excuse> subtypes.
-
-Examples:
-
-  \!No_Reason
-
-  \!Before_All_Others
-
-  \!Div_By_Zero
-
-  \!No_Such_Attr_Name
-
-=head2 Attribute Name and Heading Literals
-
-Grammar:
-
-    <Attr_Name> ::=
-        '\\' <sp> <attr_name>
-
-    <Heading> ::=
-        '\\@' <sp> <delim_attr_name_commalist>
-
-    <delim_attr_name_commalist> ::=
-        '(' <sp> <attr_name_commalist> <sp> ')'
-
-    <attr_name_commalist> ::=
-        [<attr_name> | <ord_attr_name_range> | ''] % [<sp> ',' <sp>]
-
-    <ord_attr_name_range> ::=
-        <min_ord_attr> <sp> '..' <sp> <max_ord_attr>
-
-    <min_ord_attr> ::=
-        <ord_attr_name>
-
-    <max_ord_attr> ::=
-        <ord_attr_name>
-
-A C<< <Heading> >> node represents a value of the Muldis D
-C<Heading> type, which is an arbitrarily-large unordered collection of
-attribute names.  An C<< <Attr_Name> >> node represents a value of the Muldis
-D C<Attr_Name> type, which is a subtype by constraint of the C<Heading>
-type; C<< <Attr_Name> >> provides a terser alternative syntax for the
-common special case of C<< <Heading> >> having exactly 1 attribute.
-
-An C<< <ord_attr_name_range> >> is subject to the additional rule that its
-integral C<< <min_ord_attr> >> value must be less than or equal to its
-integral C<< <max_ord_attr> >> value.
-
-The C<Heading> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Tuple> type, and all
-C<Heading> values can be selected in terms of C<< <Tuple> >> grammar
-nodes.  However, C<< <Heading> >> is the canonical grammar for all
-C<Heading> values, except for all C<Attr_Name> values, for which
-C<< <Attr_Name> >> is the canonical grammar.
-
-Examples:
-
-    `Zero attributes.`
-    \@()
-
-    `One named attribute.`
-    \sales
-
-    `Same thing.`
-    \@(sales)
-
-    `Same thing.`
-    \@('sales')
-
-    `One ordered attribute.`
-    \0
-
-    `Same thing.`
-    \'\\c<0>'
-
-    `Three nonordered attributes.`
-    \@(region,revenue,qty)
-
-    `Three ordered attributes.`
-    \@(0..2)
-
-    `One of each.`
-    \@(1,age)
-
-    `Some attribute names can only appear quoted.`
-    \'Street Address'
-
-    `A non-Latin name.`
-    \'サンプル'
-
-=head2 Attribute Name List Literals
-
-Grammar:
-
-    <Attr_Name_List> ::=
-        '\\@' <sp> <nesting_attr_names>
-
-An C<< <Attr_Name_List> >> node represents a value of the Muldis D C<Attr_Name_List>
-type, which is an arbitrarily-long sequence of C<Attr_Name> values.  It
-typically serves as a (fully or partially) qualified identifier for referencing
-either a foundation entity, or a package or component of the latter, from
-the perspective of an entity in a (possibly same) package using it.
-
-THIS PARAGRAPH IS OBSOLETE AND DESCRIBES AFTER-PARSING BEHAVIOR FOR CONTEXTS
-WHERE A Local_Name VALUE IS EXPECTED.
-Iff the first/only C<Attr_Name> in the sequence is one of the barewords
-C<{foundation,used,package,folder,material,floating}> then it is used
-as-is; otherwise the sequence will implicitly have the element C<floating>
-prepended to it.  Each of the non-first (post optional prepend) sequence
-elements corresponds in order to a level in a multi-level namespace.
-
-The C<Attr_Name_List> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Array> type, and all
-C<Attr_Name_List> values can be selected in terms of C<< <Array> >> grammar
-nodes.  However, C<< <Attr_Name_List> >> is the canonical grammar for all
-C<Attr_Name_List> values.
-
-Examples (comments refer to their Muldis-D runtime specific interpretation):
-
-    `The Muldis D Foundation function Integer_plus, from any perspective.`
-    \@foundation::Integer_plus
-
-    `The system-defined "Relation" type, from the perspective of some other
-    package that "uses" the "System" package under the local alias "MD".`
-    \@used::MD::Relation
-
-    `Some user-defined "main" procedure, from the perspective of the same
-    package as that which it is defined in.`
-    \@package::main
-
-    `Some entity "foo" that has the same parent folder as the observer.`
-    \@folder::foo
-
-    `Some material from its own perspective, such as for self-recursion.`
-    \@material
-
-    `Same "Relation" as above iff \@used::MD is among in the declared
-    "floating" list of the same observer's package.`
-    \@floating::Relation
-
-    `Same thing, after post-processing.`
-    \@Relation
-
-=head2 Attribute Renaming Specification Literals
-
-Grammar:
-
-    <Renaming> ::=
-        '\\@:' <sp> '(' <sp> <renaming_commalist> <sp> ')'
-
-    <renaming_commalist> ::=
-        [<anon_attr_rename> | <named_attr_rename> | ''] % [<sp> ',' <sp>]
-
-    <anon_attr_rename> ::=
-          ['->' <sp> <attr_name_after>]
-        | [<attr_name_after> <sp> '<-']
-        | [<attr_name_before> <sp> '->']
-        | ['<-' <sp> <attr_name_before>]
-
-    <named_attr_rename> ::=
-          [<attr_name_before> <sp> '->' <sp> <attr_name_after>]
-        | [<attr_name_after> <sp> '<-' <sp> <attr_name_before>]
-
-    <attr_name_before> ::=
-        <nonord_attr_name>
-
-    <attr_name_after> ::=
-        <nonord_attr_name>
-
-A C<< <Renaming> >> node represents a value of the Muldis D C<Renaming>
-type, which is an arbitrarily-large unordered collection of attribute
-renaming specifications.  Each attribute renaming specification is a pair
-of attribute names marked with a C<< -> >> or a C<< <- >> element; the
-associated C<< <attr_name_before> >> and C<< <attr_name_after> >> indicate
-the name that an attribute has I<before> and I<after> the renaming
-operation, respectively.  Iff the renaming specification is a C<<
-<anon_attr_rename> >> then either the I<before> or I<after> name is an
-ordered attribute name corresponding to the ordinal position of the
-renaming specification element in the C<< <renaming_commalist> >>, starting
-at zero.
-
-A C<< <renaming_commalist> >> is subject to the additional rule that no 2
-C<< <attr_name_before> >> may be the same attribute name and that no 2
-C<< <attr_name_after> >> may be the same attribute name.
-
-The C<Renaming> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Tuple> type, and all
-C<Renaming> values can be selected in terms of C<< <Tuple> >> grammar
-nodes.  However, C<< <Renaming> >> is the canonical grammar for all
-C<Renaming> values.
-
-Examples:
-
-    `Zero renamings, a no-op.`
-    \@:()
-
-    `Also a no-op.`
-    \@:(age->age)
-
-    `Rename one attribute.`
-    \@:(fname->first_name)
-
-    `Same thing.`
-    \@:(first_name<-fname)
-
-    `Swap 2 named attributes.`
-    \@:(foo->bar,foo<-bar)
-
-    `Convert ordered names to nonordered.`
-    \@:(->foo,->bar)
-
-    `Same thing.`
-    \@:(0->foo,1->bar)
-
-    `Convert nonordered names to ordered.`
-    \@:(<-foo,<-bar)
-
-    `Same thing.`
-    \@:(0<-foo,1<-bar)
-
-    `Swap 2 ordered attributes.`
-    \@:(0->1,0<-1)
-
-    `Same thing.`
-    \@:(->1,->0)
-
-    `Some attribute names can only appear quoted.`
-    \@:('First Name'->'Last Name')
-
-=head2 Identifier and Identity_Identifier Literals
-
-Grammar:
-
-    <Identifier> ::=
-        ...
-
-    <Identity_Identifier> ::=
-        ...
-
-I<TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.>
-
-=head1 COLLECTION SELECTOR EXPRESSIONS
-
-Grammar:
-
-    <collection_selector_expr> ::=
-          <Array>
-        | <Set>
-        | <Bag>
-        | <Tuple>
-        | <Tuple_Array>
-        | <Relation>
-        | <Tuple_Bag>
-        | <Capsule>
-        | <Excuse>
-        | <Function_Call>
-
-A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
-value literal specific to some system-defined data type that has its own
-special Muldis D Plain Text selector syntax, and this literal syntax
-explicitly does have child C<< <expr> >> nodes in the general case, as in
-conventional terms it is for selecting values representing collections of
-other values.
-
 =head2 Array Selectors
 
 Grammar:
@@ -1716,6 +1306,258 @@ Grammar:
 
 An C<< <Excuse> >> node represents a value of the Muldis D
 C<Excuse> type, which is ...
+
+=head2 Simple Excuse Literals
+
+Grammar:
+
+    <Simple_Excuse> ::=
+        '\\!' <sp> <attr_name>
+
+A C<< <Simple_Excuse> >> node represents a value of the Muldis D C<Excuse>
+type, and provides a terser alternative syntax to an C<< <Excuse> >> node
+for the common special case of C<Excuse> having just the C<0> attribute
+where that attribute is valued with an C<Attr_Name>, such as is the case
+for all typical Muldis D Foundation defined C<Excuse> subtypes.
+
+Examples:
+
+  \!No_Reason
+
+  \!Before_All_Others
+
+  \!Div_By_Zero
+
+  \!No_Such_Attr_Name
+
+=head2 Attribute Name List Literals
+
+Grammar:
+
+    <Attr_Name_List> ::=
+        '\\@' <sp> <nesting_attr_names>
+
+An C<< <Attr_Name_List> >> node represents a value of the Muldis D C<Attr_Name_List>
+type, which is an arbitrarily-long sequence of C<Attr_Name> values.  It
+typically serves as a (fully or partially) qualified identifier for referencing
+either a foundation entity, or a package or component of the latter, from
+the perspective of an entity in a (possibly same) package using it.
+
+THIS PARAGRAPH IS OBSOLETE AND DESCRIBES AFTER-PARSING BEHAVIOR FOR CONTEXTS
+WHERE A Local_Name VALUE IS EXPECTED.
+Iff the first/only C<Attr_Name> in the sequence is one of the barewords
+C<{foundation,used,package,folder,material,floating}> then it is used
+as-is; otherwise the sequence will implicitly have the element C<floating>
+prepended to it.  Each of the non-first (post optional prepend) sequence
+elements corresponds in order to a level in a multi-level namespace.
+
+The C<Attr_Name_List> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Array> type, and all
+C<Attr_Name_List> values can be selected in terms of C<< <Array> >> grammar
+nodes.  However, C<< <Attr_Name_List> >> is the canonical grammar for all
+C<Attr_Name_List> values.
+
+Examples (comments refer to their Muldis-D runtime specific interpretation):
+
+    `The Muldis D Foundation function Integer_plus, from any perspective.`
+    \@foundation::Integer_plus
+
+    `The system-defined "Relation" type, from the perspective of some other
+    package that "uses" the "System" package under the local alias "MD".`
+    \@used::MD::Relation
+
+    `Some user-defined "main" procedure, from the perspective of the same
+    package as that which it is defined in.`
+    \@package::main
+
+    `Some entity "foo" that has the same parent folder as the observer.`
+    \@folder::foo
+
+    `Some material from its own perspective, such as for self-recursion.`
+    \@material
+
+    `Same "Relation" as above iff \@used::MD is among in the declared
+    "floating" list of the same observer's package.`
+    \@floating::Relation
+
+    `Same thing, after post-processing.`
+    \@Relation
+
+=head2 Attribute Name and Heading Literals
+
+Grammar:
+
+    <Attr_Name> ::=
+        '\\' <sp> <attr_name>
+
+    <Heading> ::=
+        '\\@' <sp> <delim_attr_name_commalist>
+
+    <delim_attr_name_commalist> ::=
+        '(' <sp> <attr_name_commalist> <sp> ')'
+
+    <attr_name_commalist> ::=
+        [<attr_name> | <ord_attr_name_range> | ''] % [<sp> ',' <sp>]
+
+    <ord_attr_name_range> ::=
+        <min_ord_attr> <sp> '..' <sp> <max_ord_attr>
+
+    <min_ord_attr> ::=
+        <ord_attr_name>
+
+    <max_ord_attr> ::=
+        <ord_attr_name>
+
+A C<< <Heading> >> node represents a value of the Muldis D
+C<Heading> type, which is an arbitrarily-large unordered collection of
+attribute names.  An C<< <Attr_Name> >> node represents a value of the Muldis
+D C<Attr_Name> type, which is a subtype by constraint of the C<Heading>
+type; C<< <Attr_Name> >> provides a terser alternative syntax for the
+common special case of C<< <Heading> >> having exactly 1 attribute.
+
+An C<< <ord_attr_name_range> >> is subject to the additional rule that its
+integral C<< <min_ord_attr> >> value must be less than or equal to its
+integral C<< <max_ord_attr> >> value.
+
+The C<Heading> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Tuple> type, and all
+C<Heading> values can be selected in terms of C<< <Tuple> >> grammar
+nodes.  However, C<< <Heading> >> is the canonical grammar for all
+C<Heading> values, except for all C<Attr_Name> values, for which
+C<< <Attr_Name> >> is the canonical grammar.
+
+Examples:
+
+    `Zero attributes.`
+    \@()
+
+    `One named attribute.`
+    \sales
+
+    `Same thing.`
+    \@(sales)
+
+    `Same thing.`
+    \@('sales')
+
+    `One ordered attribute.`
+    \0
+
+    `Same thing.`
+    \'\\c<0>'
+
+    `Three nonordered attributes.`
+    \@(region,revenue,qty)
+
+    `Three ordered attributes.`
+    \@(0..2)
+
+    `One of each.`
+    \@(1,age)
+
+    `Some attribute names can only appear quoted.`
+    \'Street Address'
+
+    `A non-Latin name.`
+    \'サンプル'
+
+=head2 Attribute Renaming Specification Literals
+
+Grammar:
+
+    <Renaming> ::=
+        '\\@:' <sp> '(' <sp> <renaming_commalist> <sp> ')'
+
+    <renaming_commalist> ::=
+        [<anon_attr_rename> | <named_attr_rename> | ''] % [<sp> ',' <sp>]
+
+    <anon_attr_rename> ::=
+          ['->' <sp> <attr_name_after>]
+        | [<attr_name_after> <sp> '<-']
+        | [<attr_name_before> <sp> '->']
+        | ['<-' <sp> <attr_name_before>]
+
+    <named_attr_rename> ::=
+          [<attr_name_before> <sp> '->' <sp> <attr_name_after>]
+        | [<attr_name_after> <sp> '<-' <sp> <attr_name_before>]
+
+    <attr_name_before> ::=
+        <nonord_attr_name>
+
+    <attr_name_after> ::=
+        <nonord_attr_name>
+
+A C<< <Renaming> >> node represents a value of the Muldis D C<Renaming>
+type, which is an arbitrarily-large unordered collection of attribute
+renaming specifications.  Each attribute renaming specification is a pair
+of attribute names marked with a C<< -> >> or a C<< <- >> element; the
+associated C<< <attr_name_before> >> and C<< <attr_name_after> >> indicate
+the name that an attribute has I<before> and I<after> the renaming
+operation, respectively.  Iff the renaming specification is a C<<
+<anon_attr_rename> >> then either the I<before> or I<after> name is an
+ordered attribute name corresponding to the ordinal position of the
+renaming specification element in the C<< <renaming_commalist> >>, starting
+at zero.
+
+A C<< <renaming_commalist> >> is subject to the additional rule that no 2
+C<< <attr_name_before> >> may be the same attribute name and that no 2
+C<< <attr_name_after> >> may be the same attribute name.
+
+The C<Renaming> type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the C<Tuple> type, and all
+C<Renaming> values can be selected in terms of C<< <Tuple> >> grammar
+nodes.  However, C<< <Renaming> >> is the canonical grammar for all
+C<Renaming> values.
+
+Examples:
+
+    `Zero renamings, a no-op.`
+    \@:()
+
+    `Also a no-op.`
+    \@:(age->age)
+
+    `Rename one attribute.`
+    \@:(fname->first_name)
+
+    `Same thing.`
+    \@:(first_name<-fname)
+
+    `Swap 2 named attributes.`
+    \@:(foo->bar,foo<-bar)
+
+    `Convert ordered names to nonordered.`
+    \@:(->foo,->bar)
+
+    `Same thing.`
+    \@:(0->foo,1->bar)
+
+    `Convert nonordered names to ordered.`
+    \@:(<-foo,<-bar)
+
+    `Same thing.`
+    \@:(0<-foo,1<-bar)
+
+    `Swap 2 ordered attributes.`
+    \@:(0->1,0<-1)
+
+    `Same thing.`
+    \@:(->1,->0)
+
+    `Some attribute names can only appear quoted.`
+    \@:('First Name'->'Last Name')
+
+=head2 Identifier and Identity_Identifier Literals
+
+Grammar:
+
+    <Identifier> ::=
+        ...
+
+    <Identity_Identifier> ::=
+        ...
+
+I<TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.>
 
 =head2 Generic Function Call Specification Selectors
 
@@ -1950,6 +1792,164 @@ I<TODO.  Loosely speaking, "L" means left-associative,
 "R" means right-associative, "N" means non-associative.>
 
 A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
+
+=head1 SYNTACTIC MNEMONICS
+
+The syntax of Muldis D Plain Text, as well as the names of standard
+library routines of Muldis D, are designed around a variety of mnemonics
+that bring it some self-similarity and an association between syntax and
+semantics so that it is easier to read and write data and code in it.  Some
+of these mnemonics are more about self-similarity and others are more about
+shared traits with other languages.
+
+The following table enumerates and explains the syntactic character
+mnemonics that Muldis D Plain Text itself has specific knowledge of
+and ascribes specific meanings to; where multiple characters are shown
+together that means they are used in pairs.
+
+    Chars | Generic Meaning        | Specific Use Cases
+    ------+------------------------+---------------------------------------
+    ''    | stringy identifiers    | * delimit quoted code identifiers/names
+    ------+------------------------+---------------------------------------
+    ""    | stringy user data      | * delimit quoted opaque regular literals
+          |                        | * delimit all Bits/Blob/Text literals
+          |                        | * delimit quoted Integer/Fraction literals
+    ------+------------------------+---------------------------------------
+    ``    | stringy comments       | * delimit expendable dividing space comments
+    ------+------------------------+---------------------------------------
+    \     | special contexts       | * indicates special contexts where
+          |                        |   typical meanings may not apply
+          |                        | * first char inside a quoted string
+          |                        |   to indicate it has escaped characters
+          |                        | * prefix for each escaped char in quoted string
+          |                        | * L0 of prefix for literals/selectors
+          |                        |   to disambiguate that they are lits/sels
+    ------+------------------------+---------------------------------------
+    []    | ordered collections    | * delimit homogeneous ordered collections
+          |                        |   of members, concept ordinal+asset pairs
+          |                        | * delimit Array selectors
+          |                        | * delimit nonempty-Tuple_Array selectors
+          |                        | * delimit statement blocks
+    ------+------------------------+---------------------------------------
+    {}    | nonordered collections | * delimit homogeneous nonordered collections
+          |                        |   of members, concept asset+cardinal pairs
+          |                        | * delimit Set/Bag selectors
+          |                        | * delimit nonempty-Relation/Tuple_Bag sels
+    ------+------------------------+---------------------------------------
+    ()    | aordered collections   | * delimit heterogeneous aordered collections
+          |                        |   of attributes, concept nominal+asset pairs
+          |                        | * delimit Tuple/Capsule/Excuse selectors
+          |                        | * delimit Heading literals
+          |                        | * delimit empty-Tuple_Array/Relation/Tuple_Bag lits
+          |                        | * generic delimiting expressions
+    ------+------------------------+---------------------------------------
+    :     | pairings               | * indicates a pairing context
+          |                        | * separates the 2 parts of a pair
+          |                        | * indicates selection of a pair
+          |                        | * optional pair separator in Array/Set/Bag sels
+          |                        | * optional pair separator in Tuple/Excuse sels
+          |                        | * optional pair separator in ne-TA/Rel/TB sels
+          |                        | * label/attributes separator in Capsule sel
+          |                        | * L1 of optional prefix for Capsule selectors
+          |                        | * disambiguate Bag sel from Set sel
+          |                        | * L2 of prefix for Renaming literals
+          |                        | * syntax for binding a name to something
+          |                        | * syntax for assigning a value to a variable
+    ------+------------------------+---------------------------------------
+    =     | associations           | * indicates that 2 things are associated
+          |                        | * name of standard equality test function
+          |                        | * syntax for binding a name to something
+          |                        | * syntax for assigning a value to a variable
+    ------+------------------------+---------------------------------------
+    ,     | list builders          | * separates collection elements
+          |                        | * separate members in Array/Set/Bag sels
+          |                        | * separate members in nonempty-TA/Rel/TB sels
+          |                        | * separate attributes in Tuple/Excuse sels
+          |                        | * separate attributes in Heading lits
+          |                        | * disambiguate unary named Tuple sels from Capsule sels
+          |                        | * disambiguate unary anon Tuple selectors
+          |                        |   from generic delimiting expressions
+    ------+------------------------+---------------------------------------
+    ;     | code block builders    | * separates code block elements, each
+          |                        | * of which is an expression or statement
+    ------+------------------------+---------------------------------------
+    ?     | qualifications/is?/so  | * indicates a qualifying/yes-or-no context
+          |                        | * L1 of optional prefix for Boolean literals
+          |                        | * L2 of prefix for Bits literals
+          |                        | * L1 of optional prefix for Set selectors
+          |                        | * L1 of prefix for Relation lits/sels
+          |                        | * predicate functions
+          |                        | * existential tests / mapping to Boolean
+          |                        | * non-Excuse values
+    ------+------------------------+---------------------------------------
+    +     | quantifications/count  | * indicates a quantifying/count context
+          |                        | * L1 of optional prefix for Integer/Fraction literals
+          |                        | * L2 of prefix for Blob literals
+          |                        | * L1 of optional prefix for Bag selectors
+          |                        | * L1 of prefix for Tuple_Bag lits/sels
+          |                        | * numeric addition
+          |                        | * collection element insertion
+    ------+------------------------+---------------------------------------
+    ~     | sequences/stitching    | * indicates a sequencing context
+          |                        | * L1 of prefix for Bits/Blob literals
+          |                        | * L1 of optional prefix for Text literals
+          |                        | * L1 of optional prefix for Array selectors
+          |                        | * L1 of prefix for Tuple_Array lits/sels
+          |                        | * catenation of ordered collections
+    ------+------------------------+---------------------------------------
+    %     | tuples/heterogeneous   | * indicates that tuples are featured
+          |                        | * L1 of optional prefix for Tuple selectors
+          |                        | * L2 of prefix for Tuple_Array/Relation/Tuple_Bag lits/sels
+          |                        | * in names of many tuple-related operators
+    ------+------------------------+---------------------------------------
+    !     | excuses/but/not        | * indicates that excuses are featured
+          |                        | * prefix for Excuse literals/selectors
+          |                        | * logical negation
+          |                        | * in names of functions that may result
+          |                        |   in Excuses rather than throw exceptions
+    ------+------------------------+---------------------------------------
+    @     | locators/at/headings   | * indicates identifiers/names are featured
+          |                        | * L1 of prefix for Heading/Attr_Name_List literals
+          |                        | * L1 of prefix for Renaming literals
+          |                        | * in names of functions about relational headings
+    ------+------------------------+---------------------------------------
+    |     | homogeneous/bodies     | * indicates non-tuple-specific homogeneous collections
+          |                        | * in names of functions about relational bodies
+    ------+------------------------+---------------------------------------
+    &     | variables/read+write   | * indicates a program variable is featured
+          |                        | * syntax for reading current value of variable
+          |                        | * syntax for updating variable to new current value
+    ------+------------------------+---------------------------------------
+    -     | subtraction            | * indicates negative-Integer/Fraction literal
+          |                        | * numeric subtraction
+          |                        | * collection element removal
+    ------+------------------------+---------------------------------------
+    /     | division               | * disambiguate Fraction lit from Integer lit
+    ------+------------------------+---------------------------------------
+    .     | radix point            | * disambiguate Fraction lit from Integer lit
+          | accessor/at            | * in names of collection item accessor functions
+    ------+------------------------+---------------------------------------
+    digit | number                 | * first char 0..9 in bareword indicates is a number
+    ------+------------------------+---------------------------------------
+    alpha | identifier             | * first char a..z/etc in bareword indicates is identifier
+    ------+------------------------+---------------------------------------
+    0b    | base-2                 | * indicates base-2/binary notation
+          |                        | * prefix for Integer/Fraction/Bits/Blob in base-2
+    ------+------------------------+---------------------------------------
+    0o    | base-8                 | * indicates base-8/octal notation
+          |                        | * prefix for Integer/Fraction/Bits in base-8
+    ------+------------------------+---------------------------------------
+    0d    | base-10                | * indicates base-10/decimal notation
+          |                        | * optional prefix for Integer/Fraction in base-10
+    ------+------------------------+---------------------------------------
+    0x    | base-16                | * indicates base-16/hexadecimal notation
+          |                        | * prefix for Integer/Fraction/Bits/Blob in base-16
+    ------+------------------------+---------------------------------------
+
+    When combining symbols in a \XY prefix (L0+L1+L2) to represent both
+    collection type and element type, the X and Y always indicate the
+    collection and element type respectively; the mnemonic is "X of Y", for
+    example, \?% says "set of tuple", or \~? says "string of boolean".
 
 =head1 STRATEGIES FOR PARSING
 
