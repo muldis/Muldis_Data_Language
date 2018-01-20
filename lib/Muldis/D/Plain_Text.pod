@@ -732,7 +732,7 @@ Examples:
 
 I<TODO: ADD SIGNAL SENDING AND OTHER MISC EXPRESSIONS.>
 
-=head1 OPAQUE LITERAL EXPRESSIONS
+=head1 OPAQUE LITERAL AND COLLECTION SELECTOR EXPRESSIONS
 
 Grammar:
 
@@ -745,21 +745,11 @@ Grammar:
         | <Text>
         | <Simple_Excuse>
         | <Attr_Name>
+        | <Nesting>
         | <Heading>
-        | <Attr_Name_List>
         | <Renaming>
         | <Identifier>
         | <Identity_Identifier>
-
-An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
-literal specific to some system-defined data type that has its own special
-Muldis D Plain Text selector syntax, and this literal syntax explicitly has
-no child C<< <expr> >> nodes.  In conventional terms, one is typically for
-selecting scalar values, though many cases are also simple collections.
-
-=head1 COLLECTION SELECTOR EXPRESSIONS
-
-Grammar:
 
     <collection_selector_expr> ::=
           <Array>
@@ -772,6 +762,12 @@ Grammar:
         | <Capsule>
         | <Excuse>
         | <Function_Call>
+
+An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
+literal specific to some system-defined data type that has its own special
+Muldis D Plain Text selector syntax, and this literal syntax explicitly has
+no child C<< <expr> >> nodes.  In conventional terms, one is typically for
+selecting scalar values, though many cases are also simple collections.
 
 A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
 value literal specific to some system-defined data type that has its own
@@ -1157,7 +1153,7 @@ A C<< <Set> >> is subject to the additional rule that, either its C<<
 elements, or the C<< <Set> >> must have the C<\?> prefix, so that the C<<
 <Set> >> can be distinguished from every possible C<< <Bag> >>.
 
-=head2 Bag Selectors
+=head2 Bag / Multiset Selectors
 
 Grammar:
 
@@ -1192,7 +1188,7 @@ element, or the C<< <Bag> >> must have the C<\+> prefix, so that the C<<
 idiomatic way to represent an empty C<Bag> is to have exactly 1 C<<
 <multiplied_member> >> whose C<< <multiplicity_expr> >> is zero.
 
-=head2 Tuple Selectors
+=head2 Tuple / Attribute Set Selectors
 
 Grammar:
 
@@ -1232,7 +1228,7 @@ element must have a leading or trailing comma, or the C<< <Tuple> >> must
 have the C<\%> prefix, so that the C<< <Tuple> >> can be distinguished from
 every possible C<< <Capsule> >> and C<< <delimiting_expr> >>.
 
-=head2 Tuple-Array Selectors
+=head2 Tuple Array Selectors
 
 Grammar:
 
@@ -1247,7 +1243,7 @@ the additional rule that its C<< <member_commalist> >> has at least 1 C<<
 <*_member> >> element; otherwise the C<< <Tuple_Array> >> must have a C<<
 <delim_attr_name_commalist> >>.
 
-=head2 Relation Selectors
+=head2 Relation / Tuple Set Selectors
 
 Grammar:
 
@@ -1262,7 +1258,7 @@ the additional rule that its C<< <member_commalist> >> has at least 1 C<<
 <*_member> >> element; otherwise the C<< <Relation> >> must have a C<<
 <delim_attr_name_commalist> >>.
 
-=head2 Tuple-Bag Selectors
+=head2 Tuple Bag Selectors
 
 Grammar:
 
@@ -1277,7 +1273,7 @@ the additional rule that its C<< <member_commalist> >> has at least 1 C<<
 <*_member> >> element; otherwise the C<< <Tuple_Bag> >> must have a C<<
 <delim_attr_name_commalist> >>.
 
-=head2 Capsule Selectors
+=head2 Capsule / Labelled Tuple Selectors
 
 Grammar:
 
@@ -1330,14 +1326,14 @@ Examples:
 
   \!No_Such_Attr_Name
 
-=head2 Attribute Name List Literals
+=head2 Nesting / Attribute Name List Literals
 
 Grammar:
 
-    <Attr_Name_List> ::=
+    <Nesting> ::=
         '\\@' <sp> <nesting_attr_names>
 
-An C<< <Attr_Name_List> >> node represents a value of the Muldis D C<Attr_Name_List>
+An C<< <Nesting> >> node represents a value of the Muldis D C<Nesting>
 type, which is an arbitrarily-long sequence of C<Attr_Name> values.  It
 typically serves as a (fully or partially) qualified identifier for referencing
 either a foundation entity, or a package or component of the latter, from
@@ -1351,11 +1347,11 @@ as-is; otherwise the sequence will implicitly have the element C<floating>
 prepended to it.  Each of the non-first (post optional prepend) sequence
 elements corresponds in order to a level in a multi-level namespace.
 
-The C<Attr_Name_List> type is not a foundational type of the Muldis D type
+The C<Nesting> type is not a foundational type of the Muldis D type
 system, but rather is a subtype by constraint of the C<Array> type, and all
-C<Attr_Name_List> values can be selected in terms of C<< <Array> >> grammar
-nodes.  However, C<< <Attr_Name_List> >> is the canonical grammar for all
-C<Attr_Name_List> values.
+C<Nesting> values can be selected in terms of C<< <Array> >> grammar
+nodes.  However, C<< <Nesting> >> is the canonical grammar for all
+C<Nesting> values.
 
 Examples (comments refer to their Muldis-D runtime specific interpretation):
 
@@ -1383,7 +1379,7 @@ Examples (comments refer to their Muldis-D runtime specific interpretation):
     `Same thing, after post-processing.`
     \@Relation
 
-=head2 Attribute Name and Heading Literals
+=head2 Attribute Name and Heading / Attribute Name Set Literals
 
 Grammar:
 
@@ -1909,7 +1905,7 @@ together that means they are used in pairs.
           |                        |   in Excuses rather than throw exceptions
     ------+------------------------+---------------------------------------
     @     | locators/at/headings   | * indicates identifiers/names are featured
-          |                        | * L1 of prefix for Heading/Attr_Name_List literals
+          |                        | * L1 of prefix for Nesting/Heading literals
           |                        | * L1 of prefix for Renaming literals
           |                        | * in names of functions about relational headings
     ------+------------------------+---------------------------------------
