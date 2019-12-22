@@ -130,8 +130,8 @@ markers of such can either be omitted or be based on other standards.
 However, a major version of zero should be considered either pre-production
 or that the authority expects frequent upcoming backwards-incompatible changes.*
 
-See also [http://design.perl6.org/S11.html#Versioning](
-http://design.perl6.org/S11.html#Versioning) which was the primary
+See also [http://design.raku.org/S11.html#Versioning](
+http://design.raku.org/S11.html#Versioning) which was the primary
 influence for the versioning scheme described above.
 
 # SEE ALSO
