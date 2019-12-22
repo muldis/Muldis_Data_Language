@@ -1,7 +1,6 @@
 # NAME
 
-Muldis Data Language (Muldis D) -
-Relational database application programming language
+Muldis Data Language (Muldis D) - Relational database application programming language
 
 # VERSION
 
