@@ -51,30 +51,30 @@ a context for better understanding it.>
 =head1 GENERAL STRUCTURE
 
 A C<HDMD_Raku_STD> Muldis D code file is actually a Raku code file that
-defines particular multi-dimensional Perl data structures which resemble
+defines particular multi-dimensional Raku data structures which resemble
 possible concrete syntax trees (CSTs) from parsing C<PTMD_STD> Muldis D
 code.  Each component of a CST is called a I<node> or node element, and
 roughly corresponds to a capture by the C<PTMD_STD> parser.  A node is
-typically represened as a Perl Seq|Array, but could alternately be a Perl
+typically represened as a Raku Seq|Array, but could alternately be a Raku
 scalar or something else, and so C<HDMD_Raku_STD> Muldis D code is
-typically a tree of Perl structures, called I<node trees>, with Perl
-Seq|Array as the central nodes and Perl scalars as the leaf nodes.  Often
+typically a tree of Raku structures, called I<node trees>, with Raku
+Seq|Array as the central nodes and Raku scalars as the leaf nodes.  Often
 C<HDMD_Raku_STD> code is embedded or constructed in one or more files of
-a larger Perl program that does more than define this code, such as
+a larger Raku program that does more than define this code, such as
 various non-database-related tasks.  A node tree is just composed using
-basic Perl data types, and there are no Muldis D node-specific Perl classes
+basic Raku data types, and there are no Muldis D node-specific Raku classes
 or objects required for doing this.
 
-Note that Perl undefined values are not allowed anywhere in a node in the
+Note that Raku undefined values are not allowed anywhere in a node in the
 general case; you must use only defined values instead.  This documentation
-also assumes that only defined values are used, and that supplying a Perl
+also assumes that only defined values are used, and that supplying a Raku
 undef will result in an error.  The few exceptions to this rule are
 explicitly stated.
 
 The grammar in this file is informal and consists just of written
 descriptions of how each kind of I<node> must be composed and how to
-interpret such Perl data structures as Muldis D code.  Every named grammar
-node is a Perl Seq|Array unless otherwise stated, and every grammar element
+interpret such Raku data structures as Muldis D code.  Every named grammar
+node is a Raku Seq|Array unless otherwise stated, and every grammar element
 is a Seq|Array element; the first node element is the Seq|Array element at
 index zero, and so on.
 
@@ -111,24 +111,24 @@ C<language_name> node having 5 ordered elements:
 
 =item C<ln_base_name>
 
-This is the Muldis D language base name; it is simply the Perl C<Str> value
+This is the Muldis D language base name; it is simply the Raku C<Str> value
 C<Muldis_D>.
 
 =item C<ln_base_authority>
 
-This is the base authority; it is a Perl C<Str> formatted as per a
+This is the base authority; it is a Raku C<Str> formatted as per a
 specific-context C<Name> value literal, except that must be nonempty and it
 is expressly limited to using non-control characters in the ASCII
-repertoire; it is typically the Perl C<Str> value C<https://muldis.com>.
+repertoire; it is typically the Raku C<Str> value C<https://muldis.com>.
 
 =item C<ln_base_version_number>
 
-This is the base version number; it is a Perl C<Str> formatted as per
-C<ln_base_authority>; it is typically a Perl C<Str> value like C<0.148.2>.
+This is the base version number; it is a Raku C<Str> formatted as per
+C<ln_base_authority>; it is typically a Raku C<Str> value like C<0.148.2>.
 
 =item C<ln_dialect>
 
-This is the dialect name; it is simply the Perl C<Str> value
+This is the dialect name; it is simply the Raku C<Str> value
 C<HDMD_Raku_STD>.
 
 =item C<ln_extensions>
@@ -142,16 +142,16 @@ L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be added
 later, which would likely be optional.
 
 The value associated with the C<ln_extensions> attribute named
-C<catalog_abstraction_level> must be one of these 4 Perl C<Str> values:
+C<catalog_abstraction_level> must be one of these 4 Raku C<Str> values:
 C<the_floor>, C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.
 
 The value associated with the C<ln_extensions> attribute named
-C<op_char_repertoire> must be one of these 2 Perl character strings:
+C<op_char_repertoire> must be one of these 2 Raku character strings:
 C<basic>, C<extended>.
 
 The value associated with the C<ln_extensions> attribute named
 C<standard_syntax_extensions> must be formatted similarly to a C<Set> SCVL;
-each of the value's elements must be one of these 0 Perl C<Str> values.
+each of the value's elements must be one of these 0 Raku C<Str> values.
 
 =back
 
@@ -431,11 +431,11 @@ C<RatRoundRule>, C<Scalar>, C<Tuple>, C<Database>, C<Relation>,
 C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>, C<List>.
 
 Fundamentally, the various Muldis D scalar and collection types are
-represented by their equivalent Perl native scalar and collection types.
+represented by their equivalent Raku native scalar and collection types.
 But since Muldis D is more strongly typed, or at least differently typed,
-than Perl, each C<value> node is represented by a Perl Seq|Array, whose
-elements include both the payload Perl literal plus explicit metadata for
-how to interpret that Perl literal for mapping to Muldis D.
+than Raku, each C<value> node is represented by a Raku Seq|Array, whose
+elements include both the payload Raku literal plus explicit metadata for
+how to interpret that Raku literal for mapping to Muldis D.
 
 =head2 Value Literal Common Elements
 
@@ -448,7 +448,7 @@ Every GCVL has 1-3 ordered elements:
 
 =item C<value_kind>
 
-This is a Perl C<Str> value of the format
+This is a Raku C<Str> value of the format
 C<< <[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@' >>;
 it identifies the data type of the value literal in broad terms and is the
 only external metadata of C<value_payload> generally necessary to
@@ -484,13 +484,13 @@ This is mandatory for all C<value>.  Format varies with C<value_kind>.
 
 =back
 
-A Perl Pair may alternately be used to represent a GCVL iff that node has
+A Raku Pair may alternately be used to represent a GCVL iff that node has
 exactly 2 elements (C<value_kind> and C<value_payload>); in that case, the
 C<value_kind> is stored in that Pair's key, and the C<value_payload> is
 stored in the Pair's value.
 
 For some data types, a GCVL may alternately be just its payload for the
-sake of brevity.  If any Perl value of one of the following types is
+sake of brevity.  If any Raku value of one of the following types is
 encountered where a GCVL node is expected, then it is interpreted as a full
 C<value> node as follows:
 
@@ -508,7 +508,7 @@ C<value> node as follows:
     TAIInstant <- Instant  # TODO: UPDATE THIS! #
     TAIDuration <- Duration  # TODO: UPDATE THIS! #
 
-The above details are subject to revision regarding when a Perl object
+The above details are subject to revision regarding when a Raku object
 might claim to do multiple type interfaces.
 
 For GCVL and SCVL examples, see the subsequent documentation sections.
@@ -519,7 +519,7 @@ For GCVL and SCVL examples, see the subsequent documentation sections.
 
 A C<Singleton> node represents a value of any of the singleton scalar types
 that C<sys.std.Core.Type.Cat.Singleton> is a union over.  The payload must
-be one of these 2 special named Perl values: C<-Inf>, C<Inf|+Inf>.
+be one of these 2 special named Raku values: C<-Inf>, C<Inf|+Inf>.
 
 Examples:
 
@@ -531,7 +531,7 @@ Examples:
 
 A C<Bool> node represents a logical boolean value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Bool> value as follows:  The payload must be a
-Perl C<Bool>, and so C<Bool::False> and C<Bool::True> are mapped directly.
+Raku C<Bool>, and so C<Bool::False> and C<Bool::True> are mapped directly.
 
 Examples:
 
@@ -543,7 +543,7 @@ Examples:
 
 An C<Order> node represents an order-determination.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:  The payload must
-be a Perl C<Order>, and so C<Order::Less> and C<Order::Same> and
+be a Raku C<Order>, and so C<Order::Less> and C<Order::Same> and
 C<Order::More> are mapped directly.
 
 Examples:
@@ -556,7 +556,7 @@ Examples:
 
 A C<RoundMeth> node represents a rounding method.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.RoundMeth> value by
-directly mapping the payload.  The payload must be a Perl C<Str>
+directly mapping the payload.  The payload must be a Raku C<Str>
 having one of the 9 values C<Down>, C<Up>, C<ToZero>, C<ToInf>,
 C<HalfDown>, C<HalfUp>, C<HalfToZero>, C<HalfToInf>, C<HalfEven>.
 
@@ -570,7 +570,7 @@ Examples:
 
 An C<Int> node represents an integer numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:  The payload must be a
-Perl C<Int>, which is mapped directly.
+Raku C<Int>, which is mapped directly.
 
 Examples:
 
@@ -596,7 +596,7 @@ Examples:
 
 A C<Rat> node represents a rational numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Rat> value as follows:  The payload must
-be a Perl C<FatRat|Rat|Num|Int>, which is mapped directly.
+be a Raku C<FatRat|Rat|Num|Int>, which is mapped directly.
 
 Examples:
 
@@ -628,7 +628,7 @@ Examples:
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
 as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  The payload must
-be a Perl C<Blob>, which is mapped directly.
+be a Raku C<Blob>, which is mapped directly.
 
 Examples:
 
@@ -644,7 +644,7 @@ Examples:
 
 A C<Text> node represents a general purpose character string.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Text> value by directly
-mapping the payload.  The payload must be a Perl C<Str>.
+mapping the payload.  The payload must be a Raku C<Str>.
 
 Examples:
 
@@ -664,11 +664,11 @@ A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
 from C<Text>.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Cat.Name> value by directly mapping the payload.  The
-payload must be a Perl C<Str>.
+payload must be a Raku C<Str>.
 
 A C<NameChain> node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
-names.  Its payload is a Perl C<Seq|Array> value or C<Str> value.  This
+names.  Its payload is a Raku C<Seq|Array> value or C<Str> value.  This
 node is interpreted as a Muldis D C<sys.std.Core.Type.Cat.NameChain> value
 as follows:
 
@@ -678,7 +678,7 @@ as follows:
 
 If the payload is a C<Seq|Array>, then
 every element must be a valid payload for a C<Name> node (that
-is, any Perl character string).  Each element of the payload, in order,
+is, any Raku character string).  Each element of the payload, in order,
 defines an element of the C<array> possrep's attribute of a C<NameChain>.
 
 =item *
@@ -728,7 +728,7 @@ Examples:
 A C<RatRoundRule> node represents a rational rounding rule.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
 attributes are defined by the C<RatRoundRule_payload>.  A
-C<RatRoundRule_payload> must be a Perl C<Seq|Array> with 3 elements, which
+C<RatRoundRule_payload> must be a Raku C<Seq|Array> with 3 elements, which
 correspond in order to the 3 attributes: C<radix> (a C<PInt2_N>),
 C<min_exp> (an C<Int>), and C<round_meth> (a C<RoundMeth>).  Each of
 C<radix> and C<min_exp> must qualify as a valid C<Int_payload>, and
@@ -755,16 +755,16 @@ A C<Scalar> node represents a literal or selector invocation for a
 not-C<Int|String> scalar subtype value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
 by the node's (mandatory for C<Scalar>) C<type_name> element and whose
-attributes are defined by the payload.  If the payload is a Perl C<Pair>,
+attributes are defined by the payload.  If the payload is a Raku C<Pair>,
 then its key and value, respectively, are designated I<possrep name> and
-I<possrep attrs>; if the payload is not a Perl C<Pair>, then it is
+I<possrep attrs>; if the payload is not a Raku C<Pair>, then it is
 interpreted as if it was just the I<possrep attrs>, and the I<possrep name>
 was the empty string.  The possrep name and possrep attrs must be as per
 the payload of a C<Name> and C<Tuple> node, respectively.  The I<possrep
 attrs> is interpreted specifically as attributes of the declared type's
 possrep which is specified by the I<possrep name>.  Each key+value pair of
 the I<possrep attrs> defines a named possrep attribute of the new scalar;
-the pair's key and value are, respectively, a Perl C<Str> that specifies
+the pair's key and value are, respectively, a Raku C<Str> that specifies
 the possrep attribute name, and an C<expr> node that specifies the possrep
 attribute value.
 
@@ -800,9 +800,9 @@ Examples:
 A C<Tuple> node represents a literal or selector invocation for a
 tuple value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
-payload.  The payload must be a Perl C<Mapping|Hash>.  Each key+value pair
+payload.  The payload must be a Raku C<Mapping|Hash>.  Each key+value pair
 of the payload defines a named attribute of the new tuple; the pair's key
-and value are, respectively, a Perl C<Str> that specifies the attribute
+and value are, respectively, a Raku C<Str> that specifies the attribute
 name, and an C<expr> node that specifies the attribute value.
 
 Examples:
@@ -825,9 +825,9 @@ Examples:
 A C<Database> node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Database> value whose attributes are defined by the
-payload.  The payload must be a Perl C<Mapping|Hash>.  Each key+value pair
+payload.  The payload must be a Raku C<Mapping|Hash>.  Each key+value pair
 of the payload defines a named attribute of the new 'database'; the pair's
-key and value are, respectively, a Perl C<Str> that specifies the attribute
+key and value are, respectively, a Raku C<Str> that specifies the attribute
 name, and an C<expr> node that specifies the attribute value, which must be
 represent a relation value.
 
@@ -842,19 +842,19 @@ defined by the payload, which is interpreted as follows:
 
 =item *
 
-Iff the payload is a Perl C<Set|KeySet> with zero elements, then it
+Iff the payload is a Raku C<Set|KeySet> with zero elements, then it
 defines the only relation value having zero attributes and zero tuples.
 
 =item *
 
-Iff the payload is a Perl C<Set|KeySet> with at least one element, and
-every element is a Perl C<Str> (as per a valid payload for a C<Name> node),
+Iff the payload is a Raku C<Set|KeySet> with at least one element, and
+every element is a Raku C<Str> (as per a valid payload for a C<Name> node),
 then it defines the attribute names of a relation having zero tuples.
 
 =item *
 
-Iff the payload is a Perl C<Set|KeySet> with at least one element, and
-every element is a Perl C<Mapping|Hash> (as per a valid payload for a
+Iff the payload is a Raku C<Set|KeySet> with at least one element, and
+every element is a Raku C<Mapping|Hash> (as per a valid payload for a
 C<Tuple> node), then each element of the payload defines a tuple of
 the new relation; every tuple-defining element of the payload must be of
 the same degree and have the same attribute names as its sibling elements;
@@ -863,11 +863,11 @@ is its heading for the current purposes.
 
 =item *
 
-Iff the payload is a Perl C<Pair>, then:  The new relation value's
-attribute names are defined by the payload's key, which is a Perl
+Iff the payload is a Raku C<Pair>, then:  The new relation value's
+attribute names are defined by the payload's key, which is a Raku
 C<Seq|Array> of C<Str> (each as per a C<Name> node payload), and the
 relation body's tuples' attribute values are defined by the payload's
-value, which is a Perl C<Set|KeySet> of C<Seq|Array> of tuple attribute
+value, which is a Raku C<Set|KeySet> of C<Seq|Array> of tuple attribute
 value defining  nodes.  This format is meant to be the most compact of
 the generic relation payload formats, as the attribute names only appear
 once for the relation rather than repeating for each tuple.  As a
@@ -902,7 +902,7 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 A C<Set> node represents a literal or selector invocation for a set
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
-whose elements are defined by the payload.  The payload must be a Perl
+whose elements are defined by the payload.  The payload must be a Raku
 C<Set|KeySet>.  Each element of the payload defines a unary tuple of
 the new set; each element is an C<expr> node that defines the C<value>
 attribute of the tuple.
@@ -945,7 +945,7 @@ Examples:
 An C<Array> node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Array> value whose elements are defined by the
-payload.  The payload must be a Perl C<Seq|Array>.  Each element of the
+payload.  The payload must be a Raku C<Seq|Array>.  Each element of the
 payload defines a binary tuple of the new sequence; the element value
 is an C<expr> node that defines the C<value> attribute of the tuple,
 and the element index is used as the C<index> attribute of the tuple.
@@ -969,7 +969,7 @@ Examples:
 
 A C<Bag> node represents a literal or selector invocation for a bag
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value
-whose elements are defined by the payload.  The payload must be a Perl
+whose elements are defined by the payload.  The payload must be a Raku
 C<Bag|KeyBag|Set|KeySet> value; the payload element keys are C<expr> nodes
 corresponding to the C<value> attribute of the new bag's
 tuples, and the payload element values are positive integers (or
@@ -998,7 +998,7 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
 An C<SPInterval> node represents a literal or selector invocation for a
 single-piece interval value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.SPInterval> value whose attributes are defined by the
-payload.  The node payload must be a Perl C<Range>, which is mapped
+payload.  The node payload must be a Raku C<Range>, which is mapped
 directly.  Each of the C<min> and C<max> attributes/method-return-values of
 the C<Range> is an C<expr> node that defines the C<min> and C<max>
 attribute value, respectively, of the new single-piece interval.  Each of
@@ -1009,16 +1009,16 @@ A special shorthand for an C<SPInterval> payload also exists, which is to
 help with the possibly common situation where an interval is a singleton,
 meaning the interval has exactly 1 value; the shorthand empowers that value
 to be specified just once rather than twice.  Iff the payload is I<not> a
-Perl C<Range>, then the payload is treated as if it was instead the usual
-Perl C<Range>, whose C<min> and C<max> are both identical to the actual
+Raku C<Range>, then the payload is treated as if it was instead the usual
+Raku C<Range>, whose C<min> and C<max> are both identical to the actual
 payload and whose C<excludes_min> and C<excludes_max> are both
 C<Bool::False>.  For example, the payload C<6> is shorthand for C<6..6>.
 
 An C<MPInterval> node represents a literal or selector invocation for a
 multi-piece interval value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.MPInterval> value whose elements are defined by the
-payload.  The payload must be a Perl C<Set|KeySet>.  Each element of the
-payload must be a valid payload for an C<SPInterval> node (that is, a Perl
+payload.  The payload must be a Raku C<Set|KeySet>.  Each element of the
+payload must be a valid payload for an C<SPInterval> node (that is, a Raku
 C<Range>).  Each element of the payload defines a 4-ary tuple, representing
 a single-piece interval, of the new multi-piece interval.
 
@@ -1048,7 +1048,7 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 A C<List> node represents a literal or selector invocation for a low-level
 list value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.List>
 value whose elements are defined by the payload.  The payload must be just
-a Perl C<Seq|Array>.  Each element of the payload defines an element of the
+a Raku C<Seq|Array>.  Each element of the payload defines an element of the
 new list, where the elements keep the same order.
 
 Examples:
@@ -1104,28 +1104,28 @@ Examples:
 
 A C<depot> node has 2-3 ordered elements such that 3 elements means the
 depot has a normal-user-data database and 2 elements means it has just a
-(possibly empty) system catalog database:  The first element is the Perl
+(possibly empty) system catalog database:  The first element is the Raku
 C<Str> value C<depot>.  Iff the C<depot> has 3 elements then the third
-element specifies the normal-user-data database; it is a Perl C<Pair> whose
-key is the Perl C<Str> value C<depot-data> and whose value is a C<Database>
+element specifies the normal-user-data database; it is a Raku C<Pair> whose
+key is the Raku C<Str> value C<depot-data> and whose value is a C<Database>
 node.  The second element specifies the system catalog database; it is a
-Perl C<Pair> whose key is the Perl C<Str> value C<depot-catalog> and whose
-value is either a C<Database> node or a Perl C<Seq|Array> which is
+Raku C<Pair> whose key is the Raku C<Str> value C<depot-catalog> and whose
+value is either a C<Database> node or a Raku C<Seq|Array> which is
 hereafter referred to as C<depot_catalog_payload>.  A
 C<depot_catalog_payload> either has zero elements, designating an empty
-catalog, or all of its elements are Perl C<Seq|Array> (in particular, none
-of its elements is the Perl C<Str> value 'Database'), each of which is one
+catalog, or all of its elements are Raku C<Seq|Array> (in particular, none
+of its elements is the Raku C<Str> value 'Database'), each of which is one
 of the following kinds of nodes: C<subdepot>, C<named_material>,
 C<self_local_dbvar_type>.
 
-A C<subdepot> node has 3 ordered elements:  The first element is the Perl
+A C<subdepot> node has 3 ordered elements:  The first element is the Raku
 C<Str> value C<subdepot>.  The second element is a C<Name_payload>,
 which is the declared name of the subdepot within the namespace defined by
 its parent subdepot (or depot).  The third element is a
 C<depot_catalog_payload>.
 
 A C<self_local_dbvar_type> node has 2 ordered elements:  The first element
-is the Perl C<Str> value C<self-local-dbvar-type>.  The second element
+is the Raku C<Str> value C<self-local-dbvar-type>.  The second element
 is a C<PNSQNameChain_payload>, which specifies what the normal-user-data
 database has as its declared data type.
 
@@ -1172,7 +1172,7 @@ middle element is C<material_declared_name>.
 
 =item C<material_kind>
 
-This is a Perl C<Str> value of the format C<< [<[ a..z ]>+] ** '-' >>; it
+This is a Raku C<Str> value of the format C<< [<[ a..z ]>+] ** '-' >>; it
 identifies the kind of the material and is the only external metadata of
 C<material_payload> generally necessary to interpret the latter; what
 grammars are valid for C<material_payload> depend just on C<material_kind>.
@@ -1201,15 +1201,15 @@ material in another is using a C<with_clause>.
 
 A C<function> node specifies a new function that lives in a depot or
 subdepot.  A C<function> node has 3 ordered elements:  The first element
-is one of these 8 Perl C<Str> values: C<function>, C<named-value>,
+is one of these 8 Raku C<Str> values: C<function>, C<named-value>,
 C<value-map>, C<value-map-unary>, C<value-filter>, C<value-constraint>,
 C<value-reduction>, C<order-determination>.  The
 second element is a C<Name_payload>, which is the function's declared name.
 The third element is a C<function_payload>.  A C<function_payload> is a
-Perl C<Pair> whose key and value are designated, in order,
+Raku C<Pair> whose key and value are designated, in order,
 C<function_heading> and C<function_body>.
 
-A C<function_heading> is a Perl C<Seq|Array> with 2-3 ordered elements.
+A C<function_heading> is a Raku C<Seq|Array> with 2-3 ordered elements.
 The first element is designated C<result_type> and is mandatory.  The
 second element is designated C<func_params> and is mandatory.  The third
 element is designated C<implements> and is optional.
@@ -1222,10 +1222,10 @@ except for any C<procedure_payload> that has either a C<::=> element or a
 C<&> element; in other words, a function has neither global nor
 subject-to-update parameters; it just has regular read-only parameters.
 
-A C<function_body> must be either the Perl character string C<...>, in
-which case it is an C<empty_routine_body>, or it must be a Perl
+A C<function_body> must be either the Raku character string C<...>, in
+which case it is an C<empty_routine_body>, or it must be a Raku
 C<Seq|Array>, having at least one element which is an C<expr>, and each
-other element of said Perl C<Seq|Array> must be either a C<with_clause> or
+other element of said Raku C<Seq|Array> must be either a C<with_clause> or
 a C<named_expr>.
 
 Each of C<implements> and C<with_clause> of a C<function_payload> is
@@ -1241,25 +1241,25 @@ Examples:
 
 A C<procedure> node specifies a new procedure that lives in a depot or
 subdepot.  A C<procedure> node has 3 ordered elements:  The first element
-is one of these 5 Perl C<Str> values: C<procedure>, C<system-service>,
+is one of these 5 Raku C<Str> values: C<procedure>, C<system-service>,
 C<transaction>, C<recipe>, C<updater>.
 The second element is a C<Name_payload>, which is the
 procedure's declared name.  The third element is a C<procedure_payload>.  A
-C<procedure_payload> is a Perl C<Pair> whose key and value are
+C<procedure_payload> is a Raku C<Pair> whose key and value are
 designated, in order, C<procedure_heading> and C<procedure_body>.
 
-Iff the C<procedure_heading> is a Perl C<Seq|Array>, then it has 1-2
+Iff the C<procedure_heading> is a Raku C<Seq|Array>, then it has 1-2
 ordered elements.  The first element is designated C<proc_params> and is
 mandatory.  The second element is designated C<implements> and is optional.
-Iff the C<procedure_heading> is a Perl C<Mapping|Hash>, then it is
+Iff the C<procedure_heading> is a Raku C<Mapping|Hash>, then it is
 designated C<proc_params> and there is no C<implements>.
 
-A C<proc_params> is a Perl C<Mapping|Hash>; it must have at least one
+A C<proc_params> is a Raku C<Mapping|Hash>; it must have at least one
 element, meaning the procedure has one or more parameters; each hash
 element specifies one parameter, and for each hash element, the hash
 element's key and value, respectively, are designated C<param_name> and
-C<param_details>.  Iff C<param_details> is a Perl C<Seq|Array> with at
-least two elements, and its first element is not a non-empty Perl C<Str>
+C<param_details>.  Iff C<param_details> is a Raku C<Seq|Array> with at
+least two elements, and its first element is not a non-empty Raku C<Str>
 value consisting of just the characters <[ a..z A..Z 0..9 _ - ]>, then the
 C<param_details> is a C<param_multi_meta>; otherwise, C<param_details> is a
 C<param_single_meta>.
@@ -1272,7 +1272,7 @@ has no C<param_flag>.
 
 Iff a parameter's C<param_details> is a C<param_multi_meta>, then the
 latter's last element must be a C<PNSQNameChain_payload>, and each of the
-C<param_details>' other elements must be a distinct one of these 4 Perl
+C<param_details>' other elements must be a distinct one of these 4 Raku
 C<Str> values: C<&>, C<?>, C<@>, C<::=>.  A C<param_multi_meta> must
 have at least 1 of those 4 and at most 2 of them, and furthermore only
 certain permutations are allowed.  A C<&> may be used either alone or in
@@ -1297,23 +1297,23 @@ parameter's last (C<PNSQNameChain_payload>) element is designated
 C<global_var_name>.  Iff a global parameter has a C<&> element then the
 parameter is an C<upd_global_param>; otherwise it is a C<ro_global_param>.
 
-An C<implements> must be either a C<PNSQNameChain_payload> or a Perl
+An C<implements> must be either a C<PNSQNameChain_payload> or a Raku
 C<Seq|Array> having zero or more elements where every element is a
 C<PNSQNameChain_payload>; each C<PNSQNameChain_payload> names a virtual
 procedure which the current procedure is declaring that it implements.
 
-A C<procedure_body> must be either the Perl C<Str> value C<...>, in which
-case it is an C<empty_routine_body>, or it must be a Perl C<Seq|Array>
+A C<procedure_body> must be either the Raku C<Str> value C<...>, in which
+case it is an C<empty_routine_body>, or it must be a Raku C<Seq|Array>
 having zero or more elements where each element must be either a
 C<with_clause> or a C<proc_var> or a
 C<named_expr> or a C<proc_stmt>; zero elements means that
 the procedure is an unconditional no-op.
 
-A C<with_clause> is a Perl C<Pair> whose key is the Perl C<Str> value
+A C<with_clause> is a Raku C<Pair> whose key is the Raku C<Str> value
 C<with> and whose value is a C<material> node.
 
-A C<proc_var> is a 3-element Perl C<Seq|Array> whose first element is the
-Perl C<Str> value C<var>, whose second element is a C<Name_payload>, and
+A C<proc_var> is a 3-element Raku C<Seq|Array> whose first element is the
+Raku C<Str> value C<var>, whose second element is a C<Name_payload>, and
 whose third element is a C<type_name> which is a C<PNSQNameChain_payload>.
 
 Examples:
@@ -1368,7 +1368,7 @@ Examples:
 
 A C<scalar_type> node specifies a new scalar type that lives in a depot
 or subdepot.  A C<scalar_type> node has 3 ordered elements:  The first
-element is the Perl C<Str> value C<scalar-type>.  The second element
+element is the Raku C<Str> value C<scalar-type>.  The second element
 is a C<Name_payload>, which is the scalar type's declared name.  The
 third element is a C<scalar_type_payload>.
 
@@ -1380,7 +1380,7 @@ I<TODO: Examples.>
 
 A C<tuple_type> node specifies a new tuple type that lives in a depot or
 subdepot.  A C<tuple_type> node has 3 ordered elements:  The first element
-is one of these 2 Perl C<Str> values: C<tuple-type>, C<database-type>.
+is one of these 2 Raku C<Str> values: C<tuple-type>, C<database-type>.
 The second element is a C<Name_payload>, which is the tuple type's declared
 name.  The third element is a C<tuple_type_payload>.
 
@@ -1448,7 +1448,7 @@ Examples:
 
 A C<relation_type> node specifies a new relation type that lives in a depot
 or subdepot.  A C<relation_type> node has 3 ordered elements:  The first
-element is the Perl C<Str> value C<relation-type>.  The second element
+element is the Raku C<Str> value C<relation-type>.  The second element
 is a C<Name_payload>, which is the relation type's declared name.  The
 third element is a C<relation_type_payload>.
 
@@ -1485,7 +1485,7 @@ Examples:
 
 A C<domain_type> node specifies a new domain type that lives in a depot
 or subdepot.  A C<domain_type> node has 3 ordered elements:  The first
-element is the Perl C<Str> value C<domain-type>.  The second element
+element is the Raku C<Str> value C<domain-type>.  The second element
 is a C<Name_payload>, which is the domain type's declared name.  The
 third element is a C<domain_type_payload>.
 
@@ -1497,7 +1497,7 @@ I<TODO: Examples.>
 
 A C<subset_type> node specifies a new subset type that lives in a depot
 or subdepot.  A C<subset_type> node has 3 ordered elements:  The first
-element is the Perl C<Str> value C<subset-type>.  The second element
+element is the Raku C<Str> value C<subset-type>.  The second element
 is a C<Name_payload>, which is the subset type's declared name.  The
 third element is a C<subset_type_payload>.
 
@@ -1509,7 +1509,7 @@ I<TODO: Examples.>
 
 A C<mixin_type> node specifies a new mixin type that lives in a depot
 or subdepot.  A C<mixin_type> node has 3 ordered elements:  The first
-element is the Perl C<Str> value C<mixin-type>.  The second element
+element is the Raku C<Str> value C<mixin-type>.  The second element
 is a C<Name_payload>, which is the mixin type's declared name.  The
 third element is a C<mixin_type_payload>.
 
@@ -1522,9 +1522,9 @@ I<TODO: Examples.>
 A C<key_constr> node specifies a new unique key constraint or candidate
 key, for a relation type, that lives in a depot or subdepot.  A
 C<key_constr> node has 3 ordered elements:  The first element is one of
-these 2 Perl C<Str> values: C<key-constraint>, C<primary-key>.  The
+these 2 Raku C<Str> values: C<key-constraint>, C<primary-key>.  The
 second element is a C<Name_payload>, which is the constraint's declared
-name.  The third element is a C<key_constr_payload>, which is just a Perl
+name.  The third element is a C<key_constr_payload>, which is just a Raku
 C<Set|KeySet> of 0..N elements where each of said elements is a
 C<Name_payload>, which is the name of an attribute that the key ranges
 over; alternately, a C<key_constr_payload> may be just a C<Name_payload>,
@@ -1550,7 +1550,7 @@ I<TODO.>
 A C<subset_constr> node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
 that lives in a depot or subdepot.  A C<subset_constr> node has 3 ordered
-elements:  The first element is the Perl C<Str> value C<subset-constraint>.
+elements:  The first element is the Raku C<Str> value C<subset-constraint>.
 The second element is a C<Name_payload>, which is the constraint's declared
 name.  The third element is a C<subset_constr_payload>.
 
@@ -1581,13 +1581,13 @@ I<TODO.>
 
 A C<stim_resp_rule> node specifies a new stimulus-response rule that lives
 in a depot or subdepot.  A C<stim_resp_rule> node has 3 ordered elements:
-The first element is the Perl C<Str> value C<stimulus-response-rule>.
+The first element is the Raku C<Str> value C<stimulus-response-rule>.
 The second element is a C<Name_payload>, which is the stimulus-response
 rule's declared name.  The third element is a C<stim_resp_rule_payload>.
 
-A C<stim_resp_rule_payload> is a Perl C<Pair> whose key and value
+A C<stim_resp_rule_payload> is a Raku C<Pair> whose key and value
 are designated, in order, C<stimulus> and C<response>; C<stimulus> is the
-Perl C<Str> value C<after-mount> (the kind of stimulus), and
+Raku C<Str> value C<after-mount> (the kind of stimulus), and
 C<response> is a C<PNSQNameChain_payload> (the name of the recipe or
 procedure being invoked in response).
 
@@ -1597,15 +1597,15 @@ Examples:
 
 =head1 GENERIC VALUE EXPRESSIONS
 
-An C<expr_name> node has 2 ordered elements:  The first element is the Perl
+An C<expr_name> node has 2 ordered elements:  The first element is the Raku
 C<Str> value C<d> ("data").  The second element is a C<Name_payload>.
 
-An C<expr_name> node may alternately be formatted as a Perl Pair whose key
+An C<expr_name> node may alternately be formatted as a Raku Pair whose key
 and value are what would otherwise be the first and second node elements,
 respectively.
 
 A C<named_expr> node has 3 ordered elements:  The first element is either
-of the 2 Perl C<Str> values [C<::=>, C<let>].  The second element is
+of the 2 Raku C<Str> values [C<::=>, C<let>].  The second element is
 a C<Name_payload> and the third element is an C<expr> node; the second
 element declares an explicit expression node name for the third element.
 
@@ -1621,7 +1621,7 @@ Examples:
 
 An C<accessor> node has 2-3 ordered elements, such that 2 elements makes it
 an C<acc_via_named> and 3 elements makes it an C<acc_via_anon>:  The first
-element is the Perl C<Str> value C<acc>.  The last element of an
+element is the Raku C<Str> value C<acc>.  The last element of an
 C<acc_via_named> is a C<NameChain_payload>, which is by itself the
 C<target> of the accessor (naming both the other node plus its attribute to
 alias).  The second element of an C<acc_via_anon> is an C<expr> node which
@@ -1639,7 +1639,7 @@ Examples:
 =head2 Generic Function Invocation Expressions
 
 A C<func_invo> node has 2-4 ordered elements:  The first element is the
-Perl C<Str> value C<func-invo>.  The second element is a
+Raku C<Str> value C<func-invo>.  The second element is a
 C<PNSQNameChain_payload>, which names the function to invoke.  The last 1-2
 elements provide arguments to the function invocation; either or both or
 none of an C<Array_payload> element and a C<Tuple_payload> element may be
@@ -1680,7 +1680,7 @@ Examples:
 =head2 Generic If-Else Expressions
 
 An C<if_else_expr> node has 4 ordered elements:  The first element is
-either of the 2 Perl C<Str> values C<if-else-expr> and C<??!!>.  The
+either of the 2 Raku C<Str> values C<if-else-expr> and C<??!!>.  The
 second element is the I<if> condition expression; the third and fourth
 elements are the I<then> and I<else> result expressions, respectively;
 every one of the last 3 elements is an C<expr> node.
@@ -1700,10 +1700,10 @@ Examples:
 =head2 Generic Given-When-Default Expressions
 
 A C<given_when_def_expr> node has 3-4 ordered elements:  The first element
-is the Perl C<Str> value C<given-when-def-expr>.  The second element is an
+is the Raku C<Str> value C<given-when-def-expr>.  The second element is an
 C<expr> node which is the I<given> common comparand.  The optional third
-element is I<when_then>, a Perl C<Seq|Array> with 0..N elements, each of
-those being a 2-element Perl C<Seq|Array> or a Perl Pair, where each
+element is I<when_then>, a Raku C<Seq|Array> with 0..N elements, each of
+those being a 2-element Raku C<Seq|Array> or a Raku Pair, where each
 element is an C<expr> node; the first element / key is a I<when> comparand,
 and the second element / value is the associated I<then> result expression.
 The 4th/last element of a C<given_when_def_expr> node is I<default> result
@@ -1723,18 +1723,18 @@ Examples:
 =head2 Material Reference Selector Expressions
 
 A C<material_ref> node has 2 ordered elements:  The first element
-is the Perl C<Str> value C<material-ref>.  The second element is a
+is the Raku C<Str> value C<material-ref>.  The second element is a
 C<PNSQNameChain_payload>, which names the routine or type to reference.
 
 A C<primed_func> node has 2-4 ordered elements:  The first element is the
-Perl C<Str> value C<primed-func>.  The second element is a
+Raku C<Str> value C<primed-func>.  The second element is a
 C<PNSQNameChain_payload>, which names the function to reference.  The last
 1-2 elements provide arguments for the function as per the last 1-2
 elements of a C<func_invo> node.
 
 A C<material_ref> node, or a C<primed_func> node with zero primed
 arguments, may alternately be formatted as
-a Perl Pair whose key and value are what would otherwise be the first and
+a Raku Pair whose key and value are what would otherwise be the first and
 second node elements, respectively.
 
 Examples:
@@ -1751,15 +1751,15 @@ Examples:
 
 =head1 GENERIC PROCEDURE STATEMENTS
 
-A C<stmt_name> node has 2 ordered elements:  The first element is the Perl
+A C<stmt_name> node has 2 ordered elements:  The first element is the Raku
 C<Str> value C<s>.  The second element is a C<Name_payload>.
 
-A C<stmt_name> node may alternately be formatted as a Perl Pair whose key
+A C<stmt_name> node may alternately be formatted as a Raku Pair whose key
 and value are what would otherwise be the first and second node elements,
 respectively.
 
 A C<named_stmt> node has 3 ordered elements:  The first element is either
-of the 2 Perl C<Str> values [C<::=>, C<let>].  The second element is
+of the 2 Raku C<Str> values [C<::=>, C<let>].  The second element is
 a C<Name_payload> and the third element is a C<proc_stmt> node; the second
 element declares an explicit statement node name for the third element.
 
@@ -1775,7 +1775,7 @@ Examples:
 =head2 Generic Compound Statements
 
 A C<compound_stmt> node has 2 ordered elements:  The first element is the
-Perl C<Str> value C<compound-stmt>.  The second element is a Perl
+Raku C<Str> value C<compound-stmt>.  The second element is a Raku
 C<Seq|Array> having zero or more elements where each element must be either
 a C<with_clause> or a C<proc_var> or a C<named_expr> or a C<proc_stmt>;
 it is interpreted as
@@ -1792,7 +1792,7 @@ Examples:
 =head2 Multi-Update Statements
 
 A C<multi_upd_stmt> node has 2 ordered elements:  The first element is the
-Perl C<Str> value C<multi-upd-stmt>.  The second element is a Perl
+Raku C<Str> value C<multi-upd-stmt>.  The second element is a Raku
 C<Seq|Array>; it is interpreted as per a nonempty recipe body, which has
 exactly the same format.
 
@@ -1824,7 +1824,7 @@ Examples:
 =head2 Generic Procedure Invocation Statements
 
 A C<proc_invo> node has 2-4 ordered elements:  The first element is
-the Perl C<Str> value C<proc-invo>.  The second element is a
+the Raku C<Str> value C<proc-invo>.  The second element is a
 C<PNSQNameChain_payload>, which names the procedure to invoke.
 The last 1-2 elements provide arguments to the procedure
 invocation; either or both or none of an C<Array_payload> element and a
@@ -1835,8 +1835,8 @@ C<Array_payload> element or C<Tuple_payload> element value is the
 I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
 is for a read-only parameter, then the PTAV is just an C<expr> node
 which is the argument value; if the argument is for a subject-to-update
-parameter, then the PTAV is a Perl C<Seq|Array> with exactly 2 elements,
-where the first element is the Perl C<Str> value C<&>, and the second
+parameter, then the PTAV is a Raku C<Seq|Array> with exactly 2 elements,
+where the first element is the Raku C<Str> value C<&>, and the second
 element is the same C<expr> node that the PTAV would have been were this
 for a read-only parameter.
 
@@ -1866,7 +1866,7 @@ Examples:
 =head2 Generic Try-Catch Statements
 
 A C<try_catch_stmt> node has 2-3 ordered elements:  The first element is
-the Perl C<Str> value C<try-catch>.  The second element is a
+the Raku C<Str> value C<try-catch>.  The second element is a
 C<proc_stmt> node having the I<try> routine to unconditionally invoke
 first.  The optional third element is a C<proc_stmt> node having the
 I<catch> routine to execute iff I<try> throws an exception.
@@ -1881,7 +1881,7 @@ Examples:
 =head2 Generic If-Else Statements
 
 An C<if_else_stmt> node has 3-4 ordered elements:  The first element is the
-Perl C<Str> value C<if-else-stmt>.  The second element is the I<if>
+Raku C<Str> value C<if-else-stmt>.  The second element is the I<if>
 condition expression (an C<expr> node).  The third element is the I<then>
 statement (a C<proc_stmt> node).  The optional fourth/last element is the
 I<else> statement (a C<proc_stmt> node).
@@ -1897,10 +1897,10 @@ Examples:
 =head2 Generic Given-When-Default Statements
 
 A C<given_when_def_stmt> node has 3-4 ordered elements:  The first element
-is the Perl C<Str> value C<given-when-def-stmt>.  The second element is
+is the Raku C<Str> value C<given-when-def-stmt>.  The second element is
 an C<expr> node which is the I<given> common comparand.  The optional
-third element is I<proc_when_then>, a Perl C<Seq|Array> with 0..N elements,
-each of those being a 2-element Perl C<Seq|Array> or a Perl Pair; the first
+third element is I<proc_when_then>, a Raku C<Seq|Array> with 0..N elements,
+each of those being a 2-element Raku C<Seq|Array> or a Raku Pair; the first
 element / key is a I<when> comparand (an C<expr> node), and the second
 element / value is the associated I<then> result statement (a C<proc_stmt>
 node).  The optional 4th/last element of a C<given_when_def_stmt> node is
@@ -1921,16 +1921,16 @@ Examples:
 =head2 Procedure Leave, Iterate, and Loop Statements
 
 A C<leave_stmt> node has 1-2 ordered elements:  The first element is the
-Perl C<Str> value C<leave>.  The optional second element is a
+Raku C<Str> value C<leave>.  The optional second element is a
 C<Name_payload> which names the parent statement node to abort; it defaults
 to the empty string if not specified.
 
 An C<iterate_stmt> node has 1-2 ordered elements:  The first element is the
-Perl C<Str> value C<iterate>.  The optional second element is a
+Raku C<Str> value C<iterate>.  The optional second element is a
 C<Name_payload> which names the parent statement node to redo; it defaults
 to the empty string if not specified.
 
-A C<loop_stmt> node has 2 ordered elements:  The first element is the Perl
+A C<loop_stmt> node has 2 ordered elements:  The first element is the Raku
 C<Str> value C<loop>.  The second element is a C<proc_stmt> node having
 the statement to repeatedly execute.
 
@@ -1956,26 +1956,26 @@ Examples:
 =head1 DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
 A C<func_invo_alt_syntax> node has 3-4 ordered elements:  The first element
-is one of the 3 Perl C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
+is one of the 3 Raku C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
 depending on whether it represents infix, prefix, or postfix syntax,
-respectively.  The second element is a Perl C<Str> value,
+respectively.  The second element is a Raku C<Str> value,
 hereafter referred to as I<op> or I<keyword>, which determines the function
-to invoke.  The third element is (usually) a Perl C<Seq|Array>, hereafter
+to invoke.  The third element is (usually) a Raku C<Seq|Array>, hereafter
 referred to as I<main op args>, which is an ordered list of 1-N mandatory
-inputs to the function invocation.  The (optional) fourth element is a Perl
+inputs to the function invocation.  The (optional) fourth element is a Raku
 C<Mapping|Hash>, hereafter referred to as I<extra op args>, which is a
 named list of optional function inputs.  The number and format of elements
 of either I<main op args> or I<extra op args> varies depending on I<op>.
 Note that, when a I<main op args> would just contain a single element, such
 as when it is for a monadic operator, it may alternately be formatted as
 what is otherwise just its sole (node) element iff that node is not
-formatted as a Perl C<Seq|Array>.
+formatted as a Raku C<Seq|Array>.
 
 =head2 Simple Commutative N-adic Infix Reduction Operators
 
 A C<comm_infix_reduce_op_invo> node has 2-N main op args, each of which is
 an C<expr> node.  Note that the I<main op args> may alternately be given as
-a Perl C<Bag|KeyBag|Set|KeySet> rather than a Perl C<Seq|Array>.
+a Raku C<Bag|KeyBag|Set|KeySet> rather than a Raku C<Seq|Array>.
 
 Examples:
 
@@ -2216,20 +2216,20 @@ Examples:
 =head1 DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
 A C<proc_invo_alt_syntax> node has 3-4 ordered elements:  The first element
-is one of the 3 Perl C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
+is one of the 3 Raku C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
 depending on whether it represents infix, prefix, or postfix syntax,
-respectively.  The second element is a Perl C<Str> value,
+respectively.  The second element is a Raku C<Str> value,
 hereafter referred to as I<op> or I<keyword>, which determines the
-procedure to invoke.  The third element is (usually) a Perl
+procedure to invoke.  The third element is (usually) a Raku
 C<Seq|Array>, hereafter referred to as I<main op args>, which is an ordered
 list of 1-N mandatory inputs to the procedure invocation.  The
-(optional) fourth element is a Perl C<Mapping|Hash>, hereafter referred to
+(optional) fourth element is a Raku C<Mapping|Hash>, hereafter referred to
 as I<extra op args>, which is a named list of optional procedure
 inputs.  The number and format of elements of either I<main op args> or
 I<extra op args> varies depending on I<op>.  Note that, when a I<main op
 args> would just contain a single element, such as when it is for a monadic
 operator, it may alternately be formatted as what is otherwise just its
-sole (node) element iff that node is not formatted as a Perl C<Seq|Array>.
+sole (node) element iff that node is not formatted as a Raku C<Seq|Array>.
 
 =head2 Procedure Simple Monadic Postfix Operators
 
