@@ -146,7 +146,7 @@ Darren Duncan - darren@DarrenDuncan.net
 This file is part of the formal specification named
 **Muldis Data Language** (**Muldis D**).
 
-Muldis D is Copyright © 2002-2019, Muldis Data Systems, Inc.
+Muldis D is Copyright © 2002-2021, Muldis Data Systems, Inc.
 
 [https://muldis.com](https://muldis.com)
 
