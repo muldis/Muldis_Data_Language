@@ -1,7 +1,7 @@
 # README
 
 This repository or distribution features the document named
-**Muldis Data Language** (**Muldis D**)
+**Muldis Data Language** (**MDL**)
 and its supporting documents.
 
 See the file

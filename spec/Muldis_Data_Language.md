@@ -1,6 +1,6 @@
 # NAME
 
-Muldis Data Language (Muldis D) - Relational database application programming language
+Muldis Data Language (MDL) - Relational database application programming language
 
 # VERSION
 
@@ -14,7 +14,7 @@ The fully-qualified name of this document is
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification named
-**Muldis Data Language** (**Muldis D**).
+**Muldis Data Language** (**MDL**).
 The fully-qualified name of this document and specification is
 `Muldis_Data_Language https://muldis.com 0.300.0`.
 This is the official/original version by the authority Muldis Data Systems
@@ -144,28 +144,28 @@ Darren Duncan - darren@DarrenDuncan.net
 # LICENSE AND COPYRIGHT
 
 This file is part of the formal specification named
-**Muldis Data Language** (**Muldis D**).
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2021, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2021, Muldis Data Systems, Inc.
 
 [https://muldis.com](https://muldis.com)
 
-Muldis D is free documentation for software;
+MDL is free documentation for software;
 you can redistribute it and/or modify it under the terms of the Artistic
 License version 2 (AL2) as published by the Perl Foundation
 ([https://www.perlfoundation.org](https://www.perlfoundation.org)).
 You should have received a copy of the AL2 as part of the
-Muldis D distribution, in the file
+MDL distribution, in the file
 [LICENSE/artistic-2_0.txt](../LICENSE/artistic-2_0.txt); if not, see
 [https://www.perlfoundation.org/artistic-license-20.html](
 https://www.perlfoundation.org/artistic-license-20.html).
 
-Any versions of Muldis D that you modify and distribute must carry prominent
+Any versions of MDL that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
 addition to preserving this original copyright notice and other credits.
 
-While it is by no means required, the copyright holder of Muldis D would
-appreciate being informed any time you create a modified version of Muldis D
+While it is by no means required, the copyright holder of MDL would
+appreciate being informed any time you create a modified version of MDL
 that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
 
