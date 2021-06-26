@@ -90,7 +90,7 @@ as described below.  Others are encouraged to follow the same format, but
 are not required to.  For all intents and purposes, every *version number*
 of an official Muldis work is intended to conform to the external public
 standard **Semantic Versioning 2.0.0** as published at
-[https://semver.org](https://semver.org), but it is re-explained below for
+<https://semver.org>, but it is re-explained below for
 clarity or in case the external document disappears.
 
 A *version number* for authority `https://muldis.com` is an ordered sequence
@@ -129,8 +129,7 @@ markers of such can either be omitted or be based on other standards.
 However, a major version of zero should be considered either pre-production
 or that the authority expects frequent upcoming backwards-incompatible changes.*
 
-See also [http://design.raku.org/S11.html#Versioning](
-http://design.raku.org/S11.html#Versioning) which was the primary
+See also <http://design.raku.org/S11.html#Versioning> which was the primary
 influence for the versioning scheme described above.
 
 # SEE ALSO
@@ -148,34 +147,31 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2021, Muldis Data Systems, Inc.
 
-[https://muldis.com](https://muldis.com)
+<https://muldis.com>
 
 MDL is free documentation for software;
 you can redistribute it and/or modify it under the terms of the Artistic
 License version 2 (AL2) as published by the Perl Foundation
-([https://www.perlfoundation.org](https://www.perlfoundation.org)).
-You should have received a copy of the AL2 as part of the
-MDL distribution, in the file
+(<https://www.perlfoundation.org>).  You should have received a copy of the
+AL2 as part of the MDL distribution, in the file
 [LICENSE/artistic-2_0.txt](../LICENSE/artistic-2_0.txt); if not, see
-[https://www.perlfoundation.org/artistic-license-20.html](
-https://www.perlfoundation.org/artistic-license-20.html).
+<https://www.perlfoundation.org/artistic-license-20.html>.
 
 Any versions of MDL that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
 addition to preserving this original copyright notice and other credits.
 
-While it is by no means required, the copyright holder of MDL would
-appreciate being informed any time you create a modified version of MDL
-that you are willing to distribute, because that is a practical way of
-suggesting improvements to the standard version.
+While it is by no means required, the copyright holder of MDL
+would appreciate being informed any time you create a modified version of
+MDL that you are willing to distribute, because that is a
+practical way of suggesting improvements to the standard version.
 
 # TRADEMARK POLICY
 
 **MULDIS** and **MULDIS MULTIVERSE OF DISCOURSE** are trademarks of Muldis
-Data Systems, Inc. ([https://muldis.com](https://muldis.com)).
+Data Systems, Inc. (<https://muldis.com>).
 The trademarks apply to computer database software and related services.
-See [https://muldis.com/trademark_policy.html](
-https://muldis.com/trademark_policy.html) for the full written details
+See <https://muldis.com/trademark_policy.html> for the full written details
 of Muldis Data Systems' trademark policy.
 
 # ACKNOWLEDGEMENTS
