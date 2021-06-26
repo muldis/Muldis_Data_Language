@@ -14,6 +14,10 @@ resources of everyone else.
 
 ----------
 
+* https://en.wikipedia.org/wiki/Computer_algebra_system
+
+* https://www.ibm.com/support/knowledgecenter/en/SSEPEK_10.0.0/sqlref/src/tpc/db2z_distincttypessql.html
+
 * https://langserver.org
 
 * https://en.wikipedia.org/wiki/Arithmetic_progression
@@ -171,9 +175,9 @@ exploiting some weakness in the recipient process?
 - Perhaps a way to take care of this is for generic expression evaluation
 syntax to suppress / not attempt message sending, and that this is only
 permitted if an extra flag is explicitly given saying it is ok.
-- Alternately or better yet, generalize that feature into a whitelist that
+- Alternately or better yet, generalize that feature into a inclusion-list that
 defaults empty saying which services may receive messages from function
-calls, and this whitelist can be different with different senders.
+calls, and this inclusion-list can be different with different senders.
 - Having this also at procedure level means in general better explicit
 supports for analogy to the plPerl, plPerlU duality in Postgres.
 - That would be analagous to how an explicit extra flag is needed for a
@@ -1414,9 +1418,9 @@ This list of entry point kinds is subject to change.
 
 * ADDED ON 2016-08-08:
 - Muldis D should have a core security model including jails and feature
-white lists, inspired by the likes of Postgres trusted vs untrusted
+inclusion-lists, inspired by the likes of Postgres trusted vs untrusted
 languages, Unixen chroot or irrevokable privilege reduction, or Mac OS'
-per-application filesystem containers or per-process feature whitelist.
+per-application filesystem containers or per-process feature inclusion-list.
 - For example, Muldis D Foundation features would be split into groups, so
 that say the base privileges only let one invoke pure functions and can't
 do anything besides return a calculation on input, and granular optional
@@ -1429,7 +1433,7 @@ process is started, and a process may only be granted a subset of the
 privileges that the process which started it has.  A process may not seek
 to elevate its own privileges; it must pass a message to another process
 with higher privileges to operate on its behalf if desired.  The ability to
-invoke other processes is also whitelisted, which can include, can only
+invoke other processes is also inclusion-listed, which can include, can only
 invoke processes with or without certain privileges.
 - Conceptually each process can start with either a clean slate / no
 packages loaded, or it can start with a fork of the parent, starting with
@@ -6850,19 +6854,19 @@ version in the list as a fallback, probably.
 with all those versions, specifying an open range says take chances or is
 not recommended and maybe won't be supported.
 - Or, rather than having open ranges, we could stick to just closed but
-have both whitelist and blacklist ranges, where we explicitly specify what
+have both inclusion-list and exclusion-list ranges, where we explicitly specify what
 versions we *know* either are or are not compatible, and so then any
 versions not explicitly named in one of those 2 lists is considered unknown
 as to compatibility.
 - Similarly, an implementation could be introspectable for the same 2 lists
-white and black that it supports for implementing.
+inclusion and exclusion that it supports for implementing.
 - It would be possibly implementation-defined or externally
 user-configurable for what happens if the implementation only supports
-language versions outside the whitelist including versions outside the
-blacklist.  A stricter setting would say reject, permissive may say accept.
+language versions outside the inclusion-list including versions outside the
+exclusion-list.  A stricter setting would say reject, permissive may say accept.
 - For permissive, its possible that if vnums are fully orderable, then a
 nonmatching implemented vnum directly between or just next to versions in
-the whitelist could be considered to work, likewise for blacklist
+the inclusion-list could be considered to work, likewise for exclusion-list
 considered not, and between one in each list considered not.  Eg, if the
 program code declares {!1..5,6..10} and the implementation just provides
 version 12, then it could be considered to work by default.
@@ -7219,7 +7223,7 @@ eg ASCII vs Unicode; just the static tables of characters are larger.
 Text to a normal form, either "canon" or "compat" (with semantics of NFD or
 NFKD in the spec) and then the Plain_Text parser proper then works with that
 Unicode normal form as its input.
-- We would have a whitelist of code points that may appear outside of a
+- We would have a inclusion-list of code points that may appear outside of a
 quoted string in the source, and all others are illegal outside, for
 security purposes (lookalikes) if nothing else; it is applied post-normal.
 This makes it similar to pigeonhole charcters into symbol vs alpha for
@@ -8141,8 +8145,8 @@ There are only a small amount of disambiguating rules that say certain
 tokens are system-defined operators, so otherwise no knowledge.
 The hardest work then, in the face of Unicode, is specifically identifying
 what characters count as alpha or symbolic; eg what are Greek letters?
-Generally speaking we would whitelist; any characters or groups we don't
-whitelist into a particular category are disallowed from appearing outside
+Generally speaking we would inclusion-list; any characters or groups we don't
+inclusion-list into a particular category are disallowed from appearing outside
 of a quoted context.
 - Remove dash from bareword ident, leaving just alphanum and underscore;
 people can quote names with dashes when they want them.
