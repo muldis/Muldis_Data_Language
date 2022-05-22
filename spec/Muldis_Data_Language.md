@@ -150,12 +150,12 @@ MDL is Copyright © 2002-2022, Muldis Data Systems, Inc.
 <https://muldis.com>
 
 MDL is free documentation for software;
-you can redistribute it and/or modify it under the terms of the Artistic
-License version 2 (AL2) as published by the Perl Foundation
-(<https://www.perlfoundation.org>).  You should have received a copy of the
+you can redistribute it and/or modify it under the terms of the Apache
+License, Version 2.0 (AL2) as published by the Apache Software Foundation
+(<https://www.apache.org>).  You should have received a copy of the
 AL2 as part of the MDL distribution, in the file
-[LICENSE/artistic-2_0.txt](../LICENSE/artistic-2_0.txt); if not, see
-<https://www.perlfoundation.org/artistic-license-20.html>.
+[LICENSE/Apache-2.0.txt](../LICENSE/Apache-2.0.txt); if not, see
+<https://www.apache.org/licenses/LICENSE-2.0>.
 
 Any versions of MDL that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
