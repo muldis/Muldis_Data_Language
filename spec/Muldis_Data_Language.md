@@ -145,7 +145,7 @@ Darren Duncan - darren@DarrenDuncan.net
 This file is part of the formal specification named
 **Muldis Data Language** (**MDL**).
 
-MDL is Copyright © 2002-2021, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2022, Muldis Data Systems, Inc.
 
 <https://muldis.com>
 
