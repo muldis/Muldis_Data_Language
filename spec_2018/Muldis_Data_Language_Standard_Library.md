@@ -33,16 +33,10 @@ are recommended as the default options for their functionality.
 
 The **Muldis D Standard Library** comprises these Muldis D packages:
 
-=over
-
-=item *
-
-`System https://muldis.com 0.300.0` -
+* `System https://muldis.com 0.300.0` -
 [Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) - Provides the common primary
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
-
-=back
 
 Other packages will be added later, such as `System::Math`.
 

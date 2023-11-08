@@ -353,50 +353,30 @@ look-around assertions regarding adjacent tokens.
 
 In the context of any `<foo> <sp> <bar>`, these syntax rules apply:
 
-=over
-
-=item *
-
-If `<foo>` and `<bar>` are of different character classes
+* If `<foo>` and `<bar>` are of different character classes
 (alphanumeric vs quoting vs bracketing vs symbolic vs whitespace) then
 `<sp>` is allowed to be empty.
 
-=item *
-
-Otherwise, if `<foo>` and `<bar>` are both alphanumeric then
+* Otherwise, if `<foo>` and `<bar>` are both alphanumeric then
 `<sp>` must be nonempty.
 
-=item *
-
-Otherwise, if `<foo>` and `<bar>` are both quoting or bracketing
+* Otherwise, if `<foo>` and `<bar>` are both quoting or bracketing
 or whitespace then `<sp>` is allowed to be empty.
 
-=item *
-
-Otherwise, `<foo>` and `<bar>` are both symbolic; whether or not
+* Otherwise, `<foo>` and `<bar>` are both symbolic; whether or not
 `<sp>` is allowed to be empty or not depends on the specific sequence
 of symbolic characters in the original source code, as described by the
 subsequent syntax rules.
 
-=item *
-
-If either `<foo>` or `<bar>` or both are either `,` or `;` or
+* If either `<foo>` or `<bar>` or both are either `,` or `;` or
 `\` then `<sp>` is allowed to be empty.
 
-=item *
-
-Otherwise, if exactly one of `<foo>` or `<bar>` is `:` and the
+* Otherwise, if exactly one of `<foo>` or `<bar>` is `:` and the
 other doesn't have that character then `<sp>` is allowed to be empty.
 
-=item *
+* OBSOLETE: Otherwise, if `<foo>` is `:=` then `<sp>` is allowed to be empty.
 
-OBSOLETE: Otherwise, if `<foo>` is `:=` then `<sp>` is allowed to be empty.
-
-=item *
-
-Otherwise, `<sp>` must be nonempty.
-
-=back
+* Otherwise, `<sp>` must be nonempty.
 
 *TODO.  Some of the above points concerning ":" are outdated and need fixing.*
 
@@ -865,20 +845,12 @@ formatting, such as for `10_000_000`.
 
 This grammar is subject to the following additional rules:
 
-=over
-
-=item *
-
-If `<num_radix_mark>` is omitted or is `0d` then every
+* If `<num_radix_mark>` is omitted or is `0d` then every
 `<num_char>` must be a `<nc10>`.
 
-=item *
-
-Otherwise, if `<num_radix_mark>` is `0b` or `0o` or `0x` then every
+* Otherwise, if `<num_radix_mark>` is `0b` or `0o` or `0x` then every
 `<num_char>` must be a `<nc2>` or `<nc8>` or `<nc16>`
 respectively.
-
-=back
 
 A quoted `<Integer>` may optionally be split into 1..N quoted segments
 where each pair of consecutive segments is separated by dividing space;
@@ -1049,21 +1021,13 @@ where each pair of consecutive segments is separated by dividing space.
 
 This grammar is subject to the following additional rules:
 
-=over
-
-=item *
-
-If the `<Blob>` segments are prefixed by `0b` then the total count of
+* If the `<Blob>` segments are prefixed by `0b` then the total count of
 `<nc2>` in the `<Blob>` excluding `_` must be an even multiple
 of 8.
 
-=item *
-
-Otherwise, if the `<Blob>` segments are prefixed by `0x` then the
+* Otherwise, if the `<Blob>` segments are prefixed by `0x` then the
 total count of `<nc16>` in the `<Blob>` excluding `_` must be an
 even multiple of 2.
-
-=back
 
 Examples:
 

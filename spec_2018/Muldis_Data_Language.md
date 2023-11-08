@@ -33,24 +33,14 @@ control of other parties.
 For the official Muldis D by authority `https://muldis.com`, the default 3
 component specifications are named, respectively:
 
-=over
-
-=item *
-
-**Muldis D Foundation** (**MDF**) -
+* **Muldis D Foundation** (**MDF**) -
 `Muldis_D_Foundation https://muldis.com 0.300.0`.
 
-=item *
-
-**Muldis D Plain Text** (**MDPT**) -
+* **Muldis D Plain Text** (**MDPT**) -
 `Muldis_D_Plain_Text https://muldis.com 0.300.0`.
 
-=item *
-
-**Muldis D Standard Library** (**MDSL**) -
+* **Muldis D Standard Library** (**MDSL**) -
 `Muldis_D_Standard_Library https://muldis.com 0.300.0`.
-
-=back
 
 In this context, the **Muldis D** language aggregate specification is mostly
 just a top-level catalogue pointing to those 3 primary components, as well
@@ -148,11 +138,7 @@ is explicitly clear on how to parse that code.
 The expected format and meaning of a Muldis D fully-qualified name varies
 depending on the specific kind of entity being named:
 
-=over
-
-=item *
-
-The expected fully-qualified name of each Muldis D package version is the
+* The expected fully-qualified name of each Muldis D package version is the
 same format and meaning for both declaration and reference.  It has 3 main
 parts: *package base name*, *authority*, and *version number*.  The
 combination of these 3 parts is the identity of a package, and a program
@@ -163,15 +149,11 @@ restrictions on a package base name, it is expected that the community at
 large should self-regulate reasonable names as is common for libraries or
 modules for other programming languages.
 
-=item *
-
-The expected fully-qualified name of a **Muldis D Foundation** version as
+* The expected fully-qualified name of a **Muldis D Foundation** version as
 referenced as a dependency by a package has 2 main parts: *authority*, and
 *version number*.
 
-=item *
-
-The expected fully-qualified name of a **Muldis D Plain Text** version as
+* The expected fully-qualified name of a **Muldis D Plain Text** version as
 referenced by source code, where the latter declares the former to be its
 format, has 4 main parts: *family name*, *syntax name*, *authority*, and
 *version number*.  The *family name* and *syntax name* are simply the 2
@@ -185,16 +167,12 @@ depending on whether they have reliable simple format declarations or not.
 Note that a leading MDPT declaration in source code should be effective as
 a "magic number" for identifying it as being MDPT source code.
 
-=item *
-
-The expected fully-qualified name of a Muldis D language specification
+* The expected fully-qualified name of a Muldis D language specification
 document (component or aggregate) as declared in said document has 3 main
 parts: *document base name*, *authority*, and *version number*.  The
 *document base name* is a character string, officially used examples being
 `Muldis_D`, `Muldis_D_Foundation`, `Muldis_D_Plain_Text`, and
 `Muldis_D_Standard_Library`.
-
-=back
 
 The expected format and meaning of an *authority* and a *version number*
 is the same for all of the above-mentioned kinds of entities, and so their
@@ -224,25 +202,17 @@ ambiguity, assist quality control, and give due credit.
 In this context, *embrace and extend* means for someone to do any of the
 following:
 
-=over
-
-=item *
-
-Releasing a modified version of this current multi-document or any
+* Releasing a modified version of this current multi-document or any
 component thereof where the original of the modified version was released
 by someone else (the original typically being the official release), as
 opposed to just releasing a delta document that references the current one
 as a foundation.  This applies both for unofficial modifications and for
 official modifications following a change of who is the official maintainer.
 
-=item *
-
-Releasing a delta document for a version of this current multi-document or
+* Releasing a delta document for a version of this current multi-document or
 any component thereof where the referenced original is released by someone
 else, and where the delta either makes incompatible semantic or syntax
 changes or makes changes to the `System` package.
-
-=back
 
 A *version number* is an ordered sequence of 1 or more integers.  A
 *version number* is used to distinguish between all of the versions of a
