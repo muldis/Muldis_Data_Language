@@ -1,10 +1,10 @@
 # NAME
 
-Muldis::D::Standard_Library - Muldis D common core vocabulary for regular users
+Muldis D Standard Library (MDSL) - Muldis D common core vocabulary for regular users
 
 # VERSION
 
-This document is Muldis::D::Standard_Library version 0.300.0.
+This document is Muldis D Standard Library (MDSL) version 0.300.0.
 
 # DESCRIPTION
 
@@ -54,12 +54,13 @@ MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
 <https://muldis.com>
 
-MDSL is free software; you can redistribute it and/or
-modify it under the terms of the Apache License, Version 2.0 (AL2) as
-published by the Apache Software Foundation (<https://www.apache.org>).
-You should have received a copy of the AL2 as part of the MDSL
-distribution, in the file named "LICENSE/Apache-2.0.txt";
-if not, see <https://www.apache.org/licenses/LICENSE-2.0>.
+MDSL is free software;
+you can redistribute it and/or modify it under the terms of the Apache
+License, Version 2.0 (AL2) as published by the Apache Software Foundation
+(<https://apache.org>).  You should have received a copy of the
+AL2 as part of the MDSL distribution, in the file
+[LICENSE/Apache-2.0.txt](../LICENSE/Apache-2.0.txt); if not, see
+<https://apache.org/licenses/LICENSE-2.0>.
 
 Any versions of MDSL that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
@@ -68,7 +69,7 @@ MDSL is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE.
 
-While it is by no means required, the copyright holder of MDSL would
-appreciate being informed any time you create a modified version of MDSL
-that you are willing to distribute, because that is a practical way of
-suggesting improvements to the standard version.
+While it is by no means required, the copyright holder of MDSL
+would appreciate being informed any time you create a modified version of
+MDSL that you are willing to distribute, because that is a
+practical way of suggesting improvements to the standard version.

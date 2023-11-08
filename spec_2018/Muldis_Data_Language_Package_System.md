@@ -1,10 +1,10 @@
 # NAME
 
-Muldis::D::Package::System - Muldis D primary data types and operators
+System - Muldis D primary data types and operators
 
 # VERSION
 
-This document is Muldis::D::Package::System version 0.300.0.
+This document is System version 0.300.0.
 
 # SYNOPSIS
 

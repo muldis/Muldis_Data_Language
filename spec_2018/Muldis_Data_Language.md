@@ -1,10 +1,10 @@
 # NAME
 
-Muldis::D - Formal spec of Muldis D relational DBMS lang
+Muldis D - Formal spec of Muldis D relational DBMS lang
 
 # VERSION
 
-This document is Muldis::D version 0.300.0.
+This document is Muldis D version 0.300.0.
 
 # DESCRIPTION
 

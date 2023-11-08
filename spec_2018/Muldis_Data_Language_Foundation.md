@@ -1,10 +1,10 @@
 # NAME
 
-Muldis::D::Foundation - Muldis D fundamental architecture, behaviour, and type system
+Muldis D Foundation (MDF) - Muldis D fundamental architecture, behaviour, and type system
 
 # VERSION
 
-This document is Muldis::D::Foundation version 0.300.0.
+This document is Muldis D Foundation (MDF) version 0.300.0.
 
 # DESCRIPTION
 
@@ -72,7 +72,7 @@ Muldis D is rigorously defined and requires users to be explicit, which
 leaves little room for ambiguity and related bugs.  When something is
 specified in Muldis D, its semantics should be well known and fully
 portable (not implementation dependent).  If a conforming implementation
-(such as Muldis::D::Ref_Eng) can't provide a specified
+(such as **Muldis Data Engine Reference**) can't provide a specified
 behaviour, code using it will refuse to run at all, rather than silently
 changing its semantics; this also helps users to avoid bugs.  Moreover,
 Muldis D generally disallows any details of an implementation's "physical
@@ -1428,18 +1428,19 @@ MDF is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
 <https://muldis.com>
 
-MDF is free documentation for software; you can redistribute it and/or
-modify it under the terms of the Apache License, Version 2.0 (AL2) as
-published by the Apache Software Foundation (<https://www.apache.org>).
-You should have received a copy of the AL2 as part of the MDF
-distribution, in the file named "LICENSE/Apache-2.0.txt";
-if not, see <https://www.apache.org/licenses/LICENSE-2.0>.
+MDF is free documentation for software;
+you can redistribute it and/or modify it under the terms of the Apache
+License, Version 2.0 (AL2) as published by the Apache Software Foundation
+(<https://apache.org>).  You should have received a copy of the
+AL2 as part of the MDF distribution, in the file
+[LICENSE/Apache-2.0.txt](../LICENSE/Apache-2.0.txt); if not, see
+<https://apache.org/licenses/LICENSE-2.0>.
 
 Any versions of MDF that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
 addition to preserving this original copyright notice and other credits.
 
-While it is by no means required, the copyright holder of MDF would
-appreciate being informed any time you create a modified version of MDF
-that you are willing to distribute, because that is a practical way of
-suggesting improvements to the standard version.
+While it is by no means required, the copyright holder of MDF
+would appreciate being informed any time you create a modified version of
+MDF that you are willing to distribute, because that is a
+practical way of suggesting improvements to the standard version.
