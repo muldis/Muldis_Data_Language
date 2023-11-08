@@ -4,11 +4,33 @@ This repository or distribution features the document named
 **Muldis Data Language** (**MDL**)
 and its supporting documents.
 
-See the file
-[spec/Muldis_Data_Language.md](spec/Muldis_Data_Language.md)
-for that feature document.
+The **Muldis Data Language** document is currently being rewritten,
+and also had prior rewrites.
 
-See the file
-[lib/Muldis/D.pod](lib/Muldis/D.pod)
-for its deprecated predecessor feature document
-which in turn links to its main supporting documents.
+This is the newest version, which is mostly empty as of this writing:
+
+- [spec/Muldis_Data_Language.md](spec/Muldis_Data_Language.md)
+
+But the externally defined **Muldis Object Notation** (**MUON**)
+repository/document, which is complete as of this writing,
+is effectively a substantial component of **MDL** itself,
+which was split off because it is independently useful:
+
+- <https://github.com/muldis/Muldis_Object_Notation>
+
+This is the newest **MDL** version's predecessor,
+named for the year 2018 when the last major work on it was done;
+most of it has not yet been rewritten:
+
+- [spec_2018/Muldis/D.pod](spec_2018/Muldis/D.pod)
+
+This is the 2018 **MDL** version's predecessor,
+named for the year 2011 when the last major work on it was done;
+a large portion of it has not yet been rewritten:
+
+- [spec_2011/Muldis/D.pod](spec_2011/Muldis/D.pod)
+
+These documents have some supplemental material:
+
+- [See_Also.pod](See_Also.pod)
+- [Referrers](Referrers)
