@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Plain_Text - Muldis D concrete syntax for source code
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Plain_Text version 0.300.0.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document is the human readable authoritative formal specification of
 the B<Muldis D Plain Text> (B<MDPT>) primary component of the B<Muldis D>
@@ -93,7 +89,7 @@ and making an automated code reformatter shouldn't be difficult.  Often,
 named elements can also be omitted entirely for brevity, in which case the
 parser would use context to supply default values for those elements.
 
-=head1 GRAMMAR INTERPRETATION
+# GRAMMAR INTERPRETATION
 
 I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
 keep in mind that the grammar is inspired by both EBNF and Raku rules.>
@@ -103,7 +99,7 @@ keep in mind that the grammar is inspired by both EBNF and Raku rules.>
     - % takes list item separator on right, eg allows "x,y" but not "x,y,"
     - %% is like % but allows separator to end the list, eg allows "x,y,"
 
-=head1 PARSING UNITS
+# PARSING UNITS
 
 The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
 
@@ -118,7 +114,7 @@ Grammar:
 See the sections in this file named L<SHEBANG LINE>
 and L</PARSING UNIT SUBJECTS> for more details.
 
-=head1 SHEBANG LINE
+# SHEBANG LINE
 
 Grammar:
 
@@ -146,7 +142,7 @@ Examples:
 
     #!/usr/bin/env muldisdre
 
-=head1 PARSING UNIT SUBJECTS
+# PARSING UNIT SUBJECTS
 
 Grammar:
 
@@ -155,7 +151,7 @@ Grammar:
 
 See the section in this file named L</GENERIC EXPRESSIONS> for more details.
 
-=head1 CHARACTER CLASSES
+# CHARACTER CLASSES
 
 Grammar:
 
@@ -285,7 +281,7 @@ where to draw the line if one wanted to include the whole un-accented Greek
 alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
 UPDATE: A select few Greek letters are supported bareword, enumerated above.
 
-=head1 ESCAPED CHARACTERS
+# ESCAPED CHARACTERS
 
 Grammar:
 
@@ -331,7 +327,7 @@ domain of non-core Muldis D packages to support such a feature.  The main
 reason for this is to avoid an unconditionally-mandatory complex dependency
 that is the Unicode character database.
 
-=head1 DIVIDING SPACE
+# DIVIDING SPACE
 
 Grammar:
 
@@ -424,7 +420,7 @@ Examples:
 
     `This does something.`
 
-=head1 KEYWORDS
+# KEYWORDS
 
 Muldis D Plain Text has a number of keywords, both alphanumeric and
 symbolic, which have special meaning in certain contexts.  However, it does
@@ -498,7 +494,7 @@ complement of system-defined types and operators are defined using the same
 tools users have, so if you don't see something in the lists you would
 expect to be system-defined, i's likely they're defined in libraries.
 
-=head1 IDENTIFIERS
+# IDENTIFIERS
 
 Grammar:
 
@@ -586,7 +582,7 @@ A C<< <pkg_entity_name> >> is for use when either declaring or referencing
 package entities (types, singleton type definers, functions, procedures, aliases, etc)
 which live within a multi-level namespace.
 
-=head1 GENERIC EXPRESSIONS
+# GENERIC EXPRESSIONS
 
 Grammar:
 
@@ -731,7 +727,7 @@ Examples:
 
 I<TODO: ADD SIGNAL SENDING AND OTHER MISC EXPRESSIONS.>
 
-=head1 OPAQUE LITERAL AND COLLECTION SELECTOR EXPRESSIONS
+# OPAQUE LITERAL AND COLLECTION SELECTOR EXPRESSIONS
 
 Grammar:
 
@@ -775,7 +771,7 @@ explicitly does have child C<< <expr> >> nodes in the general case, as in
 conventional terms it is for selecting values representing collections of
 other values.
 
-=head2 Boolean Literals
+## Boolean Literals
 
 Grammar:
 
@@ -797,7 +793,7 @@ Examples:
 
     \?True
 
-=head2 Integer Literals
+## Integer Literals
 
 Grammar:
 
@@ -928,7 +924,7 @@ Examples:
 
     0b11001001
 
-=head2 Fraction Literals
+## Fraction Literals
 
 Grammar:
 
@@ -988,7 +984,7 @@ Examples:
 
     0b1.1
 
-=head2 Bits Literals
+## Bits Literals
 
 Grammar:
 
@@ -1026,7 +1022,7 @@ Examples:
 
     \~?"0xA705E"
 
-=head2 Blob Literals
+## Blob Literals
 
 Grammar:
 
@@ -1079,7 +1075,7 @@ Examples:
 
     \~+"0b00101110_10001011"
 
-=head2 Text Literals
+## Text Literals
 
 Grammar:
 
@@ -1129,7 +1125,7 @@ Examples:
 
     \~"Green"
 
-=head2 Array Selectors
+## Array Selectors
 
 Grammar:
 
@@ -1142,7 +1138,7 @@ Grammar:
 An C<< <Array> >> node represents a value of the Muldis D
 C<Array> type, which is ...
 
-=head2 Set Selectors
+## Set Selectors
 
 Grammar:
 
@@ -1157,7 +1153,7 @@ A C<< <Set> >> is subject to the additional rule that, either its C<<
 elements, or the C<< <Set> >> must have the C<\?> prefix, so that the C<<
 <Set> >> can be distinguished from every possible C<< <Bag> >>.
 
-=head2 Bag / Multiset Selectors
+## Bag / Multiset Selectors
 
 Grammar:
 
@@ -1192,7 +1188,7 @@ element, or the C<< <Bag> >> must have the C<\+> prefix, so that the C<<
 idiomatic way to represent an empty C<Bag> is to have exactly 1 C<<
 <multiplied_member> >> whose C<< <multiplicity_expr> >> is zero.
 
-=head2 Tuple / Attribute Set Selectors
+## Tuple / Attribute Set Selectors
 
 Grammar:
 
@@ -1232,7 +1228,7 @@ element must have a leading or trailing comma, or the C<< <Tuple> >> must
 have the C<\%> prefix, so that the C<< <Tuple> >> can be distinguished from
 every possible C<< <Article> >> and C<< <delimiting_expr> >>.
 
-=head2 Tuple Array Selectors
+## Tuple Array Selectors
 
 Grammar:
 
@@ -1247,7 +1243,7 @@ the additional rule that its C<< <member_commalist> >> has at least 1 C<<
 <*_member> >> element; otherwise the C<< <Tuple_Array> >> must have a C<<
 <delim_attr_name_commalist> >>.
 
-=head2 Relation / Tuple Set Selectors
+## Relation / Tuple Set Selectors
 
 Grammar:
 
@@ -1262,7 +1258,7 @@ the additional rule that its C<< <member_commalist> >> has at least 1 C<<
 <*_member> >> element; otherwise the C<< <Relation> >> must have a C<<
 <delim_attr_name_commalist> >>.
 
-=head2 Tuple Bag Selectors
+## Tuple Bag Selectors
 
 Grammar:
 
@@ -1277,7 +1273,7 @@ the additional rule that its C<< <member_commalist> >> has at least 1 C<<
 <*_member> >> element; otherwise the C<< <Tuple_Bag> >> must have a C<<
 <delim_attr_name_commalist> >>.
 
-=head2 Article / Labelled Tuple Selectors
+## Article / Labelled Tuple Selectors
 
 Grammar:
 
@@ -1297,7 +1293,7 @@ Examples:
 
     (\Fraction : (numerator : 5, denominator : 3))
 
-=head2 Excuse Selectors
+## Excuse Selectors
 
 Grammar:
 
@@ -1307,7 +1303,7 @@ Grammar:
 An C<< <Excuse> >> node represents a value of the Muldis D
 C<Excuse> type, which is ...
 
-=head2 Simple Excuse Literals
+## Simple Excuse Literals
 
 Grammar:
 
@@ -1330,7 +1326,7 @@ Examples:
 
   \!No_Such_Attr_Name
 
-=head2 Nesting / Attribute Name List Literals
+## Nesting / Attribute Name List Literals
 
 Grammar:
 
@@ -1383,7 +1379,7 @@ Examples (comments refer to their Muldis-D runtime specific interpretation):
     `Same thing, after post-processing.`
     \$Relation
 
-=head2 Attribute Name and Heading / Attribute Name Set Literals
+## Attribute Name and Heading / Attribute Name Set Literals
 
 Grammar:
 
@@ -1461,7 +1457,7 @@ Examples:
     `A non-Latin name.`
     \'サンプル'
 
-=head2 Attribute Renaming Specification Literals
+## Attribute Renaming Specification Literals
 
 Grammar:
 
@@ -1547,7 +1543,7 @@ Examples:
     `Some attribute names can only appear quoted.`
     \$:('First Name'->'Last Name')
 
-=head2 Identifier and Identity_Identifier Literals
+## Identifier and Identity_Identifier Literals
 
 Grammar:
 
@@ -1559,7 +1555,7 @@ Grammar:
 
 I<TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.>
 
-=head2 Generic Function Call Specification Selectors
+## Generic Function Call Specification Selectors
 
 Grammar:
 
@@ -1579,7 +1575,7 @@ same type as the result of the Function_Call expression, so that is indeed
 recursively defined in the general case.  And so other syntax would be used
 to select the most-nested Function_Call value, often postcircumfixed_func_invo_expr.>
 
-=head1 COLLECTION ACCESSOR EXPRESSIONS
+# COLLECTION ACCESSOR EXPRESSIONS
 
 Grammar:
 
@@ -1611,7 +1607,7 @@ Grammar:
 
 I<TODO.>
 
-=head1 INVOCATION EXPRESSIONS
+# INVOCATION EXPRESSIONS
 
 Grammar:
 
@@ -1624,7 +1620,7 @@ I<TODO.>
 I<OBSOLETE... Also TODO is adding things like -->? and -->! etc to test if something
 is invokable or indicate a result if one isn't invokable.>
 
-=head2 Generic Function Invocation Expressions
+## Generic Function Invocation Expressions
 
 Grammar:
 
@@ -1664,7 +1660,7 @@ function or a type (implicitly its membership predicate) may be invoked;
 for other arguments, only a function of corrisponding arity may be invoked.
 I<TODO: Update this concerning type definers.>
 
-=head2 Fixed Function Invocation Expressions
+## Fixed Function Invocation Expressions
 
 Grammar:
 
@@ -1695,7 +1691,7 @@ I<TODO.>
 
 I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
 
-=head1 CONDITIONAL EXPRESSIONS
+# CONDITIONAL EXPRESSIONS
 
 Grammar:
 
@@ -1706,13 +1702,13 @@ Grammar:
         | <given_when_def_expr>
         | <guard_expr>
 
-=head2 If-Else Expressions
+## If-Else Expressions
 
     if P then X else Y
 
 I<TODO.  Make 'if' keyword optional/noiseword, or not.>
 
-=head2 And-Then Expressions
+## And-Then Expressions
 
 This short-hand:
 
@@ -1726,7 +1722,7 @@ It is functionally a generalized non-associative non-commutative logical
 "and" suited in particular for situations where X needs to be guarded based
 on P, but an explicit "guard" is still needed to actually have a guard.
 
-=head2 Or-Else Expressions
+## Or-Else Expressions
 
 This short-hand:
 
@@ -1740,11 +1736,11 @@ It is functionally a generalized non-associative non-commutative logical
 "or" suited in particular for situations where X needs to be guarded based
 on P, but an explicit "guard" is still needed to actually have a guard.
 
-=head2 Given-When-Default Expressions
+## Given-When-Default Expressions
 
 I<TODO.  Make 'given' keyword optional/noiseword, or not.>
 
-=head2 Guard Expressions
+## Guard Expressions
 
 I<TODO.  A guard forces short-circuiting in an expression where otherwise an
 expression makes no guarantee as to whether anything is eager or lazy;
@@ -1758,11 +1754,11 @@ in contrast, a conditional statement is implicitly always short-circuiting.>
 
 I<TODO.  Note that 'fail' is implicitly guarded.>
 
-=head1 GENERIC STATEMENTS
+# GENERIC STATEMENTS
 
 I<TODO.>
 
-=head1 NESTING PRECEDENCE RULES
+# NESTING PRECEDENCE RULES
 
 I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
 
@@ -1793,7 +1789,7 @@ I<TODO.  Loosely speaking, "L" means left-associative,
 
 A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
 
-=head1 SYNTACTIC MNEMONICS
+# SYNTACTIC MNEMONICS
 
 The syntax of Muldis D Plain Text, as well as the names of standard
 library routines of Muldis D, are designed around a variety of mnemonics
@@ -1951,7 +1947,7 @@ together that means they are used in pairs.
     collection and element type respectively; the mnemonic is "X of Y", for
     example, \?% says "set of tuple", or \~? says "string of boolean".
 
-=head1 STRATEGIES FOR PARSING
+# STRATEGIES FOR PARSING
 
 Muldis D Plain Text is designed to be easy to parse, where one can use a
 multi-stage pipeline with simple rules at each step, and typically the work
@@ -1985,7 +1981,7 @@ character string and it is tagged to say how the string was interpreted,
 so that tokens can more easily be further processed in isolation, the work
 to consider their wider context having already been done.
 
-=head2 Pipeline Stage 1
+## Pipeline Stage 1
 
 Stage 1 in the parsing pipeline is to split off any leading C<< <shebang_line> >>
 that might prefix the code.  The primary output of stage 1 is a single
@@ -1997,7 +1993,7 @@ Grammar:
     <ps1> ::=
         ^ <shebang_line>? <ps2> $
 
-=head2 Pipeline Stage 2
+## Pipeline Stage 2
 
 Broadly speaking, Muldis D Plain Text code is made up of 2 primary
 grammatical contexts which are mutually disjoint and complementary; one of
@@ -2053,7 +2049,7 @@ Grammar:
     <ps2_backtick_quoted> ::=
         '`' <-[`]>* '`'
 
-=head3 Pipeline Stage 3
+### Pipeline Stage 3
 
 Stage 3 in the parsing pipeline is to take any tokens from stage 2
 representing a nonquoted context, and for each one, split it into tokens by
@@ -2072,14 +2068,14 @@ Grammar:
         | <symbolic_char>
         | <whitespace_char>
 
-=head3 Pipeline Stage 4
+### Pipeline Stage 4
 
 Stage 4 in the parsing pipeline is to split any nonquoted context tokens
 consisting of multiple C<< <bracketing_char> >> into multiple tokens such that
 each such individual character becomes its own token.  The output of stage
 4 is an array of character string tokens, or parse nodes, as per stage 3.
 
-=head3 Pipeline Stage 5
+### Pipeline Stage 5
 
 Stage 5 in the parsing pipeline is to split any nonquoted context tokens
 consisting of multiple C<< <symbolic_char> >> into multiple tokens where those
@@ -2106,7 +2102,7 @@ Generally speaking, the parsing of nonquoted context symbolic character
 runs is complete following stage 5, and each remaining token is not likely
 to be split again or be merged with other tokens.
 
-=head3 Pipeline Stage 6
+### Pipeline Stage 6
 
 Stages 6 and later in the parsing pipeline focus more on combining adjacent
 tokens or parse nodes of known kinds into subtrees of other node types,
@@ -2120,7 +2116,7 @@ representing the run; this new node is logically treated as insignificant
 (other than for its role in separating otherwise adjacent things)
 dividing space, and becomes non-semantic metadata for its wider context.
 
-=head3 Pipeline Stage 7
+### Pipeline Stage 7
 
 Stage 7 in the parsing pipeline is to collect any runs of consecutive
 (apart from any invervening dividing space) quoted context tokens or parse
@@ -2129,7 +2125,7 @@ single-quotes or double-quotes, beneath a parse node representing the run.
 Such runs are logically a single contiguous quoted string (except possibly
 for matters of escape sequences) but were split for readability.
 
-=head3 Pipeline Stage 8
+### Pipeline Stage 8
 
 Stage 8 in the parsing pipeline is to take any tokens from stage 2
 representing a single-quoted or double-quoted context, and for each one, if
@@ -2158,7 +2154,7 @@ Grammar:
 Note that the definition of C<< <escaped_char> >> includes an escape sequence
 each for a single-quote and a double-quote.
 
-=head3 Pipeline Stage 9
+### Pipeline Stage 9
 
 Stage 9 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
@@ -2181,11 +2177,11 @@ Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
 otherwise match a stricter numeric definition.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the B<Muldis D Plain Text>
 (B<MDPT>) primary component of the B<Muldis D> language specification.
@@ -2209,5 +2205,3 @@ While it is by no means required, the copyright holder of MDPT would
 appreciate being informed any time you create a modified version of MDPT
 that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
-
-=cut

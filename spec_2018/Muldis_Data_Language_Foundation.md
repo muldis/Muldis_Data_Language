@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Foundation - Muldis D fundamental architecture, behaviour, and type system
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Foundation version 0.300.0.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document is the human readable authoritative formal specification of
 the B<Muldis D Foundation> (B<MDF>) primary component of the B<Muldis D>
@@ -41,7 +37,7 @@ advantage of the strengths of each host.
 
 I<TODO, overhaul/refactor this document.>
 
-=head1 OVERVIEW
+# OVERVIEW
 
 Muldis D is an industrial-strength computationally complete high-level
 application programming language with fully integrated database
@@ -136,7 +132,7 @@ In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
-=head1 FUNDAMENTAL CONCEPTS
+# FUNDAMENTAL CONCEPTS
 
 The most fundamental concepts of Muldis D are I<values>, I<variables>,
 I<functions>, and I<procedures>.
@@ -145,7 +141,7 @@ All other Muldis D concepts relate directly to or are defined in terms of
 those 4, including I<types>, I<type definers>, I<packages>,
 I<databases>, I<expressions>, I<statements>, and so on.
 
-=head2 value
+## value
 
 A I<value> is an individual constant that is not fixed in time or space.
 Every value is unique, eternal, and immutable; it has no address and can
@@ -160,7 +156,7 @@ that value may manifest within a program; each selector takes the form of
 either a function or a value literal syntax.  A value's fundamental
 identity is itself, and does not vary with any labels applied to it.
 
-=head2 variable
+## variable
 
 A I<variable> is a container for an appearance of a value.  It is neither
 unique nor eternal nor immutable in the typical case; it does have an
@@ -170,7 +166,7 @@ created, destroyed, copied, and mutated.  A variable's fundamental identity
 is its address, its identity does not vary with what value appears there
 nor with any labels applied to its address.
 
-=head2 function
+## function
 
 A I<function> is a set of instructions for mapping a set of input I<source>
 values, its I<domain>, to a set of output I<result> values, its
@@ -182,14 +178,14 @@ mathematical function (that it otherwise resembles) such that its I<source>
 may only be a I<tuple> (a value of the C<Tuple> type) and not some other
 value.  This is for the purpose of avoiding unnecessary complications.
 
-=head2 procedure
+## procedure
 
 A I<procedure> is a set of instructions for either enacting possibly
 non-deterministic change over time in a set of variables or for reading
 from or writing to the external environment of the application, including
 its users or various external systems.
 
-=head1 ENVIRONMENT
+# ENVIRONMENT
 
 The Muldis D DBMS / virtual machine, which by definition is the environment
 in which Muldis D executes, conceptually resembles a hardware PC, having
@@ -215,7 +211,7 @@ in turn starts any others and which is the last to end on shutdown.  Each
 concurrent user connection or autonomous transaction is represented by its
 own process.
 
-=head1 FUNCTIONS
+# FUNCTIONS
 
 A I<function> (also known as a I<read-only operator>) is a set of
 instructions for mapping a set of input I<source> values, its I<domain>, to a set of
@@ -318,7 +314,7 @@ deterministic failure such as dividing by zero.
 
 I<TODO: Other related notes.  Especially the parts of a function definition.>
 
-=head1 TYPES AND TYPE DEFINERS
+# TYPES AND TYPE DEFINERS
 
 Muldis D has a formal type system, at least in intent, which works
 conceptually in the following manner.
@@ -342,7 +338,7 @@ I<V> as its argument gives the exact same result as an invocation of I<F2>
 with I<V> as its argument, I<F1> and I<F2> both characterize the same
 I<type>, even if any part of the source code for I<F1> and I<F2> differs.
 
-=head2 Type Relationships
+## Type Relationships
 
 The I<universal type> is the only type that consists of all values which
 can possibly exist, and is an infinite set; it is the maximal data type of
@@ -415,7 +411,7 @@ functions) applied to it in particular contexts, and so fake the type being
 ordered, in either one or multiple ways.  Moreover, many of the common use
 cases here have system-defined functionality to support them.
 
-=head2 Type Definers
+## Type Definers
 
 I<TODO: Rewrite the text of this section.>
 
@@ -597,7 +593,7 @@ allowed in its place.  An invocation as if it were a singleton type definer of a
 type definer is semantically identical to (and is idiomatic for) selecting the
 default value of the type definer.
 
-=head2 Type Safety
+## Type Safety
 
 Muldis D should qualify as a I<type-safe> language by many, if not all,
 definitions of the term I<type-safe>.
@@ -681,11 +677,11 @@ declared type, then this can't be done.  What must happen is for the
 operator to take an extra argument where the name of the type whose default
 we want is spelled out, or alternately just the default value itself.
 
-=head1 EXPRESSIONS
+# EXPRESSIONS
 
 I<TODO.>
 
-=head1 PROCEDURES
+# PROCEDURES
 
 A I<procedure> (a special case of which is known as an I<update operator>)
 is a set of instructions for either enacting possibly non-deterministic
@@ -695,11 +691,11 @@ external systems.
 
 I<TODO.>
 
-=head1 STATEMENTS
+# STATEMENTS
 
 I<TODO.>
 
-=head1 STIMULUS-RESPONSE RULES
+# STIMULUS-RESPONSE RULES
 
 Muldis D natively supports the concept of I<stimulus-response rules>,
 otherwise known as I<triggered routines>.  The concept involves the
@@ -709,17 +705,17 @@ routine which is in response to an explicit invocation in code.
 
 I<TODO: Other related notes.>
 
-=head1 TODO - SECTIONS ON NAMESPACES, PACKAGES, AND OTHER THINGS
+# TODO - SECTIONS ON NAMESPACES, PACKAGES, AND OTHER THINGS
 
 I<TODO.  Also say what 'using','floating' etc do.>
 
 I<TODO.  A package is the standard compilation unit.>
 
-=head1 EXTERNAL TYPES AND ROUTINES
+# EXTERNAL TYPES AND ROUTINES
 
 I<TODO.  Meanwhile see 'same' and 'EXTERNAL DATA TYPES' in System.pod.>
 
-=head2 FOUNDATION
+## FOUNDATION
 
 I<TODO: Rewrite the following.>
 
@@ -799,11 +795,11 @@ The low-level entity names given here, whether anonymous or not, are
 purposefully given different names than their high-level wrappers have,
 to help easily distinguish them; mainly they have C<foundation::> prefixes.
 
-=head1 FOUNDATION TYPES
+# FOUNDATION TYPES
 
 I<TODO.>
 
-=head2 Any
+## Any
 
 The C<Any> type is the infinite I<universal type>, which is the
 maximal data type of the entire Muldis D type system and consists of all
@@ -811,98 +807,98 @@ values which can possibly exist.  It is a union type over just these 7
 low-level types, all of the latter being mutually disjoint:
 C<Boolean>, C<Integer>, C<Array>, C<Bag>, C<Tuple>, C<Article>, C<Handle>.
 
-=head2 Boolean
+## Boolean
 
 The C<Boolean> type is finite.  A C<Boolean> value is a general
 purpose 2-valued logic boolean or I<truth value>, or specifically it is one
 of the 2 values I<false> and I<true>.
 
-=head2 Integer
+## Integer
 
 The C<Integer> type is infinite.  An C<Integer> value is a
 general purpose exact integral number of any magnitude, which explicitly
 does not represent any kind of thing in particular, neither cardinal nor
 ordinal nor nominal.
 
-=head2 Array
+## Array
 
 The C<Array> type is infinite.  An C<Array> value is a ... I<TODO>.
 
-=head2 Bag
+## Bag
 
 The C<Bag> type is infinite.  A C<Bag> value is a ... I<TODO>.
 
-=head2 Tuple
+## Tuple
 
 The C<Tuple> type is infinite.  A C<Tuple> value is a ... I<TODO>.
 
-=head2 Article
+## Article
 
 The C<Article> type is infinite.  A C<Article> value is a ... I<TODO>.
 
-=head2 Handle
+## Handle
 
 The C<Handle> type is infinite.  A C<Handle> value is a ... I<TODO>.
 
-=head1 FOUNDATION HANDLE SUBTYPES
+# FOUNDATION HANDLE SUBTYPES
 
-=head2 Variable
+## Variable
 
 The C<Variable> type is infinite.  A C<Variable> value is a ... I<TODO>.
 
-=head2 Process
+## Process
 
 The C<Process> type is infinite.  A C<Process> value is a ... I<TODO>.
 
-=head2 Stream
+## Stream
 
 The C<Stream> type is infinite.  A C<Stream> value is a ... I<TODO>.
 
-=head2 External
+## External
 
 The C<External> type is infinite.  An C<External> value is an
 opaque and transient reference to an entity that is defined and managed
 externally to the Muldis D language environment, either internally to the
 Muldis D host implementation or in some peer language that it mediates.
 
-=head1 FOUNDATION SUBTYPES FOR DEFINING SOURCE CODE
+# FOUNDATION SUBTYPES FOR DEFINING SOURCE CODE
 
 I<TODO.>
 
-=head2 ...
+## ...
 
 I<TODO.>
 
-=head1 FOUNDATION SINGLETON TYPE DEFINERS
+# FOUNDATION SINGLETON TYPE DEFINERS
 
 I<TODO.>
 
-=head2 False
+## False
 
 The Foundation singleton type definer C<False> represents the C<Boolean>
 value I<false>.
 
-=head2 True
+## True
 
 The Foundation singleton type definer C<True> represents the C<Boolean>
 value I<true>.
 
-=head2 Neg_One
+## Neg_One
 
 The Foundation singleton type definer C<Neg_One> represents the C<Integer>
 value negative-one.
 
-=head2 Zero
+## Zero
 
 The Foundation singleton type definer C<Zero> represents the C<Integer>
 value zero.
 
-=head2 Pos_One
+## Pos_One
 
 The Foundation singleton type definer C<Pos_One> represents the C<Integer>
 value positive-one.
 
-=head1 FOUNDATION FUNCTIONS
+# FOUNDATION FUNCTIONS
 
 I<TODO.>
 
@@ -910,7 +906,7 @@ Every low-level routine takes a source of just the C<Any> type, so
 any value expression will bind to it; any further input requirements will
 be defined in their bodies and fail with thrown exceptions.
 
-=head2 Boolean
+## Boolean
 
 The function C<Boolean> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -918,7 +914,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Boolean> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Integer
+## Integer
 
 The function C<Integer> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -926,7 +922,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Integer> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Array
+## Array
 
 The function C<Array> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -934,7 +930,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Array> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Bag
+## Bag
 
 The function C<Bag> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -942,7 +938,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Bag> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Tuple
+## Tuple
 
 The function C<Tuple> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -950,7 +946,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Tuple> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Article
+## Article
 
 The function C<Article> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -958,7 +954,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Article> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Handle
+## Handle
 
 The function C<Handle> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -966,7 +962,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Handle> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Variable
+## Variable
 
 The function C<Variable> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -974,7 +970,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Variable> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Process
+## Process
 
 The function C<Process> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -982,7 +978,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Process> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Stream
+## Stream
 
 The function C<Stream> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -990,7 +986,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<Stream> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 External
+## External
 
 The function C<External> requires its source to be a C<Tuple>
 value with just 1 attribute/argument named C<0>, where that argument may be
@@ -998,7 +994,7 @@ any value.  This function results in the C<Boolean> value
 I<true> iff its C<0> argument is a member of the C<External> type, and
 results in the C<Boolean> value I<false> otherwise.
 
-=head2 Any_same
+## Any_same
 
 The function C<Any_same> requires its source to be a C<Tuple>
 value with just 2 attributes/arguments named C<0> and C<1>.  This function
@@ -1006,7 +1002,7 @@ results in the C<Boolean> value I<true> iff its 2 arguments C<0> and
 C<1> are exactly the same value, and results in the C<Boolean> value
 I<false> otherwise.  This function is commutative.
 
-=head2 Integer_in_order
+## Integer_in_order
 
 The function C<Integer_in_order> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1016,14 +1012,14 @@ C<0> and C<1> are exactly the same value or the C<0> argument is closer to
 negative infinity than its C<1> argument; it results in the C<Boolean>
 value I<false> otherwise.
 
-=head2 Integer_opposite
+## Integer_opposite
 
 The function C<Integer_opposite> requires its source to be a
 C<Tuple> value with just 1 attribute/argument named C<0>, where
 that argument is an C<Integer> value.  This function results in the
 C<Integer> value that is the I<opposite> of its C<0> argument.
 
-=head2 Integer_modulus
+## Integer_modulus
 
 The function C<Integer_modulus> requires its source to be a
 C<Tuple> value with just 1 attribute/argument named C<0>, where
@@ -1031,7 +1027,7 @@ that argument is an C<Integer> value.  This function results in the
 non-negative C<Integer> value that is the I<absolute value> of its
 C<0> argument.
 
-=head2 Integer_plus
+## Integer_plus
 
 The function C<Integer_plus> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1041,7 +1037,7 @@ its 2 I<summand> arguments C<0> (I<augend>) and C<1> (I<addend>).  This
 function is both associative and commutative; its I<two-sided identity element> value is the
 C<Integer> zero; C<Integer_times> is its repeater function.
 
-=head2 Integer_minus
+## Integer_minus
 
 The function C<Integer_minus> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1050,7 +1046,7 @@ results in the C<Integer> I<difference> from performing
 I<subtraction> of its 2 arguments C<0> (I<minuend>) and C<1>
 (I<subtrahend>).
 
-=head2 Integer_times
+## Integer_times
 
 The function C<Integer_times> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1061,7 +1057,7 @@ C<1> (I<multiplicand>).  This function is both associative and commutative;
 its I<two-sided identity element> value is the C<Integer> positive one;
 C<Integer_nn_power> is its repeater function.
 
-=head2 Integer_multiple_of
+## Integer_multiple_of
 
 The function C<Integer_multiple_of> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1071,7 +1067,7 @@ its C<0> argument is an even multiple of its C<1> argument (that is, the
 former is evenly divisible by the latter); it results in the
 C<Boolean> value I<false> otherwise.
 
-=head2 Integer_divided_by_rtz
+## Integer_divided_by_rtz
 
 The function C<Integer_divided_by_rtz> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1082,7 +1078,7 @@ I<numerator>) and C<1> (I<divisor> or I<denominator>) using the semantics
 of real number division, whereupon the real number result is rounded to the
 same or nearest-towards-zero integral number.
 
-=head2 Integer_nn_power
+## Integer_nn_power
 
 The function C<Integer_nn_power> requires its source to be a
 C<Tuple> value with just 2 attributes/arguments named C<0> and
@@ -1092,7 +1088,7 @@ function results in the C<Integer> value from performing
 I<exponentiation> of its 2 arguments C<0> (I<base>) and C<1> (I<exponent>
 or I<power>).
 
-=head2 Integer_factorial
+## Integer_factorial
 
 The function C<Integer_factorial> requires its source to be a
 C<Tuple> value with just 1 attribute/argument named C<0>, where
@@ -1100,307 +1096,307 @@ that argument is a non-negative C<Integer> value.  This function
 results in the positive C<Integer> value that is the I<factorial>
 of its C<0> argument.
 
-=head2 Array_substring_of
+## Array_substring_of
 
 I<TODO.>
 
-=head2 Array_overlaps_string
+## Array_overlaps_string
 
 I<TODO.>
 
-=head2 Array_disjoint_string
+## Array_disjoint_string
 
 I<TODO.>
 
-=head2 Array_catenate
+## Array_catenate
 
 I<TODO.>
 
-=head2 Array_replicate
+## Array_replicate
 
 I<TODO.>
 
-=head2 Array_has_n
+## Array_has_n
 
 I<TODO.>
 
-=head2 Array_multiplicity
+## Array_multiplicity
 
 I<TODO.>
 
-=head2 Array_all_unique
+## Array_all_unique
 
 I<TODO.>
 
-=head2 Array_unique
+## Array_unique
 
 I<TODO.>
 
-=head2 Array_any
+## Array_any
 
 I<TODO.>
 
-=head2 Array_insert_n
+## Array_insert_n
 
 I<TODO.>
 
-=head2 Array_remove_n
+## Array_remove_n
 
 I<TODO.>
 
-=head2 Array_except
+## Array_except
 
 I<TODO.  Change from except(A1,A2) to except(A1,to_Bag(A2)).>
 
-=head2 Array_intersect
+## Array_intersect
 
 I<TODO.  Change from intersect(A1,A2) to intersect(A1,to_Bag(A2)).>
 
-=head2 Array_union
+## Array_union
 
 I<TODO.  Kill this; instead of union(A1,A2), users catenate(A1,except(A2,(to_Bag(A1)))).>
 
-=head2 Array_exclusive
+## Array_exclusive
 
 I<TODO.  Kill this; users do analagous to union replacement.>
 
-=head2 Array_nest
+## Array_nest
 
 I<TODO.>
 
-=head2 Array_unnest
+## Array_unnest
 
 I<TODO.>
 
-=head2 Array_where
+## Array_where
 
 I<TODO.>
 
-=head2 Array_map
+## Array_map
 
 I<TODO.>
 
-=head2 Array_reduce
+## Array_reduce
 
 I<TODO.>
 
-=head2 Array_to_Bag
+## Array_to_Bag
 
 I<TODO.>
 
-=head2 Array_count
+## Array_count
 
 I<TODO.>
 
-=head2 Array_order_using
+## Array_order_using
 
 I<TODO.>
 
-=head2 Array_at
+## Array_at
 
 I<TODO.>
 
-=head2 Array_slice_n
+## Array_slice_n
 
 I<TODO.>
 
-=head2 Array_ord_pos_succ_all_matches
+## Array_ord_pos_succ_all_matches
 
 I<TODO.>
 
-=head2 Bag_singular
+## Bag_singular
 
 I<TODO.>
 
-=head2 Bag_only_member
+## Bag_only_member
 
 I<TODO.>
 
-=head2 Bag_has_n
+## Bag_has_n
 
 I<TODO.>
 
-=head2 Bag_multiplicity
+## Bag_multiplicity
 
 I<TODO.>
 
-=head2 Bag_all_unique
+## Bag_all_unique
 
 I<TODO.>
 
-=head2 Bag_unique
+## Bag_unique
 
 I<TODO.>
 
-=head2 Bag_subset_of
+## Bag_subset_of
 
 I<TODO.>
 
-=head2 Bag_overlaps_members
+## Bag_overlaps_members
 
 I<TODO.>
 
-=head2 Bag_disjoint_members
+## Bag_disjoint_members
 
 I<TODO.>
 
-=head2 Bag_any
+## Bag_any
 
 I<TODO.>
 
-=head2 Bag_insert_n
+## Bag_insert_n
 
 I<TODO.>
 
-=head2 Bag_remove_n
+## Bag_remove_n
 
 I<TODO.>
 
-=head2 Bag_member_plus
+## Bag_member_plus
 
 I<TODO.>
 
-=head2 Bag_except
+## Bag_except
 
 I<TODO.>
 
-=head2 Bag_intersect
+## Bag_intersect
 
 I<TODO.>
 
-=head2 Bag_union
+## Bag_union
 
 I<TODO.>
 
-=head2 Bag_exclusive
+## Bag_exclusive
 
 I<TODO.>
 
-=head2 Bag_nest
+## Bag_nest
 
 I<TODO.>
 
-=head2 Bag_unnest
+## Bag_unnest
 
 I<TODO.>
 
-=head2 Bag_where
+## Bag_where
 
 I<TODO.>
 
-=head2 Bag_map
+## Bag_map
 
 I<TODO.>
 
-=head2 Bag_reduce
+## Bag_reduce
 
 I<TODO.>
 
-=head2 Bag_count
+## Bag_count
 
 I<TODO.>
 
-=head2 Bag_unique_count
+## Bag_unique_count
 
 I<TODO.>
 
-=head2 Bag_order_using
+## Bag_order_using
 
 I<TODO.>
 
-=head2 Tuple_D1_select
+## Tuple_D1_select
 
 I<TODO.>
 
-=head2 Tuple_degree
+## Tuple_degree
 
 I<TODO.>
 
-=head2 Tuple_heading
+## Tuple_heading
 
 I<TODO.>
 
-=head2 Tuple_subheading_of
+## Tuple_subheading_of
 
 I<TODO.>
 
-=head2 Tuple_overlaps_heading
+## Tuple_overlaps_heading
 
 I<TODO.>
 
-=head2 Tuple_disjoint_heading
+## Tuple_disjoint_heading
 
 I<TODO.>
 
-=head2 Tuple_except_heading
+## Tuple_except_heading
 
 I<TODO.>
 
-=head2 Tuple_intersect_heading
+## Tuple_intersect_heading
 
 I<TODO.>
 
-=head2 Tuple_union_heading
+## Tuple_union_heading
 
 I<TODO.>
 
-=head2 Tuple_exclusive_heading
+## Tuple_exclusive_heading
 
 I<TODO.>
 
-=head2 Tuple_rename
+## Tuple_rename
 
 I<TODO.>
 
-=head2 Tuple_on
+## Tuple_on
 
 I<TODO.>
 
-=head2 Tuple_update
+## Tuple_update
 
 I<TODO.>
 
-=head2 Tuple_extend
+## Tuple_extend
 
 I<TODO.>
 
-=head2 Tuple_at
+## Tuple_at
 
 I<TODO.>
 
-=head2 Tuple_any_attrs
+## Tuple_any_attrs
 
 I<TODO.>
 
-=head2 Tuple_attrs_where
+## Tuple_attrs_where
 
 I<TODO.>
 
-=head2 Tuple_attrs_map
+## Tuple_attrs_map
 
 I<TODO.>
 
-=head2 Tuple_attrs_reduce
+## Tuple_attrs_reduce
 
 I<TODO.>
 
-=head2 Article_select
+## Article_select
 
 I<TODO.>
 
-=head2 Article_label
+## Article_label
 
 I<TODO.>
 
-=head2 Article_attrs
+## Article_attrs
 
 I<TODO.>
 
-=head2 Article_at
+## Article_at
 
 I<TODO.>
 
-=head2 External_call_function
+## External_call_function
 
 The function C<External_call_function> requires its source to be a
 C<Tuple> value with just 1 attribute/argument named C<0>, where that
@@ -1409,21 +1405,21 @@ invoking a function that is defined and managed externally to the Muldis D
 language environment where that external function receives the value of the
 C<0> attribute as its source/arguments.  Its result type is C<Any>.
 
-=head1 FOUNDATION PROCEDURES
+# FOUNDATION PROCEDURES
 
 I<TODO.>
 
 I<TODO.  Practically all Variable ops are procedures.>
 
-=head2 ...
+## ...
 
 I<TODO.>
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the B<Muldis D Foundation>
 (B<MDF>) primary component of the B<Muldis D> language specification.
@@ -1447,5 +1443,3 @@ While it is by no means required, the copyright holder of MDF would
 appreciate being informed any time you create a modified version of MDF
 that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
-
-=cut

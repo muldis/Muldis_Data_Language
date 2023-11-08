@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Standard_Library - Muldis D common core vocabulary for regular users
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Standard_Library version 0.300.0.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document is the human readable authoritative formal specification of
 the B<Muldis D Standard Library> (B<MDSL>) primary component of the B<Muldis D>
@@ -33,7 +29,7 @@ units) that users can choose from as dependencies of their applications and
 schemas.  None are mandatory, and users can choose alternatives, but they
 are recommended as the default options for their functionality.
 
-=head1 PACKAGES
+# PACKAGES
 
 The B<Muldis D Standard Library> comprises these Muldis D packages:
 
@@ -50,11 +46,11 @@ would employ directly in their applications and schemas.
 
 Other packages will be added later, such as C<System::Math>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the B<Muldis D Standard
 Library> (B<MDSL>) primary component of the B<Muldis D> language
@@ -82,5 +78,3 @@ While it is by no means required, the copyright holder of MDSL would
 appreciate being informed any time you create a modified version of MDSL
 that you are willing to distribute, because that is a practical way of
 suggesting improvements to the standard version.
-
-=cut

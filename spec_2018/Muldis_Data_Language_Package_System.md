@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Package::System - Muldis D primary data types and operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Package::System version 0.300.0.
 
-=head1 SYNOPSIS
+# SYNOPSIS
 
  `Muldis_Content_Predicate
  MCP version https://muldis.com 0.300.0 MCP
@@ -42,7 +38,7 @@ This document is Muldis::D::Package::System version 0.300.0.
     ),
  ))
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document defines the Muldis D package
 C<System https://muldis.com 0.300.0> which provides the common core
@@ -52,7 +48,7 @@ would employ directly in their applications and schemas.
 See also L<Muldis::D::Standard_Library> to read about the B<Muldis D
 Standard Library> specification, of which this document is a part.
 
-=head1 PACKAGE
+# PACKAGE
 
  `Muldis_Content_Predicate
  MCP version https://muldis.com 0.300.0 MCP
@@ -76,9 +72,9 @@ Standard Library> specification, of which this document is a part.
     ),
  ))
 
-=head1 MAXIMAL AND MINIMAL DATA TYPES
+# MAXIMAL AND MINIMAL DATA TYPES
 
-=head2 Any
+## Any
 
         Any : (\Function : (
             is_type_definer : True,
@@ -93,7 +89,7 @@ represents the infinite Muldis D Foundation type C<foundation::Any>.  Its
 default value is C<False>.  Other programming languages may name their
 corresponding types I<Object> or I<Universal>.
 
-=head2 None
+## None
 
         None : (\Function : (
             is_type_definer : True,
@@ -104,7 +100,7 @@ The selection type definer C<None> represents the finite I<empty type>,
 which is the minimal data type of the entire Muldis D type system and
 consists of exactly zero values.  It can not have any default value.
 
-=head2 same =
+## same =
 
         same : (\Function : (
             returns : \$Boolean,
@@ -130,7 +126,7 @@ an C<External> value is considered a mutable container, then 2 C<External>
 should only be considered I<same> if they both point to the same container,
 and not if two distinct containers have the same content.
 
-=head2 not_same != ≠
+## not_same != ≠
 
         not_same : (\Function : (
             negates : \$same,
@@ -147,7 +143,7 @@ Other programming languages may name their corresponding operators
 I<< <> >> or I<!===> or or I<~=> or I<^=> or I<ne> or I</=> or I<=/=>
 or I<=\=>.
 
-=head2 is_a
+## is_a
 
         is_a : (\Function : (
             returns : \$Boolean,
@@ -165,7 +161,7 @@ that the type specifier it takes has more of a template format suitable in
 particular for concisely defining common cases of structural types, and in
 particular routine input and output signatures.
 
-=head2 not_is_a
+## not_is_a
 
         not_is_a : (\Function : (
             negates : \$is_a,
@@ -174,9 +170,9 @@ particular routine input and output signatures.
 The function C<not_is_a> results in C<False> iff its C<0> argument is a
 member of the type specified by its C<1> argument, and C<True> otherwise.
 
-=head1 ORDERABLE DATA TYPES
+# ORDERABLE DATA TYPES
 
-=head2 Orderable
+## Orderable
 
         Orderable::'' : (\Function : (
             is_type_definer : True,
@@ -212,7 +208,7 @@ C<Boolean>, C<Integral>, C<Integer>, C<Fractional>, C<Fraction>,
 C<Stringy>, C<Bits>, C<Blob>, C<Textual>, C<Text>, C<Positional>, C<Array>,
 C<Tuple_Array>.
 
-=head2 in_order
+## in_order
 
         in_order::'' : (\Function : (
             virtual : True,
@@ -241,7 +237,7 @@ partly to keep its core type system simpler (it would have gone the
 enumeration route) and partly because the logic for doing sorting or
 comparisons or validation is typically much simpler with this foundation.
 
-=head2 in_order (Before_All_Others, After_All_Others)
+## in_order (Before_All_Others, After_All_Others)
 
         in_order::Before_All_Others_L : (\Function : (
             returns : \$Boolean,
@@ -278,7 +274,7 @@ function C<in_order> for the composing types C<Before_All_Others>
 and C<After_All_Others>, specifically for comparing either value
 with any C<Orderable>.
 
-=head2 before <
+## before <
 
         before : (\Function : (
             commutes : \$after,
@@ -290,7 +286,7 @@ The function C<before> aka C<< < >> results in C<True> iff its C<0>
 argument is I<before> its C<1> argument; otherwise it results in C<False>.
 Other programming languages may name this operator I<lt>.
 
-=head2 after >
+## after >
 
         after : (\Function : (
             negates : \$before_or_same,
@@ -302,7 +298,7 @@ The function C<after> aka C<< > >> results in C<True> iff its C<0>
 argument is I<after> its C<1> argument; otherwise it results in C<False>.
 Other programming languages may name this operator I<gt>.
 
-=head2 before_or_same <= ≤
+## before_or_same <= ≤
 
         before_or_same : (\Alias : ( of : \$in_order, )),
 
@@ -315,7 +311,7 @@ iff its C<0> argument is I<before> its C<1> argument or they are the same
 value; otherwise it results in C<False>.  Other programming languages may
 name this operator I<le>.
 
-=head2 after_or_same >= ≥
+## after_or_same >= ≥
 
         after_or_same : (\Function : (
             commutes : \$before_or_same,
@@ -330,7 +326,7 @@ iff its C<0> argument is I<after> its C<1> argument or they are the same
 value; otherwise it results in C<False>.  Other programming languages may
 name this operator I<ge>.
 
-=head2 min
+## min
 
         min : (\Function : (
             returns : \$Orderable,
@@ -347,7 +343,7 @@ the 2 are sorted I<in order>.  This function is designed to be chained for
 any number of values in order to pick the one that sorts
 I<before> all of the others.
 
-=head2 max
+## max
 
         max : (\Function : (
             returns : \$Orderable,
@@ -364,7 +360,7 @@ the 2 are sorted I<in order>.  This function is designed to be chained for
 any number of values in order to pick the one that sorts
 I<after> all of the others.
 
-=head2 minmax
+## minmax
 
         minmax : (\Function : (
             returns : (\$Orderable, \$Orderable),
@@ -378,9 +374,9 @@ arguments sorted I<in order>; the function's result is the same as its
 source when the arguments are already in order, and the reverse of that
 otherwise, meaning the values of C<0> and C<1> are swapped.
 
-=head1 SUCCESSABLE DATA TYPES
+# SUCCESSABLE DATA TYPES
 
-=head2 Successable
+## Successable
 
         Successable : (\Function : (
             is_type_definer : True,
@@ -437,7 +433,7 @@ Fibonacci.  This is for cases where it may be necessary to calculate all
 the intermediate values in order to arrive at a desired nth one, and doing
 them out of sequence or in parallel may not be an option.
 
-=head2 asset
+## asset
 
         asset::'' : (\Function : (
             virtual : True,
@@ -449,7 +445,7 @@ The virtual function C<asset> results in the I<asset> of its C<0> argument,
 which for trivial cases may simply be that same argument.  Other
 programming languages may name their corresponding operators I<Current>.
 
-=head2 succ
+## succ
 
         succ : (\Function : (
             returns : {\$Successable, \$After_All_Others},
@@ -462,7 +458,7 @@ argument, or in C<\!After_All_Others> if there is none.  Other
 programming languages may name their corresponding operators I<next> or
 I<MoveNext>.
 
-=head2 nth_succ
+## nth_succ
 
         nth_succ::'' : (\Function : (
             virtual : True,
@@ -474,9 +470,9 @@ The virtual function C<nth_succ> results in the Nth I<successor> value of
 its C<0> argument, where N is its C<1> argument, or in
 C<\!After_All_Others> if there is none.
 
-=head1 BICESSABLE DATA TYPES
+# BICESSABLE DATA TYPES
 
-=head2 Bicessable
+## Bicessable
 
         Bicessable : (\Function : (
             is_type_definer : True,
@@ -525,7 +521,7 @@ with the quantum of I<one> for types specifically representing integers;
 for C<Bicessable> types in general, the terms just mean prior or next
 values and should not be conceptualized as mathematical operations.
 
-=head2 pred
+## pred
 
         pred : (\Function : (
             returns : {\$Bicessable, \$Before_All_Others},
@@ -538,7 +534,7 @@ argument, or in C<\!Before_All_Others> if there is none.  Other
 programming languages may name their corresponding operators I<prior> or
 I<previous>.
 
-=head2 nth_pred
+## nth_pred
 
         nth_pred::'' : (\Function : (
             virtual : True,
@@ -550,9 +546,9 @@ The virtual function C<nth_pred> results in the Nth I<predecessor> value of
 its C<0> argument, where N is its C<1> argument, or in
 C<\!Before_All_Others> if there is none.
 
-=head1 BOOLABLE DATA TYPES
+# BOOLABLE DATA TYPES
 
-=head2 Boolable
+## Boolable
 
         Boolable : (\Function : (
             is_type_definer : True,
@@ -593,7 +589,7 @@ C<has_any_attrs> and C<is_nullary> are provided as that dimension's direct
 analogies to the C<Homogeneous> dimension's C<Boolable>-implementing
 C<has_any_members> (C<to_Boolean>/C<so>) and C<is_empty> (C<not_so>) functions.
 
-=head2 to_Boolean so ?
+## to_Boolean so ?
 
         to_Boolean::'' : (\Function : (
             virtual : True,
@@ -608,7 +604,7 @@ The virtual function C<to_Boolean> aka C<so> aka C<?> results in C<True>
 typically when its C<0> argument is a nonzero number or a nonempty
 collection; otherwise it results in C<False>.
 
-=head2 not_so !?
+## not_so !?
 
         not_so : (\Function : (
             negates : \$to_Boolean,
@@ -620,9 +616,9 @@ The function C<not_so> aka C<!?> results in C<True> typically when
 its C<0> argument is a number zero or an empty collection; otherwise
 it results in C<False>.
 
-=head1 BOOLEAN DATA TYPES
+# BOOLEAN DATA TYPES
 
-=head2 Boolean
+## Boolean
 
         Boolean : (\Function : (
             is_type_definer : True,
@@ -641,7 +637,7 @@ its maximum value is C<True>.  Other programming languages frequently don't
 have a dedicated boolean type but rather consider values of other types,
 typically integer types, to be I<false> or I<true>.
 
-=head2 False ⊥
+## False ⊥
 
         False : (\Function : (
             is_type_definer : True,
@@ -654,7 +650,7 @@ The singleton type definer C<False> aka C<⊥> represents the boolean logical tr
 I<false> aka I<contradiction>.  Other programming languages frequently use
 the integer 0 to represent I<false>.
 
-=head2 True ⊤
+## True ⊤
 
         True : (\Function : (
             is_type_definer : True,
@@ -667,7 +663,7 @@ The singleton type definer C<True> aka C<⊤> represents the boolean logical tru
 I<true> aka I<tautology>.  Other programming languages frequently use the
 integer 1 to represent I<true>.
 
-=head2 in_order (Boolean)
+## in_order (Boolean)
 
         in_order::Boolean : (\Function : (
             returns : \$Boolean,
@@ -679,7 +675,7 @@ integer 1 to represent I<true>.
 The function C<in_order::Boolean> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Boolean>.
 
-=head2 asset (Boolean)
+## asset (Boolean)
 
         asset::Boolean : (\Function : (
             returns : \$Boolean,
@@ -692,7 +688,7 @@ The function C<asset::Boolean> simply results in its C<0> argument.
 This function implements the C<Successable> virtual function C<asset> for
 the composing type C<Boolean>.
 
-=head2 nth_pred (Boolean)
+## nth_pred (Boolean)
 
         nth_pred::Boolean : (\Function : (
             returns : {\$False, \$Before_All_Others},
@@ -704,7 +700,7 @@ the composing type C<Boolean>.
 The function C<nth_pred::Boolean> implements the C<Bicessable> virtual
 function C<nth_pred> for the composing type C<Boolean>.
 
-=head2 nth_succ (Boolean)
+## nth_succ (Boolean)
 
         nth_succ::Boolean : (\Function : (
             returns : {\$True, \$After_All_Others},
@@ -716,7 +712,7 @@ function C<nth_pred> for the composing type C<Boolean>.
 The function C<nth_succ::Boolean> implements the C<Successable> virtual
 function C<nth_succ> for the composing type C<Boolean>.
 
-=head2 to_Boolean (Boolean)
+## to_Boolean (Boolean)
 
         to_Boolean::Boolean : (\Function : (
             returns : \$Boolean,
@@ -730,7 +726,7 @@ simply results in its C<0> argument.  This function implements the
 C<Boolable> virtual function C<to_Boolean> aka C<so> aka C<?> for the
 composing type C<Boolean>.
 
-=head2 not ! ¬
+## not ! ¬
 
         not : (\Function : (
             negates : \$to_Boolean::Boolean,
@@ -745,7 +741,7 @@ I<logical complement>; it results in C<True> iff its C<0> argument is
 C<False> and vice-versa.  Other programming languages may name their
 corresponding operators I<~> or I<^> or I<N>.
 
-=head2 and ∧
+## and ∧
 
         and : (\Function : (
             returns : \$Boolean,
@@ -764,7 +760,7 @@ in C<True> iff its 2 arguments C<0> and C<1> are both C<True>, and C<False>
 otherwise.  Other programming languages may name their corresponding
 operators I<&> or I<&&> or I<K>.
 
-=head2 nand not_and ⊼ ↑
+## nand not_and ⊼ ↑
 
         nand : (\Function : (
             negates : \$and,
@@ -780,7 +776,7 @@ The function C<nand> aka C<not_and> aka C<⊼> aka C<↑> performs a logical
 I<alternative denial>; it results in C<False> iff its 2 arguments C<0> and
 C<1> are both C<True>, and C<True> otherwise.
 
-=head2 or ∨
+## or ∨
 
         or : (\Function : (
             returns : \$Boolean,
@@ -799,7 +795,7 @@ in C<True> iff at least one of its 2 arguments C<0> and C<1> is C<True>,
 and C<False> otherwise.  Other programming languages may name their
 corresponding operators I<|> or I<||> or I<A>.
 
-=head2 nor not_or ⊽ ↓
+## nor not_or ⊽ ↓
 
         nor : (\Function : (
             negates : \$or,
@@ -815,7 +811,7 @@ The function C<nor> aka C<not_or> aka C<⊽> aka C<↓> performs a logical
 I<joint denial>; it results in C<False> iff at least one of its 2 arguments
 C<0> and C<1> is C<True>, and C<True> otherwise.
 
-=head2 xnor iff ↔
+## xnor iff ↔
 
         xnor : (\Function : (
             returns : \$Boolean,
@@ -838,7 +834,7 @@ alias of the function C<same> aka C<=>; it behaves identically to C<same>
 when given the same arguments.  Other programming languages may
 name their corresponding operators I<E>.
 
-=head2 xor ⊻ ↮
+## xor ⊻ ↮
 
         xor : (\Function : (
             negates : \$xnor,
@@ -858,7 +854,7 @@ C<not_same> aka C<!=> aka C<≠>; it behaves identically to C<not_same>
 when given the same arguments.  Other programming languages may name their
 corresponding operators I<^>.
 
-=head2 imp implies →
+## imp implies →
 
         imp : (\Function : (
             returns : \$Boolean,
@@ -874,7 +870,7 @@ The function C<imp> aka C<implies> aka C<→> performs a logical I<material
 implication>; it results in C<False> when its C<0> argument is C<True> and
 its C<1> argument is C<False>, and C<True> otherwise.
 
-=head2 nimp not_implies ↛
+## nimp not_implies ↛
 
         nimp : (\Function : (
             negates : \$imp,
@@ -888,7 +884,7 @@ The function C<nimp> aka C<not_implies> aka C<↛> performs a logical
 I<material nonimplication>; it results in C<True> when its C<0> argument is
 C<True> and its C<1> argument is C<False>, and C<False> otherwise.
 
-=head2 if ←
+## if ←
 
         if : (\Function : (
             commutes : \$imp,
@@ -901,7 +897,7 @@ I<reverse material implication>; it results in C<False> when its C<0>
 argument is C<False> and its C<1> argument is C<True>, and C<True>
 otherwise.
 
-=head2 nif not_if ↚
+## nif not_if ↚
 
         nif : (\Function : (
             commutes : \$nimp,
@@ -915,9 +911,9 @@ The function C<nif> aka C<not_if> aka C<↚> performs a logical I<converse
 nonimplication>; it results in C<True> when its C<0> argument is C<False>
 and its C<1> argument is C<True>, and C<False> otherwise.
 
-=head1 ROUNDING INSTRUCTION DATA TYPES
+# ROUNDING INSTRUCTION DATA TYPES
 
-=head2 Round_Meth
+## Round_Meth
 
         Round_Meth : (\Function : (
             is_type_definer : True,
@@ -957,7 +953,7 @@ The default value of C<Round_Meth> is C<To_Zero>, which is the simplest.
 Other programming languages may name their corresponding types
 I<RoundingMode> (Java) or I<MidpointRounding> (C#).
 
-=head2 Round_Meth_Attr_Name
+## Round_Meth_Attr_Name
 
         Round_Meth_Attr_Name : (\Function : (
             is_type_definer : True,
@@ -973,7 +969,7 @@ The selection type definer C<Round_Meth_Attr_Name> represents the finite type
 consisting just of the C<Attr_Name> values that are valid Article attribute
 assets of C<Round_Meth> values.
 
-=head2 RM
+## RM
 
         RM : (\Function : (
             returns : \$Round_Meth,
@@ -984,9 +980,9 @@ assets of C<Round_Meth> values.
 The function C<RM> results in the C<Round_Meth> value selected in
 terms of the C<Attr_Name> of its C<0> argument.
 
-=head1 NUMERICAL DATA TYPES
+# NUMERICAL DATA TYPES
 
-=head2 Numerical
+## Numerical
 
         Numerical : (\Function : (
             is_type_definer : True,
@@ -1019,7 +1015,7 @@ these include types for irrational or algebraic or complex numbers or
 quaternions or rational types with a fixed precision or scale or
 floating-point types and so on.
 
-=head2 to_Boolean (Numerical)
+## to_Boolean (Numerical)
 
         to_Boolean::Numerical : (\Function : (
             virtual : True,
@@ -1033,7 +1029,7 @@ C<0> argument is a nonzero number; otherwise it results in C<False>.  This
 function implements the C<Boolable> virtual function C<to_Boolean> aka
 C<so> aka C<?> for the composing type C<Numerical>.
 
-=head2 is_zero
+## is_zero
 
         is_zero : (\Function : (
             negates : \$to_Boolean::Numerical,
@@ -1042,7 +1038,7 @@ C<so> aka C<?> for the composing type C<Numerical>.
 The function C<is_zero> results in C<True> when its C<0> argument is a
 number zero; otherwise it results in C<False>.
 
-=head2 zero
+## zero
 
         zero::'' : (\Function : (
             virtual : True,
@@ -1054,7 +1050,7 @@ The virtual function C<zero> results in the number zero of its C<0>
 argument's numerical type, assuming that every type composing C<Numerical>
 has one.
 
-=head2 opposite
+## opposite
 
         opposite::'' : (\Function : (
             virtual : True,
@@ -1070,7 +1066,7 @@ inverse> or I<unary minus> of its C<0> argument, and is a shorthand for
 either multiplying that argument by negative one or subtracting it from
 zero.  By definition, the sum of a number and its opposite is zero.
 
-=head2 reciprocal
+## reciprocal
 
         reciprocal::'' : (\Function : (
             virtual : True,
@@ -1088,7 +1084,7 @@ is always C<Fractional> for both C<Integral> and C<Fractional> arguments.
 The result is only I<defined> when the argument is a nonzero number; it is
 C<\!Div_By_Zero> otherwise.
 
-=head2 modulus abs
+## modulus abs
 
         modulus::'' : (\Function : (
             virtual : True,
@@ -1103,7 +1099,7 @@ I<modulus> or I<absolute value> of its C<0> argument, which is the
 (non-negative) distance between that argument and zero.  Note that typical
 mathematical notion writes this operator in circumfix like I<|n|>.
 
-=head2 plus +
+## plus +
 
         plus::'' : (\Function : (
             virtual : True,
@@ -1120,7 +1116,7 @@ The virtual function C<plus> aka C<+> results in the numeric I<sum> from
 performing I<addition> of its 2 I<summand> arguments C<0> (I<augend>) and
 C<1> (I<addend>).  This operation has a I<two-sided identity element> value of a number zero.
 
-=head2 minus
+## minus
 
         minus::'' : (\Function : (
             virtual : True,
@@ -1133,7 +1129,7 @@ the numeric I<difference> from performing I<subtraction> of its 2 arguments
 C<0> (I<minuend>) and C<1> (I<subtrahend>).  This operation has a I<right
 identity element> value of a number zero.
 
-=head2 - −
+## - −
 
         '-' : (\Function : (
             returns : \$Numerical,
@@ -1147,7 +1143,7 @@ The function C<-> aka C<−> is a proxy for either of the virtual functions
 unary C<opposite> and binary C<minus>, depending on how many arguments it
 was invoked with.
 
-=head2 modulus_minus abs_minus |-| |−|
+## modulus_minus abs_minus |-| |−|
 
         modulus_minus : (\Function : (
             returns : \$Numerical,
@@ -1165,7 +1161,7 @@ The function C<modulus_minus> aka C<abs_minus> aka C<|-|> aka C<|−|>
 results in the numeric I<absolute difference> of its 2 arguments C<0> and
 C<1>, which is the (non-negative) distance between those arguments.
 
-=head2 times * ×
+## times * ×
 
         times::'' : (\Function : (
             virtual : True,
@@ -1185,7 +1181,7 @@ I<product> from performing I<multiplication> of its 2 I<factor> arguments
 C<0> (I<multiplier>) and C<1> (I<multiplicand>).  This operation has a
 I<two-sided identity element> value of a number positive one.
 
-=head2 multiple_of
+## multiple_of
 
         multiple_of::'' : (\Function : (
             virtual : True,
@@ -1200,7 +1196,7 @@ only I<defined> when the C<1> argument is a nonzero number; it is
 C<\!Div_By_Zero> otherwise.  Other programming languages may name their
 corresponding operators I<%%>.
 
-=head2 nearest_multiple_of round
+## nearest_multiple_of round
 
         nearest_multiple_of : (\Function : (
             returns : {\$Numerical, \$Div_By_Zero},
@@ -1223,7 +1219,7 @@ C<\!Div_By_Zero> otherwise.  Other programming languages may name their
 corresponding operators I<truncate> or I<int> or I<floor> or I<ceil> or
 other things, some of which would always round to a multiple of one.
 
-=head2 fractional_divided_by / ÷ ∕
+## fractional_divided_by / ÷ ∕
 
         fractional_divided_by::'' : (\Function : (
             virtual : True,
@@ -1247,7 +1243,7 @@ I<defined> when the C<1> argument is a nonzero number; it is C<\!Div_By_Zero>
 otherwise.  This operation has a I<right identity element> value of a
 number positive one.
 
-=head2 integral_divided_by div
+## integral_divided_by div
 
         integral_divided_by::'' : (\Function : (
             virtual : True,
@@ -1269,7 +1265,7 @@ I<defined> when the C<1> argument is a nonzero number; it is C<\!Div_By_Zero>
 otherwise.  This operation has a I<right identity element> value of a
 number positive one.
 
-=head2 modulo mod
+## modulo mod
 
         modulo : (\Function : (
             returns : {\$Numerical, \$Div_By_Zero},
@@ -1290,7 +1286,7 @@ argument is a nonzero number; it is C<\!Div_By_Zero> otherwise.  Other
 programming languages may name their corresponding operators I<%> or I<//>
 or I<\\> or I<div> or I<rem> or I<remainder> or various other things.
 
-=head2 divided_by_and_modulo
+## divided_by_and_modulo
 
         divided_by_and_modulo::'' : (\Function : (
             returns : ({\$Numerical, \$Div_By_Zero}, {\$Numerical, \$Div_By_Zero}),
@@ -1303,7 +1299,7 @@ and C<1> attributes have the exact same values that C<integral_divided_by>
 and C<modulo> would result in, respectively, when each is given all of the
 same arguments.  This function is a shorthand for invoking the other two.
 
-=head2 integral_power **
+## integral_power **
 
         integral_power::'' : (\Function : (
             virtual : True,
@@ -1321,7 +1317,7 @@ argument.  The result is only I<defined> when at least one of the arguments
 C<0> and C<1> is a nonzero number; it is C<\!Zero_To_The_Zero> otherwise.  Other
 programming languages may name their corresponding operators I<exp> or I<^>.
 
-=head2 integral_nn_power power
+## integral_nn_power power
 
         integral_nn_power::'' : (\Function : (
             virtual : True,
@@ -1339,9 +1335,9 @@ C<Fractional> C<0> argument.  The result is only I<defined> when at least
 one of the arguments C<0> and C<1> is a nonzero number; it is C<\!Zero_To_The_Zero>
 otherwise.
 
-=head1 INTEGRAL DATA TYPES
+# INTEGRAL DATA TYPES
 
-=head2 Integral
+## Integral
 
         Integral::'' : (\Function : (
             is_type_definer : True,
@@ -1366,7 +1362,7 @@ generally mean that.  In the general case, C<Integral> has no minimum or
 maximum value, but often a type that is C<Integral> will have them.
 C<Integral> is composed by C<Integer>.
 
-=head2 Integral_NN
+## Integral_NN
 
         Integral_NN : (\Function : (
             is_type_definer : True,
@@ -1378,7 +1374,7 @@ The selection type definer C<Integral_NN> represents the infinite type
 consisting just of the C<Integral> values that are non-negative.  Its
 default and minmum value is C<0>; it has no maximum value.
 
-=head2 Integral_P
+## Integral_P
 
         Integral_P : (\Function : (
             is_type_definer : True,
@@ -1391,7 +1387,7 @@ The selection type definer C<Integral_P> represents the infinite type
 consisting just of the C<Integral_NN> values that are positive.  Its
 default and minmum value is C<1>; it has no maximum value.
 
-=head2 --
+## --
 
         '--' : (\Function : (
             returns : {\$Integral, \$Before_All_Others},
@@ -1404,7 +1400,7 @@ argument, or in C<\!Before_All_Others> if there is none.  It is an integral nume
 specific alias for the C<Bicessable> virtual function C<pred>.  Other
 programming languages may name their corresponding operators I<decrement>.
 
-=head2 ++
+## ++
 
         '++' : (\Function : (
             returns : {\$Integral, \$After_All_Others},
@@ -1417,7 +1413,7 @@ or in C<\!After_All_Others> if there is none.  It is an integral numeric specifi
 alias for the C<Successable> virtual function C<succ>.  Other programming
 languages may name their corresponding operators I<increment>.
 
-=head2 to_Integer
+## to_Integer
 
         to_Integer::'' : (\Function : (
             virtual : True,
@@ -1432,7 +1428,7 @@ abstractly as integers, or so that it is easier to do exact math with
 integers without running afoul of possible range limits of fixed-size
 C<Integral> types, just dealing with the latter for storage.
 
-=head2 factorial
+## factorial
 
         factorial::'' : (\Function : (
             virtual : True,
@@ -1446,7 +1442,7 @@ every integer between 1 and that argument; the factorial of zero is defined
 to result in positive one.  Note that typical mathematical notion writes
 this operator in postfix like I<n!>.
 
-=head2 gcd greatest_common_divisor
+## gcd greatest_common_divisor
 
         gcd : (\Function : (
             returns : \$Integral_P,
@@ -1465,7 +1461,7 @@ numeric I<greatest common divisor> of its 2 arguments C<0> and C<1>, which
 is the largest integer that will divide both arguments evenly.
 I<TODO: Look into generalizing it to take negative integer arguments too.>
 
-=head2 lcm least_common_multiple
+## lcm least_common_multiple
 
         lcm : (\Function : (
             returns : \$Integral_NN,
@@ -1484,7 +1480,7 @@ numeric I<least common multiple> of its 2 arguments C<0> and C<1>, which
 is the smallest integer that is an even multiple of both arguments.
 I<TODO: Look into generalizing it to take negative integer arguments too.>
 
-=head2 coprime
+## coprime
 
         coprime : (\Function : (
             returns : \$Boolean,
@@ -1496,9 +1492,9 @@ The function C<coprime> results in C<True> iff its 2 arguments C<0> and
 C<1> are coprime (their I<greatest common divisor> is 1), and C<False>
 otherwise.
 
-=head1 INTEGER DATA TYPES
+# INTEGER DATA TYPES
 
-=head2 Integer
+## Integer
 
         Integer::'' : (\Function : (
             is_type_definer : True,
@@ -1517,7 +1513,7 @@ is both C<Orderable> and C<Bicessable>; it has no minimum or maximum value.
 Other programming languages may name their corresponding types I<BigInt>
 or I<Bignum> or I<BigInteger>.
 
-=head2 Integer_NN
+## Integer_NN
 
         Integer_NN : (\Function : (
             is_type_definer : True,
@@ -1528,7 +1524,7 @@ The selection type definer C<Integer_NN> represents the infinite type
 consisting just of the C<Integer> values that are non-negative.  Its
 default and minmum value is C<0>; it has no maximum value.
 
-=head2 Integer_P
+## Integer_P
 
         Integer_P : (\Function : (
             is_type_definer : True,
@@ -1540,7 +1536,7 @@ The selection type definer C<Integer_P> represents the infinite type consisting
 just of the C<Integer_NN> values that are positive.  Its default and minmum
 value is C<1>; it has no maximum value.
 
-=head2 in_order (Integer)
+## in_order (Integer)
 
         in_order::Integer : (\Function : (
             returns : \$Boolean,
@@ -1552,7 +1548,7 @@ value is C<1>; it has no maximum value.
 The function C<in_order::Integer> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Integer>.
 
-=head2 asset (Integer)
+## asset (Integer)
 
         asset::Integer : (\Function : (
             returns : \$Integer,
@@ -1565,7 +1561,7 @@ The function C<asset::Integer> simply results in its C<0> argument.
 This function implements the C<Successable> virtual function C<asset> for
 the composing type C<Integer>.
 
-=head2 nth_pred (Integer)
+## nth_pred (Integer)
 
         nth_pred::Integer : (\Function : (
             returns : \$Integer,
@@ -1577,7 +1573,7 @@ the composing type C<Integer>.
 The function C<nth_pred::Integer> implements the C<Bicessable>
 virtual function C<nth_pred> for the composing type C<Integer>.
 
-=head2 nth_succ (Integer)
+## nth_succ (Integer)
 
         nth_succ::Integer : (\Function : (
             returns : \$Integer,
@@ -1590,7 +1586,7 @@ virtual function C<nth_pred> for the composing type C<Integer>.
 The function C<nth_succ::Integer> implements the C<Successable>
 virtual function C<nth_succ> for the composing type C<Integer>.
 
-=head2 to_Boolean (Integer)
+## to_Boolean (Integer)
 
         to_Boolean::Integer : (\Function : (
             returns : \$Boolean,
@@ -1604,7 +1600,7 @@ argument is not C<0>, and in C<False> if it is C<0>.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Integer>.
 
-=head2 zero (Integer)
+## zero (Integer)
 
         zero::Integer : (\Function : (
             returns : \$Integer,
@@ -1617,7 +1613,7 @@ The function C<zero::Integer> simply results in C<0>.  This function
 implements the C<Numerical> virtual function C<zero> for the composing type
 C<Integer>.
 
-=head2 opposite (Integer)
+## opposite (Integer)
 
         opposite::Integer : (\Function : (
             returns : \$Integer,
@@ -1630,7 +1626,7 @@ The function C<opposite::Integer> implements the C<Numerical> virtual
 function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
 for the composing type C<Integer>.
 
-=head2 reciprocal (Integer)
+## reciprocal (Integer)
 
         reciprocal::Integer : (\Function : (
             returns : {\$Fraction, \$Div_By_Zero},
@@ -1643,7 +1639,7 @@ The function C<reciprocal::Integer> implements the C<Numerical> virtual
 function C<reciprocal> aka C<multiplicative_inverse> for the composing type
 C<Integer>.
 
-=head2 modulus (Integer)
+## modulus (Integer)
 
         modulus::Integer : (\Function : (
             returns : \$Integer_NN,
@@ -1655,7 +1651,7 @@ C<Integer>.
 The function C<modulus::Integer> implements the C<Numerical>
 virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
 
-=head2 plus (Integer)
+## plus (Integer)
 
         plus::Integer : (\Function : (
             returns : \$Integer,
@@ -1671,7 +1667,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Integer>.
 The function C<plus::Integer> implements the C<Numerical>
 virtual function C<plus> aka C<+> for the composing type C<Integer>.
 
-=head2 minus (Integer)
+## minus (Integer)
 
         minus::Integer : (\Function : (
             returns : \$Integer,
@@ -1684,7 +1680,7 @@ virtual function C<plus> aka C<+> for the composing type C<Integer>.
 The function C<minus::Integer> implements the C<Numerical> virtual function
 C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
 
-=head2 times (Integer)
+## times (Integer)
 
         times::Integer : (\Function : (
             returns : \$Integer,
@@ -1700,7 +1696,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Integer>.
 The function C<times::Integer> implements the C<Numerical> virtual function
 C<times> aka C<*> aka C<×> for the composing type C<Integer>.
 
-=head2 multiple_of (Integer)
+## multiple_of (Integer)
 
         multiple_of::Integer : (\Function : (
             returns : {\$Boolean, \$Div_By_Zero},
@@ -1713,7 +1709,7 @@ C<times> aka C<*> aka C<×> for the composing type C<Integer>.
 The function C<multiple_of::Integer> implements the C<Numerical>
 virtual function C<multiple_of> for the composing type C<Integer>.
 
-=head2 fractional_divided_by (Integer)
+## fractional_divided_by (Integer)
 
         fractional_divided_by::Integer : (\Function : (
             returns : {\$Fraction, \$Div_By_Zero},
@@ -1739,7 +1735,7 @@ The function C<fractional_divided_by::Integer> implements the C<Numerical>
 virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕> for
 the composing type C<Integer>.
 
-=head2 integral_divided_by (Integer)
+## integral_divided_by (Integer)
 
         integral_divided_by::Integer : (\Function : (
             returns : {\$Integer, \$Div_By_Zero},
@@ -1821,7 +1817,7 @@ The function C<integral_divided_by::Integer> implements the C<Numerical>
 virtual function C<integral_divided_by> aka C<div> for the composing type
 C<Integer>.
 
-=head2 integral_power (Integer)
+## integral_power (Integer)
 
         integral_power::Integer : (\Function : (
             returns : {\$Fraction, \$Zero_To_The_Zero},
@@ -1834,7 +1830,7 @@ C<Integer>.
 The function C<integral_power::Integer> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Integer>.
 
-=head2 integral_nn_power (Integer)
+## integral_nn_power (Integer)
 
         integral_nn_power::Integer : (\Function : (
             returns : {\$Integer, \$Zero_To_The_Zero},
@@ -1848,7 +1844,7 @@ The function C<integral_nn_power::Integer> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
 C<Integer>.
 
-=head2 to_Integer (Integer)
+## to_Integer (Integer)
 
         to_Integer::Integer : (\Function : (
             returns : \$Integer,
@@ -1861,7 +1857,7 @@ The function C<to_Integer::Integer> simply results in its C<0> argument.
 This function implements the C<Integral> virtual function C<to_Integer> for
 the composing type C<Integer>.
 
-=head2 factorial (Integer)
+## factorial (Integer)
 
         factorial::Integer : (\Function : (
             returns : \$Integer_P,
@@ -1873,9 +1869,9 @@ the composing type C<Integer>.
 The function C<factorial::Integer> implements the C<Integral> virtual
 function C<factorial> for the composing type C<Integer>.
 
-=head1 FRACTIONAL DATA TYPES
+# FRACTIONAL DATA TYPES
 
-=head2 Fractional
+## Fractional
 
         Fractional::'' : (\Function : (
             is_type_definer : True,
@@ -1898,7 +1894,7 @@ positive infinity.  In the general case it is not C<Bicessable> nor does it
 have a minimum or maximum value, but sometimes a type that is C<Fractional>
 will have either of those.  C<Fractional> is composed by C<Fraction>.
 
-=head2 Fractional_NN
+## Fractional_NN
 
         Fractional_NN : (\Function : (
             is_type_definer : True,
@@ -1910,7 +1906,7 @@ The selection type definer C<Fractional_NN> represents the infinite type
 consisting just of the C<Fractional> values that are non-negative.  Its
 default and minmum value is C<0.0>; it has no maximum value.
 
-=head2 to_Fraction
+## to_Fraction
 
         to_Fraction::'' : (\Function : (
             virtual : True,
@@ -1925,7 +1921,7 @@ compared abstractly as rationals, or so that it is easier to do exact math
 with rationals without running afoul of possible range limits of fixed-size
 C<Fractional> types, just dealing with the latter for storage.
 
-=head2 numerator
+## numerator
 
         numerator::'' : (\Function : (
             virtual : True,
@@ -1937,7 +1933,7 @@ The virtual function C<numerator> results in the I<numerator> of its
 C<0> argument, when the latter is expressed as a coprime I<numerator> /
 I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
-=head2 denominator
+## denominator
 
         denominator::'' : (\Function : (
             virtual : True,
@@ -1949,9 +1945,9 @@ The virtual function C<denominator> results in the I<denominator> of its
 C<0> argument, when the latter is expressed as a coprime I<numerator> /
 I<denominator> pair of C<Integral> whose I<denominator> is positive.
 
-=head1 FRACTION DATA TYPES
+# FRACTION DATA TYPES
 
-=head2 Fraction
+## Fraction
 
         Fraction::'' : (\Function : (
             is_type_definer : True,
@@ -1980,7 +1976,7 @@ C<0.0>.  C<Fraction> is C<Orderable>; it has no minimum or maximum value.
 Other programming languages may name their corresponding types I<BigRat>
 or I<Rational>.
 
-=head2 Fraction_NN
+## Fraction_NN
 
         Fraction_NN : (\Function : (
             is_type_definer : True,
@@ -1991,7 +1987,7 @@ The selection type definer C<Fraction_NN> represents the infinite type
 consisting just of the C<Fraction> values that are non-negative.  Its
 default and minmum value is C<0.0>; it has no maximum value.
 
-=head2 in_order (Fraction)
+## in_order (Fraction)
 
         in_order::Fraction : (\Function : (
             returns : \$Boolean,
@@ -2014,7 +2010,7 @@ default and minmum value is C<0.0>; it has no maximum value.
 The function C<in_order::Fraction> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Fraction>.
 
-=head2 to_Boolean (Fraction)
+## to_Boolean (Fraction)
 
         to_Boolean::Fraction : (\Function : (
             returns : \$Boolean,
@@ -2028,7 +2024,7 @@ argument is not C<0.0>, and in C<False> if it is C<0.0>.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Fraction>.
 
-=head2 zero (Fraction)
+## zero (Fraction)
 
         zero::Fraction : (\Function : (
             returns : \$Fraction,
@@ -2041,7 +2037,7 @@ The function C<zero::Fraction> simply results in C<0.0>.  This function
 implements the C<Numerical> virtual function C<zero> for the composing type
 C<Fraction>.
 
-=head2 opposite (Fraction)
+## opposite (Fraction)
 
         opposite::Fraction : (\Function : (
             returns : \$Fraction,
@@ -2054,7 +2050,7 @@ The function C<opposite::Fraction> implements the C<Numerical> virtual
 function C<opposite> aka C<additive_inverse> aka unary C<-> aka unary C<−>
 for the composing type C<Fraction>.
 
-=head2 reciprocal (Fraction)
+## reciprocal (Fraction)
 
         reciprocal::Fraction : (\Function : (
             returns : {\$Fraction, \$Div_By_Zero},
@@ -2068,7 +2064,7 @@ The function C<reciprocal::Fraction> implements the C<Numerical> virtual
 function C<reciprocal> aka C<multiplicative_inverse> for the composing type
 C<Fraction>.
 
-=head2 modulus (Fraction)
+## modulus (Fraction)
 
         modulus::Fraction : (\Function : (
             returns : \$Fraction_NN,
@@ -2080,7 +2076,7 @@ C<Fraction>.
 The function C<modulus::Fraction> implements the C<Numerical>
 virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
 
-=head2 plus (Fraction)
+## plus (Fraction)
 
         plus::Fraction : (\Function : (
             returns : \$Fraction,
@@ -2106,7 +2102,7 @@ virtual function C<modulus> aka C<abs> for the composing type C<Fraction>.
 The function C<plus::Fraction> implements the C<Numerical>
 virtual function C<plus> aka C<+> for the composing type C<Fraction>.
 
-=head2 minus (Fraction)
+## minus (Fraction)
 
         minus::Fraction : (\Function : (
             returns : \$Fraction,
@@ -2119,7 +2115,7 @@ virtual function C<plus> aka C<+> for the composing type C<Fraction>.
 The function C<minus::Fraction> implements the C<Numerical> virtual function
 C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
 
-=head2 times (Fraction)
+## times (Fraction)
 
         times::Fraction : (\Function : (
             returns : \$Fraction,
@@ -2136,7 +2132,7 @@ C<minus> aka binary C<-> aka binary C<−> for the composing type C<Fraction>.
 The function C<times::Fraction> implements the C<Numerical> virtual function
 C<times> aka C<*> aka C<×> for the composing type C<Fraction>.
 
-=head2 times (Fraction, Integer)
+## times (Fraction, Integer)
 
         times::Fraction_Integer : (\Function : (
             returns : \$Fraction,
@@ -2149,7 +2145,7 @@ The function C<times::Fraction_Integer> implements the C<Numerical> virtual
 function C<times> aka C<*> aka C<×> for the composing type C<Fraction>,
 specifically for multiplying one by an C<Integer>.
 
-=head2 multiple_of (Fraction)
+## multiple_of (Fraction)
 
         multiple_of::Fraction : (\Function : (
             returns : {\$Boolean, \$Div_By_Zero},
@@ -2162,7 +2158,7 @@ specifically for multiplying one by an C<Integer>.
 The function C<multiple_of::Fraction> implements the C<Numerical>
 virtual function C<multiple_of> for the composing type C<Fraction>.
 
-=head2 fractional_divided_by (Fraction)
+## fractional_divided_by (Fraction)
 
         fractional_divided_by::Fraction : (\Function : (
             returns : {\$Fraction, \$Div_By_Zero},
@@ -2177,7 +2173,7 @@ The function C<fractional_divided_by::Fraction> implements the C<Numerical>
 virtual function C<fractional_divided_by> aka C</> aka C<÷> aka C<∕> for
 the composing type C<Fraction>.
 
-=head2 integral_divided_by (Fraction)
+## integral_divided_by (Fraction)
 
         integral_divided_by::Fraction : (\Function : (
             returns : {\$Fraction, \$Div_By_Zero},
@@ -2197,7 +2193,7 @@ The function C<integral_divided_by::Fraction> implements the C<Numerical>
 virtual function C<integral_divided_by> aka C<div> for the composing type
 C<Fraction>.
 
-=head2 integral_power (Fraction)
+## integral_power (Fraction)
 
         integral_power::Fraction : (\Function : (
             returns : {\$Fraction, \$Zero_To_The_Zero},
@@ -2210,7 +2206,7 @@ C<Fraction>.
 The function C<integral_power::Fraction> implements the C<Numerical> virtual
 function C<integral_power> aka C<**> for the composing type C<Fraction>.
 
-=head2 integral_nn_power (Fraction)
+## integral_nn_power (Fraction)
 
         integral_nn_power::Fraction : (\Function : (
             returns : {\$Fraction, \$Zero_To_The_Zero},
@@ -2224,7 +2220,7 @@ The function C<integral_nn_power::Fraction> implements the C<Numerical>
 virtual function C<integral_nn_power> aka C<power> for the composing type
 C<Fraction>.
 
-=head2 to_Fraction (Fraction)
+## to_Fraction (Fraction)
 
         to_Fraction::Fraction : (\Function : (
             returns : \$Fraction,
@@ -2237,7 +2233,7 @@ The function C<to_Fraction::Fraction> simply results in its C<0> argument.
 This function implements the C<Fractional> virtual function C<to_Fraction>
 for the composing type C<Fraction>.
 
-=head2 numerator (Fraction)
+## numerator (Fraction)
 
         numerator::Fraction : (\Function : (
             returns : \$Integer,
@@ -2248,7 +2244,7 @@ for the composing type C<Fraction>.
 The function C<numerator::Fraction> implements the C<Fractional> virtual
 function C<numerator> for the composing type C<Fraction>.
 
-=head2 denominator (Fraction)
+## denominator (Fraction)
 
         denominator::Fraction : (\Function : (
             returns : \$Integer_P,
@@ -2259,9 +2255,9 @@ function C<numerator> for the composing type C<Fraction>.
 The function C<denominator::Fraction> implements the C<Fractional> virtual
 function C<denominator> for the composing type C<Fraction>.
 
-=head1 EMPTYABLE DATA TYPES
+# EMPTYABLE DATA TYPES
 
-=head2 Emptyable
+## Emptyable
 
         Emptyable : (\Function : (
             is_type_definer : True,
@@ -2282,7 +2278,7 @@ C<Positional>, C<Array>, C<Set>, C<Bag>, C<Relational>,
 C<Tuple_Array>, C<Relation>, C<Tuple_Bag>, C<Intervalish>, C<Interval>,
 C<Unionable_Intervalish>, C<Interval_Set>, C<Interval_Bag>.
 
-=head2 to_Boolean (Emptyable) has_any_members
+## to_Boolean (Emptyable) has_any_members
 
         to_Boolean::Emptyable : (\Function : (
             virtual : True,
@@ -2299,7 +2295,7 @@ iff it has no members.  This function implements the C<Boolable> virtual
 function C<to_Boolean> aka C<so> aka C<?> for the composing type
 C<Emptyable>.
 
-=head2 is_empty ∅?
+## is_empty ∅?
 
         is_empty : (\Function : (
             negates : \$to_Boolean::Emptyable,
@@ -2311,7 +2307,7 @@ The function C<is_empty> aka C<∅?> results in C<True> iff its C<0> argument
 has no members, and in C<False> iff it has any members.
 Other programming languages may name their corresponding operators I<empty?>.
 
-=head2 empty ∅
+## empty ∅
 
         empty::'' : (\Function : (
             virtual : True,
@@ -2327,9 +2323,9 @@ C<Text> or C<Set>, this is a constant value, but for types like C<Relation>
 or C<Tuple_Bag>, there is a distinct result for each distinct I<heading>.
 Other programming languages may name their corresponding operators I<clear>.
 
-=head1 STRINGY DATA TYPES
+# STRINGY DATA TYPES
 
-=head2 Stringy
+## Stringy
 
         Stringy : (\Function : (
             is_type_definer : True,
@@ -2363,7 +2359,7 @@ idiomatically that is done by some kind of pairwise comparison of members.
 C<Stringy> is composed, directly or indirectly, by: C<Bits>, C<Blob>,
 C<Textual>, C<Text>, C<Positional>, C<Array>, C<Tuple_Array>.
 
-=head2 substring_of
+## substring_of
 
         substring_of::'' : (\Function : (
             virtual : True,
@@ -2376,7 +2372,7 @@ members of its C<0> argument is a substring of the sequence of members of
 its C<1> argument; otherwise it results in C<False>.  Other programming
 languages may name their corresponding operators I<in>.
 
-=head2 superstring_of
+## superstring_of
 
         superstring_of : (\Function : (
             commutes : \$substring_of,
@@ -2391,7 +2387,7 @@ searching operators such as I<like> or I<~~> or I<=~>; some of them also
 provide operators that result in an ordinal position or nonmatch indicator
 rather than a boolean.
 
-=head2 proper_substring_or_superstring
+## proper_substring_or_superstring
 
         proper_substring_or_superstring : (\Function : (
             returns : \$Boolean,
@@ -2405,7 +2401,7 @@ sequence of members of one of its 2 arguments C<0> and C<1> is a proper
 substring of the sequence of members of its other argument; otherwise it
 results in C<False>.
 
-=head2 substring_or_superstring
+## substring_or_superstring
 
         substring_or_superstring : (\Function : (
             returns : \$Boolean,
@@ -2419,7 +2415,7 @@ sequence of members of one of its 2 arguments C<0> and C<1> is a substring
 of the sequence of members of its other argument; otherwise it results in
 C<False>.
 
-=head2 overlaps_string
+## overlaps_string
 
         overlaps_string::'' : (\Function : (
             virtual : True,
@@ -2436,7 +2432,7 @@ the same value, the overlap of I<X> and I<Y> has at least 1 member, and
 each of I<X> and I<Y> has at least 1 member that is not overlapped;
 otherwise it results in C<False>.
 
-=head2 disjoint_string
+## disjoint_string
 
         disjoint_string::'' : (\Function : (
             virtual : True,
@@ -2451,7 +2447,7 @@ members of its C<1> argument by at least 1 member such that every
 corresponding member pair has 2 of the same value; otherwise it results in
 C<False>.
 
-=head2 catenate ~
+## catenate ~
 
         catenate::'' : (\Function : (
             virtual : True,
@@ -2472,7 +2468,7 @@ name their corresponding operators I<concat> or I<||> or I<+> or I<.> or
 I<strcat> or I<join>; some of them also have string interpolation syntax
 which logically does the same thing without an explicit operator.
 
-=head2 replicate ~#
+## replicate ~#
 
         replicate::'' : (\Function : (
             virtual : True,
@@ -2488,9 +2484,9 @@ the C<1> argument is zero then the result is the value of the C<0>
 argument's collection type that has zero members.  Other programming
 languages may name their corresponding operators I<x>.
 
-=head1 BITS DATA TYPES
+# BITS DATA TYPES
 
-=head2 Bits
+## Bits
 
         Bits : (\Function : (
             is_type_definer : True,
@@ -2514,7 +2510,7 @@ its ordering algorithm corresponds directly to that of C<Array>, pairwise
 as integer sequences.  Other programming languages may name their
 corresponding types I<bit> or I<bit varying>.
 
-=head2 Array::Bits
+## Array::Bits
 
         Array::Bits : (\Function : (
             is_type_definer : True,
@@ -2525,7 +2521,7 @@ The selection type definer C<Array::Bits> represents the infinite type
 consisting just of the C<Array> values for which every one of their member
 values is an integer in the range 0..1 inclusive.
 
-=head2 in_order (Bits)
+## in_order (Bits)
 
         in_order::Bits : (\Function : (
             returns : \$Boolean,
@@ -2537,7 +2533,7 @@ values is an integer in the range 0..1 inclusive.
 The function C<in_order::Bits> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Bits>.
 
-=head2 to_Boolean (Bits)
+## to_Boolean (Bits)
 
         to_Boolean::Bits : (\Function : (
             returns : \$Boolean,
@@ -2551,7 +2547,7 @@ is not C<\~?"">, and in C<False> if it is C<\~?"">.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Bits>.
 
-=head2 empty (Bits)
+## empty (Bits)
 
         empty::Bits : (\Function : (
             returns : \$Bits,
@@ -2564,7 +2560,7 @@ The function C<empty::Bits> simply results in C<\~?"">.  This function
 implements the C<Emptyable> virtual function C<empty> for the composing
 type C<Bits>.
 
-=head2 substring_of (Bits)
+## substring_of (Bits)
 
         substring_of::Bits : (\Function : (
             returns : \$Boolean,
@@ -2576,7 +2572,7 @@ type C<Bits>.
 The function C<substring_of::Bits> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Bits>.
 
-=head2 overlaps_string (Bits)
+## overlaps_string (Bits)
 
         overlaps_string::Bits : (\Function : (
             returns : \$Boolean,
@@ -2590,7 +2586,7 @@ function C<substring_of> for the composing type C<Bits>.
 The function C<overlaps_string::Bits> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Bits>.
 
-=head2 disjoint_string (Bits)
+## disjoint_string (Bits)
 
         disjoint_string::Bits : (\Function : (
             returns : \$Boolean,
@@ -2604,7 +2600,7 @@ function C<overlaps_string> for the composing type C<Bits>.
 The function C<disjoint_string::Bits> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Bits>.
 
-=head2 catenate (Bits)
+## catenate (Bits)
 
         catenate::Bits : (\Function : (
             returns : \$Bits,
@@ -2620,7 +2616,7 @@ function C<disjoint_string> for the composing type C<Bits>.
 The function C<catenate::Bits> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Bits>.
 
-=head2 replicate (Bits)
+## replicate (Bits)
 
         replicate::Bits : (\Function : (
             returns : \$Bits,
@@ -2632,7 +2628,7 @@ C<catenate> aka C<~> for the composing type C<Bits>.
 The function C<replicate::Bits> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Bits>.
 
-=head2 Bits_from_Array_Bits
+## Bits_from_Array_Bits
 
         Bits_from_Array_Bits : (\Function : (
             returns : \$Bits,
@@ -2643,7 +2639,7 @@ C<replicate> aka C<~#> for the composing type C<Bits>.
 The function C<Bits_from_Array_Bits> results in the C<Bits> value selected
 in terms of the integer sequence of its C<0> argument.
 
-=head2 Bits_to_Array_Bits
+## Bits_to_Array_Bits
 
         Bits_to_Array_Bits : (\Function : (
             returns : \$Array::Bits,
@@ -2654,9 +2650,9 @@ in terms of the integer sequence of its C<0> argument.
 The function C<Bits_to_Array_Bits> results in an integer sequence defining
 the bits of its C<Bits>-typed C<0> argument.
 
-=head1 BLOB DATA TYPES
+# BLOB DATA TYPES
 
-=head2 Blob
+## Blob
 
         Blob : (\Function : (
             is_type_definer : True,
@@ -2679,7 +2675,7 @@ its ordering algorithm corresponds directly to that of C<Array>, pairwise
 as integer sequences.  Other programming languages may name their
 corresponding types I<Buf> or I<byte[]> or I<bytea>.
 
-=head2 Array::Octets
+## Array::Octets
 
         Array::Octets : (\Function : (
             is_type_definer : True,
@@ -2690,7 +2686,7 @@ The selection type definer C<Array::Octets> represents the infinite type
 consisting just of the C<Array> values for which every one of their member
 values is an integer in the range 0..255 inclusive.
 
-=head2 in_order (Blob)
+## in_order (Blob)
 
         in_order::Blob : (\Function : (
             returns : \$Boolean,
@@ -2702,7 +2698,7 @@ values is an integer in the range 0..255 inclusive.
 The function C<in_order::Blob> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Blob>.
 
-=head2 to_Boolean (Blob)
+## to_Boolean (Blob)
 
         to_Boolean::Blob : (\Function : (
             returns : \$Boolean,
@@ -2716,7 +2712,7 @@ is not C<\~+"">, and in C<False> if it is C<\~+"">.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Blob>.
 
-=head2 empty (Blob)
+## empty (Blob)
 
         empty::Blob : (\Function : (
             returns : \$Blob,
@@ -2729,7 +2725,7 @@ The function C<empty::Blob> simply results in C<\~+"">.  This function
 implements the C<Emptyable> virtual function C<empty> for the composing
 type C<Blob>.
 
-=head2 substring_of (Blob)
+## substring_of (Blob)
 
         substring_of::Blob : (\Function : (
             returns : \$Boolean,
@@ -2741,7 +2737,7 @@ type C<Blob>.
 The function C<substring_of::Blob> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Blob>.
 
-=head2 overlaps_string (Blob)
+## overlaps_string (Blob)
 
         overlaps_string::Blob : (\Function : (
             returns : \$Boolean,
@@ -2754,7 +2750,7 @@ function C<substring_of> for the composing type C<Blob>.
 The function C<overlaps_string::Blob> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Blob>.
 
-=head2 disjoint_string (Blob)
+## disjoint_string (Blob)
 
         disjoint_string::Blob : (\Function : (
             returns : \$Boolean,
@@ -2767,7 +2763,7 @@ function C<overlaps_string> for the composing type C<Blob>.
 The function C<disjoint_string::Blob> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Blob>.
 
-=head2 catenate (Blob)
+## catenate (Blob)
 
         catenate::Blob : (\Function : (
             returns : \$Blob,
@@ -2782,7 +2778,7 @@ function C<disjoint_string> for the composing type C<Blob>.
 The function C<catenate::Blob> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Blob>.
 
-=head2 replicate (Blob)
+## replicate (Blob)
 
         replicate::Blob : (\Function : (
             returns : \$Blob,
@@ -2794,7 +2790,7 @@ C<catenate> aka C<~> for the composing type C<Blob>.
 The function C<replicate::Blob> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Blob>.
 
-=head2 Blob_from_Octets
+## Blob_from_Octets
 
         Blob_from_Octets : (\Function : (
             returns : \$Blob,
@@ -2805,7 +2801,7 @@ C<replicate> aka C<~#> for the composing type C<Blob>.
 The function C<Blob_from_Octets> results in the C<Blob> value selected in
 terms of the integer sequence of its C<0> argument.
 
-=head2 Blob_to_Octets
+## Blob_to_Octets
 
         Blob_to_Octets : (\Function : (
             returns : \$Array::Octets,
@@ -2816,9 +2812,9 @@ terms of the integer sequence of its C<0> argument.
 The function C<Blob_to_Octets> results in an integer sequence defining the
 octets of its C<Blob>-typed C<0> argument.
 
-=head1 TEXTUAL DATA TYPES
+# TEXTUAL DATA TYPES
 
-=head2 Textual
+## Textual
 
         Textual : (\Function : (
             is_type_definer : True,
@@ -2872,7 +2868,7 @@ considers a character string to be a sequence of generic integers and
 doesn't ascribe very many distinct semantics to particular ones, while
 non-C<System> code is empowered to do that instead.
 
-=head2 to_Text
+## to_Text
 
         to_Text::'' : (\Function : (
             virtual : True,
@@ -2888,9 +2884,9 @@ like national collations or fixed-size types.
 
 I<TODO: Add an Excuse for when the source type has non-Unicode characters.>
 
-=head1 TEXT DATA TYPES
+# TEXT DATA TYPES
 
-=head2 Text Text::Unicode
+## Text Text::Unicode
 
         Text::'' : (\Function : (
             is_type_definer : True,
@@ -2933,7 +2929,7 @@ C<Text> value can not directly represent all possible character strings
 that they can, and so other C<Textual>-composing types should be used
 instead for such character strings.
 
-=head2 Array::Unicode_Codes
+## Array::Unicode_Codes
 
         Array::Unicode_Codes : (\Function : (
             is_type_definer : True,
@@ -2945,7 +2941,7 @@ The selection type definer C<Array::Unicode_Codes> represents the infinite type
 consisting just of the C<Array> values for which every one of their member
 values is an integer in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
-=head2 Text::ASCII
+## Text::ASCII
 
         Text::ASCII : (\Function : (
             is_type_definer : True,
@@ -2960,7 +2956,7 @@ This C<Text> subtype has its own canonical representation in terms of an
 C<Array> value named C<ASCII_Chars> where each member code point matches
 the standard ASCII codes for the same symbols.
 
-=head2 Array::ASCII_Chars
+## Array::ASCII_Chars
 
         Array::ASCII_Chars : (\Function : (
             is_type_definer : True,
@@ -2971,7 +2967,7 @@ The selection type definer C<Array::ASCII_Chars> represents the infinite type
 consisting just of the C<Array> values for which every one of their member
 values is an integer in the range 0..127 inclusive.
 
-=head2 in_order (Text)
+## in_order (Text)
 
         in_order::Text : (\Function : (
             returns : \$Boolean,
@@ -2983,7 +2979,7 @@ values is an integer in the range 0..127 inclusive.
 The function C<in_order::Text> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Text>.
 
-=head2 to_Boolean (Text)
+## to_Boolean (Text)
 
         to_Boolean::Text : (\Function : (
             returns : \$Boolean,
@@ -2997,7 +2993,7 @@ is not C<"">, and in C<False> if it is C<"">.  This function implements the
 C<Boolable> virtual function C<to_Boolean> aka C<so> aka C<?> for the
 composing type C<Text>.
 
-=head2 empty (Text)
+## empty (Text)
 
         empty::Text : (\Function : (
             returns : \$Text,
@@ -3010,7 +3006,7 @@ The function C<empty::Text> simply results in C<"">.  This function
 implements the C<Emptyable> virtual function C<empty> for the composing
 type C<Text>.
 
-=head2 substring_of (Text)
+## substring_of (Text)
 
         substring_of::Text : (\Function : (
             returns : \$Boolean,
@@ -3023,7 +3019,7 @@ type C<Text>.
 The function C<substring_of::Text> implements the C<Stringy> virtual
 function C<substring_of> for the composing type C<Text>.
 
-=head2 overlaps_string (Text)
+## overlaps_string (Text)
 
         overlaps_string::Text : (\Function : (
             returns : \$Boolean,
@@ -3037,7 +3033,7 @@ function C<substring_of> for the composing type C<Text>.
 The function C<overlaps_string::Text> implements the C<Stringy> virtual
 function C<overlaps_string> for the composing type C<Text>.
 
-=head2 disjoint_string (Text)
+## disjoint_string (Text)
 
         disjoint_string::Text : (\Function : (
             returns : \$Boolean,
@@ -3051,7 +3047,7 @@ function C<overlaps_string> for the composing type C<Text>.
 The function C<disjoint_string::Text> implements the C<Stringy> virtual
 function C<disjoint_string> for the composing type C<Text>.
 
-=head2 catenate (Text)
+## catenate (Text)
 
         catenate::Text : (\Function : (
             returns : \$Text,
@@ -3067,7 +3063,7 @@ function C<disjoint_string> for the composing type C<Text>.
 The function C<catenate::Text> implements the C<Stringy> virtual function
 C<catenate> aka C<~> for the composing type C<Text>.
 
-=head2 replicate (Text)
+## replicate (Text)
 
         replicate::Text : (\Function : (
             returns : \$Text,
@@ -3079,7 +3075,7 @@ C<catenate> aka C<~> for the composing type C<Text>.
 The function C<replicate::Text> implements the C<Stringy> virtual function
 C<replicate> aka C<~#> for the composing type C<Text>.
 
-=head2 to_Text (Text)
+## to_Text (Text)
 
         to_Text::Text : (\Function : (
             returns : \$Text,
@@ -3092,7 +3088,7 @@ The function C<to_Text::Text> simply results in its C<0> argument.
 This function implements the C<Textual> virtual function C<to_Text>
 for the composing type C<Text>.
 
-=head2 Text_from_Unicode_Codes
+## Text_from_Unicode_Codes
 
         Text_from_Unicode_Codes : (\Function : (
             returns : \$Text,
@@ -3104,7 +3100,7 @@ The function C<Text_from_Unicode_Codes> results in the C<Text> value selected
 in terms of an integer sequence in the standard Unicode code point
 mapping of its C<0> argument.
 
-=head2 Text_to_Unicode_Codes
+## Text_to_Unicode_Codes
 
         Text_to_Unicode_Codes : (\Function : (
             returns : \$Array::Unicode_Codes,
@@ -3116,7 +3112,7 @@ The function C<Text_to_Unicode_Codes> results in an integer sequence in the
 standard Unicode code point mapping that corresponds to its
 C<Text>-typed C<0> argument.
 
-=head2 Text_from_ASCII_Chars
+## Text_from_ASCII_Chars
 
         Text_from_ASCII_Chars : (\Function : (
             returns : \$Text::ASCII,
@@ -3128,7 +3124,7 @@ The function C<Text_from_ASCII_Chars> results in the C<Text> value selected
 in terms of an integer sequence in the standard 7-bit ASCII character
 mapping of its C<0> argument.
 
-=head2 Text_to_ASCII_Chars
+## Text_to_ASCII_Chars
 
         Text_to_ASCII_Chars : (\Function : (
             returns : \$Array::ASCII_Chars,
@@ -3140,7 +3136,7 @@ The function C<Text_to_ASCII_Chars> results in an integer sequence in the
 standard 7-bit ASCII character mapping that corresponds to its
 C<Text>-typed C<0> argument.
 
-=head2 Blob_is_UTF_8
+## Blob_is_UTF_8
 
         Blob_is_UTF_8 : (\Function : (
             returns : \$Boolean,
@@ -3158,7 +3154,7 @@ with 6 octets), the UTF-8 standard further restricts the range to
 I<TODO.  Note that we don't define a Blob::UTF_8 type as
 it is superfluous with simply trying to decode one and see if it succeeded.>
 
-=head2 Text_from_UTF_8_Blob
+## Text_from_UTF_8_Blob
 
         Text_from_UTF_8_Blob : (\Function : (
             returns : {\$Text::Unicode, \$Unicode::..., ...},
@@ -3184,7 +3180,7 @@ I<TODO.  See also http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
 and http://cpansearch.perl.org/src/RJBS/perl-5.24.0/t/op/utf8decode.t for
 some decoder edge case testing.>
 
-=head2 Text_from_UTF_8_Blob_with_repl_Text
+## Text_from_UTF_8_Blob_with_repl_Text
 
         Text_from_UTF_8_Blob_with_repl_Text : (\Function : (
             returns : \$Text::Unicode,
@@ -3198,7 +3194,7 @@ consistency, even if the sequence decodes fine in one sense but is an out
 of range character, the instances of substitution are per count of octets
 not one per character.>
 
-=head2 Text_from_UTF_8_Blob_with_repl_char
+## Text_from_UTF_8_Blob_with_repl_char
 
         Text_from_UTF_8_Blob_with_repl_char : (\Function : (
             returns : \$Text::Unicode,
@@ -3208,7 +3204,7 @@ not one per character.>
 
 I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
 
-=head2 Text_to_UTF_8_Blob
+## Text_to_UTF_8_Blob
 
         Text_to_UTF_8_Blob : (\Function : (
             returns : \$Blob,
@@ -3219,7 +3215,7 @@ I<TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.>
 I<TODO.  This should just work as Text::Unicode excludes the surrogate
 pairs and out of range etc stuff.>
 
-=head2 Blob_is_ASCII
+## Blob_is_ASCII
 
         Blob_is_ASCII : (\Function : (
             returns : \$Boolean,
@@ -3229,7 +3225,7 @@ pairs and out of range etc stuff.>
 
 I<TODO.>
 
-=head2 Text_from_ASCII_Blob
+## Text_from_ASCII_Blob
 
         Text_from_ASCII_Blob : (\Function : (
             returns : {\$Text::ASCII, \$ASCII::High_Bit_Not_Zero},
@@ -3244,7 +3240,7 @@ I<TODO.>
 
 I<TODO.  Note, still have to define that Excuse.>
 
-=head2 Text_from_ASCII_Blob_with_repl_Text
+## Text_from_ASCII_Blob_with_repl_Text
 
         Text_from_ASCII_Blob_with_repl_Text : (\Function : (
             returns : \$Text::ASCII,
@@ -3275,7 +3271,7 @@ I<TODO.  Each invalid octet encountered is replaced by the substitution text
 Note there is no alternate with a predefined substitution char as there
 is no good implicit default in ASCII, unlike with Unicode.>
 
-=head2 Text_to_ASCII_Blob
+## Text_to_ASCII_Blob
 
         Text_to_ASCII_Blob : (\Function : (
             returns : \$Blob,
@@ -3285,7 +3281,7 @@ is no good implicit default in ASCII, unlike with Unicode.>
 
 I<TODO.>
 
-=head1 COLLECTIVE DATA TYPES OVERVIEW
+# COLLECTIVE DATA TYPES OVERVIEW
 
 A I<collective> value either is a generic regular aggregate of a
 multiplicity of other, I<component>, values whose composition is
@@ -3381,9 +3377,9 @@ the I<attributive> dimension (but not both) as makes the most sense for the
 composing types in question; example composers are C<Array> and C<Tuple>
 respectively for said dimensions.
 
-=head1 ACCESSIBLE DATA TYPES
+# ACCESSIBLE DATA TYPES
 
-=head2 Accessible
+## Accessible
 
         Accessible : (\Function : (
             is_type_definer : True,
@@ -3422,7 +3418,7 @@ Note that this interface type definer could have as easily been mamed
 I<Associative>, but it wasn't so that term could be reserved for the
 C<associative> function trait which has a different meaning.
 
-=head2 has_any_at .?
+## has_any_at .?
 
         has_any_at::'' : (\Function : (
             virtual : True,
@@ -3438,7 +3434,7 @@ otherwise it results in C<False>.  Other programming languages may name
 their corresponding operators I<ContainsKey> or I<has_key?> or I<key?> or
 I<exists> or I<in> or I<array_key_exists>.
 
-=head2 not_has_any_at .!?
+## not_has_any_at .!?
 
         not_has_any_at : (\Function : (
             negates : \$has_any_at,
@@ -3450,7 +3446,7 @@ The function C<not_has_any_at> aka C<.!?> results in C<True> iff its C<0>
 argument does not have any mapping whose key is equal to its C<1> argument;
 otherwise it results in C<False>.
 
-=head2 has_mapping_at .:?
+## has_mapping_at .:?
 
         has_mapping_at::'' : (\Function : (
             virtual : True,
@@ -3465,7 +3461,7 @@ its C<0> argument has a mapping that is equal to its C<1> argument;
 otherwise it results in C<False>.  The C<1> argument is a binary C<Tuple>
 whose C<0> and C<1> attributes are the mapping key and asset respectively.
 
-=head2 mapping_at .:
+## mapping_at .:
 
         mapping_at::'' : (\Function : (
             virtual : True,
@@ -3482,7 +3478,7 @@ attribute is the asset value of the mapping of its C<0> argument where that
 mapping's key is equal to its C<1> argument.  Other programming languages
 may name their corresponding operators I<assoc>.
 
-=head2 at .
+## at .
 
         at::'' : (\Function : (
             virtual : True,
@@ -3500,7 +3496,7 @@ mapping.  Other programming languages may name their corresponding
 operators I<ElementAt> or I<fetch>; it is also common to use
 subscript/postcircumfix syntax.
 
-=head2 maybe_at .!
+## maybe_at .!
 
         maybe_at::'' : (\Function : (
             virtual : True,
@@ -3517,7 +3513,7 @@ C<Excuse>.  Other programming languages may name their corresponding
 operators I<ElementAtOrDefault> or I<at> or I<get> or I<fetch>; it is also
 common to use subscript/postcircumfix syntax.
 
-=head2 replace_at .:=
+## replace_at .:=
 
         replace_at::'' : (\Function : (
             virtual : True,
@@ -3537,7 +3533,7 @@ attribute.  This function will fail if the C<0> argument doesn't have a
 mapping with the key I<K>.  Other programming languages commonly use
 assignment syntax.
 
-=head2 shiftless_insert_at .+
+## shiftless_insert_at .+
 
         shiftless_insert_at::'' : (\Function : (
             virtual : True,
@@ -3557,7 +3553,7 @@ fail if the C<0> argument already has a mapping with that key.  Other
 programming languages may name their corresponding operators I<Add>; it is
 also common to use assignment syntax.
 
-=head2 shiftless_remove_at .-
+## shiftless_remove_at .-
 
         shiftless_remove_at::'' : (\Function : (
             virtual : True,
@@ -3575,7 +3571,7 @@ C<1> argument.  This function will fail if the C<0> argument doesn't have
 such a mapping.  Other programming languages may name their corresponding
 operators I<del> or I<delete_at>.
 
-=head2 replace_or_insert_at .=+
+## replace_or_insert_at .=+
 
         replace_or_insert_at::'' : (\Function : (
             virtual : True,
@@ -3593,7 +3589,7 @@ attribute.  Other programming languages may name their corresponding
 operators I<Item> or I<set> or I<put> or I<store> or I<update>; it is also
 common to use subscript/postcircumfix syntax plus assignment syntax.
 
-=head2 shiftless_maybe_remove_at .?-
+## shiftless_maybe_remove_at .?-
 
         shiftless_maybe_remove_at::'' : (\Function : (
             virtual : True,
@@ -3610,9 +3606,9 @@ key matches its C<1> argument, rather than fail.  Other programming
 languages may name their corresponding operators I<Remove> or I<remove> or
 I<delete> or I<unset>.
 
-=head1 HOMOGENEOUS DATA TYPES
+# HOMOGENEOUS DATA TYPES
 
-=head2 Homogeneous
+## Homogeneous
 
         Homogeneous : (\Function : (
             is_type_definer : True,
@@ -3668,7 +3664,7 @@ way; see also the 'repeater' function trait that helps optimize it.
 Surely, any time when one may think these operations need to know the
 baggy count or ordinal position, its for a problem best solved differently.>
 
-=head2 singular
+## singular
 
         singular::'' : (\Function : (
             virtual : True,
@@ -3679,7 +3675,7 @@ baggy count or ordinal position, its for a problem best solved differently.>
 The virtual function C<singular> results in C<True> iff its C<0> argument
 has exactly 1 distinct member value, and C<False> otherwise.
 
-=head2 only_member
+## only_member
 
         only_member::'' : (\Function : (
             virtual : True,
@@ -3701,7 +3697,7 @@ for simply picking I<a> member would give an effectively random one.
 
 I<TODO: See also the C# methods "Single" and "SingleOrDefault" etc.>
 
-=head2 in ∈
+## in ∈
 
         in : (\Function : (
             commutes : \$has,
@@ -3715,7 +3711,7 @@ in C<False>.  Note that this operation is also known as I<containment>.
 Other programming languages may name their corresponding operators
 I<in_array>.
 
-=head2 not_in ∉
+## not_in ∉
 
         not_in : (\Function : (
             commutes : \$not_has,
@@ -3727,7 +3723,7 @@ The function C<not_in> aka C<∉> results in C<True> iff its C<0> argument is
 equal to no member value of its C<1> argument; otherwise it results in
 C<False>.
 
-=head2 has ∋
+## has ∋
 
         has : (\Function : (
             returns : \$Boolean,
@@ -3742,7 +3738,7 @@ at least 1 member whose value is equal to its C<1> argument; otherwise it
 results in C<False>.  Other programming languages may name their
 corresponding operators I<contains> or I<exists> or I<includes>.
 
-=head2 not_has ∌
+## not_has ∌
 
         not_has : (\Function : (
             negates : \$has,
@@ -3754,7 +3750,7 @@ The function C<not_has> aka C<∌> results in C<True> iff its C<0> argument
 does not have any member whose value is equal to its C<1> argument;
 otherwise it results in C<False>.
 
-=head2 has_n
+## has_n
 
         has_n::'' : (\Function : (
             virtual : True,
@@ -3769,7 +3765,7 @@ result is always C<True> when the C<2> argument is zero.  Note that
 having a C<2> argument greater than 1 in combination with a C<Setty> typed
 C<0> argument will always result in C<False>.
 
-=head2 multiplicity
+## multiplicity
 
         multiplicity::'' : (\Function : (
             virtual : True,
@@ -3782,7 +3778,7 @@ members of its C<0> argument such that each member value is equal to its
 C<1> argument.  For a C<Setty> typed C<0> argument, the result is always
 just 0 or 1.
 
-=head2 all_unique
+## all_unique
 
         all_unique::'' : (\Function : (
             virtual : True,
@@ -3794,7 +3790,7 @@ The virtual function C<all_unique> results in C<True> iff its C<0> argument
 has no 2 members that are the same value, and C<False> otherwise.  The
 result is always C<True> for a C<Setty> argument.
 
-=head2 unique
+## unique
 
         unique::'' : (\Function : (
             virtual : True,
@@ -3810,7 +3806,7 @@ If the result's type is C<Positional>, then each retained member is the one
 closest to the start of the argument out of those members sharing the
 retained member's value.  See also the C<Positional> function C<squish>.
 
-=head2 proper_subset_of ⊂
+## proper_subset_of ⊂
 
         proper_subset_of : (\Function : (
             returns : \$Boolean,
@@ -3825,7 +3821,7 @@ multiset of members of its C<0> argument is a proper subset of the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 Note that this operation is also known as I<strict multiset inclusion>.
 
-=head2 not_proper_subset_of ⊄
+## not_proper_subset_of ⊄
 
         not_proper_subset_of : (\Function : (
             negates : \$proper_subset_of,
@@ -3837,7 +3833,7 @@ The function C<not_proper_subset_of> aka C<⊄> results in C<True> iff the
 multiset of members of its C<0> argument is not a proper subset of the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 
-=head2 proper_superset_of ⊃
+## proper_superset_of ⊃
 
         proper_superset_of : (\Function : (
             commutes : \$proper_subset_of,
@@ -3849,7 +3845,7 @@ The function C<proper_superset_of> aka C<⊃> results in C<True> iff the
 multiset of members of its C<0> argument is a proper superset of the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 
-=head2 not_proper_superset_of ⊅
+## not_proper_superset_of ⊅
 
         not_proper_superset_of : (\Function : (
             negates : \$proper_superset_of,
@@ -3861,7 +3857,7 @@ The function C<not_proper_superset_of> aka C<⊅> results in C<True> iff the
 multiset of members of its C<0> argument is not a proper superset of the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 
-=head2 subset_of ⊆
+## subset_of ⊆
 
         subset_of::'' : (\Function : (
             virtual : True,
@@ -3876,7 +3872,7 @@ members of its C<0> argument is a subset of the multiset of members of
 its C<1> argument; otherwise it results in C<False>.  Note that this
 operation is also known as I<multiset inclusion>.
 
-=head2 not_subset_of ⊈
+## not_subset_of ⊈
 
         not_subset_of : (\Function : (
             negates : \$subset_of,
@@ -3888,7 +3884,7 @@ The function C<not_subset_of> aka C<⊈> results in C<True> iff the multiset
 of members of its C<0> argument is not a subset of the multiset of
 members of its C<1> argument; otherwise it results in C<False>.
 
-=head2 superset_of ⊇
+## superset_of ⊇
 
         superset_of : (\Function : (
             commutes : \$subset_of,
@@ -3900,7 +3896,7 @@ The function C<superset_of> aka C<⊇> results in C<True> iff the multiset of
 members of its C<0> argument is a superset of the multiset of members of
 its C<1> argument; otherwise it results in C<False>.
 
-=head2 not_superset_of ⊉
+## not_superset_of ⊉
 
         not_superset_of : (\Function : (
             negates : \$superset_of,
@@ -3912,7 +3908,7 @@ The function C<not_superset_of> aka C<⊉> results in C<True> iff the
 multiset of members of its C<0> argument is not a superset of the multiset
 of members of its C<1> argument; otherwise it results in C<False>.
 
-=head2 same_members
+## same_members
 
         same_members::'' : (\Function : (
             virtual : True,
@@ -3929,7 +3925,7 @@ in C<False> because the latter considers member order significant while the
 former doesn't; for non-C<Positional> arguments, the 2 functions are
 typically the same.
 
-=head2 proper_subset_or_superset
+## proper_subset_or_superset
 
         proper_subset_or_superset : (\Function : (
             returns : \$Boolean,
@@ -3943,7 +3939,7 @@ multiset of members of one of its 2 arguments C<0> and C<1> is a proper
 subset of the multiset of members of its other argument; otherwise it
 results in C<False>.
 
-=head2 subset_or_superset
+## subset_or_superset
 
         subset_or_superset : (\Function : (
             returns : \$Boolean,
@@ -3956,7 +3952,7 @@ The function C<subset_or_superset> results in C<True> iff the multiset of
 members of one of its 2 arguments C<0> and C<1> is a subset of the multiset
 of members of its other argument; otherwise it results in C<False>.
 
-=head2 overlaps_members
+## overlaps_members
 
         overlaps_members::'' : (\Function : (
             virtual : True,
@@ -3971,7 +3967,7 @@ members of its argument C<1>, there exists at least 1 member that both I<X>
 and I<Y> have, and there also exists at least 1 other member each of I<X>
 and I<Y> that the other doesn't have; otherwise it results in C<False>.
 
-=head2 disjoint_members
+## disjoint_members
 
         disjoint_members::'' : (\Function : (
             virtual : True,
@@ -3984,7 +3980,7 @@ The virtual function C<disjoint_members> results in C<True> iff the multiset of
 members of its C<0> argument has no member values in common with the
 multiset of members of its C<1> argument; otherwise it results in C<False>.
 
-=head2 any there_exists ∃
+## any there_exists ∃
 
         any::'' : (\Function : (
             virtual : True,
@@ -4007,7 +4003,7 @@ than all members, and therefore the result would only be valid for
 predicates that for the given member types would always produce the same
 results for endpoints as for non-endpoints the former bound.>
 
-=head2 none there_does_not_exist ∄
+## none there_does_not_exist ∄
 
         none : (\Function : (
             negates : \$any,
@@ -4019,7 +4015,7 @@ results for endpoints as for non-endpoints the former bound.>
 
 I<TODO.  Result is true when no member evaluates to true.>
 
-=head2 all for_all ∀
+## all for_all ∀
 
         all : (\Function : (
             returns : \$Boolean,
@@ -4035,7 +4031,7 @@ I<TODO.  Result is true when no member evaluates to false.>
 
 I<Other languages: "TrueForAll".>
 
-=head2 not_all
+## not_all
 
         not_all : (\Function : (
             negates : \$all,
@@ -4043,9 +4039,9 @@ I<Other languages: "TrueForAll".>
 
 I<TODO.  Result is true when at least one member evaluates to false.>
 
-=head1 UNIONABLE DATA TYPES
+# UNIONABLE DATA TYPES
 
-=head2 Unionable
+## Unionable
 
         Unionable : (\Function : (
             is_type_definer : True,
@@ -4067,7 +4063,7 @@ C<Interval_Set>, C<Interval_Bag>.  A key type that composes C<Homogeneous>
 but not C<Unionable> is C<Interval>; use C<Interval_Set> instead for its
 C<Unionable> closest analogy.
 
-=head2 insert
+## insert
 
         insert : (\Function : (
             returns : \$Unionable,
@@ -4082,7 +4078,7 @@ are identical to those of C<insert_n> where N is 1.  Other programming
 languages may name their corresponding operators I<add>; it is also common
 to use assignment syntax.
 
-=head2 insert_n
+## insert_n
 
         insert_n::'' : (\Function : (
             virtual : True,
@@ -4100,7 +4096,7 @@ may equal the C<0> argument even when the C<2> argument is nonzero.  If the
 result's type is C<Positional>, then the result starts with all of the
 members of C<0> in the same order and ends with any added instances of C<1>.
 
-=head2 remove
+## remove
 
         remove : (\Function : (
             returns : \$Unionable,
@@ -4114,7 +4110,7 @@ minus 1 existing member that is each equal to its C<1> argument; its
 semantics are identical to those of C<remove_n> where N is 1.  Other
 programming languages may name their corresponding operators I<delete>.
 
-=head2 remove_n
+## remove_n
 
         remove_n::'' : (\Function : (
             virtual : True,
@@ -4134,7 +4130,7 @@ mirror C<insert_n>, so the identity C<c = remove_n::(insert_n::(c,x,n),x,n)>
 should hold for any C<Unionable> type, even a C<Positional> one, except
 with a C<Setty> C<c> that already has an C<x> element with a nonzero C<n>.
 
-=head2 member_plus ⊎
+## member_plus ⊎
 
         member_plus::'' : (\Function : (
             virtual : True,
@@ -4162,7 +4158,7 @@ collection with zero members.  For non-ordered types, this operation is
 also commutative.  Other programming languages may name their corresponding
 operators I<union all> or I<+>.
 
-=head2 except ∖
+## except ∖
 
         except::'' : (\Function : (
             virtual : True,
@@ -4192,7 +4188,7 @@ Other programming languages may name their corresponding operators I<minus>
 or I<-> or I<difference> or I<\\> or I<complement> or I<setdiff> or I<diff>
 or I<--> etc or I<subtract>.
 
-=head2 intersect ∩
+## intersect ∩
 
         intersect::'' : (\Function : (
             virtual : True,
@@ -4220,7 +4216,7 @@ for every member of that member type.)  For non-ordered types, this operation
 is also commutative.  Other programming languages may name their
 corresponding operators I<&> or I<*>.
 
-=head2 union ∪
+## union ∪
 
         union::'' : (\Function : (
             virtual : True,
@@ -4248,7 +4244,7 @@ I<two-sided identity element> value of a collection with zero members.  For non-
 this operation is also associative and commutative.  Other programming
 languages may name their corresponding operators I<|> or I<+>.
 
-=head2 exclusive symm_diff ∆
+## exclusive symm_diff ∆
 
         exclusive::'' : (\Function : (
             virtual : True,
@@ -4281,7 +4277,7 @@ non-ordered types, this operation is also associative and commutative.
 Other programming languages may name their corresponding operators
 I<symmdiff> or I<^> or I<%>.
 
-=head2 nest group
+## nest group
 
         nest::'' : (\Function : (
             virtual : True,
@@ -4294,7 +4290,7 @@ I<symmdiff> or I<^> or I<%>.
 
 I<TODO.>
 
-=head2 unnest ungroup
+## unnest ungroup
 
         unnest::'' : (\Function : (
             virtual : True,
@@ -4307,7 +4303,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 where σ
+## where σ
 
         where::'' : (\Function : (
             virtual : True,
@@ -4332,7 +4328,7 @@ intervalish types in general such that they only evaluate endpoints rather
 than all members, and therefore the result may not be valid depending on
 what the function argument does or on the given member types.>
 
-=head2 filtering
+## filtering
 
         filtering : (\Function : (
             commutes : \$where,
@@ -4340,7 +4336,7 @@ what the function argument does or on the given member types.>
 
 I<TODO.>
 
-=head2 map
+## map
 
         map::'' : (\Function : (
             virtual : True,
@@ -4358,7 +4354,7 @@ etc.  Also note that for intervals over successable types, some operations
 may result in every member becoming discontinuous from the others, such as
 multiply with integers.>
 
-=head2 reduce
+## reduce
 
         reduce::'' : (\Function : (
             virtual : True,
@@ -4388,9 +4384,9 @@ otherwise the reduce is a serial operation, at least naively.>
 
 I<TODO.  Also define related No_Identity_Element type.>
 
-=head1 DISCRETE DATA TYPES
+# DISCRETE DATA TYPES
 
-=head2 Discrete
+## Discrete
 
         Discrete : (\Function : (
             is_type_definer : True,
@@ -4408,7 +4404,7 @@ C<Discrete> is composed, directly or indirectly, by: C<Positional>,
 C<Array>, C<Set>, C<Bag>, C<Relational>, C<Tuple_Array>,
 C<Relation>, C<Tuple_Bag>.
 
-=head2 to_Set ?|
+## to_Set ?|
 
         to_Set::'' : (\Function : (
             virtual : True,
@@ -4424,7 +4420,7 @@ argument.  The purpose of C<to_Set> is to canonicalize C<Discrete> values
 so they can be treated abstractly as sets of discrete values, for
 operations where neither multiplicity nor order is significant.
 
-=head2 to_Bag +|
+## to_Bag +|
 
         to_Bag::'' : (\Function : (
             virtual : True,
@@ -4440,7 +4436,7 @@ purpose of C<to_Bag> is to canonicalize C<Discrete> values so they can be
 treated abstractly as multisets of discrete values, for operations where
 multiplicity possibly is significant but order isn't.
 
-=head2 count cardinality #
+## count cardinality #
 
         count::'' : (\Function : (
             virtual : True,
@@ -4455,7 +4451,7 @@ The virtual function C<count> aka C<cardinality> aka C<#> results in the
 integral count of the members of its C<0> argument; when multiple members
 have the same member value, every member counts as 1 towards the total.
 
-=head2 unique_count
+## unique_count
 
         unique_count::'' : (\Function : (
             virtual : True,
@@ -4466,7 +4462,7 @@ have the same member value, every member counts as 1 towards the total.
 The virtual function C<unique_count> results in the integral count of the
 distinct member values of its C<0> argument.
 
-=head2 order
+## order
 
         order : (\Function : (
             returns : \$Positional,
@@ -4480,7 +4476,7 @@ arranged into a sequence in accordance with a total order defined by the
 function C<in_order>.  This function will succeed iff C<in_order> is
 defined for the types of the members or they are of an C<Orderable> type.
 
-=head2 order_using
+## order_using
 
         order_using::'' : (\Function : (
             virtual : True,
@@ -4497,9 +4493,9 @@ generic C<in_order> function may be used as the C<1> argument; regardless,
 the C<1> argument can define any total order it likes for members that are
 of any type, both C<Orderable> or not.
 
-=head1 POSITIONAL DATA TYPES
+# POSITIONAL DATA TYPES
 
-=head2 Positional
+## Positional
 
         Positional : (\Function : (
             is_type_definer : True,
@@ -4537,7 +4533,7 @@ lowest-ordinal-positioned non-matching members of X and Y determines that the or
 of X and Y as a whole are the same as said members.  C<Positional> is
 composed, directly or indirectly, by: C<Array>, C<Tuple_Array>.
 
-=head2 singular (Positional)
+## singular (Positional)
 
         singular::Positional : (\Function : (
             returns : \$Boolean,
@@ -4551,7 +4547,7 @@ argument has exactly 1 distinct member value, and C<False> otherwise.  This
 function implements the C<Homogeneous> virtual function C<singular> for the
 composing type C<Positional>.
 
-=head2 only_member (Positional)
+## only_member (Positional)
 
         only_member::Positional : (\Function : (
             returns : \$Any,
@@ -4567,7 +4563,7 @@ have exactly 1 distinct member value.  This function implements the
 C<Homogeneous> virtual function C<only_member> for the composing type
 C<Positional>.
 
-=head2 subset_of (Positional)
+## subset_of (Positional)
 
         subset_of::Positional : (\Function : (
             returns : \$Boolean,
@@ -4582,7 +4578,7 @@ its C<1> argument; otherwise it results in C<False>.  This function
 implements the C<Homogeneous> virtual function C<subset_of> aka C<⊆> for
 the composing type C<Positional>.
 
-=head2 same_members (Positional)
+## same_members (Positional)
 
         same_members::Positional : (\Function : (
             returns : \$Boolean,
@@ -4600,7 +4596,7 @@ result in C<False> because the latter considers member order significant
 while the former doesn't.  This function implements the C<Homogeneous>
 virtual function C<same_members> for the composing type C<Positional>.
 
-=head2 overlaps_members (Positional)
+## overlaps_members (Positional)
 
         overlaps_members::Positional : (\Function : (
             returns : \$Boolean,
@@ -4618,7 +4614,7 @@ each of I<X> and I<Y> that the other doesn't have; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<overlaps_members> for the composing type C<Positional>.
 
-=head2 disjoint_members (Positional)
+## disjoint_members (Positional)
 
         disjoint_members::Positional : (\Function : (
             returns : \$Boolean,
@@ -4634,7 +4630,7 @@ with the multiset of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Positional>.
 
-=head2 member_plus (Positional)
+## member_plus (Positional)
 
         member_plus::Positional : (\Function : (
             returns : \$Positional,
@@ -4650,7 +4646,7 @@ C<~> when given the same arguments.  This function implements the
 C<Unionable> virtual function C<member_plus> aka C<⊎> for the composing
 type C<Positional>.
 
-=head2 unique_count (Positional)
+## unique_count (Positional)
 
         unique_count::Positional : (\Function : (
             returns : \$Integer_NN,
@@ -4664,7 +4660,7 @@ the distinct member values of its C<0> argument.  This function implements
 the C<Discrete> virtual function C<unique_count> for the composing type
 C<Positional>.
 
-=head2 has_any_at (Positional)
+## has_any_at (Positional)
 
         has_any_at::Positional : (\Function : (
             returns : \$Boolean,
@@ -4680,7 +4676,7 @@ otherwise it results in C<False>.  This function implements the
 C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
 type C<Positional>.
 
-=head2 has_mapping_at (Positional)
+## has_mapping_at (Positional)
 
         has_mapping_at::Positional : (\Function : (
             returns : \$Boolean,
@@ -4696,7 +4692,7 @@ C<0> attribute; otherwise it results in C<False>.  This function implements
 the C<Accessible> virtual function C<has_mapping_at> aka C<.:?> for the
 composing type C<Positional>.
 
-=head2 mapping_at (Positional)
+## mapping_at (Positional)
 
         mapping_at::Positional : (\Function : (
             returns : (\$Integer, \$Any),
@@ -4714,7 +4710,7 @@ doesn't have such a member.  This function implements the C<Accessible>
 virtual function C<mapping_at> aka C<.:> for the composing type
 C<Positional>.
 
-=head2 maybe_at (Positional)
+## maybe_at (Positional)
 
         maybe_at::Positional : (\Function : (
             returns : \$Any,
@@ -4729,7 +4725,7 @@ is such a member; otherwise it results in C<\!No_Such_Ord_Pos>.  This function
 implements the C<Accessible> virtual function C<maybe_at> aka C<.!> for the
 composing type C<Positional>.
 
-=head2 replace_at (Positional)
+## replace_at (Positional)
 
         replace_at::Positional : (\Function : (
             returns : \$Positional,
@@ -4759,7 +4755,7 @@ function will fail if the C<0> argument doesn't have a member with the
 ordinal position I<K>.  This function implements the C<Accessible> virtual
 function C<replace_at> aka C<.:=> for the composing type C<Positional>.
 
-=head2 shiftless_insert_at (Positional)
+## shiftless_insert_at (Positional)
 
         shiftless_insert_at::Positional : (\Function : (
             returns : \$Positional,
@@ -4779,7 +4775,7 @@ argument's C<first_unused_ord_pos>.  This function implements the
 C<Accessible> virtual function C<shiftless_insert_at> aka C<.+> for the
 composing type C<Positional>.
 
-=head2 shiftless_remove_at (Positional)
+## shiftless_remove_at (Positional)
 
         shiftless_remove_at::Positional : (\Function : (
             returns : \$Positional,
@@ -4799,7 +4795,7 @@ equal to the C<0> argument's C<last_ord_pos>.  This function implements the
 C<Accessible> virtual function C<shiftless_remove_at> aka C<.-> for the
 composing type C<Positional>.
 
-=head2 replace_or_insert_at (Positional)
+## replace_or_insert_at (Positional)
 
         replace_or_insert_at::Positional : (\Function : (
             returns : \$Positional,
@@ -4818,7 +4814,7 @@ argument's C<0> attribute.  This function implements the C<Accessible>
 virtual function C<replace_or_insert_at> aka C<.=+> for the composing type
 C<Positional>.
 
-=head2 shiftless_maybe_remove_at (Positional)
+## shiftless_maybe_remove_at (Positional)
 
         shiftless_maybe_remove_at::Positional : (\Function : (
             returns : \$Positional,
@@ -4836,7 +4832,7 @@ matches its C<1> argument, rather than fail.  This function implements the
 C<Accessible> virtual function C<shiftless_maybe_remove_at> aka C<.?-> for
 the composing type C<Positional>.
 
-=head2 to_Array ~|
+## to_Array ~|
 
         to_Array::'' : (\Function : (
             virtual : True,
@@ -4852,7 +4848,7 @@ The purpose of C<to_Array> is to canonicalize C<Positional> values so they
 can be treated abstractly as sequences of discrete values with minimal
 effort.
 
-=head2 squish
+## squish
 
         squish : (\Function : (
             returns : \$Positional,
@@ -4869,7 +4865,7 @@ argument is such that all appearances of each distinct value are adjacent
 members, the result of C<squish> is the same as that of C<unique>.
 TODO CAN AVOID SECOND LAMBDA?
 
-=head2 first_possible_ord_pos
+## first_possible_ord_pos
 
         first_possible_ord_pos::'' : (\Function : (
             virtual : True,
@@ -4884,7 +4880,7 @@ the result is also equal to the actual ordinal position of I<C>'s first
 member; otherwise I<P> is the ordinal position that a subsequently-added
 first member of I<C> would have.
 
-=head2 first_unused_ord_pos
+## first_unused_ord_pos
 
         first_unused_ord_pos : (\Function : (
             returns : \$Integer,
@@ -4899,7 +4895,7 @@ is nonempty then the result is one greater than the last ordinal position of
 I<C>; otherwise the result is equal to the first possible ordinal position.  For a
 zero-based C<Positional>, the result is equal to its C<count>.
 
-=head2 first_ord_pos
+## first_ord_pos
 
         first_ord_pos : (\Function : (
             returns : \$Integer,
@@ -4911,7 +4907,7 @@ zero-based C<Positional>, the result is equal to its C<count>.
 The function C<first_ord_pos> results in the integral ordinal position of its
 nonempty C<0> argument's first member.
 
-=head2 last_ord_pos
+## last_ord_pos
 
         last_ord_pos : (\Function : (
             returns : \$Integer,
@@ -4923,7 +4919,7 @@ nonempty C<0> argument's first member.
 The function C<last_ord_pos> results in the integral ordinal position of its
 nonempty C<0> argument's last member.
 
-=head2 slice_n
+## slice_n
 
         slice_n::'' : (\Function : (
             virtual : True,
@@ -4943,7 +4939,7 @@ did in I<C>.  This function will fail if I<C> does not have members at any
 of the ordinal positions requested.  Other programming languages may name
 their corresponding operators I<array_slice>.
 
-=head2 slice_range
+## slice_range
 
         slice_range : (\Function : (
             returns : \$Positional,
@@ -4963,7 +4959,7 @@ I<C> does not have members at any of the ordinal positions requested.  Other
 programming languages may name their corresponding operators I<slice> or
 may instead overload their array element subscripting syntax.
 
-=head2 first
+## first
 
         first : (\Function : (
             returns : \$Any,
@@ -4974,7 +4970,7 @@ may instead overload their array element subscripting syntax.
 
 The function C<first> results in its nonempty C<0> argument's first member.
 
-=head2 nonfirst
+## nonfirst
 
         nonfirst : (\Function : (
             returns : \$Positional,
@@ -4989,7 +4985,7 @@ nonempty C<0> argument, in the same order, except for its very first one.
 The taken members occupy ordinal positions of exactly 1 less in the result as
 they did in the argument.
 
-=head2 last
+## last
 
         last : (\Function : (
             returns : \$Any,
@@ -5000,7 +4996,7 @@ they did in the argument.
 
 The function C<last> results in its nonempty C<0> argument's last member.
 
-=head2 nonlast
+## nonlast
 
         nonlast : (\Function : (
             returns : \$Positional,
@@ -5015,7 +5011,7 @@ argument, in the same order, except for its very last one.  The taken
 members occupy the exact same ordinal positions in the result as they did in
 the argument.
 
-=head2 ord_pos_succ_all_matches
+## ord_pos_succ_all_matches
 
         ord_pos_succ_all_matches::'' : (\Function : (
             virtual : True,
@@ -5026,9 +5022,9 @@ the argument.
 
 I<TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as name.>
 
-=head1 ARRAY DATA TYPES
+# ARRAY DATA TYPES
 
-=head2 Array
+## Array
 
         Array::'' : (\Function : (
             is_type_definer : True,
@@ -5053,7 +5049,7 @@ value is the same C<[]> as its default value; it has no maximum value; its
 ordering algorithm is defined by C<Positional>.  Other programming
 languages may name their corresponding types I<List>.
 
-=head2 Array_C0 ~∅
+## Array_C0 ~∅
 
         Array_C0 : (\Function : (
             is_type_definer : True,
@@ -5065,7 +5061,7 @@ languages may name their corresponding types I<List>.
 The singleton type definer C<Array_C0> aka C<~∅> represents the only zero-member
 C<Array> value, C<[]>.
 
-=head2 in_order (Array)
+## in_order (Array)
 
         in_order::Array : (\Function : (
             returns : \$Boolean,
@@ -5090,7 +5086,7 @@ The function C<in_order::Array> implements the C<Orderable> virtual
 function C<in_order> for the composing type C<Array>.  This function
 will succeed iff C<in_order> is also defined for the types of the members.
 
-=head2 to_Boolean (Array)
+## to_Boolean (Array)
 
         to_Boolean::Array : (\Function : (
             returns : \$Boolean,
@@ -5104,7 +5100,7 @@ has any members, and in C<False> iff it has no members.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Array>.
 
-=head2 empty (Array)
+## empty (Array)
 
         empty::Array : (\Function : (
             returns : \$Array,
@@ -5117,7 +5113,7 @@ The function C<empty::Array> results in the only zero-member C<Array>
 value.  This function implements the C<Emptyable> virtual function C<empty>
 aka C<∅> for the composing type C<Array>.
 
-=head2 substring_of (Array)
+## substring_of (Array)
 
         substring_of::Array : (\Function : (
             returns : \$Boolean,
@@ -5132,7 +5128,7 @@ its C<1> argument; otherwise it results in C<False>.  This function
 implements the C<Stringy> virtual function C<substring_of> for the
 composing type C<Array>.
 
-=head2 overlaps_string (Array)
+## overlaps_string (Array)
 
         overlaps_string::Array : (\Function : (
             returns : \$Boolean,
@@ -5151,7 +5147,7 @@ each of I<X> and I<Y> has at least 1 member that is not overlapped;
 otherwise it results in C<False>.  This function implements the C<Stringy>
 virtual function C<overlaps_string> for the composing type C<Array>.
 
-=head2 disjoint_string (Array)
+## disjoint_string (Array)
 
         disjoint_string::Array : (\Function : (
             returns : \$Boolean,
@@ -5168,7 +5164,7 @@ corresponding member pair has 2 of the same value; otherwise it results in
 C<False>.  This function implements the C<Stringy> virtual function
 C<disjoint_string> for the composing type C<Array>.
 
-=head2 catenate (Array)
+## catenate (Array)
 
         catenate::Array : (\Function : (
             returns : \$Array,
@@ -5186,7 +5182,7 @@ C<0> and ends with the members of C<1>.  This function implements the
 C<Stringy> virtual function C<catenate> aka C<~> for the composing type
 C<Array>.
 
-=head2 replicate (Array)
+## replicate (Array)
 
         replicate::Array : (\Function : (
             returns : \$Array,
@@ -5201,7 +5197,7 @@ argument is zero then the result is the only zero-member C<Array>.  This
 function implements the C<Stringy> virtual function C<replicate> aka C<~#>
 for the composing type C<Array>.
 
-=head2 has_n (Array)
+## has_n (Array)
 
         has_n::Array : (\Function : (
             returns : \$Boolean,
@@ -5216,7 +5212,7 @@ argument, where N is defined by its C<2> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<has_n> for the composing type C<Array>.
 
-=head2 multiplicity (Array)
+## multiplicity (Array)
 
         multiplicity::Array : (\Function : (
             returns : \$Integer_NN,
@@ -5230,7 +5226,7 @@ of members of its C<0> argument such that each member value is equal to its
 C<1> argument.  This function implements the C<Homogeneous> virtual
 function C<multiplicity> for the composing type C<Array>.
 
-=head2 all_unique (Array)
+## all_unique (Array)
 
         all_unique::Array : (\Function : (
             returns : \$Boolean,
@@ -5244,7 +5240,7 @@ has no 2 members that are the same value, and C<False> otherwise.  This
 function implements the C<Homogeneous> virtual function C<all_unique> for
 the composing type C<Array>.
 
-=head2 unique (Array)
+## unique (Array)
 
         unique::Array : (\Function : (
             returns : \$Array,
@@ -5260,7 +5256,7 @@ closest to the start of the argument out of those members sharing the
 retained member's value.  This function implements the C<Homogeneous>
 virtual function C<unique> for the composing type C<Array>.
 
-=head2 any (Array)
+## any (Array)
 
         any::Array : (\Function : (
             returns : \$Boolean,
@@ -5271,7 +5267,7 @@ virtual function C<unique> for the composing type C<Array>.
 
 I<TODO.>
 
-=head2 insert_n (Array)
+## insert_n (Array)
 
         insert_n::Array : (\Function : (
             returns : \$Array,
@@ -5288,7 +5284,7 @@ order and ends with any added instances of C<1>.  This function implements
 the C<Unionable> virtual function C<insert_n> for the composing type
 C<Array>.
 
-=head2 remove_n (Array)
+## remove_n (Array)
 
         remove_n::Array : (\Function : (
             returns : \$Array,
@@ -5305,7 +5301,7 @@ argument.  The removed instances of C<1> are those closest to the end of
 C<0>.  This function implements the C<Unionable> virtual function
 C<remove_n> for the composing type C<Array>.
 
-=head2 except (Array)
+## except (Array)
 
         except::Array : (\Function : (
             returns : \$Array,
@@ -5323,7 +5319,7 @@ removed instances of any distinct member value are those closest to the end
 of C<0>.  This function implements the C<Unionable> virtual function
 C<except> aka C<∖> for the composing type C<Array>.
 
-=head2 intersect (Array)
+## intersect (Array)
 
         intersect::Array : (\Function : (
             returns : \$Array,
@@ -5343,7 +5339,7 @@ has a I<two-sided identity element> value of a collection with an infinite numbe
 This function implements the C<Unionable> virtual function C<intersect>
 aka C<∩> for the composing type C<Array>.
 
-=head2 union (Array)
+## union (Array)
 
         union::Array : (\Function : (
             returns : \$Array,
@@ -5364,7 +5360,7 @@ matching) instances of any distinct member value are those closest to the
 end of C<1>.  This function implements the C<Unionable> virtual function
 C<union> aka C<∪> for the composing type C<Array>.
 
-=head2 exclusive (Array)
+## exclusive (Array)
 
         exclusive::Array : (\Function : (
             returns : \$Array,
@@ -5385,7 +5381,7 @@ distinct member value are those closest to the end of C<0> or C<1>
 respectively.  This function implements the C<Unionable> virtual function
 C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
 
-=head2 nest (Array)
+## nest (Array)
 
         nest::Array : (\Function : (
             returns : \$Array,
@@ -5397,7 +5393,7 @@ C<exclusive> aka C<symm_diff> aka C<∆> for the composing type C<Array>.
 
 I<TODO.>
 
-=head2 unnest (Array)
+## unnest (Array)
 
         unnest::Array : (\Function : (
             returns : \$Array,
@@ -5409,7 +5405,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 where (Array)
+## where (Array)
 
         where::Array : (\Function : (
             returns : \$Array,
@@ -5420,7 +5416,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 map (Array)
+## map (Array)
 
         map::Array : (\Function : (
             returns : \$Array,
@@ -5431,7 +5427,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 reduce (Array)
+## reduce (Array)
 
         reduce::Array : (\Function : (
             returns : \$Any,
@@ -5442,7 +5438,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 to_Set (Array)
+## to_Set (Array)
 
         to_Set::Array : (\Function : (
             returns : \$Set,
@@ -5457,7 +5453,7 @@ member whose value is equal to I<V>.  This function implements the
 C<Discrete> virtual function C<to_Set> aka C<?|> for the composing type
 C<Array>.
 
-=head2 to_Bag (Array)
+## to_Bag (Array)
 
         to_Bag::Array : (\Function : (
             returns : \$Bag,
@@ -5471,7 +5467,7 @@ the members of the function's C<0> argument.  This function implements the
 C<Discrete> virtual function C<to_Bag> aka C<+|> for the composing type
 C<Array>.
 
-=head2 count (Array)
+## count (Array)
 
         count::Array : (\Function : (
             returns : \$Integer_NN,
@@ -5485,7 +5481,7 @@ of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type
 C<Array>.
 
-=head2 order_using (Array)
+## order_using (Array)
 
         order_using::Array : (\Function : (
             returns : \$Array,
@@ -5501,7 +5497,7 @@ defined by the function given in its C<1> argument.  This function
 implements the C<Discrete> virtual function C<order_using> for the composing
 type C<Array>.
 
-=head2 at (Array)
+## at (Array)
 
         at::Array : (\Function : (
             returns : \$Any,
@@ -5517,7 +5513,7 @@ fail if the C<0> argument doesn't have such a member.  This function
 implements the C<Accessible> virtual function C<at> aka C<.> for the
 composing type C<Array>.
 
-=head2 to_Array (Array)
+## to_Array (Array)
 
         to_Array::Array : (\Function : (
             returns : \$Array,
@@ -5530,7 +5526,7 @@ The function C<to_Array::Array> simply results in its C<0> argument.  This
 function implements the C<Positional> virtual function C<to_Array> aka
 C<~|> for the composing type C<Array>.
 
-=head2 first_possible_ord_pos (Array)
+## first_possible_ord_pos (Array)
 
         first_possible_ord_pos::Array : (\Function : (
             returns : \$Integer_NN,
@@ -5543,7 +5539,7 @@ The function C<first_possible_ord_pos::Array> simply results in C<0>.  This
 function implements the C<Positional> virtual function
 C<first_possible_ord_pos> for the composing type C<Array>.
 
-=head2 slice_n (Array)
+## slice_n (Array)
 
         slice_n::Array : (\Function : (
             returns : \$Array,
@@ -5563,7 +5559,7 @@ fail if I<C> does not have members at any of the ordinal positions requested.
 This function implements the C<Positional> virtual function C<slice_n> for
 the composing type C<Array>.
 
-=head2 ord_pos_succ_all_matches (Array)
+## ord_pos_succ_all_matches (Array)
 
         ord_pos_succ_all_matches::Array : (\Function : (
             returns : \$Integer_NN,
@@ -5576,9 +5572,9 @@ the composing type C<Array>.
 I<TODO.  While conceivably implementable at a higher level, make low level
 for perceived efficiency.>
 
-=head1 SETTY DATA TYPES
+# SETTY DATA TYPES
 
-=head2 Setty
+## Setty
 
         Setty : (\Function : (
             is_type_definer : True,
@@ -5591,9 +5587,9 @@ distinct value.  The default value of C<Setty> is the C<Set> value with
 zero members, C<{}>.  C<Setty> is composed, directly or indirectly, by:
 C<Set>, C<Relation>, C<Interval>, C<Interval_Set>.
 
-=head1 SET DATA TYPES
+# SET DATA TYPES
 
-=head2 Set
+## Set
 
         Set : (\Function : (
             is_type_definer : True,
@@ -5615,7 +5611,7 @@ particular, and is simply the sum of its members.  A C<Set> ensures that no
 2 of its members are the same value.  The default value of C<Set> is C<{}>,
 the only zero-member C<Set> value.
 
-=head2 Set_C0 ?∅
+## Set_C0 ?∅
 
         Set_C0 : (\Function : (
             is_type_definer : True,
@@ -5627,7 +5623,7 @@ the only zero-member C<Set> value.
 The singleton type definer C<Set_C0> aka C<?∅> represents the only zero-member
 C<Set> value, C<{}>.
 
-=head2 to_Boolean (Set)
+## to_Boolean (Set)
 
         to_Boolean::Set : (\Function : (
             returns : \$Boolean,
@@ -5641,7 +5637,7 @@ has any members, and in C<False> iff it has no members.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Set>.
 
-=head2 empty (Set)
+## empty (Set)
 
         empty::Set : (\Function : (
             returns : \$Set,
@@ -5654,7 +5650,7 @@ The function C<empty::Set> results in the only zero-member C<Set>
 value.  This function implements the C<Emptyable> virtual function C<empty>
 aka C<∅> for the composing type C<Set>.
 
-=head2 singular (Set)
+## singular (Set)
 
         singular::Set : (\Function : (
             returns : \$Boolean,
@@ -5668,7 +5664,7 @@ exactly 1 member value, and C<False> otherwise.  This function implements
 the C<Homogeneous> virtual function C<singular> for the composing type
 C<Set>.
 
-=head2 only_member (Set)
+## only_member (Set)
 
         only_member::Set : (\Function : (
             returns : \$Any,
@@ -5683,7 +5679,7 @@ value.  This function will fail if the argument doesn't have exactly 1
 member value.  This function implements the C<Homogeneous> virtual function
 C<only_member> for the composing type C<Set>.
 
-=head2 has_n (Set)
+## has_n (Set)
 
         has_n::Set : (\Function : (
             returns : \$Boolean,
@@ -5698,7 +5694,7 @@ its C<2> argument is 1; otherwise it results in C<False>.  This function
 implements the C<Homogeneous> virtual function C<has_n> for the composing
 type C<Set>.
 
-=head2 multiplicity (Set)
+## multiplicity (Set)
 
         multiplicity::Set : (\Function : (
             returns : \$Integer_NN,
@@ -5712,7 +5708,7 @@ has a member equal to its C<1> argument; otherwise it results in 0.  This
 function implements the C<Homogeneous> virtual function C<multiplicity> for
 the composing type C<Set>.
 
-=head2 all_unique (Set)
+## all_unique (Set)
 
         all_unique::Set : (\Function : (
             returns : \$Boolean,
@@ -5725,7 +5721,7 @@ The function C<all_unique::Set> simply results in C<True>.  This function
 implements the C<Homogeneous> virtual function C<all_unique> for the
 composing type C<Set>.
 
-=head2 unique (Set)
+## unique (Set)
 
         unique::Set : (\Function : (
             returns : \$Set,
@@ -5738,7 +5734,7 @@ The function C<unique::Set> simply results in its C<0> argument.  This
 function implements the C<Homogeneous> virtual function C<unique> for the
 composing type C<Set>.
 
-=head2 subset_of (Set)
+## subset_of (Set)
 
         subset_of::Set : (\Function : (
             returns : \$Boolean,
@@ -5753,7 +5749,7 @@ otherwise it results in C<False>.  This function implements the
 C<Homogeneous> virtual function C<subset_of> aka C<⊆> for the composing
 type C<Set>.
 
-=head2 same_members (Set)
+## same_members (Set)
 
         same_members::Set : (\Function : (
             returns : \$Boolean,
@@ -5769,7 +5765,7 @@ its behaviour is identical to that of the function C<same> when given the
 same arguments.  This function implements the C<Homogeneous> virtual
 function C<same_members> for the composing type C<Set>.
 
-=head2 overlaps_members (Set)
+## overlaps_members (Set)
 
         overlaps_members::Set : (\Function : (
             returns : \$Boolean,
@@ -5787,7 +5783,7 @@ each of I<X> and I<Y> that the other doesn't have; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<overlaps_members> for the composing type C<Set>.
 
-=head2 disjoint_members (Set)
+## disjoint_members (Set)
 
         disjoint_members::Set : (\Function : (
             returns : \$Boolean,
@@ -5803,7 +5799,7 @@ with the set of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Set>.
 
-=head2 any (Set)
+## any (Set)
 
         any::Set : (\Function : (
             returns : \$Boolean,
@@ -5814,7 +5810,7 @@ C<disjoint_members> for the composing type C<Set>.
 
 I<TODO.>
 
-=head2 insert_n (Set)
+## insert_n (Set)
 
         insert_n::Set : (\Function : (
             returns : \$Set,
@@ -5830,7 +5826,7 @@ nonzero then the result has a member equal to the C<1> argument, whether or
 not C<0> had it.  This function implements the C<Unionable> virtual
 function C<insert_n> for the composing type C<Set>.
 
-=head2 remove_n (Set)
+## remove_n (Set)
 
         remove_n::Set : (\Function : (
             returns : \$Set,
@@ -5845,7 +5841,7 @@ nonzero and C<0> had a member equal to the C<1> argument, the result lacks
 that member.  This function implements the C<Unionable> virtual function
 C<remove_n> for the composing type C<Set>.
 
-=head2 member_plus (Set)
+## member_plus (Set)
 
         member_plus::Set : (\Function : (
             returns : \$Set,
@@ -5863,7 +5859,7 @@ arguments C<0> and C<1>; it behaves identically to C<union> aka C<∪> when
 given the same arguments.  This function implements the C<Unionable>
 virtual function C<member_plus> aka C<⊎> for the composing type C<Set>.
 
-=head2 except (Set)
+## except (Set)
 
         except::Set : (\Function : (
             returns : \$Set,
@@ -5880,7 +5876,7 @@ argument minus all of the matching members of its C<1> argument.  This
 function implements the C<Unionable> virtual function C<except> aka C<∖>
 for the composing type C<Set>.
 
-=head2 intersect (Set)
+## intersect (Set)
 
         intersect::Set : (\Function : (
             returns : \$Set,
@@ -5898,7 +5894,7 @@ of the members of the function's C<0> argument that match their own members
 of its C<1> argument.  This function implements the C<Unionable> virtual
 function C<intersect> aka C<∩> for the composing type C<Set>.
 
-=head2 union (Set)
+## union (Set)
 
         union::Set : (\Function : (
             returns : \$Set,
@@ -5917,7 +5913,7 @@ the members of the function's C<0> argument plus all of the nonmatching
 members of its C<1> argument.  This function implements the C<Unionable>
 virtual function C<union> aka C<∪> for the composing type C<Set>.
 
-=head2 exclusive (Set)
+## exclusive (Set)
 
         exclusive::Set : (\Function : (
             returns : \$Set,
@@ -5936,7 +5932,7 @@ arguments that do not have matching members of their counterpart argument.
 This function implements the C<Unionable> virtual function C<exclusive>
 aka C<symm_diff> aka C<∆> for the composing type C<Set>.
 
-=head2 nest (Set)
+## nest (Set)
 
         nest::Set : (\Function : (
             returns : \$Set,
@@ -5948,7 +5944,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Set>.
 
 I<TODO.>
 
-=head2 unnest (Set)
+## unnest (Set)
 
         unnest::Set : (\Function : (
             returns : \$Set,
@@ -5960,7 +5956,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 where (Set)
+## where (Set)
 
         where::Set : (\Function : (
             returns : \$Set,
@@ -5971,7 +5967,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 map (Set)
+## map (Set)
 
         map::Set : (\Function : (
             returns : \$Set,
@@ -5982,7 +5978,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 reduce (Set)
+## reduce (Set)
 
         reduce::Set : (\Function : (
             returns : \$Any,
@@ -5993,7 +5989,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 to_Set (Set)
+## to_Set (Set)
 
         to_Set::Set : (\Function : (
             returns : \$Set,
@@ -6006,7 +6002,7 @@ The function C<to_Set::Set> simply results in its C<0> argument.  This
 function implements the C<Discrete> virtual function C<to_Set> aka
 C<?|> for the composing type C<Set>.
 
-=head2 to_Bag (Set)
+## to_Bag (Set)
 
         to_Bag::Set : (\Function : (
             returns : \$Bag,
@@ -6020,7 +6016,7 @@ members of the function's C<0> argument.  This function implements the
 C<Discrete> virtual function C<to_Bag> aka C<+|> for the composing type
 C<Set>.
 
-=head2 count (Set)
+## count (Set)
 
         count::Set : (\Function : (
             returns : \$Integer_NN,
@@ -6033,7 +6029,7 @@ The function C<count::Set> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type C<Set>.
 
-=head2 unique_count (Set)
+## unique_count (Set)
 
         unique_count::Set : (\Function : (
             returns : \$Integer_NN,
@@ -6047,7 +6043,7 @@ members of its C<0> argument; its behaviour is identical to C<count> given
 the same argument.  This function implements the C<Discrete> virtual
 function C<unique_count> for the composing type C<Set>.
 
-=head2 order_using (Set)
+## order_using (Set)
 
         order_using::Set : (\Function : (
             returns : \$Array,
@@ -6062,9 +6058,9 @@ arranged into a sequence in accordance with a total order defined by the
 function given in its C<1> argument.  This function implements the
 C<Discrete> virtual function C<order_using> for the composing type C<Set>.
 
-=head1 BAG DATA TYPES
+# BAG DATA TYPES
 
-=head2 Bag
+## Bag
 
         Bag : (\Function : (
             is_type_definer : True,
@@ -6082,7 +6078,7 @@ the same value.  The default value of C<Bag> is C<{0:0}>, the only
 zero-member C<Bag> value.  Other programming languages may name their
 corresponding types I<Multiset>.
 
-=head2 Bag_C0 +∅
+## Bag_C0 +∅
 
         Bag_C0 : (\Function : (
             is_type_definer : True,
@@ -6094,7 +6090,7 @@ corresponding types I<Multiset>.
 The singleton type definer C<Bag_C0> aka C<+∅> represents the only zero-member
 C<Bag> value, C<{0:0}>.
 
-=head2 to_Boolean (Bag)
+## to_Boolean (Bag)
 
         to_Boolean::Bag : (\Function : (
             returns : \$Boolean,
@@ -6108,7 +6104,7 @@ has any members, and in C<False> iff it has no members.  This function
 implements the C<Boolable> virtual function C<to_Boolean> aka C<so> aka
 C<?> for the composing type C<Bag>.
 
-=head2 empty (Bag)
+## empty (Bag)
 
         empty::Bag : (\Function : (
             returns : \$Bag,
@@ -6121,7 +6117,7 @@ The function C<empty::Bag> results in the only zero-member C<Bag>
 value.  This function implements the C<Emptyable> virtual function C<empty>
 aka C<∅> for the composing type C<Bag>.
 
-=head2 singular (Bag)
+## singular (Bag)
 
         singular::Bag : (\Function : (
             returns : \$Boolean,
@@ -6135,7 +6131,7 @@ exactly 1 distinct member value, and C<False> otherwise.  This function
 implements the C<Homogeneous> virtual function C<singular> for the
 composing type C<Bag>.
 
-=head2 only_member (Bag)
+## only_member (Bag)
 
         only_member::Bag : (\Function : (
             returns : \$Any,
@@ -6151,7 +6147,7 @@ have exactly 1 distinct member value.  This function implements the
 C<Homogeneous> virtual function C<only_member> for the composing type
 C<Bag>.
 
-=head2 has_n (Bag)
+## has_n (Bag)
 
         has_n::Bag : (\Function : (
             returns : \$Boolean,
@@ -6166,7 +6162,7 @@ defined by its C<2> argument; otherwise it results in C<False>.  This
 function implements the C<Homogeneous> virtual function C<has_n> for the
 composing type C<Bag>.
 
-=head2 multiplicity (Bag)
+## multiplicity (Bag)
 
         multiplicity::Bag : (\Function : (
             returns : \$Integer_NN,
@@ -6180,7 +6176,7 @@ of members of its C<0> argument such that each member value is equal to its
 C<1> argument.  This function implements the C<Homogeneous> virtual
 function C<multiplicity> for the composing type C<Bag>.
 
-=head2 all_unique (Bag)
+## all_unique (Bag)
 
         all_unique::Bag : (\Function : (
             returns : \$Boolean,
@@ -6194,7 +6190,7 @@ has no 2 members that are the same value, and C<False> otherwise.  This
 function implements the C<Homogeneous> virtual function C<all_unique> for
 the composing type C<Bag>.
 
-=head2 unique (Bag)
+## unique (Bag)
 
         unique::Bag : (\Function : (
             returns : \$Bag,
@@ -6208,7 +6204,7 @@ distinct member value I<V> of the function's C<0> argument, exactly 1
 member whose value is equal to I<V>.  This function implements the
 C<Homogeneous> virtual function C<unique> for the composing type C<Bag>.
 
-=head2 subset_of (Bag)
+## subset_of (Bag)
 
         subset_of::Bag : (\Function : (
             returns : \$Boolean,
@@ -6223,7 +6219,7 @@ C<1> argument; otherwise it results in C<False>.  This function implements
 the C<Homogeneous> virtual function C<subset_of> aka C<⊆> for the composing
 type C<Bag>.
 
-=head2 same_members (Bag)
+## same_members (Bag)
 
         same_members::Bag : (\Function : (
             returns : \$Boolean,
@@ -6239,7 +6235,7 @@ its behaviour is identical to that of the function C<same> when given the
 same arguments.  This function implements the C<Homogeneous> virtual
 function C<same_members> for the composing type C<Bag>.
 
-=head2 overlaps_members (Bag)
+## overlaps_members (Bag)
 
         overlaps_members::Bag : (\Function : (
             returns : \$Boolean,
@@ -6257,7 +6253,7 @@ each of I<X> and I<Y> that the other doesn't have; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<overlaps_members> for the composing type C<Bag>.
 
-=head2 disjoint_members (Bag)
+## disjoint_members (Bag)
 
         disjoint_members::Bag : (\Function : (
             returns : \$Boolean,
@@ -6273,7 +6269,7 @@ with the multiset of members of its C<1> argument; otherwise it results in
 C<False>.  This function implements the C<Homogeneous> virtual function
 C<disjoint_members> for the composing type C<Bag>.
 
-=head2 any (Bag)
+## any (Bag)
 
         any::Bag : (\Function : (
             returns : \$Boolean,
@@ -6284,7 +6280,7 @@ C<disjoint_members> for the composing type C<Bag>.
 
 I<TODO.>
 
-=head2 insert_n (Bag)
+## insert_n (Bag)
 
         insert_n::Bag : (\Function : (
             returns : \$Bag,
@@ -6299,7 +6295,7 @@ are each equal to its C<1> argument, where N is defined by its C<2>
 argument.  This function implements the C<Unionable> virtual function
 C<insert_n> for the composing type C<Bag>.
 
-=head2 remove_n (Bag)
+## remove_n (Bag)
 
         remove_n::Bag : (\Function : (
             returns : \$Bag,
@@ -6315,7 +6311,7 @@ its C<2> argument and the count of members of C<0> equal to the C<1>
 argument.  This function implements the C<Unionable> virtual function
 C<remove_n> for the composing type C<Bag>.
 
-=head2 member_plus (Bag)
+## member_plus (Bag)
 
         member_plus::Bag : (\Function : (
             returns : \$Bag,
@@ -6333,7 +6329,7 @@ the members of the function's C<0> argument plus all of the members of its
 C<1> argument.  This function implements the C<Unionable> virtual
 function C<member_plus> aka C<⊎> for the composing type C<Bag>.
 
-=head2 except (Bag)
+## except (Bag)
 
         except::Bag : (\Function : (
             returns : \$Bag,
@@ -6350,7 +6346,7 @@ argument minus all of the matching members of its C<1> argument.  This
 function implements the C<Unionable> virtual function C<except> aka C<∖>
 for the composing type C<Bag>.
 
-=head2 intersect (Bag)
+## intersect (Bag)
 
         intersect::Bag : (\Function : (
             returns : \$Bag,
@@ -6368,7 +6364,7 @@ of the members of the function's C<0> argument that match their own members
 of its C<1> argument.  This function implements the C<Unionable> virtual
 function C<intersect> aka C<∩> for the composing type C<Bag>.
 
-=head2 union (Bag)
+## union (Bag)
 
         union::Bag : (\Function : (
             returns : \$Bag,
@@ -6387,7 +6383,7 @@ the members of the function's C<0> argument plus all of the nonmatching
 members of its C<1> argument.  This function implements the C<Unionable>
 virtual function C<union> aka C<∪> for the composing type C<Bag>.
 
-=head2 exclusive (Bag)
+## exclusive (Bag)
 
         exclusive::Bag : (\Function : (
             returns : \$Bag,
@@ -6406,7 +6402,7 @@ arguments that do not have matching members of their counterpart argument.
 This function implements the C<Unionable> virtual function C<exclusive>
 aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
 
-=head2 nest (Bag)
+## nest (Bag)
 
         nest::Bag : (\Function : (
             returns : \$Bag,
@@ -6418,7 +6414,7 @@ aka C<symm_diff> aka C<∆> for the composing type C<Bag>.
 
 I<TODO.>
 
-=head2 unnest (Bag)
+## unnest (Bag)
 
         unnest::Bag : (\Function : (
             returns : \$Bag,
@@ -6430,7 +6426,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 where (Bag)
+## where (Bag)
 
         where::Bag : (\Function : (
             returns : \$Bag,
@@ -6441,7 +6437,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 map (Bag)
+## map (Bag)
 
         map::Bag : (\Function : (
             returns : \$Bag,
@@ -6452,7 +6448,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 reduce (Bag)
+## reduce (Bag)
 
         reduce::Bag : (\Function : (
             returns : \$Any,
@@ -6463,7 +6459,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 to_Set (Bag)
+## to_Set (Bag)
 
         to_Set::Bag : (\Function : (
             returns : \$Set,
@@ -6478,7 +6474,7 @@ member whose value is equal to I<V>.  This function implements the
 C<Discrete> virtual function C<to_Set> aka C<?|> for the composing type
 C<Bag>.
 
-=head2 to_Bag (Bag)
+## to_Bag (Bag)
 
         to_Bag::Bag : (\Function : (
             returns : \$Bag,
@@ -6491,7 +6487,7 @@ The function C<to_Bag::Bag> simply results in its C<0> argument.  This
 function implements the C<Discrete> virtual function C<to_Bag> aka
 C<+|> for the composing type C<Bag>.
 
-=head2 count (Bag)
+## count (Bag)
 
         count::Bag : (\Function : (
             returns : \$Integer_NN,
@@ -6504,7 +6500,7 @@ The function C<count::Bag> results in the integral count of the members
 of its C<0> argument.  This function implements the C<Discrete> virtual
 function C<count> aka C<cardinality> aka C<#> for the composing type C<Bag>.
 
-=head2 unique_count (Bag)
+## unique_count (Bag)
 
         unique_count::Bag : (\Function : (
             returns : \$Integer_NN,
@@ -6517,7 +6513,7 @@ The function C<unique_count::Bag> results in the integral count of the
 distinct member values of its C<0> argument.  This function implements the
 C<Discrete> virtual function C<unique_count> for the composing type C<Bag>.
 
-=head2 order_using (Bag)
+## order_using (Bag)
 
         order_using::Bag : (\Function : (
             returns : \$Array,
@@ -6532,9 +6528,9 @@ arranged into a sequence in accordance with a total order defined by the
 function given in its C<1> argument.  This function implements the
 C<Discrete> virtual function C<order_using> for the composing type C<Bag>.
 
-=head1 ATTRIBUTIVE DATA TYPES
+# ATTRIBUTIVE DATA TYPES
 
-=head2 Attributive
+## Attributive
 
         Attributive : (\Function : (
             is_type_definer : True,
@@ -6584,7 +6580,7 @@ C<Tuple>; otherwise, that may not be the case.
 C<Attributive> is composed, directly or indirectly, by: C<Structural>,
 C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
-=head2 has_any_attrs ?$
+## has_any_attrs ?$
 
         has_any_attrs::'' : (\Function : (
             virtual : True,
@@ -6597,7 +6593,7 @@ C<Tuple>, C<Relational>, C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 The virtual function C<has_any_attrs> aka C<?$> results in C<True> iff its
 C<0> argument has any attributes, and in C<False> iff it has no attributes.
 
-=head2 is_nullary !?$
+## is_nullary !?$
 
         is_nullary : (\Function : (
             negates : \$has_any_attrs,
@@ -6608,7 +6604,7 @@ C<0> argument has any attributes, and in C<False> iff it has no attributes.
 The function C<is_nullary> aka C<!?$> results in C<True> iff its C<0>
 argument has no attributes, and in C<False> iff it has any attributes.
 
-=head2 nullary
+## nullary
 
         nullary::'' : (\Function : (
             virtual : True,
@@ -6622,7 +6618,7 @@ C<Tuple>, this is a constant value, but for types like C<Tuple_Bag>, there
 is a distinct result for each I<cardinality>; for types like C<Relation>
 there are exactly 2 possible result values.
 
-=head2 is_unary
+## is_unary
 
         is_unary::'' : (\Function : (
             virtual : True,
@@ -6633,7 +6629,7 @@ there are exactly 2 possible result values.
 The virtual function C<is_unary> results in C<True> iff its C<0> argument
 has exactly 1 attribute, and C<False> otherwise.
 
-=head2 degree #$
+## degree #$
 
         degree::'' : (\Function : (
             virtual : True,
@@ -6646,7 +6642,7 @@ has exactly 1 attribute, and C<False> otherwise.
 The virtual function C<degree> aka C<#$> results in the integral count of
 the attributes of its C<0> argument.
 
-=head2 heading $
+## heading $
 
         heading::'' : (\Function : (
             virtual : True,
@@ -6663,7 +6659,7 @@ same attribute names where every one of its assets is the value C<True>.
 The purpose of C<heading> is to canonicalize C<Attributive> values such
 that their headings can be reasoned about in isolation from their bodies.
 
-=head2 subheading_of ⊆$
+## subheading_of ⊆$
 
         subheading_of : (\Function : (
             returns : \$Boolean,
@@ -6677,7 +6673,7 @@ The function C<subheading_of> aka C<⊆$> results in C<True> iff the heading
 of its C<0> argument is a subset of the heading of its C<1> argument;
 otherwise it results in C<False>.
 
-=head2 superheading_of has_subheading $? ⊇$
+## superheading_of has_subheading $? ⊇$
 
         superheading_of : (\Function : (
             commutes : \$subheading_of,
@@ -6696,7 +6692,7 @@ idiomatic way to test if an C<Attributive> has all of a specific set of
 attribute names; whereas the C<.?> function is idiomatic for testing for
 exactly 1 name.
 
-=head2 same_heading =$
+## same_heading =$
 
         same_heading : (\Function : (
             returns : \$Boolean,
@@ -6711,7 +6707,7 @@ The function C<same_heading> aka C<=$> results in C<True> iff the heading
 of its C<0> argument is the same as the heading of its C<1> argument;
 otherwise it results in C<False>.
 
-=head2 proper_subheading_or_superheading
+## proper_subheading_or_superheading
 
         proper_subheading_or_superheading : (\Function : (
             returns : \$Boolean,
@@ -6724,7 +6720,7 @@ The function C<proper_subheading_or_superheading> results in C<True> iff
 the heading of one of its 2 arguments C<0> and C<1> is a proper subset of
 the heading of its other argument; otherwise it results in C<False>.
 
-=head2 subheading_or_superheading
+## subheading_or_superheading
 
         subheading_or_superheading : (\Function : (
             returns : \$Boolean,
@@ -6737,7 +6733,7 @@ The function C<subheading_or_superheading> results in C<True> iff the
 heading of one of its 2 arguments C<0> and C<1> is a subset of the heading
 of its other argument; otherwise it results in C<False>.
 
-=head2 overlaps_heading
+## overlaps_heading
 
         overlaps_heading : (\Function : (
             returns : \$Boolean,
@@ -6752,7 +6748,7 @@ there exists at least 1 attribute name that both I<X> and I<Y> have, and
 there also exists at least 1 other attribute name each of I<X> and I<Y>
 that the other doesn't have; otherwise it results in C<False>.
 
-=head2 disjoint_heading
+## disjoint_heading
 
         disjoint_heading : (\Function : (
             returns : \$Boolean,
@@ -6765,7 +6761,7 @@ The function C<disjoint_heading> results in C<True> iff the heading of its
 C<0> argument has no attribute names in common with the heading of its C<1>
 argument; otherwise it results in C<False>.
 
-=head2 except_heading ∖$
+## except_heading ∖$
 
         except_heading : (\Function : (
             returns : \$Heading,
@@ -6781,7 +6777,7 @@ between the I<headings> of its 2 arguments C<0> (I<minuend>) and C<1>
 attribute name that exists in the heading of the function's C<0> argument
 but not in the heading of its C<1> argument.
 
-=head2 intersect_heading ∩$
+## intersect_heading ∩$
 
         intersect_heading : (\Function : (
             returns : \$Heading,
@@ -6801,7 +6797,7 @@ exists in both of the headings of the function's C<0> and C<1> arguments.
 This operation conceptually has a I<two-sided identity element> value of a C<Heading> with an
 infinite number of attribute names.
 
-=head2 union_heading ∪$
+## union_heading ∪$
 
         union_heading : (\Function : (
             returns : \$Heading,
@@ -6820,7 +6816,7 @@ I<headings> of its 2 arguments C<0> and C<1>.  The result is the C<Heading>
 value that just has every attribute name that exists in either or both of
 the headings of the function's C<0> and C<1> arguments.
 
-=head2 exclusive_heading symm_diff_heading ∆$
+## exclusive_heading symm_diff_heading ∆$
 
         exclusive : (\Function : (
             returns : \$Heading,
@@ -6841,7 +6837,7 @@ arguments C<0> and C<1>.  The result is the C<Heading> value that just has
 every attribute name that exists in the heading of exactly one of the
 function's C<0> or C<1> arguments.
 
-=head2 rename $:= ρ
+## rename $:= ρ
 
         rename::'' : (\Function : (
             virtual : True,
@@ -6871,7 +6867,7 @@ former does match an attribute name of the latter that isn't being renamed.
 I<TODO: Revisit the spec_2011 docs of this operator after the Renaming type
 is fully defined, for additional useful language for describing "rename".>
 
-=head2 renaming
+## renaming
 
         renaming : (\Function : (
             commutes : \$rename,
@@ -6880,7 +6876,7 @@ is fully defined, for additional useful language for describing "rename".>
 The function C<renaming> behaves identically to the function C<rename> when
 given the same arguments in swapped positions.
 
-=head2 can_project_matching %=?
+## can_project_matching %=?
 
         can_project_matching::'' : (\Function : (
             virtual : True,
@@ -6897,7 +6893,7 @@ has the same attribute asset; otherwise it results in C<False>.  Note that
 by definition, the identity C<can_project_matching::(update::(a,s),s) = True>
 aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.
 
-=head2 on project %= π
+## on project %= π
 
         on::'' : (\Function : (
             virtual : True,
@@ -6928,7 +6924,7 @@ I<heading> of the C<0> argument.  Other programming languages may name
 their corresponding operators I<over> or I<select>; it is also common to
 use subscript/postcircumfix syntax.
 
-=head2 from
+## from
 
         from : (\Function : (
             commutes : \$on,
@@ -6937,7 +6933,7 @@ use subscript/postcircumfix syntax.
 The function C<from> behaves identically to the function C<on>
 when given the same arguments in swapped positions.
 
-=head2 maybe_on %!
+## maybe_on %!
 
         maybe_on : (\Function : (
             returns : \$Attributive,
@@ -6952,7 +6948,7 @@ when given the same arguments but that it simply ignores the existence of
 attributes of its C<1> argument whose names don't match attributes of its
 C<0> argument rather than failing.
 
-=head2 update %:=
+## update %:=
 
         update::'' : (\Function : (
             virtual : True,
@@ -6982,7 +6978,7 @@ I<heading> of the C<0> argument.  Other programming languages may name
 their corresponding operators I<update ... set>; it is also common to use
 subscript/postcircumfix syntax plus assignment syntax.
 
-=head2 extend %+
+## extend %+
 
         extend::'' : (\Function : (
             virtual : True,
@@ -7015,7 +7011,7 @@ routine version; they can use join/cross-product for the static version.
 Also, this is analogous to set union (disjoint).
 The Structural version is commutative and associative, but not Attributive in general.>
 
-=head2 but project_all_but %-
+## but project_all_but %-
 
         but : (\Function : (
             returns : \$Attributive,
@@ -7044,7 +7040,7 @@ I<heading> of the C<1> argument is not a subset of the I<heading> of the
 C<0> argument.  Other programming languages may name their corresponding
 operators I<remove>.
 
-=head2 update_or_extend %=+
+## update_or_extend %=+
 
         update_or_extend : (\Function : (
             returns : \$Attributive,
@@ -7061,7 +7057,7 @@ those from the function's C<1> argument where the attribute names match,
 and the result has new attributes added from the C<1> argument where the
 latter's names don't match.
 
-=head2 maybe_but %?-
+## maybe_but %?-
 
         maybe_but : (\Function : (
             returns : \$Attributive,
@@ -7076,9 +7072,9 @@ when given the same arguments but that it simply ignores the existence of
 attributes of its C<1> argument whose names don't match attributes of its
 C<0> argument rather than failing.
 
-=head1 STRUCTURAL DATA TYPES
+# STRUCTURAL DATA TYPES
 
-=head2 Structural
+## Structural
 
         Structural : (\Function : (
             is_type_definer : True,
@@ -7094,7 +7090,7 @@ corresponding attribute asset.  The default value of C<Structural> is the
 C<Tuple> value with zero attributes, C<()>.  C<Structural> is composed by
 C<Tuple>.
 
-=head2 can_project_matching (Structural)
+## can_project_matching (Structural)
 
         can_project_matching::Structural : (\Function : (
             returns : \$Boolean,
@@ -7112,7 +7108,7 @@ aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.  This
 function implements the C<Attributive> virtual function
 C<can_project_matching> aka C<%=?> for the composing type C<Structural>.
 
-=head2 has_any_at (Structure)
+## has_any_at (Structure)
 
         has_any_at::Structure : (\Function : (
             returns : \$Boolean,
@@ -7127,7 +7123,7 @@ argument; otherwise it results in C<False>.  This function implements the
 C<Accessible> virtual function C<has_any_at> aka C<.?> for the composing
 type C<Structure>.
 
-=head2 has_mapping_at (Structural)
+## has_mapping_at (Structural)
 
         has_mapping_at::Structural : (\Function : (
             returns : \$Boolean,
@@ -7142,7 +7138,7 @@ C<1> argument's C<0> and C<1> attribute assets, respectively; otherwise it
 results in C<False>.  This function implements the C<Accessible> virtual
 function C<has_mapping_at> aka C<.:?> for the composing type C<Structural>.
 
-=head2 mapping_at (Structural)
+## mapping_at (Structural)
 
         mapping_at::Structural : (\Function : (
             returns : (\$Attr_Name, \$Any),
@@ -7160,7 +7156,7 @@ argument doesn't have such an attribute.  This function implements the
 C<Accessible> virtual function C<mapping_at> aka C<.:> for the composing
 type C<Structural>.
 
-=head2 maybe_at (Structural)
+## maybe_at (Structural)
 
         maybe_at::Structural : (\Function : (
             returns : \$Any,
@@ -7175,7 +7171,7 @@ iff there is such an attribute; otherwise it results in C<\!No_Such_Attr_Name>. 
 function implements the C<Accessible> virtual function C<maybe_at> aka
 C<.!> for the composing type C<Structural>.
 
-=head2 replace_at (Structure)
+## replace_at (Structure)
 
         replace_at::Structure : (\Function : (
             returns : \$Structure,
@@ -7195,7 +7191,7 @@ argument doesn't have an attribute with that name.  This function
 implements the C<Accessible> virtual function C<replace_at> aka C<.:=> for
 the composing type C<Structure>.
 
-=head2 shiftless_insert_at (Structure)
+## shiftless_insert_at (Structure)
 
         shiftless_insert_at::Structure : (\Function : (
             returns : \$Structure,
@@ -7214,7 +7210,7 @@ attribute with that name.  This function implements the C<Accessible>
 virtual function C<shiftless_insert_at> aka C<.+> for the composing type
 C<Structure>.
 
-=head2 shiftless_remove_at (Structure)
+## shiftless_remove_at (Structure)
 
         shiftless_remove_at::Structure : (\Function : (
             returns : \$Structure,
@@ -7232,7 +7228,7 @@ have such an attribute.  This function implements the C<Accessible> virtual
 function C<shiftless_remove_at> aka C<.-> for the composing type
 C<Structure>.
 
-=head2 replace_or_insert_at (Structural)
+## replace_or_insert_at (Structural)
 
         replace_or_insert_at::Structural : (\Function : (
             returns : \$Structural,
@@ -7249,7 +7245,7 @@ argument's C<0> attribute.  This function implements the C<Accessible>
 virtual function C<replace_or_insert_at> aka C<.=+> for the composing type
 C<Structural>.
 
-=head2 shiftless_maybe_remove_at (Structural)
+## shiftless_maybe_remove_at (Structural)
 
         shiftless_maybe_remove_at::Structural : (\Function : (
             returns : \$Structural,
@@ -7265,7 +7261,7 @@ name matches its C<1> argument, rather than fail.  This function implements
 the C<Accessible> virtual function C<shiftless_maybe_remove_at> aka C<.?->
 for the composing type C<Structural>.
 
-=head2 to_Tuple %
+## to_Tuple %
 
         to_Tuple::'' : (\Function : (
             virtual : True,
@@ -7280,9 +7276,9 @@ that represents the same set of attributes as its C<0> argument.  The
 purpose of C<to_Tuple> is to canonicalize C<Structural> values so they can
 be treated abstractly as sets of attributes with minimal effort.
 
-=head1 TUPLE DATA TYPES
+# TUPLE DATA TYPES
 
-=head2 Tuple
+## Tuple
 
         Tuple::'' : (\Function : (
             is_type_definer : True,
@@ -7317,7 +7313,7 @@ value of C<Tuple> is C<()>, the only zero-attribute C<Tuple> value.  Other
 programming languages may name their corresponding types I<Capture> or
 I<Stash> or I<record> or I<struct> or I<row> or I<DataRow> or I<Hash>.
 
-=head2 Tuple_D0
+## Tuple_D0
 
         Tuple_D0 : (\Function : (
             is_type_definer : True,
@@ -7327,7 +7323,7 @@ I<Stash> or I<record> or I<struct> or I<row> or I<DataRow> or I<Hash>.
 The singleton type definer C<Tuple_D0> represents the only zero-attribute
 C<Tuple> value.
 
-=head2 Tuple_D1
+## Tuple_D1
 
         Tuple_D1 : (\Function : (
             is_type_definer : True,
@@ -7339,7 +7335,7 @@ The selection type definer C<Tuple_D1> represents the infinite type consisting
 just of the C<Tuple> values having exactly 1 attribute.  Its default value
 has just the attribute with the name C<0> and asset value of C<False>.
 
-=head2 D1
+## D1
 
         D1 : (\Function : (
             returns : \$Tuple_D1,
@@ -7351,7 +7347,7 @@ The function C<D1> results in the C<Tuple_D1> value whose sole attribute's
 name is is specified in its C<0> argument and that attribute's value is
 specified in its C<1> argument.
 
-=head2 has_any_attrs (Tuple)
+## has_any_attrs (Tuple)
 
         has_any_attrs::Tuple : (\Function : (
             returns : \$Boolean,
@@ -7365,7 +7361,7 @@ argument has any attributes, and in C<False> iff it has no attributes.
 This function implements the C<Attributive> virtual function
 C<has_any_attrs> aka C<?$> for the composing type C<Tuple>.
 
-=head2 nullary (Tuple)
+## nullary (Tuple)
 
         nullary::Tuple : (\Function : (
             returns : \$Tuple,
@@ -7378,7 +7374,7 @@ The function C<nullary::Tuple> results in the only zero-attribute C<Tuple>
 value.  This function implements the C<Attributive> virtual function
 C<nullary> for the composing type C<Tuple>.
 
-=head2 is_unary (Tuple)
+## is_unary (Tuple)
 
         is_unary::Tuple : (\Function : (
             returns : \$Boolean,
@@ -7392,7 +7388,7 @@ has exactly 1 attribute, and C<False> otherwise.  This function implements
 the C<Attributive> virtual function C<is_unary> for the composing type
 C<Tuple>.
 
-=head2 degree (Tuple)
+## degree (Tuple)
 
         degree::Tuple : (\Function : (
             returns : \$Integer_NN,
@@ -7406,7 +7402,7 @@ attributes of its C<0> argument.  This function implements the
 C<Attributive> virtual function C<degree> aka C<#$> for the composing type
 C<Tuple>.
 
-=head2 heading (Tuple)
+## heading (Tuple)
 
         heading::Tuple : (\Function : (
             returns : \$Heading,
@@ -7420,7 +7416,7 @@ C<0> argument, that is its set of distinct attribute names.  This function
 implements the C<Attributive> virtual function C<heading> aka C<$> for the
 composing type C<Tuple>.
 
-=head2 rename (Tuple)
+## rename (Tuple)
 
         rename::Tuple : (\Function : (
             returns : \$Tuple,
@@ -7444,7 +7440,7 @@ the former does match an attribute name of the latter that isn't being
 renamed.  This function implements the C<Attributive> virtual function
 C<rename> aka C<$:=> aka C<ρ> for the composing type C<Tuple>.
 
-=head2 on (Tuple)
+## on (Tuple)
 
         on::Tuple : (\Function : (
             returns : \$Tuple,
@@ -7464,7 +7460,7 @@ I<heading> of the C<0> argument.  This function implements the
 C<Attributive> virtual function C<on> aka C<project> aka C<%=> aka C<π> for
 the composing type C<Tuple>.
 
-=head2 update (Tuple)
+## update (Tuple)
 
         update::Tuple : (\Function : (
             returns : \$Tuple,
@@ -7485,7 +7481,7 @@ of the I<heading> of the C<0> argument.  This function implements the
 C<Attributive> virtual function C<update> aka C<%:=> for the composing type
 C<Tuple>.
 
-=head2 extend (Tuple)
+## extend (Tuple)
 
         extend::Tuple : (\Function : (
             returns : \$Tuple,
@@ -7507,7 +7503,7 @@ will fail if the I<headings> of the 2 arguments are not disjoint.  This
 function implements the C<Attributive> virtual function C<extend> aka C<%+>
 for the composing type C<Tuple>.
 
-=head2 at (Tuple)
+## at (Tuple)
 
         at::Tuple : (\Function : (
             returns : \$Any,
@@ -7528,7 +7524,7 @@ plain invocation of the Foundation function C<Tuple_at>, it is instead in
 terms of the special-purpose expression syntax for a C<Tuple> attribute
 asset accessor aka C<:.>.
 
-=head2 to_Tuple (Tuple)
+## to_Tuple (Tuple)
 
         to_Tuple::Tuple : (\Function : (
             returns : \$Tuple,
@@ -7541,7 +7537,7 @@ The function C<to_Tuple::Tuple> simply results in its C<0> argument.  This
 function implements the C<Structural> virtual function C<to_Tuple> aka C<%>
 for the composing type C<Tuple>.
 
-=head2 any_attrs
+## any_attrs
 
         any_attrs : (\Function : (
             returns : \$Boolean,
@@ -7551,7 +7547,7 @@ for the composing type C<Tuple>.
 
 I<TODO.>
 
-=head2 none_of_attrs
+## none_of_attrs
 
         none_of_attrs : (\Function : (
             negates : \$any_attrs,
@@ -7559,7 +7555,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 all_attrs
+## all_attrs
 
         all_attrs : (\Function : (
             returns : \$Boolean,
@@ -7569,7 +7565,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 not_all_attrs
+## not_all_attrs
 
         not_all_attrs : (\Function : (
             negates : \$all_attrs,
@@ -7577,7 +7573,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 all_attr_assets
+## all_attr_assets
 
         all_attr_assets : (\Function : (
             returns : \$Boolean,
@@ -7588,7 +7584,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 attrs_where
+## attrs_where
 
         attrs_where : (\Function : (
             returns : \$Tuple,
@@ -7598,7 +7594,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 attrs_map
+## attrs_map
 
         attrs_map : (\Function : (
             returns : \$Tuple,
@@ -7608,7 +7604,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 attrs_reduce
+## attrs_reduce
 
         attrs_reduce : (\Function : (
             returns : \$Any,
@@ -7618,9 +7614,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 RELATIONAL DATA TYPES
+# RELATIONAL DATA TYPES
 
-=head2 Relational
+## Relational
 
         Relational : (\Function : (
             is_type_definer : True,
@@ -7637,7 +7633,7 @@ members.  The default value of C<Relational> is the C<Relation> value with
 zero attributes and zero members, C<\?%()>.  C<Relational> is composed by
 C<Tuple_Array>, C<Relation>, C<Tuple_Bag>.
 
-=head2 to_Boolean (Relational)
+## to_Boolean (Relational)
 
         to_Boolean::Relational : (\Function : (
             returns : \$Boolean,
@@ -7651,7 +7647,7 @@ argument has any tuples, and in C<False> iff it has no tuples.  This
 function implements the C<Boolable> virtual function C<to_Boolean> aka
 C<so> aka C<?> for the composing type C<Relational>.
 
-=head2 empty (Relational)
+## empty (Relational)
 
         empty::Relational : (\Function : (
             returns : \$Relational,
@@ -7666,7 +7662,7 @@ and whose I<body> has zero tuples.  This function implements the
 C<Emptyable> virtual function C<empty> aka C<∅> for the composing type
 C<Relational>.
 
-=head2 singular (Relational)
+## singular (Relational)
 
         singular::Relational : (\Function : (
             returns : \$Boolean,
@@ -7680,7 +7676,7 @@ argument has exactly 1 distinct tuple, and C<False> otherwise.  This
 function implements the C<Homogeneous> virtual function C<singular> for the
 composing type C<Relational>.
 
-=head2 only_member (Relational)
+## only_member (Relational)
 
         only_member::Relational : (\Function : (
             returns : \$Structural,
@@ -7695,7 +7691,7 @@ distinct tuple.  This function will fail if the argument doesn't have
 exactly 1 distinct tuple.  This function implements the C<Homogeneous>
 virtual function C<only_member> for the composing type C<Relational>.
 
-=head2 has_n (Relational)
+## has_n (Relational)
 
         has_n::Relational : (\Function : (
             returns : {\$Boolean, \$Not_Same_Heading},
@@ -7715,7 +7711,7 @@ when the C<0> and C<1> arguments have the same I<heading>; it is
 C<\!Not_Same_Heading> otherwise.  This function implements the C<Homogeneous> virtual
 function C<has_n> for the composing type C<Relational>.
 
-=head2 multiplicity (Relational)
+## multiplicity (Relational)
 
         multiplicity::Relational : (\Function : (
             returns : \$Integer_NN,
@@ -7730,7 +7726,7 @@ C<1> argument.  For a C<Setty> typed C<0> argument, the result is always
 just 0 or 1.  This function implements the C<Homogeneous> virtual
 function C<multiplicity> for the composing type C<Relational>.
 
-=head2 all_unique (Relational)
+## all_unique (Relational)
 
         all_unique::Relational : (\Function : (
             returns : \$Boolean,
@@ -7745,7 +7741,7 @@ The result is always C<True> for a C<Setty> argument.  This function
 implements the C<Homogeneous> virtual function C<all_unique> for the
 composing type C<Relational>.
 
-=head2 unique (Relational)
+## unique (Relational)
 
         unique::Relational : (\Function : (
             returns : \$Relational,
@@ -7764,7 +7760,7 @@ tuple's value.  See also the C<Positional> function C<squish>.  This
 function implements the C<Homogeneous> virtual function C<unique> for the
 composing type C<Relational>.
 
-=head2 subset_of (Relational)
+## subset_of (Relational)
 
         subset_of::Relational : (\Function : (
             returns : {\$Boolean, \$Not_Same_Heading},
@@ -7781,7 +7777,7 @@ I<defined> when the 2 arguments have the same I<heading>; it is
 C<\!Not_Same_Heading> otherwise.  This function implements the C<Homogeneous> virtual
 function C<subset_of> aka C<⊆> for the composing type C<Relational>.
 
-=head2 same_members (Relational)
+## same_members (Relational)
 
         same_members::Relational : (\Function : (
             returns : {\$Boolean, \$Not_Same_Heading},
@@ -7803,7 +7799,7 @@ significant while the former doesn't; for non-C<Positional> arguments, the
 function implements the C<Homogeneous> virtual function C<same_members> for
 the composing type C<Relational>.
 
-=head2 overlaps_members (Relational)
+## overlaps_members (Relational)
 
         overlaps_members::Relational : (\Function : (
             returns : {\$Boolean, \$Not_Same_Heading},
@@ -7824,7 +7820,7 @@ I<heading>; it is C<\!Not_Same_Heading> otherwise.  This function implements the
 C<Homogeneous> virtual function C<overlaps_members> for the composing type
 C<Relational>.
 
-=head2 disjoint_members (Relational)
+## disjoint_members (Relational)
 
         disjoint_members::Relational : (\Function : (
             returns : {\$Boolean, \$Not_Same_Heading},
@@ -7843,7 +7839,7 @@ I<heading>; it is C<\!Not_Same_Heading> otherwise.  This function implements the
 C<Homogeneous> virtual function C<disjoint_members> for the composing type
 C<Relational>.
 
-=head2 any (Relational)
+## any (Relational)
 
         any::Relational : (\Function : (
             returns : \$Boolean,
@@ -7854,7 +7850,7 @@ C<Relational>.
 
 I<TODO.>
 
-=head2 insert_n (Relational)
+## insert_n (Relational)
 
         insert_n::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -7879,7 +7875,7 @@ same I<heading>; it is C<\!Not_Same_Heading> otherwise. This function implements
 C<Unionable> virtual function C<insert_n> for the composing type
 C<Relational>.
 
-=head2 remove_n (Relational)
+## remove_n (Relational)
 
         remove_n::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -7902,7 +7898,7 @@ arguments have the same I<heading>; it is C<\!Not_Same_Heading> otherwise.  This
 function implements the C<Unionable> virtual function C<remove_n> for the
 composing type C<Relational>.
 
-=head2 member_plus (Relational)
+## member_plus (Relational)
 
         member_plus::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -7933,7 +7929,7 @@ is C<\!Not_Same_Heading> otherwise.  This function implements the C<Unionable>
 virtual function C<member_plus> aka C<⊎> for the composing type
 C<Relational>.
 
-=head2 except (Relational)
+## except (Relational)
 
         except::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -7959,7 +7955,7 @@ result is only I<defined> when the 2 arguments have the same I<heading>; it
 is C<\!Not_Same_Heading> otherwise.  This function implements the C<Unionable>
 virtual function C<except> aka C<∖> for the composing type C<Relational>.
 
-=head2 intersect (Relational)
+## intersect (Relational)
 
         intersect::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -7987,7 +7983,7 @@ only I<defined> when the 2 arguments have the same I<heading>; it is
 C<\!Not_Same_Heading> otherwise.  This function implements the C<Unionable> virtual
 function C<intersect> aka C<∩> for the composing type C<Relational>.
 
-=head2 union (Relational)
+## union (Relational)
 
         union::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -8016,7 +8012,7 @@ the same I<heading>; it is C<\!Not_Same_Heading> otherwise.  This function
 implements the C<Unionable> virtual function C<union> aka C<∪> for the
 composing type C<Relational>.
 
-=head2 exclusive (Relational)
+## exclusive (Relational)
 
         exclusive::Relational : (\Function : (
             returns : {\$Relational, \$Not_Same_Heading},
@@ -8048,7 +8044,7 @@ C<\!Not_Same_Heading> otherwise. This function implements the C<Unionable> virtu
 function C<exclusive> aka C<symm_diff> aka C<∆> for the composing type
 C<Relational>.
 
-=head2 nest (Relational)
+## nest (Relational)
 
         nest::Relational : (\Function : (
             returns : \$Relational,
@@ -8060,7 +8056,7 @@ C<Relational>.
 
 I<TODO.>
 
-=head2 unnest (Relational)
+## unnest (Relational)
 
         unnest::Relational : (\Function : (
             returns : \$Relational,
@@ -8072,7 +8068,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 where (Relational)
+## where (Relational)
 
         where::Relational : (\Function : (
             returns : \$Relational,
@@ -8083,7 +8079,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 map (Relational)
+## map (Relational)
 
         map::Relational : (\Function : (
             returns : \$Relational,
@@ -8094,7 +8090,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 reduce (Relational)
+## reduce (Relational)
 
         reduce::Relational : (\Function : (
             returns : \$Any,
@@ -8105,7 +8101,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 has_any_attrs (Relational)
+## has_any_attrs (Relational)
 
         has_any_attrs::Relational : (\Function : (
             returns : \$Boolean,
@@ -8119,7 +8115,7 @@ argument has any attributes, and in C<False> iff it has no attributes.
 This function implements the C<Attributive> virtual function
 C<has_any_attrs> aka C<?$> for the composing type C<Relational>.
 
-=head2 nullary (Relational)
+## nullary (Relational)
 
         nullary::Relational : (\Function : (
             returns : \$Relational,
@@ -8135,7 +8131,7 @@ like C<Relation> there are exactly 2 possible result values.  This function
 implements the C<Attributive> virtual function C<nullary> for the composing
 type C<Relational>.
 
-=head2 is_unary (Relational)
+## is_unary (Relational)
 
         is_unary::Relational : (\Function : (
             returns : \$Boolean,
@@ -8149,7 +8145,7 @@ argument has exactly 1 attribute, and C<False> otherwise.  This function
 implements the C<Attributive> virtual function C<is_unary> for the
 composing type C<Relational>.
 
-=head2 degree (Relational)
+## degree (Relational)
 
         degree::Relational : (\Function : (
             returns : \$Integer_NN,
@@ -8163,7 +8159,7 @@ attributes of its C<0> argument.  This function implements the
 C<Attributive> virtual function C<degree> aka C<#$> for the composing type
 C<Relational>.
 
-=head2 rename (Relational)
+## rename (Relational)
 
         rename::Relational : (\Function : (
             returns : \$Relational,
@@ -8190,7 +8186,7 @@ that isn't being renamed.  This function implements the C<Attributive>
 virtual function C<rename> aka C<$:=> aka C<ρ> for the composing type
 C<Relational>.
 
-=head2 can_project_matching (Relational)
+## can_project_matching (Relational)
 
         can_project_matching::Relational : (\Function : (
             returns : \$Boolean,
@@ -8209,7 +8205,7 @@ aka C<a %:= s %=? s = True> should hold for all valid C<a> and C<s>.  This
 function implements the C<Attributive> virtual function
 C<can_project_matching> aka C<%=?> for the composing type C<Relational>.
 
-=head2 on (Relational)
+## on (Relational)
 
         on::Relational : (\Function : (
             returns : \$Relational,
@@ -8236,7 +8232,7 @@ is not a subset of the I<heading> of the C<0> argument.  This function
 implements the C<Attributive> virtual function C<on> aka C<project> aka
 C<%=> aka C<π> for the composing type C<Relational>.
 
-=head2 update (Relational)
+## update (Relational)
 
         update::Relational : (\Function : (
             returns : \$Relational,
@@ -8266,7 +8262,7 @@ I<heading> of the C<0> argument.  This function implements the
 C<Attributive> virtual function C<update> aka C<%:=> for the composing type
 C<Relational>.
 
-=head2 extend (Relational)
+## extend (Relational)
 
         extend::Relational : (\Function : (
             returns : \$Relational,
@@ -8292,7 +8288,7 @@ function will fail if the I<headings> of the 2 arguments are not disjoint.
 This function implements the C<Attributive> virtual function C<extend> aka
 C<%+> for the composing type C<Relational>.
 
-=head2 body |
+## body |
 
         body::'' : (\Function : (
             virtual : True,
@@ -8310,7 +8306,7 @@ functions C<heading> and C<body> are complementary for C<Relational>
 values; between the two of them, one can obtain all primary components of a
 typical C<Relational> value, and select that same value again.
 
-=head2 select_Relational
+## select_Relational
 
         select_Relational::'' : (\Function : (
             virtual : True,
@@ -8330,9 +8326,9 @@ I<TODO: Flesh out the set of predefined Excuse values, such as for body
 members that aren't compatible with the heading, or possibly for composing
 types that restrict their possible headings at the type level.>
 
-=head1 TUPLE-ARRAY DATA TYPES
+# TUPLE-ARRAY DATA TYPES
 
-=head2 Tuple_Array
+## Tuple_Array
 
         Tuple_Array : (\Function : (
             is_type_definer : True,
@@ -8361,7 +8357,7 @@ since we don't want to infect the generic Tuple with all the Orderable ops.>
 I<Note: This type structurally resembles a spreadsheet or a .NET DataTable,
 or a subtype of it does.>
 
-=head2 Tuple_Array_D0C0
+## Tuple_Array_D0C0
 
         Tuple_Array_D0C0 : (\Function : (
             is_type_definer : True,
@@ -8371,7 +8367,7 @@ or a subtype of it does.>
 The singleton type definer C<Tuple_Array_D0C0> represents the only zero-attribute,
 zero-tuple C<Tuple_Array> value.
 
-=head2 Tuple_Array_D0C1
+## Tuple_Array_D0C1
 
         Tuple_Array_D0C1 : (\Function : (
             is_type_definer : True,
@@ -8381,7 +8377,7 @@ zero-tuple C<Tuple_Array> value.
 The singleton type definer C<Tuple_Array_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Array> value.
 
-=head2 heading (Tuple_Array)
+## heading (Tuple_Array)
 
         heading::Tuple_Array : (\Function : (
             returns : \$Heading,
@@ -8395,7 +8391,7 @@ of its C<0> argument, that is its set of distinct attribute names.  This
 function implements the C<Attributive> virtual function C<heading> aka C<$>
 for the composing type C<Tuple_Array>.
 
-=head2 body (Tuple_Array)
+## body (Tuple_Array)
 
         body::Tuple_Array : (\Function : (
             returns : \$Array,
@@ -8409,7 +8405,7 @@ C<0> argument, that is its multiset of member tuples.  This function
 implements the C<Relational> virtual function C<body> aka C<|> for the
 composing type C<Tuple_Array>.
 
-=head2 select_Relational (Tuple_Array)
+## select_Relational (Tuple_Array)
 
         select_Relational::Tuple_Array : (\Function : (
             returns : {\$Relational, \$...},
@@ -8424,9 +8420,9 @@ argument and whose I<body> consists of just the member I<tuples> of its
 C<body> argument.  This function implements the C<Relational> virtual
 function C<select_Relational> for the composing type C<Tuple_Array>.
 
-=head1 RELATION DATA TYPES
+# RELATION DATA TYPES
 
-=head2 Relation
+## Relation
 
         Relation : (\Function : (
             is_type_definer : True,
@@ -8447,7 +8443,7 @@ function C<select_Relational> for the composing type C<Tuple_Array>.
 
 I<TODO.  See also definition of Set in terms of Bag, which Relation mirrors.>
 
-=head2 Relation_D0C0
+## Relation_D0C0
 
         Relation_D0C0 : (\Function : (
             is_type_definer : True,
@@ -8458,7 +8454,7 @@ The singleton type definer C<Relation_D0C0> represents the only
 zero-attribute, zero-tuple C<Relation> value.  Note that I<The Third
 Manifesto> also refers to this value by the special name I<TABLE_DUM>.
 
-=head2 Relation_D0C1
+## Relation_D0C1
 
         Relation_D0C1 : (\Function : (
             is_type_definer : True,
@@ -8469,7 +8465,7 @@ The singleton type definer C<Relation_D0C1> represents the only
 zero-attribute, single-tuple C<Relation> value.  Note that I<The Third
 Manifesto> also refers to this value by the special name I<TABLE_DEE>.
 
-=head2 heading (Relation)
+## heading (Relation)
 
         heading::Relation : (\Function : (
             returns : \$Heading,
@@ -8483,7 +8479,7 @@ of its C<0> argument, that is its set of distinct attribute names.  This
 function implements the C<Attributive> virtual function C<heading> aka C<$>
 for the composing type C<Relation>.
 
-=head2 body (Relation)
+## body (Relation)
 
         body::Relation : (\Function : (
             returns : \$Set,
@@ -8497,7 +8493,7 @@ C<0> argument, that is its set of member tuples.  This function
 implements the C<Relational> virtual function C<body> aka C<|> for the
 composing type C<Relation>.
 
-=head2 select_Relational (Relation)
+## select_Relational (Relation)
 
         select_Relational::Relation : (\Function : (
             returns : {\$Relational, \$...},
@@ -8512,9 +8508,9 @@ argument and whose I<body> consists of just the member I<tuples> of its
 C<body> argument.  This function implements the C<Relational> virtual
 function C<select_Relational> for the composing type C<Relation>.
 
-=head1 TUPLE-BAG DATA TYPES
+# TUPLE-BAG DATA TYPES
 
-=head2 Tuple_Bag
+## Tuple_Bag
 
         Tuple_Bag : (\Function : (
             is_type_definer : True,
@@ -8534,7 +8530,7 @@ function C<select_Relational> for the composing type C<Relation>.
 
 I<TODO.>
 
-=head2 Tuple_Bag_D0C0
+## Tuple_Bag_D0C0
 
         Tuple_Bag_D0C0 : (\Function : (
             is_type_definer : True,
@@ -8544,7 +8540,7 @@ I<TODO.>
 The singleton type definer C<Tuple_Bag_D0C0> represents the only zero-attribute,
 zero-tuple C<Tuple_Bag> value.
 
-=head2 Tuple_Bag_D0C1
+## Tuple_Bag_D0C1
 
         Tuple_Bag_D0C1 : (\Function : (
             is_type_definer : True,
@@ -8554,7 +8550,7 @@ zero-tuple C<Tuple_Bag> value.
 The singleton type definer C<Tuple_Bag_D0C1> represents the only zero-attribute,
 single-tuple C<Tuple_Bag> value.
 
-=head2 heading (Tuple_Bag)
+## heading (Tuple_Bag)
 
         heading::Tuple_Bag : (\Function : (
             returns : \$Heading,
@@ -8568,7 +8564,7 @@ of its C<0> argument, that is its set of distinct attribute names.  This
 function implements the C<Attributive> virtual function C<heading> aka C<$>
 for the composing type C<Tuple_Bag>.
 
-=head2 body (Tuple_Bag)
+## body (Tuple_Bag)
 
         body::Tuple_Bag : (\Function : (
             returns : \$Bag,
@@ -8582,7 +8578,7 @@ C<0> argument, that is its multiset of member tuples.  This function
 implements the C<Relational> virtual function C<body> aka C<|> for the
 composing type C<Tuple_Bag>.
 
-=head2 select_Relational (Tuple_Bag)
+## select_Relational (Tuple_Bag)
 
         select_Relational::Tuple_Bag : (\Function : (
             returns : {\$Relational, \$...},
@@ -8597,9 +8593,9 @@ argument and whose I<body> consists of just the member I<tuples> of its
 C<body> argument.  This function implements the C<Relational> virtual
 function C<select_Relational> for the composing type C<Tuple_Bag>.
 
-=head1 INTERVALISH DATA TYPES
+# INTERVALISH DATA TYPES
 
-=head2 Intervalish
+## Intervalish
 
         Intervalish : (\Function : (
             is_type_definer : True,
@@ -8609,9 +8605,9 @@ function C<select_Relational> for the composing type C<Tuple_Bag>.
 
 I<TODO.>
 
-=head1 INTERVAL DATA TYPES
+# INTERVAL DATA TYPES
 
-=head2 Interval
+## Interval
 
         Interval : (\Function : (
             is_type_definer : True,
@@ -8625,7 +8621,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Interval_Attrs
+## Interval_Attrs
 
         Interval_Attrs : (\Function : (
             is_type_definer : True,
@@ -8634,9 +8630,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 UNIONABLE INTERVALISH DATA TYPES
+# UNIONABLE INTERVALISH DATA TYPES
 
-=head2 Unionable_Intervalish
+## Unionable_Intervalish
 
         Unionable_Intervalish : (\Function : (
             is_type_definer : True,
@@ -8646,9 +8642,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 INTERVAL-SET DATA TYPES
+# INTERVAL-SET DATA TYPES
 
-=head2 Interval_Set
+## Interval_Set
 
         Interval_Set : (\Function : (
             is_type_definer : True,
@@ -8664,9 +8660,9 @@ I<TODO.>
 
 I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.>
 
-=head1 INTERVAL-BAG DATA TYPES
+# INTERVAL-BAG DATA TYPES
 
-=head2 Interval_Bag
+## Interval_Bag
 
         Interval_Bag : (\Function : (
             is_type_definer : True,
@@ -8682,9 +8678,9 @@ I<TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.
 
 I<TODO.>
 
-=head1 QUANTITATIVE DATA TYPES
+# QUANTITATIVE DATA TYPES
 
-=head2 Quantitative
+## Quantitative
 
         Quantitative : (\Function : (
             is_type_definer : True,
@@ -8694,9 +8690,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 QUANTITY DATA TYPES
+# QUANTITY DATA TYPES
 
-=head2 Quantity
+## Quantity
 
         Quantity : (\Function : (
             is_type_definer : True,
@@ -8712,9 +8708,9 @@ I<TODO.>
 
 I<TODO.>
 
-=head1 ARTICLE DATA TYPES
+# ARTICLE DATA TYPES
 
-=head2 Article
+## Article
 
         Article : (\Function : (
             is_type_definer : True,
@@ -8745,9 +8741,9 @@ I<label>/I<attributes> pair, or for extracting the I<label> or
 I<attributes> of a C<Article>, are provided by dedicated language
 expression node types and concrete syntax (and Foundation functions).
 
-=head1 HANDLE DATA TYPES
+# HANDLE DATA TYPES
 
-=head2 Handle
+## Handle
 
         Handle : (\Function : (
             is_type_definer : True,
@@ -8777,7 +8773,7 @@ example that the current value of a C<Variable> is itself, however the
 intentional use of cycles is strongly discouraged.  Optional hints may be
 associated with C<Handle> by users to help the system manage such cycles.
 
-=head2 Variable
+## Variable
 
         Variable : (\Function : (
             is_type_definer : True,
@@ -8852,7 +8848,7 @@ represented by C<Variable> values.  The generic assignment procedure C<:=>
 takes a C<Variable> as its left-hand argument and updates the variable
 that this points to to hold the value of its right-hand argument.>>
 
-=head2 Process
+## Process
 
         Process : (\Function : (
             is_type_definer : True,
@@ -8885,7 +8881,7 @@ Any translation of a message into physical actions against a file system,
 or any translation of a message into some other query language such as SQL
 for a remote execution, is done by the I<database owner> Muldis D process.
 
-=head2 Stream
+## Stream
 
         Stream : (\Function : (
             is_type_definer : True,
@@ -8897,7 +8893,7 @@ Foundation type C<foundation::Stream>.  A C<Stream> value is an opaque and
 transient reference to a Muldis D I<stream>, which represents streaming
 data such as from/to user I/O or the filesystem or network services etc.
 
-=head2 External
+## External
 
         External::'' : (\Function : (
             is_type_definer : True,
@@ -8920,7 +8916,7 @@ D values.
 Other programming languages may name their corresponding types I<extern>
 (asmjs).
 
-=head2 External::call_function
+## External::call_function
 
         External::call_function : (\Function : (
             returns : \$Any,
@@ -8935,9 +8931,9 @@ deterministic, and there would likely be problems if it isn't.  Using
 C<External::call_function> as a foundation, it is possible to define an
 arbitrarily complex type graph involving C<External> values.
 
-=head1 EXCUSE DATA TYPES
+# EXCUSE DATA TYPES
 
-=head2 Excuse
+## Excuse
 
         Excuse : (\Function : (
             is_type_definer : True,
@@ -8994,7 +8990,7 @@ cancelling whole blocks of code is ok, while returning Excuses is for when
 we do expect to handle these things within the normal code flow and/or not
 automatically halt blocks of code.>
 
-=head2 No_Reason
+## No_Reason
 
         No_Reason : (\Function : (
             is_type_definer : True,
@@ -9012,7 +9008,7 @@ Other programming languages may name their corresponding values or
 quasi-values I<null> or I<nil> or I<none> or I<nothing> or I<undef> or
 I<unknown>; but unlike some of those languages, C<No_Reason> equals itself.
 
-=head2 Before_All_Others
+## Before_All_Others
 
         Before_All_Others : (\Function : (
             is_type_definer : True,
@@ -9028,7 +9024,7 @@ or physical concept of I<infinity> or I<∞> (of which there are many),
 including those of the IEEE floating-point standards; such things should be
 defined in other, not-C<System>, Muldis D packages for the relevant domains.
 
-=head2 After_All_Others
+## After_All_Others
 
         After_All_Others : (\Function : (
             is_type_definer : True,
@@ -9044,7 +9040,7 @@ or physical concept of I<infinity> or I<∞> (of which there are many),
 including those of the IEEE floating-point standards; such things should be
 defined in other, not-C<System>, Muldis D packages for the relevant domains.
 
-=head2 Div_By_Zero
+## Div_By_Zero
 
         Div_By_Zero : (\Function : (
             is_type_definer : True,
@@ -9057,7 +9053,7 @@ Note that IEEE floating-point standards define a negative or positive
 infinity result value when dividing by an explicitly signed (negative or
 positive) zero, but the Muldis D C<System> package lacks those concepts.
 
-=head2 Zero_To_The_Zero
+## Zero_To_The_Zero
 
         Zero_To_The_Zero : (\Function : (
             is_type_definer : True,
@@ -9067,7 +9063,7 @@ positive) zero, but the Muldis D C<System> package lacks those concepts.
 The singleton type definer C<Zero_To_The_Zero> represents the I<undefined> result
 of attempting to exponentiate a number zero to the power of a number zero.
 
-=head2 No_Empty_Value
+## No_Empty_Value
 
         No_Empty_Value : (\Function : (
             is_type_definer : True,
@@ -9078,7 +9074,7 @@ The singleton type definer C<No_Empty_Value> represents the I<undefined> result
 of attempting to request the value with zero members of some collection
 type that doesn't have a value with zero members.
 
-=head2 No_Such_Ord_Pos
+## No_Such_Ord_Pos
 
         No_Such_Ord_Pos : (\Function : (
             is_type_definer : True,
@@ -9089,7 +9085,7 @@ The singleton type definer C<No_Such_Ord_Pos> represents the I<undefined> result
 attempting to use a member ordinal position I<P> of C<Positional> value I<V> while
 assuming incorrectly that I<V> already has a member whose ordinal position is I<P>.
 
-=head2 No_Such_Attr_Name
+## No_Such_Attr_Name
 
         No_Such_Attr_Name : (\Function : (
             is_type_definer : True,
@@ -9101,7 +9097,7 @@ result of attempting to use an attribute named I<N> of C<Attributive> value
 I<V> while assuming incorrectly that I<V> already has an attribute whose
 name is I<N>.
 
-=head2 Not_Same_Heading
+## Not_Same_Heading
 
         Not_Same_Heading : (\Function : (
             is_type_definer : True,
@@ -9113,7 +9109,7 @@ of attempting to perform an operation that takes 2 C<Attributive> inputs
 and requires them to have the same relational I<heading> but the actual 2
 inputs have different headings.
 
-=head2 coalesce ??
+## coalesce ??
 
         coalesce : (\Function : (
             returns : \$Any,
@@ -9136,7 +9132,7 @@ for C<False> and C<True> respectively but it has the opposite associativity.
 Other programming languages may name their corresponding I<null coalescing>
 operators I<?:> or I<//> or I<NVL> or I<ISNULL>.
 
-=head2 anticoalesce !!
+## anticoalesce !!
 
         anticoalesce : (\Function : (
             returns : \$Any,
@@ -9157,11 +9153,11 @@ This function has analogous stop-or-continue behaviour to the Muldis D
 special syntax C<and_then> where any C<Excuse> or non-C<Excuse> stands in
 for C<False> and C<True> respectively but it has the opposite associativity.
 
-=head1 SOURCE CODE BEHAVIOURAL DATA TYPES
+# SOURCE CODE BEHAVIOURAL DATA TYPES
 
 I<TODO.>
 
-=head2 Package
+## Package
 
         Package : (\Function : (
             is_type_definer : True,
@@ -9181,7 +9177,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Package::Identity
+## Package::Identity
 
         Package::Identity : (\Function : (
             is_type_definer : True,
@@ -9192,7 +9188,7 @@ I<TODO.>
             ),
         )),
 
-=head2 Package::Foundation
+## Package::Foundation
 
         Package::Foundation : (\Function : (
             is_type_definer : True,
@@ -9202,7 +9198,7 @@ I<TODO.>
             ),
         )),
 
-=head2 Package::Base_Name
+## Package::Base_Name
 
         Package::Base_Name : (\Function : (
             is_type_definer : True,
@@ -9211,7 +9207,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Package::Canon_Authority
+## Package::Canon_Authority
 
         Package::Canon_Authority : (\Function : (
             is_type_definer : True,
@@ -9220,7 +9216,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Package::Canon_Version_Number
+## Package::Canon_Version_Number
 
         Package::Canon_Version_Number : (\Function : (
             is_type_definer : True,
@@ -9229,7 +9225,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Package::Uses_Map
+## Package::Uses_Map
 
         Package::Uses_Map : (\Function : (
             is_type_definer : True,
@@ -9240,7 +9236,7 @@ I<TODO.>
 I<TODO.  Each attribute name declares a single-element composing-package-local
 alias for the used package.>
 
-=head2 Package::Uses_Item
+## Package::Uses_Item
 
         Package::Uses_Item : (\Function : (
             is_type_definer : True,
@@ -9256,7 +9252,7 @@ eg multiple authorities or version numbers including in interval format and
 also indicate both positive or negative assertions of compatibility.
 Until then, this type just represents a single positive assertion.>
 
-=head2 Package::Entry_Point
+## Package::Entry_Point
 
         Package::Entry_Point : (\Function : (
             is_type_definer : True,
@@ -9265,7 +9261,7 @@ Until then, this type just represents a single positive assertion.>
 
 I<TODO.  This type is subject to be expanded to some collection or have alternatives.>
 
-=head2 Package::Floating
+## Package::Floating
 
         Package::Floating : (\Function : (
             is_type_definer : True,
@@ -9274,7 +9270,7 @@ I<TODO.  This type is subject to be expanded to some collection or have alternat
 
 I<TODO.>
 
-=head2 Package::Folder
+## Package::Folder
 
         Package::Folder : (\Function : (
             is_type_definer : True,
@@ -9284,7 +9280,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Material
+## Material
 
         Material : (\Function : (
             is_type_definer : True,
@@ -9292,7 +9288,7 @@ I<TODO.>
             default : ...,
         )),
 
-=head2 Alias
+## Alias
 
         Alias : (\Function : (
             is_type_definer : True,
@@ -9307,7 +9303,7 @@ I<TODO.>
 
 I<TODO.  Also possibly use something other than Identity_Identifier as payload.>
 
-=head2 Function
+## Function
 
         Function : (\Function : (
             is_type_definer : True,
@@ -9417,7 +9413,7 @@ Each Expression tree used as the value of an applicable trait of a Function has
 its own isolated lexical scope and its own `args` context where generally the
 `args` has the same value in every trait of a Function for a call to said.>
 
-=head2 Procedure
+## Procedure
 
         Procedure : (\Function : (
             is_type_definer : True,
@@ -9438,7 +9434,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
 I<TODO.>
 
-=head2 Signature
+## Signature
 
         Signature::'' : (\Function : (
             is_type_definer : True,
@@ -9455,7 +9451,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Signature::Conjunction
+## Signature::Conjunction
 
         Signature::Conjunction : (\Function : (
             is_type_definer : True,
@@ -9464,7 +9460,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Signature::Disjunction
+## Signature::Disjunction
 
         Signature::Disjunction : (\Function : (
             is_type_definer : True,
@@ -9473,7 +9469,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Signature::Tuple_Attrs_Match_Simple
+## Signature::Tuple_Attrs_Match_Simple
 
         Signature::Tuple_Attrs_Match_Simple : (\Function : (
             is_type_definer : True,
@@ -9482,7 +9478,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Signature::Tuple_Attrs_Match
+## Signature::Tuple_Attrs_Match
 
         Signature::Tuple_Attrs_Match : (\Function : (
             is_type_definer : True,
@@ -9510,7 +9506,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Signature::Article_Match
+## Signature::Article_Match
 
         Signature::Article_Match : (\Function : (
             is_type_definer : True,
@@ -9522,7 +9518,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Expression
+## Expression
 
         Expression : (\Function : (
             is_type_definer : True,
@@ -9552,7 +9548,7 @@ I<TODO.>
 I<TODO.  This represents a generic expression to be evaluated at a future date.
 Its lexical scope and `args` context is the innermost Function/Procedure (trait) containing it.>
 
-=head2 Literal
+## Literal
 
         Literal : (\Function : (
             is_type_definer : True,
@@ -9578,7 +9574,7 @@ own `args` that one wants to execute "later" rather than "now"; for example
 the `literal` the `args` would be interpreted as the `args` of the routine
 containing the `add_42` and not the `args` of the nested routine.>
 
-=head2 Args
+## Args
 
         Args : (\Function : (
             is_type_definer : True,
@@ -9590,7 +9586,7 @@ input arguments given to the current call of the Function/Procedure
 that this Args node is part of.
 Written in Plain_Text with the token `args`.>
 
-=head2 Evaluates
+## Evaluates
 
         Evaluates : (\Function : (
             is_type_definer : True,
@@ -9612,7 +9608,7 @@ where X denotes a Function_Call value.>
 I<Note: Visual Basic has the 'Nothing' keyword that represents the default
 value of the type of the variable it is assigned to.>
 
-=head2 Array_Selector
+## Array_Selector
 
         Array_Selector : (\Function : (
             is_type_definer : True,
@@ -9633,7 +9629,7 @@ of multiplied members; each member value and its given multiplicity comes
 from a child expression.  Written in Plain_Text like `["hello":3,-5:2]`.
 This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 
-=head2 Set_Selector
+## Set_Selector
 
         Set_Selector : (\Function : (
             is_type_definer : True,
@@ -9657,7 +9653,7 @@ Array_Selector and Bag_Selector in allowing one to specify a multiplicity
 to support greater code reuse, including explicitly specifying one vs zero.
 This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 
-=head2 Bag_Selector
+## Bag_Selector
 
         Bag_Selector : (\Function : (
             is_type_definer : True,
@@ -9678,7 +9674,7 @@ of multiplied members; each member value and its given multiplicity comes
 from a child expression.  Written in Plain_Text like `{"hello":3,-5:2}`.
 This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 
-=head2 Tuple_Selector
+## Tuple_Selector
 
         Tuple_Selector : (\Function : (
             is_type_definer : True,
@@ -9696,7 +9692,7 @@ of attributes; each attribute name is specified directly, each attribute asset c
 from a child expression.  Written in Plain_Text like `(name:"Jo",age:7)`.
 This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 
-=head2 Article_Selector
+## Article_Selector
 
         Article_Selector : (\Function : (
             is_type_definer : True,
@@ -9716,7 +9712,7 @@ label plus a list of attributes, each of which comes from a child
 expression.  Written in Plain_Text like `(\Person:(name:"Jo",age:7))`.
 This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 
-=head2 If_Then_Else_Expr
+## If_Then_Else_Expr
 
         If_Then_Else_Expr : (\Function : (
             is_type_definer : True,
@@ -9735,7 +9731,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.>
 I<TODO.  This represents an if-then-else expression,
 written in Plain_Text with special syntax example `if P then X else Y`.>
 
-=head2 And_Then
+## And_Then
 
         And_Then : (\Function : (
             is_type_definer : True,
@@ -9755,7 +9751,7 @@ written in Plain_Text with special syntax example `P and_then X`.>
 
 I<Note: Visual Basic has "AndAlso" operator that does the same thing.>
 
-=head2 Or_Else
+## Or_Else
 
         Or_Else : (\Function : (
             is_type_definer : True,
@@ -9775,7 +9771,7 @@ written in Plain_Text with special syntax example `P or_else X`.>
 
 I<Note: Visual Basic has "OrElse" operator that does the same thing.>
 
-=head2 Given_When_Default_Expr
+## Given_When_Default_Expr
 
         Given_When_Default_Expr : (\Function : (
             is_type_definer : True,
@@ -9798,7 +9794,7 @@ I<TODO.  This represents a given-when-default expression,
 written in Plain_Text with special syntax example
 `given X when A then B when C then D default Y`.>
 
-=head2 Guard
+## Guard
 
         Guard : (\Function : (
             is_type_definer : True,
@@ -9814,7 +9810,7 @@ written in Plain_Text with special syntax example
 I<TODO.  This represents a guard expression,
 written in Plain_Text with special syntax example `guard X`.>
 
-=head2 Factorization
+## Factorization
 
         Factorization : (\Function : (
             is_type_definer : True,
@@ -9841,7 +9837,7 @@ assignment statement or be confused for such; in the meantime, procedure
 factors may only be declared in sub-expressions of statements though they
 can be re-used in other statements.>
 
-=head2 Expansion
+## Expansion
 
         Expansion : (\Function : (
             is_type_definer : True,
@@ -9860,7 +9856,7 @@ as an unqualified alphanumeric or quoted identifier example `foo`.
 Note that it is an error for a factor to contain any Expansion referring
 to itself, either directly or indirectly (except via a routine call).>
 
-=head2 Vars
+## Vars
 
         Vars : (\Function : (
             is_type_definer : True,
@@ -9875,7 +9871,7 @@ token `vars`.  On entry to a procedure call a new Variable is created for
 Variable is usually destroyed when that procedure exits, unless some other
 Variable has been made to reference it directly or indirectly meanwhile.>
 
-=head2 New
+## New
 
         New : (\Function : (
             is_type_definer : True,
@@ -9892,7 +9888,7 @@ I<TODO.  This represents a procedure expression that evaluates to a newly
 created "Variable" whose initial current value is given by evaluating its
 sub-expression.  Written in Plain_Text with syntax example `new foo`.>
 
-=head2 Current
+## Current
 
         Current : (\Function : (
             is_type_definer : True,
@@ -9911,7 +9907,7 @@ Written in Plain_Text with syntax example `current bar` or `bar:&`.
 Note that C<Current> is designed to mirror C<New>, so the identity
 C<x = (new x):& = current new x> should hold for any value of C<x>. >>
 
-=head2 Statement
+## Statement
 
         Statement : (\Function : (
             is_type_definer : True,
@@ -9930,7 +9926,7 @@ C<x = (new x):& = current new x> should hold for any value of C<x>. >>
 I<TODO.  This represents a generic statement to be performed at a future date.
 Its lexical scope and `args` context is the innermost Procedure (trait) containing it.>
 
-=head2 Declare
+## Declare
 
         Declare : (\Function : (
             is_type_definer : True,
@@ -9956,7 +9952,7 @@ best just exist as a Plain_Text feature and be rendered in its longhand
 at this core data types level; on the other hand we have types for And_Then
 plus Or_Else and justified keeping them; its a similar situation.>
 
-=head2 Performs
+## Performs
 
         Performs : (\Function : (
             is_type_definer : True,
@@ -9975,7 +9971,7 @@ also defines the arguments to pass to said procedure while invoking it,
 written in Plain_Text with special syntax example `performs X`
 where X denotes a Procedure_Call value.>
 
-=head2 If_Then_Else_Stmt
+## If_Then_Else_Stmt
 
         If_Then_Else_Stmt : (\Function : (
             is_type_definer : True,
@@ -9996,7 +9992,7 @@ written in Plain_Text with special syntax example `if P then X else Y`.
 Note that a plain if-then statement is shorthand for this, in which case
 the 'else' is an empty compound statement.>
 
-=head2 Given_When_Default_Stmt
+## Given_When_Default_Stmt
 
         Given_When_Default_Stmt : (\Function : (
             is_type_definer : True,
@@ -10019,7 +10015,7 @@ I<TODO.  This represents a given-when-default statement,
 written in Plain_Text with special syntax example
 `given X when A then B when C then D default Y`.>
 
-=head2 Block
+## Block
 
         Block : (\Function : (
             is_type_definer : True,
@@ -10038,7 +10034,7 @@ consists of an ordered list of 0..N statements, which optionally may be
 iterated, written in Plain_Text with special syntax example
 `[declare x: 42; print(x:&);]` or `do_work block [foo(); bar();]`.>
 
-=head2 Leave
+## Leave
 
         Leave : (\Function : (
             is_type_definer : True,
@@ -10058,7 +10054,7 @@ the ancestor Block with that label is the one abnormally exited, and
 otherwise the most immediate parent Block is the one; written in Plain_Text
 with special syntax examples `leave` or `leave do_work`.>
 
-=head2 Iterate
+## Iterate
 
         Iterate : (\Function : (
             is_type_definer : True,
@@ -10078,7 +10074,7 @@ Block with that label is the one iterated, and otherwise the most immediate
 parent Block is the one; written in Plain_Text
 with special syntax examples `iterate` or `iterate do_work`.>
 
-=head2 Heading
+## Heading
 
         Heading : (\Function : (
             is_type_definer : True,
@@ -10091,7 +10087,7 @@ I<TODO.  For the likes of all_attrs etc consider making args:.\0 a unary tuple
 instead whereupon keywords analagous to name/asset are used, if we had such
 a thing for opening tuples as for creating them.>
 
-=head2 Attr_Name
+## Attr_Name
 
         Attr_Name : (\Function : (
             is_type_definer : True,
@@ -10100,7 +10096,7 @@ a thing for opening tuples as for creating them.>
 
 I<TODO.>
 
-=head2 Nesting
+## Nesting
 
         Nesting : (\Function : (
             is_type_definer : True,
@@ -10109,7 +10105,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Local_Name
+## Local_Name
 
         Local_Name : (\Function : (
             is_type_definer : True,
@@ -10128,7 +10124,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Absolute_Name
+## Absolute_Name
 
         Absolute_Name : (\Function : (
             is_type_definer : True,
@@ -10138,7 +10134,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Routine_Call
+## Routine_Call
 
         Routine_Call : (\Function : (
             is_type_definer : True,
@@ -10169,7 +10165,7 @@ about those / assume they are not needed here, until such time we actually
 are trying to make the code execute.  Users shouldn't have to be writing
 such manually anyhow, the runtime environment should fill them in as needed.>
 
-=head2 Function_Call
+## Function_Call
 
         Function_Call : (\Function : (
             is_type_definer : True,
@@ -10185,7 +10181,7 @@ and names or defines the function to invoke and
 also defines the arguments to pass to said function while invoking it,
 written in Plain_Text with special syntax example `\foo::()` or `\(...)`.>
 
-=head2 Function_Call_But_0
+## Function_Call_But_0
 
         Function_Call_But_0 : (\Function : (
             is_type_definer : True,
@@ -10195,7 +10191,7 @@ written in Plain_Text with special syntax example `\foo::()` or `\(...)`.>
 
 I<TODO.>
 
-=head2 Function_Call_But_0_1
+## Function_Call_But_0_1
 
         Function_Call_But_0_1 : (\Function : (
             is_type_definer : True,
@@ -10205,7 +10201,7 @@ I<TODO.>
 
 I<TODO.>
 
-=head2 Procedure_Call
+## Procedure_Call
 
         Procedure_Call : (\Function : (
             is_type_definer : True,
@@ -10221,7 +10217,7 @@ and names or defines the procedure to invoke and
 also defines the arguments to pass to said procedure while invoking it,
 written in Plain_Text with special syntax example `\foo::()` or `\[...]`.>
 
-=head2 Key_Asset_Pair
+## Key_Asset_Pair
 
         Key_Asset_Pair : (\Function : (
             is_type_definer : True,
@@ -10231,7 +10227,7 @@ written in Plain_Text with special syntax example `\foo::()` or `\[...]`.>
 
 I<TODO.  Note, this type currently isn't used anywhere.>
 
-=head2 with_args
+## with_args
 
         with_args : (\Function : (
             returns : \$Routine_Call,
@@ -10248,7 +10244,7 @@ I<TODO.  This adds to the list of arguments for routine call.  It is
 functionally equivalent to "priming" or "partial function application".
 A Raku corresponding operator has the name "assuming".>
 
-=head2 priming
+## priming
 
         priming : (\Function : (
             commutes : \$assuming,
@@ -10258,7 +10254,7 @@ A Raku corresponding operator has the name "assuming".>
 
 I<TODO.  This also adds to the list of arguments for a routine call.>
 
-=head2 Signature_to_Function_Call_But_0
+## Signature_to_Function_Call_But_0
 
         Signature_to_Function_Call_But_0 : (\Function : (
             returns : \$Function_Call_But_0,
@@ -10341,11 +10337,11 @@ Signature_to_Function_Call_But_0 in order to answer that question, at least
 until something is changed that the compiler folds the type definitions to
 no longer use Signature_to_Function_Call_But_0.>
 
-=head1 SOURCE CODE ANNOTATION DATA TYPES
+# SOURCE CODE ANNOTATION DATA TYPES
 
 I<TODO.>
 
-=head2 Annotation
+## Annotation
 
         Annotation::'' : (\Function : (
             is_type_definer : True,
@@ -10359,7 +10355,7 @@ for higher level DBMS mappers such as Entity Framework or DBIx::Class to
 track their own metadata within a database, such as an easy way to tell if
 the database schema version matches what the application expects.>
 
-=head1 SOURCE CODE DECORATION DATA TYPES
+# SOURCE CODE DECORATION DATA TYPES
 
 I<TODO.  Generally speaking, all Decoraction types are declared by a
 package that is not System, such as in some System::Plain_Text/etc package.>
@@ -10375,7 +10371,7 @@ between Annotation and Decoration depending on whether it affects behaviour
 in any way / would cause a problem if missing, or if it is purely cosmetic
 and would not cause a problem if missing.>
 
-=head2 Decoration
+## Decoration
 
         Decoration::'' : (\Function : (
             is_type_definer : True,
@@ -10384,11 +10380,11 @@ and would not cause a problem if missing.>
 
 I<TODO.>
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the B<Muldis D Standard
 Library> (B<MDSL>) primary component of the B<Muldis D> language
@@ -10397,5 +10393,3 @@ specification.  MDSL substantially comprises executable code as well.
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of L<Muldis::D::Standard_Library> for details.
-
-=cut

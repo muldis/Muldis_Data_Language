@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D - Formal spec of Muldis D relational DBMS lang
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D version 0.300.0.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document aggregate is the human readable authoritative
 formal specification of the B<Muldis D> language, and of the virtual
@@ -128,7 +124,7 @@ other packages that satisfy its direct requirements, whether system-defined
 make the code
 unambiguous to both human and machine (eg, implementing) readers of the code.
 
-=head1 VERSIONING
+# VERSIONING
 
 Every Muldis D I<package> (compilation unit) is expected to declare a
 fully-qualified name, or I<identity>, so that it can easily be referred to
@@ -308,11 +304,11 @@ markers of such can either be omitted or be based on other standards.
 
 I<This is all subject to change.>
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the B<Muldis D> language.
 
@@ -337,7 +333,7 @@ would appreciate being informed any time you create a modified version of
 Muldis D that you are willing to distribute, because that is a
 practical way of suggesting improvements to the standard version.
 
-=head1 TRADEMARK POLICY
+# TRADEMARK POLICY
 
 B<MULDIS> and B<MULDIS MULTIVERSE OF DISCOURSE> are trademarks of Muldis
 Data Systems, Inc. (L<https://muldis.com>).
@@ -345,8 +341,6 @@ The trademarks apply to computer database software and related services.
 See L<https://muldis.com/trademark_policy.html> for the full written details
 of Muldis Data Systems' trademark policy.
 
-=head1 ACKNOWLEDGEMENTS
+# ACKNOWLEDGEMENTS
 
 None yet.
-
-=cut
