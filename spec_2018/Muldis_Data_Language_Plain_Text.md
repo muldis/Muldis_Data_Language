@@ -648,8 +648,8 @@ ancestor `<expr>` is having at least one of its descendents declared
 with an explicit name/alias rather than being anonymous inline, and then
 the `<expr_name>` is the invocation name of that child.
 
-Iff an `<expr>` is a `<naming_expr>`, then the `<named_expr>
->> element of the `< <naming_expr`` is being declared with an explicit
+Iff an `<expr>` is a `<naming_expr>`, then the `<named_expr>`
+element of the `<naming_expr>` is being declared with an explicit
 name/alias, and the `<expr_name>` element of the `<naming_expr>`
 is that name/alias.  Any `<expr>` not thusly named/aliased is
 anonymous; there is no name to refer to it by in the system and it only can

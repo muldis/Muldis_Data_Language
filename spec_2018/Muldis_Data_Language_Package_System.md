@@ -113,8 +113,8 @@ consists of exactly zero values.  It can not have any default value.
 
 The function `same` aka `=` results in `True` iff its 2 arguments `0`
 and `1` are exactly the same value, and `False` otherwise.  Other
-programming languages may name their corresponding operators *==* or
-*===* or *eq*.
+programming languages may name their corresponding operators `==` or
+`===` or *eq*.
 
 Note that `same` is guaranteed to result in `False` when exactly one of
 its 2 arguments is an `External` value but beyond that its behaviour when
@@ -140,8 +140,8 @@ and not if two distinct containers have the same content.
 The function `not_same` aka `!=` aka `≠` results in `False` iff its 2
 arguments `0` and `1` are exactly the same value, and `True` otherwise.
 Other programming languages may name their corresponding operators
-*< <* >> or *!===* or or *~=* or *^=* or *ne* or */=* or *=/=*
-or *=\=*.
+`<>` or `!===` or or `~=` or `^=` or `ne` or `/=` or `=/=`
+or `=\=`.
 
 ## is_a
 
@@ -231,7 +231,7 @@ Other programming languages may instead typically use a three-way
 comparison operator for this role, where its possible result values are
 *before*, *same*, and *after*, and those 3 are typically represented by
 either the integers {-1,0,1} or a special 3-valued enumeration type.  Said
-operators may be named *< <=* >> or *cmp* or *compare* or *CompareTo*
+operators may be named `<=>` or *cmp* or *compare* or *CompareTo*
 or *memcmp* or *strcmp*.  But Muldis D uses a `Boolean` result instead
 partly to keep its core type system simpler (it would have gone the
 enumeration route) and partly because the logic for doing sorting or
@@ -739,7 +739,7 @@ composing type `Boolean`.
 The function `not` aka `!` aka `¬` performs a logical *negation* or
 *logical complement*; it results in `True` iff its `0` argument is
 `False` and vice-versa.  Other programming languages may name their
-corresponding operators *~* or *^* or *N*.
+corresponding operators `~` or `^` or *N*.
 
 ## and ∧
 
@@ -758,7 +758,7 @@ corresponding operators *~* or *^* or *N*.
 The function `and` aka `∧` performs a logical *conjunction*; it results
 in `True` iff its 2 arguments `0` and `1` are both `True`, and `False`
 otherwise.  Other programming languages may name their corresponding
-operators *&* or *&&* or *K*.
+operators `&` or `&&` or *K*.
 
 ## nand not_and ⊼ ↑
 
@@ -793,7 +793,7 @@ The function `nand` aka `not_and` aka `⊼` aka `↑` performs a logical
 The function `or` aka `∨` performs a logical *disjunction*; it results
 in `True` iff at least one of its 2 arguments `0` and `1` is `True`,
 and `False` otherwise.  Other programming languages may name their
-corresponding operators *|* or *||* or *A*.
+corresponding operators `|` or `||` or *A*.
 
 ## nor not_or ⊽ ↓
 
@@ -852,7 +852,7 @@ disjunction* or *odd parity*; it results in `False` iff its 2 arguments
 function is effectively a `Boolean`-specific alias of the function
 `not_same` aka `!=` aka `≠`; it behaves identically to `not_same`
 when given the same arguments.  Other programming languages may name their
-corresponding operators *^*.
+corresponding operators `^`.
 
 ## imp implies →
 
@@ -1194,7 +1194,7 @@ argument is an even multiple of its `1` argument (that is, the former is
 evenly divisible by the latter), and `False` otherwise.  The result is
 only *defined* when the `1` argument is a nonzero number; it is
 `\!Div_By_Zero` otherwise.  Other programming languages may name their
-corresponding operators *%%*.
+corresponding operators `%%`.
 
 ## nearest_multiple_of round
 
@@ -1283,8 +1283,8 @@ numeric *remainder* from performing same *division* operation as
 result is `Integral` for `Integral` arguments and is `Fractional` for
 `Fractional` arguments.  The result is only *defined* when the `1`
 argument is a nonzero number; it is `\!Div_By_Zero` otherwise.  Other
-programming languages may name their corresponding operators *%* or *//*
-or *\\* or *div* or *rem* or *remainder* or various other things.
+programming languages may name their corresponding operators `%` or `//`
+or `\\` or *div* or *rem* or *remainder* or various other things.
 
 ## divided_by_and_modulo
 
@@ -1315,7 +1315,7 @@ arguments `0` (*base*) and `1` (*exponent* or *power*).  The result is
 always `Fractional` for both an `Integral` and a `Fractional` `0`
 argument.  The result is only *defined* when at least one of the arguments
 `0` and `1` is a nonzero number; it is `\!Zero_To_The_Zero` otherwise.  Other
-programming languages may name their corresponding operators *exp* or *^*.
+programming languages may name their corresponding operators *exp* or `^`.
 
 ## integral_nn_power power
 
@@ -2383,7 +2383,7 @@ members of its `0` argument is a superstring of the sequence of members of
 its `1` argument; otherwise it results in `False`.  Other programming
 languages may name their corresponding operators *contains* or
 *include?*; some of them instead provide more generalized pattern
-searching operators such as *like* or *~~* or *=~*; some of them also
+searching operators such as *like* or `~~` or `=~`; some of them also
 provide operators that result in an ordinal position or nonmatch indicator
 rather than a boolean.
 
@@ -2464,7 +2464,7 @@ The virtual function `catenate` aka `~` results in the catenation of its
 `0` and ends with the members of `1`, the members from both in the same
 order as in their respective arguments.  This operation has a *two-sided identity element*
 value of a collection with zero members.  Other programming languages may
-name their corresponding operators *concat* or *||* or *+* or *.* or
+name their corresponding operators *concat* or `||` or `+` or *.* or
 *strcat* or *join*; some of them also have string interpolation syntax
 which logically does the same thing without an explicit operator.
 
@@ -4156,7 +4156,7 @@ is, this function then behaves identically to `catenate` aka `~` when
 given the same arguments.  This operation has a *two-sided identity element* value of a
 collection with zero members.  For non-ordered types, this operation is
 also commutative.  Other programming languages may name their corresponding
-operators *union all* or *+*.
+operators *union all* or `+`.
 
 ## except ∖
 
@@ -4185,8 +4185,8 @@ should hold for any `Unionable` type, even a `Positional` one, except
 with `Setty` `x` and `y` that have any members that are the same value.
 This operation has a *right identity element* value of a collection with zero members.
 Other programming languages may name their corresponding operators *minus*
-or *-* or *difference* or *\\* or *complement* or *setdiff* or *diff*
-or *--* etc or *subtract*.
+or `-` or *difference* or `\\` or *complement* or *setdiff* or *diff*
+or `--` etc or *subtract*.
 
 ## intersect ∩
 
@@ -4214,7 +4214,7 @@ with an infinite number of members.  (For `Setty` collections whose member type 
 finite, the *two-sided identity element* of `intersect` instead simply has 1 member
 for every member of that member type.)  For non-ordered types, this operation
 is also commutative.  Other programming languages may name their
-corresponding operators *&* or ***.
+corresponding operators `&` or `*`.
 
 ## union ∪
 
@@ -4242,7 +4242,7 @@ identity `union::(x,y) = member_plus::(x,except::(y,x))` should hold for
 any `Unionable` type, even a `Positional` one.  This operation has a
 *two-sided identity element* value of a collection with zero members.  For non-ordered types,
 this operation is also associative and commutative.  Other programming
-languages may name their corresponding operators *|* or *+*.
+languages may name their corresponding operators `|` or `+`.
 
 ## exclusive symm_diff ∆
 
@@ -4275,7 +4275,7 @@ should hold for any `Unionable` type, even a `Positional` one.  This
 operation has a *two-sided identity element* value of a collection with zero members.  For
 non-ordered types, this operation is also associative and commutative.
 Other programming languages may name their corresponding operators
-*symmdiff* or *^* or *%*.
+*symmdiff* or `^` or `%`.
 
 ## nest group
 
@@ -8802,7 +8802,7 @@ type of the underlying variable's current value.  However, a `Variable`
 can be wrapped by another value on the basis of whose other components
 there can be subtyping or constraints.
 
-*TODO: Consider whether it is logically necessary for functions to be able
+TODO: Consider whether it is logically necessary for functions to be able
 to read the variable behind a Variable, with a special expression node,
 albeit with the guarantee that the variable is immutable / repeatable-read
 during the life of the function call.  But if so, then that causes problems
@@ -8832,9 +8832,9 @@ FOR EXAMPLE, JUST CREATE A FOUNDATION 'SNAPSHOT' PROCEDURE WHICH WILL
 RECURSIVELY FOLLOW A STRUCTURE AND REPLACE ALL HANDLES WITH THE CURRENT VALUES OF
 THEIR VARIABLES AT THAT TIME (THIS OP SHOULD BE CHEAP).  Regular "current"/":&" deref
 keyword would work for the typical single level fine, give value of a
-variable to a function say.  Likewise, a proc to fetch a set of randoms.*
+variable to a function say.  Likewise, a proc to fetch a set of randoms.
 
-*<TODO, other notes.  A `Variable* value also carries meta-data such as
+TODO, other notes.  A `Variable` value also carries meta-data such as
 whether it is a strong or a weak reference.  The actual current value of
 the referenced variable is itself readonly, but if it or any of its
 elements is a Variable, then via that indirection one can have an
@@ -8844,9 +8844,9 @@ can be emulated or interfaced without too much indirection.
 A *variable* itself also has meta-data such as its declared type (a
 type definer) or registered stimulus-response rules etc.  Typically,
 externally-interfacing resources such as file or network streams are
-represented by C<Variable` values.  The generic assignment procedure `:=`
+represented by `Variable` values.  The generic assignment procedure `:=`
 takes a `Variable` as its left-hand argument and updates the variable
-that this points to to hold the value of its right-hand argument.>>
+that this points to to hold the value of its right-hand argument.
 
 ## Process
 
@@ -9020,7 +9020,7 @@ The singleton type definer `Before_All_Others` represents a type-agnostic
 analogy of negative infinity, an `Orderable` value that sorts *before*
 all other values in the Muldis D type system, and that is its only meaning.
 This value is expressly *not* meant to represent any specific mathematical
-or physical concept of *infinity* or *∞* (of which there are many),
+or physical concept of *infinity* or `∞` (of which there are many),
 including those of the IEEE floating-point standards; such things should be
 defined in other, not-`System`, Muldis D packages for the relevant domains.
 
@@ -9036,7 +9036,7 @@ The singleton type definer `After_All_Others` represents a type-agnostic
 analogy of positive infinity, an `Orderable` value that sorts *after*
 all other values in the Muldis D type system, and that is its only meaning.
 This value is expressly *not* meant to represent any specific mathematical
-or physical concept of *infinity* or *∞* (of which there are many),
+or physical concept of *infinity* or `∞` (of which there are many),
 including those of the IEEE floating-point standards; such things should be
 defined in other, not-`System`, Muldis D packages for the relevant domains.
 
@@ -9130,7 +9130,7 @@ This function has analogous stop-or-continue behaviour to the Muldis D
 special syntax `or_else` where any `Excuse` or non-`Excuse` stands in
 for `False` and `True` respectively but it has the opposite associativity.
 Other programming languages may name their corresponding *null coalescing*
-operators *?:* or *//* or *NVL* or *ISNULL*.
+operators `?:` or `//` or *NVL* or *ISNULL*.
 
 ## anticoalesce !!
 
@@ -9824,12 +9824,12 @@ written in Plain_Text with special syntax example `guard X`.*
             default : (\$material : (factors : (), returns : (\$Literal : (False,)))),
         )),
 
-*TODO.  This represents a compound expression, which consists of a single
+TODO.  This represents a compound expression, which consists of a single
 "returns" component plus a list of 0..N lexically labelled expression factors,
 written in Plain_Text with special syntax example `(x ::= y+3; returns 2*x)`.
 When one (less commonly) wants to simply name an expression factor not
 conceptually part of a compound expression, the alternate Plain Text syntax
-example `foo ::= 42` is shorthand for `(foo ::= 42; returns foo)`.*
+example `foo ::= 42` is shorthand for `(foo ::= 42; returns foo)`.
 
 *TODO.  Consider provision for declaring standalone factors where
 procedure statements are allowed, which would normally look a lot like an
@@ -9901,11 +9901,11 @@ sub-expression.  Written in Plain_Text with syntax example `new foo`.*
             default : (\$material : ((\$New : ((\$Literal : (False,)),)),)),
         )),
 
-*< TODO.  This represents a procedure expression that evaluates to the
+TODO.  This represents a procedure expression that evaluates to the
 "current value" of the "Variable" that its sub-expression evaluates to.
 Written in Plain_Text with syntax example `current bar` or `bar:&`.
-Note that `Current* is designed to mirror C<New`, so the identity
-`x = (new x):& = current new x` should hold for any value of `x`. >>
+Note that `Current` is designed to mirror `New`, so the identity
+`x = (new x):& = current new x` should hold for any value of `x`.
 
 ## Statement
 
@@ -9939,18 +9939,18 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
             default : (\$material : (vars : (),)),
         )),
 
-*TODO.  This represents a procedure body statement that declares 0..N
+TODO.  This represents a procedure body statement that declares 0..N
 lexically labelled expression factors, each of which is intended to be a
 convenient shorthand for referring to a procedure body lexical variable.
-To be specific, using Plain_Text syntax examples, the statement
+To be specific, using Plain\_Text syntax examples, the statement
 `declare (foo:42, bar:"Hello", baz:{})` is strictly a shorthand for
 `vars := vars:& %+ (foo ::= vars:&.\foo; bar ::= vars:&.\bar; baz ::= vars:&.\baz;
 returns (foo : new 42, bar : new "Hello", baz : new {}))`.
 Or, the parens may be omitted for singles, for example `declare foo:42`.
 Note that in theory the fact this is a shorthand means that `declare` might
-best just exist as a Plain_Text feature and be rendered in its longhand
-at this core data types level; on the other hand we have types for And_Then
-plus Or_Else and justified keeping them; its a similar situation.*
+best just exist as a Plain\_Text feature and be rendered in its longhand
+at this core data types level; on the other hand we have types for And\_Then
+plus Or\_Else and justified keeping them; its a similar situation.
 
 ## Performs
 
