@@ -177,7 +177,3 @@ of Muldis Data Systems' trademark policy.
 # ACKNOWLEDGEMENTS
 
 *None yet.*
-
-# FORUMS
-
-*TODO.*
