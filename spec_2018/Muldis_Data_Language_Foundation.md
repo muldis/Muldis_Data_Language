@@ -1,37 +1,37 @@
 # NAME
 
-Muldis D Foundation (MDF) - Muldis D fundamental architecture, behaviour, and type system
+Muldis Data Language Foundation (MDF) - Muldis Data Language fundamental architecture, behaviour, and type system
 
 # VERSION
 
-This document is Muldis D Foundation (MDF) version 0.300.0.
+This document is Muldis Data Language Foundation (MDF) version 0.300.0.
 
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis D Foundation** (**MDF**) primary component of the **Muldis D**
+the **Muldis Data Language Foundation** (**MDF**) primary component of the **Muldis Data Language**
 language.  The fully-qualified name of this document and the specification
-it contains is `Muldis_D_Foundation https://muldis.com 0.300.0`.
+it contains is `Muldis_Data_Language_Foundation https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis D** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** language meta-specification.
 
-The **Muldis D Foundation** specification defines the fundamental
-architecture, behaviour, and type system of Muldis D.  For all intents and
-purposes, it is the entire official Muldis D language specification except
+The **Muldis Data Language Foundation** specification defines the fundamental
+architecture, behaviour, and type system of Muldis Data Language.  For all intents and
+purposes, it is the entire official Muldis Data Language language specification except
 for any candidate syntaxes and any candidate standard libraries.  So it is
 generally useful to read this specification first and consider any others
 subservient to it.  While many alternative syntaxes and standard libraries
-are likely and expected to exist in a combination called **Muldis D**,
-substituting out **Muldis D Foundation** for something with a large degree
+are likely and expected to exist in a combination called **Muldis Data Language**,
+substituting out **Muldis Data Language Foundation** for something with a large degree
 of changes would likely yield a combination that is best to name something
-other than **Muldis D**.  **Muldis D Foundation** defines the *native* form
-of Muldis D source code, which is homoiconic data structures composed
+other than **Muldis Data Language**.  **Muldis Data Language Foundation** defines the *native* form
+of Muldis Data Language source code, which is homoiconic data structures composed
 largely in terms of function calls, and is expressly agnostic to any
 concrete language syntax.  It defines the user-facing behaviour/API of the
 small number of foundational / low-level system-defined types and
 operators and other features which are canonically written in one or more
-third-party languages which are *hosting* Muldis D; formally their
-implementation or internals are expected to be hidden from the Muldis D
+third-party languages which are *hosting* Muldis Data Language; formally their
+implementation or internals are expected to be hidden from the Muldis Data Language
 user, and differ in arbitrarily large ways between hosts, so to take
 advantage of the strengths of each host.
 
@@ -39,7 +39,7 @@ advantage of the strengths of each host.
 
 # OVERVIEW
 
-Muldis D is an industrial-strength computationally complete high-level
+Muldis Data Language is an industrial-strength computationally complete high-level
 application programming language with fully integrated database
 functionality; you can use it to define, query, and update ("object")
 relational databases, as well as write general purpose applications.  The
@@ -48,7 +48,7 @@ imperative, and object-oriented.  It is primarily focused on providing
 reliability, consistency, portability, and ease of use and extension.  The
 language should also lend itself to making fast implementations.
 
-Muldis D provides an effective means to reduce or avoid entirely the
+Muldis Data Language provides an effective means to reduce or avoid entirely the
 problem of "object-relational impedance mismatch".  The main way that it
 deals with that problem is that it natively supports user-defined types at
 the database level, which can be arbitrarily complex such as to support
@@ -58,35 +58,35 @@ applications, with no non-trivial mapping required. This is in contrast
 with typical database ORM tools which only remap application objects into
 simpler built-in database types like plain numbers and strings.
 
-The syntax and feature set of Muldis D is like that of a general purpose
+The syntax and feature set of Muldis Data Language is like that of a general purpose
 programming language, and so shouldn't be too difficult to learn.  Multiple
 other languages influence its design in various ways, not just SQL but also
 a variety of general purpose application languages, such as Raku.
 
 In contrast to a typical SQL DBMS which uses multiple programming languages
 together, where SQL is used for queries and something else (possibly
-SQL-alike) for defining stored procedures, a Muldis D DBMS would use the
-same Muldis D language to assume both roles.
+SQL-alike) for defining stored procedures, a Muldis Data Language DBMS would use the
+same Muldis Data Language language to assume both roles.
 
-Muldis D is rigorously defined and requires users to be explicit, which
+Muldis Data Language is rigorously defined and requires users to be explicit, which
 leaves little room for ambiguity and related bugs.  When something is
-specified in Muldis D, its semantics should be well known and fully
+specified in Muldis Data Language, its semantics should be well known and fully
 portable (not implementation dependent).  If a conforming implementation
 (such as **Muldis Data Engine Reference**) can't provide a specified
 behaviour, code using it will refuse to run at all, rather than silently
 changing its semantics; this also helps users to avoid bugs.  Moreover,
-Muldis D generally disallows any details of an implementation's "physical
+Muldis Data Language generally disallows any details of an implementation's "physical
 representation" or other internals to leak through into the language; eg,
 there is no "varchar" vs "char", simply "text".  Users should not have to
 know about this level of detail, and implementers should be free to
 adaptively pick optimum ways to satisfy user requests, and change later.
 
-Muldis D, being first and foremost a data processing language, provides a
+Muldis Data Language, being first and foremost a data processing language, provides a
 thorough means to both introspect and define all entities using just data
 processing operators.  In general purpose languages an analogous concept is
 *reflection* and in SQL it is the *system catalog*.
 
-The design and various features of Muldis D go a long way to help both its
+The design and various features of Muldis Data Language go a long way to help both its
 users and implementers alike.  A lot of flexibility is afforded to
 implementers of the language to be adaptive to changing constraints of
 their environment and deliver efficient solutions.  This also makes things
@@ -96,48 +96,48 @@ users can focus on defining what needs to be accomplished rather than how
 to accomplish that, which relieves burdens on their creativity, and saves
 them time.
 
-Muldis D is designed such that, to nearly the maximum degree possible, the
+Muldis Data Language is designed such that, to nearly the maximum degree possible, the
 built-in language syntax is expressed just in terms of generic-syntax
 routine invocations, meaning that wherever possible the language features
 are defined in terms of being just routines.  This allows the fundamental
-Muldis D grammar to be as simple as possible and it empowers users to
+Muldis Data Language grammar to be as simple as possible and it empowers users to
 define additional features that can mimic nearly any built-in ones in both
 functionality and syntax.  There are only a few exceptions to this rule,
 where doing so has a large net benefit to the language design.
 
-Muldis D is intended to qualify as a "**D**" language as defined by
+Muldis Data Language is intended to qualify as a "**D**" language as defined by
 "*Databases, Types, and The Relational Model: The Third Manifesto*"
 (*TTM*), a formal proposal for a solid foundation for data and database
 management systems, written by Chris Date (C.J. Date) and Hugh Darwen.  See
 <http://thethirdmanifesto.com> and its "Documents and Books" section for
 that book, and the website also has other resources explaining what *TTM*
-is, and has copies of some documents that were used in writing Muldis D.
+is, and has copies of some documents that were used in writing Muldis Data Language.
 
-It should be noted that Muldis D, being quite new, may omit some features
+It should be noted that Muldis Data Language, being quite new, may omit some features
 that are mandatory for a "**D**" language initially, to speed the way to a
 useable partial solution, but any omissions will be corrected later.  Also,
 it contains some features that go beyond the scope of a "**D**" language, so
-Muldis D is technically a "**D** plus extra"; examples of this are
+Muldis Data Language is technically a "**D** plus extra"; examples of this are
 constructs for creating the databases themselves and managing connections
 to them.
 
-Muldis D also incorporates design aspects and constructs that are taken
+Muldis Data Language also incorporates design aspects and constructs that are taken
 from or influenced by a wide variety of other general-purpose languages,
 such as Raku, functional languages in particular, and various
 DBMS languages, including SQL and other **D** languages.  At some
 point a section will be added that lists the various influences as well as
 similarities with other languages, whether by influence or by coincidence.
 
-In any event, the Muldis D documentation will be focusing mainly on how
-Muldis D itself works, and will spend little time in providing rationale;
+In any event, the Muldis Data Language documentation will be focusing mainly on how
+Muldis Data Language itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
 # FUNDAMENTAL CONCEPTS
 
-The most fundamental concepts of Muldis D are *values*, *variables*,
+The most fundamental concepts of Muldis Data Language are *values*, *variables*,
 *functions*, and *procedures*.
 
-All other Muldis D concepts relate directly to or are defined in terms of
+All other Muldis Data Language concepts relate directly to or are defined in terms of
 those 4, including *types*, *type definers*, *packages*,
 *databases*, *expressions*, *statements*, and so on.
 
@@ -187,8 +187,8 @@ its users or various external systems.
 
 # ENVIRONMENT
 
-The Muldis D DBMS / virtual machine, which by definition is the environment
-in which Muldis D executes, conceptually resembles a hardware PC, having
+The Muldis Data Language DBMS / virtual machine, which by definition is the environment
+in which Muldis Data Language executes, conceptually resembles a hardware PC, having
 command processors (CPUs), standard user input and output channels,
 persistent read-only memory (ROM), volatile read-write memory (RAM), and
 persistent read-write disk or network storage.
@@ -205,8 +205,8 @@ where a routine call chain exists, where statements execute, where program
 variables exist, where the scope of "atomic" operations and transactions
 lie, and so on.  However, some commands could cause other processes to
 start or end, and some could send messages to or receive messages from
-other processes, either individuals or groups of processes.  When a Muldis
-D virtual machine first starts up, there is an initial root process which
+other processes, either individuals or groups of processes.  When a
+Muldis Data Language virtual machine first starts up, there is an initial root process which
 in turn starts any others and which is the last to end on shutdown.  Each
 concurrent user connection or autonomous transaction is represented by its
 own process.
@@ -217,7 +217,7 @@ A *function* (also known as a *read-only operator*) is a set of
 instructions for mapping a set of input *source* values, its *domain*, to a set of
 output *result* values, its *codomain*, in a pure and deterministic manner.
 
-A Muldis D function is isomorphic to a mathematical function.  A function
+A Muldis Data Language function is isomorphic to a mathematical function.  A function
 call/invocation takes exactly 1 input *source* value and gives exactly 1
 output *result* value.  The result value of a function call is determined
 entirely by its source value, and a function is guaranteed to give exactly
@@ -225,20 +225,20 @@ the same single result value for every call with the same source value.
 Multiple distinct sources may yield the same result, but multiple calls with
 the same source never give different results.
 
-A Muldis D *function* is more constrained than a mathematical function such
+A Muldis Data Language *function* is more constrained than a mathematical function such
 that its input *source* may only be a *tuple* (a value of the
 `Tuple` type) and not some other value.  This is for the purpose of
 avoiding unnecessary complication for the design and users of the language.
 Each (distinctly named) member *attribute* of the *source* is an input
 *argument* to the function, and a function may thus take anywhere from
 zero to N arguments.  In contrast to this, there are no restrictions on
-what the type of a Muldis D *result* may be; some functions might result
+what the type of a Muldis Data Language *result* may be; some functions might result
 in a tuple as the idiomatic way to give multiple outputs, but those are
 likely rare compared to those that don't.  An example with multiple inputs
 and outputs is the common whole division operation; it takes a dividend
 plus a divisor and gives a quotient plus a remainder.
 
-Note that for brevity the Muldis D language specifications will refer to
+Note that for brevity the Muldis Data Language language specifications will refer to
 arguments with the same `foo` syntax regardless of whether they
 are conceptually positional or named, examples being `0` and `1` for the
 former and `like` or `body` for the latter.  However, while the latter are
@@ -246,7 +246,7 @@ equivalent to the text characters they look like, the former are officially
 equivalent to the Unicode code point numbers they look like, rather than the
 digit characters they look like; so `0` is `"\c<0>"` and not `"0"`.
 
-A Muldis D function is composed fundamentally of one or more arbitrarily
+A Muldis Data Language function is composed fundamentally of one or more arbitrarily
 complex value expressions, and the former is essentially just a wrapper for
 the latter.  Complementary to this, a function can only be invoked as part
 of a value expression, such that its result value is the value of the
@@ -254,7 +254,7 @@ expression, and similarly, the function call's source must be
 defined by a value expression.  The ultimate roots of value expression call
 chains are typically procedure statements.
 
-A Muldis D *predicate function* is a function whose *result* is always a
+A Muldis Data Language *predicate function* is a function whose *result* is always a
 *boolean* (a value of the `Boolean` type) and which has exactly 1
 *argument* that is positional (its name is `0`).  A predicate function
 considers its argument and results in either *true* or *false*.
@@ -268,7 +268,7 @@ conditionally.
 *TODO: Update this with appropriate language-specific terms such as "label" and "embed".*
 
 A function call, like any value expression evaluation in general, is an
-implicitly atomic operation.  From the perspective of Muldis D code or its
+implicitly atomic operation.  From the perspective of Muldis Data Language code or its
 users, there is no discrete instant within its host process at which a
 function/expression has partially evaluated or that any involved variables
 are in a partly-changed state; at one instant there is the system state
@@ -298,7 +298,7 @@ exception, so one will unwind the call stack up to some invoking procedure.
 If one wants to effectively trap failures within a function, then its
 expressions or called functions must explicitly return excuse-indicating
 values among their possible results, such as IEEE NaN values, rather than
-throw exceptions; as far as Muldis D is concerned, all explicit results,
+throw exceptions; as far as Muldis Data Language is concerned, all explicit results,
 even the likes of NaN, are considered to be normal termination.
 
 It is considered a best practice for a function to indicate failure with
@@ -316,7 +316,7 @@ deterministic failure such as dividing by zero.
 
 # TYPES AND TYPE DEFINERS
 
-Muldis D has a formal type system, at least in intent, which works
+Muldis Data Language has a formal type system, at least in intent, which works
 conceptually in the following manner.
 
 A *type* aka *data type* is characterized by an unordered set (or just
@@ -371,9 +371,9 @@ type* is a union type of all other types, and the *empty type* is the
 intersection of all others; the two are both disjoint and complementary.
 A *singleton type* or *singleton* is a type that consists of exactly 1 value.
 
-Subtyping in Muldis D, as in any **D** language, fundamentally takes the
+Subtyping in Muldis Data Language, as in any **D** language, fundamentally takes the
 form of *specialization by constraint*, not *specialization by
-extension*.  (A consequence is that every Muldis D function is covariant.)
+extension*.  (A consequence is that every Muldis Data Language function is covariant.)
 
 So conceptually speaking, a plain "circle" value is an "ellipse" value, but
 a "coloured circle" is neither a "circle" value nor a "colour" value; the
@@ -383,17 +383,17 @@ circle" is a multi-component type which has components of type "circle" and
 "colour", but composition like this does not a subtype make.  That being
 said, the type "coloured circle" is a subtype of "coloured ellipse".
 
-Every Muldis D type is *countable* such that every one of its member
+Every Muldis Data Language type is *countable* such that every one of its member
 values can be mapped 1:1 with a subset of the set of natural numbers, and
 likewise the set of member values can be deterministically arranged in some
 total order where every member value can be reached via enumeration in that
-order within a finite amount of time.  Moreover, every value of a Muldis D
+order within a finite amount of time.  Moreover, every value of a Muldis Data Language
 type can be represented somehow using a finite amount of memory.  This
 doesn't exclude the possibility that the representation of any value is
 larger than present-day computing hardware can handle, but even if so, it
 could be handled by sufficiently larger but finite resources.
 
-Every Muldis D type is exactly 1 of *finite*, *infinite*, *semifinite*.
+Every Muldis Data Language type is exactly 1 of *finite*, *infinite*, *semifinite*.
 A *finite type* is a data type whose cardinality (count of member values)
 is known to be *finite*, and this cardinality can be deterministically
 computed with finite time and memory resources.  An *infinite type* is a
@@ -403,7 +403,7 @@ finite or infinite, because its membership is only partially defined at any
 given time, typically because it corresponds to an *interface type definer*.
 The universal type is an infinite type and the empty type is a finite type.
 
-Data types in Muldis D are characterized by unordered sets of values, and so
+Data types in Muldis Data Language are characterized by unordered sets of values, and so
 in the general case, it does not make sense to use them in a context that
 requires some conception of values being mutually ordered.  However,
 potentially any type can externally have ordering algorithms (as defined by
@@ -440,7 +440,7 @@ the empty type is to have an explicit empty *S1* and omit *P1*.
 
 A selection type definer associated with a *singleton type* is
 idiomatically declared in a different way, by declaring a *singleton type definer* whose
-value is the type's only value.  For any context in Muldis D where a
+value is the type's only value.  For any context in Muldis Data Language where a
 reference to or a definition of a selection type definer is allowed, a
 reference to or a definition of a singleton type definer is allowed in its place.  A
 given singleton type definer for value *V1* is semantically identical for such uses as a
@@ -521,8 +521,8 @@ all the possible values you might get.  A particularly important use of
 interface type definers is doing operator overloading between disjoint types,
 which would be considerably more difficult without them.
 
-One might say that Muldis D is using *progressive nominal typing*; or at
-least Larry Wall made up that term on the spot in reference to how Muldis D
+One might say that Muldis Data Language is using *progressive nominal typing*; or at
+least Larry Wall made up that term on the spot in reference to how Muldis Data Language
 was perceived to work, <http://irclog.perlgeek.de/perl6/2010-05-06/text>.
 Users can choose to select values before or without at all declaring the
 types of (that is, type definers for) those values, and not just after; the
@@ -530,7 +530,7 @@ values alternately do or don't belong to named types/type definers; values can
 often include a declaration of a nominal type in their composition,
 regardless of whether such a type/type definer exists at the time.
 
-For any context in Muldis D where a reference to or a definition of a
+For any context in Muldis Data Language where a reference to or a definition of a
 function is allowed, a reference to or a definition of a type definer is
 allowed in its place.  An invocation as if it were a function of a given
 type definer for type *T1*, where the invocation has exactly 1 argument whose
@@ -554,28 +554,28 @@ function may be, and a singleton type definer may invoke functions.  The single 
 singleton type definer denotes may be arbitrarily complex, and repeated portions may be
 factored under their own names, like in a function.
 
-A primary use of a Muldis D *singleton type definer* is for code factoring, so that
+A primary use of a Muldis Data Language *singleton type definer* is for code factoring, so that
 multiple routines or dependent packages may share a common named singleton type definer.
 
-In Muldis D, an additional idiomatic purpose of a *singleton type definer* is to support
+In Muldis Data Language, an additional idiomatic purpose of a *singleton type definer* is to support
 representing the current value of any arbitrary database (or data dump) in
-the form of Muldis D source code, where it is a named entity in a package.
+the form of Muldis Data Language source code, where it is a named entity in a package.
 Such a form allows one to bundle up all the type definitions the database
 depends on, or factor repeated database content values, within a common
 package, or cite external definition or content dependencies of such, with
 all the same flexibility and power as with ordinary source code.  In this
 context, all kinds of database updates, both *data definition* and *data
-manipulation*, occur using the same basic tools, updating Muldis D package
+manipulation*, occur using the same basic tools, updating Muldis Data Language package
 source-code-as-data, at runtime.
 
-Normally, when Muldis D source code is parsed, the details of its actual
+Normally, when Muldis Data Language source code is parsed, the details of its actual
 user-written syntax are preserved as data, so that it is possible to
 losslessly round trip the source code to a form identical to what the users
 wrote.  However, in the case of singleton type definers used to represent a database,
 especially one previously created or changed at runtime as ordinary user
 data values, there is no benefit to maintaining that syntax meta-data when
 parsing such singleton type definers, and it takes up a lot of extra space.  For a given
-*singleton type definer*, since the Muldis D parser can never otherwise know for sure of
+*singleton type definer*, since the Muldis Data Language parser can never otherwise know for sure of
 its source code's origin or purpose, the singleton type definer can explicitly declare
 that it is *folded*, in which case the parser can throw away any syntax
 meta-data and just store the singleton type definer's result value.  It is idiomatic for
@@ -587,7 +587,7 @@ means to define a selection type definer associated with a singleton type;
 as such a reference to a singleton type definer can be used both where a type definer or a
 value is expected.
 
-For any context in Muldis D where a reference to or a definition of a
+For any context in Muldis Data Language where a reference to or a definition of a
 singleton type definer is allowed, a reference to or a definition of a type definer is
 allowed in its place.  An invocation as if it were a singleton type definer of a given
 type definer is semantically identical to (and is idiomatic for) selecting the
@@ -595,10 +595,10 @@ default value of the type definer.
 
 ## Type Safety
 
-Muldis D should qualify as a *type-safe* language by many, if not all,
+Muldis Data Language should qualify as a *type-safe* language by many, if not all,
 definitions of the term *type-safe*.
 
-The Muldis D type system is used to prevent certain erroneous or
+The Muldis Data Language type system is used to prevent certain erroneous or
 undesirable program behaviour.  Type errors are usually those that result
 from attempts to perform an operation on some values that is not
 appropriate to their data types; or any contravention of the programmer's
@@ -614,17 +614,17 @@ value of its declared type.  There are no implicit type conversions, only
 explicit type mapping.  For example, it is invalid for a numeric value to
 appear where a character string value is expected, or vice-versa, but an
 expression or function that explicitly maps a numeric to a string is valid
-to use there.  Muldis D follows the *principle of cautious design*.
+to use there.  Muldis Data Language follows the *principle of cautious design*.
 
-Muldis D is a hybrid dynamic and static language, and where on the spectrum
+Muldis Data Language is a hybrid dynamic and static language, and where on the spectrum
 it is varies by implementation.  At the very least, all imminent type
 errors would be prevented by the system at run time.  But the more
 potential type errors are caught at compile time, the better for users.
 
-Fundamentally, Muldis D is a dynamic language, associating type information
+Fundamentally, Muldis Data Language is a dynamic language, associating type information
 with values at run time and consulting them as needed to detect imminent
 errors; the system prevents run time imminent type errors by throwing an
-exception.  However, it is possible in many cases for Muldis D to be
+exception.  However, it is possible in many cases for Muldis Data Language to be
 treated as a static language, where type errors are found and prevented at
 compile time, such that the compilation process throws an exception.
 Ideally, all type errors would be found at compile time, and more
@@ -651,7 +651,7 @@ is valid to compare an integer to a character string for equality; the
 result would always be false, but it is still logical; however the user
 might want the system to detect such occurrences.
 
-Therefore, Muldis D officially defines for now that the latter category is
+Therefore, Muldis Data Language officially defines for now that the latter category is
 not fatal and would just generate a warning by default.  Warnings can be
 either enabled as warnings, disabled to not display, or be promoted to
 fatal errors automatically, using a compile-time option or lexically scoped
@@ -660,7 +660,7 @@ pragma or something.
 All warnings are issued at compile-time only, which includes any time when
 a package is being registered.
 
-Generally speaking, a Muldis D implementation can not expect at run time to
+Generally speaking, a Muldis Data Language implementation can not expect at run time to
 remember matters related to declared types of contexts that values are
 coming from.  Rather, only the most specific type of the value itself can
 be known or computable at runtime in order to enforce say the constraint
@@ -697,7 +697,7 @@ external systems.
 
 # STIMULUS-RESPONSE RULES
 
-Muldis D natively supports the concept of *stimulus-response rules*,
+Muldis Data Language natively supports the concept of *stimulus-response rules*,
 otherwise known as *triggered routines*.  The concept involves the
 automatic execution of a procedure in response to a particular
 defined stimulus.  This is in contrast with the normal way to execute a
@@ -719,33 +719,33 @@ routine which is in response to an explicit invocation in code.
 
 *TODO: Rewrite the following.*
 
-This document defines the fundamental data types and operators of Muldis D,
-collectively referred to as the *Muldis D Foundation*; these are the
+This document defines the fundamental data types and operators of Muldis Data Language,
+collectively referred to as the *Muldis Data Language Foundation*; these are the
 mandatory minimal core set of system-defined and eternally available
-entities that all Muldis D implementations, at least those that claim to
-support the `Muldis_D Plain_Text https://muldis.com 0.300.0` language,
+entities that all Muldis Data Language implementations, at least those that claim to
+support the `Muldis_Data_Language Plain_Text https://muldis.com 0.300.0` language,
 need to provide.
 
-The official Muldis D language is canonically stratified into 2
+The official Muldis Data Language language is canonically stratified into 2
 main layers implementation-wise, *low-level* and *high-level*.
 
-High-level Muldis D provides the system-defined types and operators and
+High-level Muldis Data Language provides the system-defined types and operators and
 other features that regular users of the language would employ directly in
-their applications and schemas.  High-level Muldis D is formally defined
+their applications and schemas.  High-level Muldis Data Language is formally defined
 using the exact same methods available to users for writing their own
 types/operators/etc, including choices of syntax and features.  It is
-canonically written as regular Muldis D packages / code libraries just like
+canonically written as regular Muldis Data Language packages / code libraries just like
 user code is; users can introspect it or write their own alternatives for
 parts or the whole of it that look and function as it does.  See
-[Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) for the details of high-level Muldis D.
+[Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) for the details of high-level Muldis Data Language.
 
-The *Muldis D Foundation* defines low-level Muldis D, which is the
+The *Muldis Data Language Foundation* defines low-level Muldis Data Language, which is the
 system-defined types and operators and other features which are canonically
-written in one or more third-party languages which are *hosting* Muldis D,
-whether for purposes of bootstrapping Muldis D or for purposes of
+written in one or more third-party languages which are *hosting* Muldis Data Language,
+whether for purposes of bootstrapping Muldis Data Language or for purposes of
 integrating the languages in a common user development environment.
 
-The Muldis D Foundation encompases fundamental types and operators that
+The Muldis Data Language Foundation encompases fundamental types and operators that
 best practice would deem each host should be taking care of their
 implementation details itself and that implementing such higher up would
 not be a pragmatic use of resources or would be inappropriate reinventing
@@ -755,8 +755,8 @@ matters that strongly effect performance or that differentiate themselves,
 not the least of which is functional vs procedural or distributed vs not,
 or static vs dynamic, or other matters of algorithms and integration.
 
-Low-level Muldis D is a polar opposite of high-level; its API is not
-defined or invokable or introspectable in the same way as normal Muldis D
+Low-level Muldis Data Language is a polar opposite of high-level; its API is not
+defined or invokable or introspectable in the same way as normal Muldis Data Language
 code, and users can not define their own substitutes that have the exact
 same user syntax as they have.  The purpose of low-level is to provide the
 basis for writing the system-defined high level language, and users should
@@ -764,18 +764,18 @@ not normally be invoking low-level directly, although they do in fact have
 all of the same freedom to do so if the situation warrants.
 
 Canonically speaking, any system-defined entities defined as part of
-high-level Muldis D can just be written once and be shared by all host
-implementations as is, and so porting Muldis D to a new host can be done
-with fairly little work in order for it to run at all.  The Muldis D
+high-level Muldis Data Language can just be written once and be shared by all host
+implementations as is, and so porting Muldis Data Language to a new host can be done
+with fairly little work in order for it to run at all.  The Muldis Data Language
 Foundation is minimized to the reasonable bare bones on purpose in order
 largely to aid this (and largely to increase user substitutability).  That
 being said, each host implementation is free to override the
-implementations of any Muldis D code, whether part of high-level Muldis D
+implementations of any Muldis Data Language code, whether part of high-level Muldis Data Language
 or part of a user's own code, with host-native implementations in order to
 boost performance.  It is in fact assumed that such overrides will be
 common, with simple hosts doing little of it and sophisticated industrial
 strength hosts doing it a lot.  As long as the actual semantics as seen by
-the user is unchanged, this is all fair game.  The design of Muldis D is
+the user is unchanged, this is all fair game.  The design of Muldis Data Language is
 also meant to help hosts do this more reliably and with fewer errors.
 
 *TODO.  Update the following, and some preceding, which are now outdated.*
@@ -789,7 +789,7 @@ operators/routines are named, and the documentation refers to them like
 
 The high-level API gives more user-friendly physical `foo` names to all of
 the above in its own type definer/routine wrappers for the low-level entities,
-but those names won't be used in this Muldis D Foundation document.
+but those names won't be used in this Muldis Data Language Foundation document.
 
 The low-level entity names given here, whether anonymous or not, are
 purposefully given different names than their high-level wrappers have,
@@ -802,7 +802,7 @@ to help easily distinguish them; mainly they have `foundation::` prefixes.
 ## Any
 
 The `Any` type is the infinite *universal type*, which is the
-maximal data type of the entire Muldis D type system and consists of all
+maximal data type of the entire Muldis Data Language type system and consists of all
 values which can possibly exist.  It is a union type over just these 7
 low-level types, all of the latter being mutually disjoint:
 `Boolean`, `Integer`, `Array`, `Bag`, `Tuple`, `Article`, `Handle`.
@@ -858,8 +858,8 @@ The `Stream` type is infinite.  A `Stream` value is a ... *TODO*.
 
 The `External` type is infinite.  An `External` value is an
 opaque and transient reference to an entity that is defined and managed
-externally to the Muldis D language environment, either internally to the
-Muldis D host implementation or in some peer language that it mediates.
+externally to the Muldis Data Language language environment, either internally to the
+Muldis Data Language host implementation or in some peer language that it mediates.
 
 # FOUNDATION SUBTYPES FOR DEFINING SOURCE CODE
 
@@ -1401,7 +1401,7 @@ of its `0` argument.
 The function `External_call_function` requires its source to be a
 `Tuple` value with just 1 attribute/argument named `0`, where that
 argument may be any value.  This function is a proxy for
-invoking a function that is defined and managed externally to the Muldis D
+invoking a function that is defined and managed externally to the Muldis Data Language
 language environment where that external function receives the value of the
 `0` attribute as its source/arguments.  Its result type is `Any`.
 
@@ -1417,12 +1417,12 @@ language environment where that external function receives the value of the
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the **Muldis D Foundation**
-(**MDF**) primary component of the **Muldis D** language specification.
+This file is part of the formal specification of the **Muldis Data Language Foundation**
+(**MDF**) primary component of the **Muldis Data Language** language specification.
 
 MDF is Copyright © 2002-2018, Muldis Data Systems, Inc.
 

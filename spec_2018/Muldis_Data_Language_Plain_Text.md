@@ -1,39 +1,39 @@
 # NAME
 
-Muldis D Plain Text (MDPT) - Muldis D concrete syntax for source code
+Muldis Data Language Plain Text (MDPT) - Muldis Data Language concrete syntax for source code
 
 # VERSION
 
-This document is Muldis D Plain Text (MDPT) version 0.300.0.
+This document is Muldis Data Language Plain Text (MDPT) version 0.300.0.
 
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis D Plain Text** (**MDPT**) primary component of the **Muldis D**
+the **Muldis Data Language Plain Text** (**MDPT**) primary component of the **Muldis Data Language**
 language.  The fully-qualified name of this document and the specification
-it contains is `Muldis_D_Plain_Text https://muldis.com 0.300.0`.
+it contains is `Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis D** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** language meta-specification.
 
-The **Muldis D Plain Text** specification defines the grammar of the official
-concrete Muldis D language syntax that every Muldis D implementation
+The **Muldis Data Language Plain Text** specification defines the grammar of the official
+concrete Muldis Data Language language syntax that every Muldis Data Language implementation
 is expected to support as an option.  It is intended to be a standard format
-of interchange of both code and data between all Muldis D implementations.
-It is also expected to be the syntax of choice for users to write Muldis D
+of interchange of both code and data between all Muldis Data Language implementations.
+It is also expected to be the syntax of choice for users to write Muldis Data Language
 applications or database schemas in, having the most direct correspondance
-to the *native* homoiconic Muldis D defined by **Muldis D Foundation**, and
+to the *native* homoiconic Muldis Data Language defined by **Muldis Data Language Foundation**, and
 is designed to have a similar level of conciseness and readability as what
 users get in both typical general purpose application programming languages
 as well as SQL.
-That being said, Muldis D is designed to empower a variety of alternate
+That being said, Muldis Data Language is designed to empower a variety of alternate
 language syntaxes to be used in different areas of a program, either in
 support of user tastes, or for better host/peer language integration
 (including their ORMs), or as a method of emulating other programming
 language environments or SQL DBMSs.
 
-This document defines the grammar that all non-hosted plain-text Muldis D
+This document defines the grammar that all non-hosted plain-text Muldis Data Language
 source code must conform to when it claims to be written in the
-`Muldis_D Plain_Text https://muldis.com 0.300.0` (**MDPT**) language.
+`Muldis_Data_Language Plain_Text https://muldis.com 0.300.0` (**MDPT**) language.
 
 This grammar is meant to be more illustrative to human readers than
 executable, as is typical for standards documents; you wouldn't likely be
@@ -41,20 +41,20 @@ able to just hand if off to a parser-generator and expect it to work as is.
 But it should still have enough information to derive an executable parser.
 
 Note that the standard filename extension for files with such source code
-is `.mdpt`, though as per standard UNIX conventions, such Muldis D source
+is `.mdpt`, though as per standard UNIX conventions, such Muldis Data Language source
 code files can in fact have any filename extension when there is other
 context to interpret them with.  Filename extensions are more for the
-benefit of the operating system or command shell or users than for a Muldis
-D implementation, the latter just cares about the content of the file.
+benefit of the operating system or command shell or users than for a
+Muldis Data Language implementation, the latter just cares about the content of the file.
 
 *TODO: Comment about resolving package names to package source files;
 the CompUnitRepo concept of Raku would be a good precedent.
 That will probably go somewhere else in the spec rather than here.*
 
-A primary feature of Muldis D is a grammar that is small and simple while
+A primary feature of Muldis Data Language is a grammar that is small and simple while
 still being quite rich and expressive.  As much as possible of the language
 is defined in terms of ordinary packages, types and routines, in exactly
-the same manner as users write their own code in.  Therefore, a Muldis D
+the same manner as users write their own code in.  Therefore, a Muldis Data Language
 grammar has no special knowledge of, or specific syntax for, the vast
 majority of the language, and mainly just concerns itself with the minimal
 syntactic framework for defining generic types and routines, generic
@@ -63,11 +63,11 @@ number of data types or routines.  A key benefit of this is that it is very
 easy for users to extend the language with new features that look and work
 in the same way as the system-defined ones, and are drop-in substitutable
 for them, rather than user-defined things being second-class citizens.  The
-design also means it is much easier to implement the Muldis D language
+design also means it is much easier to implement the Muldis Data Language language
 itself, a large part of the langauge can be bootstrapped, and both parsers
-and generators of Muldis D Plain Text can be simple and easy to make.
+and generators of Muldis Data Language Plain Text can be simple and easy to make.
 
-Muldis D Plain Text has a *linear syntax*, and is designed to be easily
+Muldis Data Language Plain Text has a *linear syntax*, and is designed to be easily
 handled by a single-pass parser, or at least a single-pass lexer; all the
 context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code, or any required lookahead is
@@ -101,7 +101,7 @@ keep in mind that the grammar is inspired by both EBNF and Raku rules.*
 
 # PARSING UNITS
 
-The root grammar token for Muldis D Plain Text is `<MDPT>`.
+The root grammar token for Muldis Data Language Plain Text is `<MDPT>`.
 
 Grammar:
 
@@ -130,13 +130,13 @@ Grammar:
 A `<shebang_line>`, if it exists, must be the first characters of the
 text file, and consists of a magic number which expressed as ASCII or UTF-8
 is `#!`, followed by a UNIX-like interpreter directive or path to an
-executable that can interpret Muldis D Plain Text files.  When a Muldis D
+executable that can interpret Muldis Data Language Plain Text files.  When a Muldis Data Language
 Plain Text file starts with a shebang line, it can be invoked directly as
 if it were an executable on a UNIX-like system.  The format of
 `<shebang_directive>` isn't defined in this document; see the appropriate
-external UNIX/etc documentation for that; however, the Muldis D Plain Text
+external UNIX/etc documentation for that; however, the Muldis Data Language Plain Text
 file must have at least one line-breaking whitespace character of some kind
-following it, which is how we know where the Muldis D code begins.
+following it, which is how we know where the Muldis Data Language code begins.
 
 Examples:
 
@@ -225,7 +225,7 @@ Grammar:
     <restricted_inside_char> ::=
         <-quoting_char -illegal_char -ws_restricted_outside_char>
 
-The Muldis D Plain Text grammar recognizes 7 distinct character code point
+The Muldis Data Language Plain Text grammar recognizes 7 distinct character code point
 (hereafter referred to as *character*) classes,
 which are mutually disjoint proper subsets of the character repertoire
 identified by the *script name*: *alphanumeric*, *quoting*, *bracketing*,
@@ -236,7 +236,7 @@ The first 5 *enumerated* classes (all but *illegal*) are the more
 syntactically interesting ones and are generally what the grammar are
 defined in terms of.
 
-Broadly speaking, Muldis D Plain Text code is made up of 2 primary
+Broadly speaking, Muldis Data Language Plain Text code is made up of 2 primary
 grammatical contexts which are mutually disjoint and complementary; one of
 these is anywhere *outside* all quoted strings, and its complement is
 anywhere *inside* any quoted string; it is the *quoting* characters that
@@ -264,7 +264,7 @@ in terms of character escape sequences, but only inside of a quoted string.
 
 Note that the primary reason most enumerated whitespace characters are
 generally restricted from being inside of a quoted string is so that the
-Muldis D Plain Text code is resilient to passage through environments that
+Muldis Data Language Plain Text code is resilient to passage through environments that
 might have different native line-breaking characters; the restriction
 guarantees that executing the code will produce logically identical values
 and behaviour for character string literals or quoted identifiers.  In
@@ -323,7 +323,7 @@ Examples:
 Note that Plain_Text eschews built-in support for a `\c<...>` format
 that specifies characters in terms of their Unicode character name, for
 example `\c<LATIN SMALL LETTER OU>`.  Instead, it is left to the
-domain of non-core Muldis D packages to support such a feature.  The main
+domain of non-core Muldis Data Language packages to support such a feature.  The main
 reason for this is to avoid an unconditionally-mandatory complex dependency
 that is the Unicode character database.
 
@@ -343,7 +343,7 @@ Grammar:
 The primary function of *dividing space*, represented by `<sp>`, is
 to disambiguate the boundaries of otherwise-consecutive grammar tokens.
 
-Once Muldis D Plain Text code is parsed, any dividing space is just
+Once Muldis Data Language Plain Text code is parsed, any dividing space is just
 discardable non-semantic metadata for its wider context, but during a parse
 its presence is often critical to properly interpret the wider context.
 
@@ -402,7 +402,7 @@ Examples:
 
 # KEYWORDS
 
-Muldis D Plain Text has a number of keywords, both alphanumeric and
+Muldis Data Language Plain Text has a number of keywords, both alphanumeric and
 symbolic, which have special meaning in certain contexts.  However, it does
 not have any reserved words so users can still define identifiers having
 any character string they want.
@@ -411,7 +411,7 @@ The keywords use a proper subset of the same syntax otherwise available for
 user-defined identifiers.  In any contexts where it would otherwise be
 ambiguous as to whether a term is a keyword versus the name of some entity,
 the parser will always take the keyword interpretation.  For all such
-cases, Muldis D Plain Text provides syntax options that explicitly
+cases, Muldis Data Language Plain Text provides syntax options that explicitly
 disambiguate in favor of the non-keyword choice.  Since every entity name
 `foo` is allowed to be double-quoted anywhere it appears like `'foo'`,
 while all keywords only have a single syntax each which is non-quoted, a
@@ -467,7 +467,7 @@ These are used as list/pair separators:
 Finally, the backslash `\` is used heavily to indicate value literals of
 many different kinds, disambiguating them from other things.
 
-Muldis D Plain Text purposefully keeps its set of keywords small, therefore
+Muldis Data Language Plain Text purposefully keeps its set of keywords small, therefore
 giving users the maximum amount of flexibility to effectively define
 whatever operator/etc names they want for use as barewords, and the full
 complement of system-defined types and operators are defined using the same
@@ -547,7 +547,7 @@ Grammar:
         <absolute_name>
 
 A `<generic_name>` is a *generic context entity name*, which can be
-used in any context that is expecting *a* Muldis D entity name in the
+used in any context that is expecting *a* Muldis Data Language entity name in the
 general sense, without restrictions.  Examples of use are when declaring
 any named entity or with general type/routine/etc invocation syntax that
 allows any entity of the respective kind, or for attr names.
@@ -616,7 +616,7 @@ Grammar:
     <fail_expr> ::=
         fail
 
-An `<expr>` is a Muldis D *generic context value expression*, which
+An `<expr>` is a Muldis Data Language *generic context value expression*, which
 can be used in any context that is expecting *a* value but has no
 expectation that said value belongs to a specific data type.  In the
 general case, an expression denoting any value of the `Any` type may
@@ -740,13 +740,13 @@ Grammar:
 
 An `<opaque_literal_expr>` is an `<expr>` that denotes a value
 literal specific to some system-defined data type that has its own special
-Muldis D Plain Text selector syntax, and this literal syntax explicitly has
+Muldis Data Language Plain Text selector syntax, and this literal syntax explicitly has
 no child `<expr>` nodes.  In conventional terms, one is typically for
 selecting scalar values, though many cases are also simple collections.
 
 A `<collection_selector_expr>` is an `<expr>` that denotes a
 value literal specific to some system-defined data type that has its own
-special Muldis D Plain Text selector syntax, and this literal syntax
+special Muldis Data Language Plain Text selector syntax, and this literal syntax
 explicitly does have child `<expr>` nodes in the general case, as in
 conventional terms it is for selecting values representing collections of
 other values.
@@ -758,9 +758,9 @@ Grammar:
     <Boolean> ::=
         ['\\?' <sp>]? [False | True]
 
-A `<Boolean>` node represents a value of the Muldis D `Boolean` type,
+A `<Boolean>` node represents a value of the Muldis Data Language `Boolean` type,
 which is a general purpose 2-valued logic boolean or *truth value*.  The
-`Boolean` type is a foundational type of the Muldis D type system, and
+`Boolean` type is a foundational type of the Muldis Data Language type system, and
 this is the canonical grammar for them.
 
 Examples:
@@ -831,11 +831,11 @@ Grammar:
     <qu_num_tail> ::=
         '"'
 
-An `<Integer>` node represents a value of the Muldis D `Integer`
+An `<Integer>` node represents a value of the Muldis Data Language `Integer`
 type, which is a general purpose exact integral number of any magnitude,
 which explicitly does not represent any kind of thing in particular,
 neither cardinal nor ordinal nor nominal.  The `Integer` type is a
-foundational type of the Muldis D type system, and this is the canonical
+foundational type of the Muldis Data Language type system, and this is the canonical
 grammar for them.
 
 This grammar supports writing `Integer` literals in any of the numeric
@@ -857,7 +857,7 @@ where each pair of consecutive segments is separated by dividing space;
 this segmenting ability is provided to support code that contains very long
 numeric literals while still being well formatted (no extra long lines).
 
-Note that the general grammar rules of Muldis D Plain Text will treat all
+Note that the general grammar rules of Muldis Data Language Plain Text will treat all
 nonquoted symbolic characters {-,+,.,/} as *fixed* operator invocations,
 and nonquoted digit sequences as positive integer literals.  However,
 nonquoted numeric literals have a special exception for {-,+,.,/} iff they
@@ -865,8 +865,8 @@ appear in very specific places, such that those symbolics are treated as
 part of a numeric literal instead of an operator call.  This is done so
 that all values of the core numeric types can be written in a clean and
 concise manner while avoiding any risk of the meanings of the literals
-changing depending what Muldis D packages are in scope, which would be the
-case if the symbolics were parsed as operator calls.  When writing Muldis D
+changing depending what Muldis Data Language packages are in scope, which would be the
+case if the symbolics were parsed as operator calls.  When writing Muldis Data Language
 Plain Text code with unquoted numeric literals, having dividing space
 between any {-,+,.,/} and any `<num_char>` should guarantee their
 interpretation as an operator call, while ensuring no dividing space
@@ -912,14 +912,14 @@ Grammar:
     <quoted_frac> ::=
         <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
 
-A `<Fraction>` node represents a value of the Muldis D `Fraction`
+A `<Fraction>` node represents a value of the Muldis Data Language `Fraction`
 type, which is a general purpose exact rational number of any magnitude and
 precision, expressible as a coprime *numerator* / *denominator* pair of
 `Integer` whose *denominator* is positive, which explicitly does not
 represent any kind of thing in particular, neither cardinal nor ordinal nor
 nominal.
 
-The `Fraction` type is not a foundational type of the Muldis D type
+The `Fraction` type is not a foundational type of the Muldis Data Language type
 system, but rather is a subtype by constraint of the `Article` type, and
 all `Fraction` values can be selected in terms of `<Article>` grammar
 nodes.  However, `<Fraction>` is the canonical grammar for all
@@ -967,11 +967,11 @@ Grammar:
             | [['"' ['0x'  <nc16>*]? '"'] % <sp>]
         ]
 
-A `<Bits>` node represents a value of the Muldis D `Bits` type, which
+A `<Bits>` node represents a value of the Muldis Data Language `Bits` type, which
 is an arbitrarily-long sequence of *bits* where each bit is represented by
 an `Integer` in the range 0..1.
 
-The `Bits` type is not a foundational type of the Muldis D type system,
+The `Bits` type is not a foundational type of the Muldis Data Language type system,
 but rather is a subtype by constraint of the `Article` type, and all
 `Bits` values can be selected in terms of `<Article>` grammar nodes.
 However, `<Bits>` is the canonical grammar for all `Bits` values.
@@ -1004,11 +1004,11 @@ Grammar:
             | [['"' ['0x'? <nc16>*]? '"'] % <sp>]
         ]
 
-A `<Blob>` node represents a value of the Muldis D `Blob` type, which
+A `<Blob>` node represents a value of the Muldis Data Language `Blob` type, which
 is an arbitrarily-long sequence of *octets* where each octet is
 represented by an `Integer` in the range 0..255.
 
-The `Blob` type is not a foundational type of the Muldis D type system,
+The `Blob` type is not a foundational type of the Muldis Data Language type system,
 but rather is a subtype by constraint of the `Article` type, and all
 `Blob` values can be selected in terms of `<Article>` grammar nodes.
 However, `<Blob>` is the canonical grammar for all `Blob` values.
@@ -1058,11 +1058,11 @@ Grammar:
     <qnots_escaped_content> ::=
         '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
 
-A `<Text>` node represents a value of the Muldis D `Text` type, which
+A `<Text>` node represents a value of the Muldis Data Language `Text` type, which
 is characterized by an arbitrarily-long sequence of Unicode 12.1 standard
 *character code points*.
 
-The `Text` type is not a foundational type of the Muldis D type system,
+The `Text` type is not a foundational type of the Muldis Data Language type system,
 but rather is a subtype by constraint of the `Article` type, and all
 `Text` values can be selected in terms of `<Article>` grammar nodes.
 However, `<Text>` is the canonical grammar for all `Text` values.
@@ -1099,7 +1099,7 @@ Grammar:
     <ord_member_commalist> ::=
         '[' <sp> <member_commalist> <sp> ']'
 
-An `<Array>` node represents a value of the Muldis D
+An `<Array>` node represents a value of the Muldis Data Language
 `Array` type, which is ...
 
 ## Set Selectors
@@ -1109,7 +1109,7 @@ Grammar:
     <Set> ::=
         ['\\?' <sp>]? <nonord_member_commalist>
 
-A `<Set>` node represents a value of the Muldis D
+A `<Set>` node represents a value of the Muldis Data Language
 `Set` type, which is ...
 
 A `<Set>` is subject to the additional rule that, either its
@@ -1142,7 +1142,7 @@ Grammar:
     <multiplicity_expr> ::=
         <expr>
 
-A `<Bag>` node represents a value of the Muldis D
+A `<Bag>` node represents a value of the Muldis Data Language
 `Bag` type, which is ...
 
 A `<Bag>` is subject to the additional rule that, either its
@@ -1183,7 +1183,7 @@ Grammar:
     <attr_asset_expr> ::=
         <expr>
 
-A `<Tuple>` node represents a value of the Muldis D
+A `<Tuple>` node represents a value of the Muldis Data Language
 `Tuple` type, which is ...
 
 A `<Tuple>` is subject to the additional rule that, iff its
@@ -1199,7 +1199,7 @@ Grammar:
     <Tuple_Array> ::=
         '\\~%' <sp> [<delim_attr_name_commalist> | <ord_member_commalist>]
 
-A `<Tuple_Array>` node represents a value of the Muldis D
+A `<Tuple_Array>` node represents a value of the Muldis Data Language
 `Tuple_Array` type, which is ...
 
 A `<Tuple_Array>` with an `<ord_member_commalist>` is subject to
@@ -1214,7 +1214,7 @@ Grammar:
     <Relation> ::=
         '\\?%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
 
-A `<Relation>` node represents a value of the Muldis D
+A `<Relation>` node represents a value of the Muldis Data Language
 `Relation` type, which is ...
 
 A `<Relation>` with a `<nonord_member_commalist>` is subject to
@@ -1229,7 +1229,7 @@ Grammar:
     <Tuple_Bag> ::=
         '\\+%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
 
-A `<Tuple_Bag>` node represents a value of the Muldis D
+A `<Tuple_Bag>` node represents a value of the Muldis Data Language
 `Tuple_Bag` type, which is ...
 
 A `<Tuple_Bag>` with a `<nonord_member_commalist>` is subject to
@@ -1250,7 +1250,7 @@ Grammar:
     <c_attrs_expr> ::=
         <expr>
 
-A `<Article>` node represents a value of the Muldis D
+A `<Article>` node represents a value of the Muldis Data Language
 `Article` type, which is ...
 
 Examples:
@@ -1264,7 +1264,7 @@ Grammar:
     <Excuse> ::=
         '\\!' <sp> <delim_attr_commalist>
 
-An `<Excuse>` node represents a value of the Muldis D
+An `<Excuse>` node represents a value of the Muldis Data Language
 `Excuse` type, which is ...
 
 ## Simple Excuse Literals
@@ -1274,11 +1274,11 @@ Grammar:
     <Simple_Excuse> ::=
         '\\!' <sp> <attr_name>
 
-A `<Simple_Excuse>` node represents a value of the Muldis D `Excuse`
+A `<Simple_Excuse>` node represents a value of the Muldis Data Language `Excuse`
 type, and provides a terser alternative syntax to an `<Excuse>` node
 for the common special case of `Excuse` having just the `0` attribute
 where that attribute is valued with an `Attr_Name`, such as is the case
-for all typical Muldis D Foundation defined `Excuse` subtypes.
+for all typical Muldis Data Language Foundation defined `Excuse` subtypes.
 
 Examples:
 
@@ -1297,7 +1297,7 @@ Grammar:
     <Nesting> ::=
         '\\\$' <sp> <nesting_attr_names>
 
-An `<Nesting>` node represents a value of the Muldis D `Nesting`
+An `<Nesting>` node represents a value of the Muldis Data Language `Nesting`
 type, which is an arbitrarily-long sequence of `Attr_Name` values.  It
 typically serves as a (fully or partially) qualified identifier for referencing
 either a foundation entity, or a package or component of the latter, from
@@ -1311,7 +1311,7 @@ as-is; otherwise the sequence will implicitly have the element `floating`
 prepended to it.  Each of the non-first (post optional prepend) sequence
 elements corresponds in order to a level in a multi-level namespace.
 
-The `Nesting` type is not a foundational type of the Muldis D type
+The `Nesting` type is not a foundational type of the Muldis Data Language type
 system, but rather is a subtype by constraint of the `Array` type, and all
 `Nesting` values can be selected in terms of `<Array>` grammar
 nodes.  However, `<Nesting>` is the canonical grammar for all
@@ -1319,7 +1319,7 @@ nodes.  However, `<Nesting>` is the canonical grammar for all
 
 Examples (comments refer to their Muldis-D runtime specific interpretation):
 
-    `The Muldis D Foundation function Integer_plus, from any perspective.`
+    `The Muldis Data Language Foundation function Integer_plus, from any perspective.`
     \$foundation::Integer_plus
 
     `The system-defined "Relation" type, from the perspective of some other
@@ -1368,10 +1368,10 @@ Grammar:
     <max_ord_attr> ::=
         <ord_attr_name>
 
-A `<Heading>` node represents a value of the Muldis D
+A `<Heading>` node represents a value of the Muldis Data Language
 `Heading` type, which is an arbitrarily-large unordered collection of
-attribute names.  An `<Attr_Name>` node represents a value of the Muldis
-D `Attr_Name` type, which is a subtype by constraint of the `Heading`
+attribute names.  An `<Attr_Name>` node represents a value of the
+Muldis Data Language `Attr_Name` type, which is a subtype by constraint of the `Heading`
 type; `<Attr_Name>` provides a terser alternative syntax for the
 common special case of `<Heading>` having exactly 1 attribute.
 
@@ -1379,7 +1379,7 @@ An `<ord_attr_name_range>` is subject to the additional rule that its
 integral `<min_ord_attr>` value must be less than or equal to its
 integral `<max_ord_attr>` value.
 
-The `Heading` type is not a foundational type of the Muldis D type
+The `Heading` type is not a foundational type of the Muldis Data Language type
 system, but rather is a subtype by constraint of the `Tuple` type, and all
 `Heading` values can be selected in terms of `<Tuple>` grammar
 nodes.  However, `<Heading>` is the canonical grammar for all
@@ -1447,7 +1447,7 @@ Grammar:
     <attr_name_after> ::=
         <nonord_attr_name>
 
-A `<Renaming>` node represents a value of the Muldis D `Renaming`
+A `<Renaming>` node represents a value of the Muldis Data Language `Renaming`
 type, which is an arbitrarily-large unordered collection of attribute
 renaming specifications.  Each attribute renaming specification is a pair
 of attribute names marked with a `->` or a `<-` element; the
@@ -1463,7 +1463,7 @@ A `<renaming_commalist>` is subject to the additional rule that no 2
 `<attr_name_before>` may be the same attribute name and that no 2
 `<attr_name_after>` may be the same attribute name.
 
-The `Renaming` type is not a foundational type of the Muldis D type
+The `Renaming` type is not a foundational type of the Muldis Data Language type
 system, but rather is a subtype by constraint of the `Tuple` type, and all
 `Renaming` values can be selected in terms of `<Tuple>` grammar
 nodes.  However, `<Renaming>` is the canonical grammar for all
@@ -1755,15 +1755,15 @@ A `::=` is *what-binding* while a `note` is *why-binding*.
 
 # SYNTACTIC MNEMONICS
 
-The syntax of Muldis D Plain Text, as well as the names of standard
-library routines of Muldis D, are designed around a variety of mnemonics
+The syntax of Muldis Data Language Plain Text, as well as the names of standard
+library routines of Muldis Data Language, are designed around a variety of mnemonics
 that bring it some self-similarity and an association between syntax and
 semantics so that it is easier to read and write data and code in it.  Some
 of these mnemonics are more about self-similarity and others are more about
 shared traits with other languages.
 
 The following table enumerates and explains the syntactic character
-mnemonics that Muldis D Plain Text itself has specific knowledge of
+mnemonics that Muldis Data Language Plain Text itself has specific knowledge of
 and ascribes specific meanings to; where multiple characters are shown
 together that means they are used in pairs.
 
@@ -1913,7 +1913,7 @@ together that means they are used in pairs.
 
 # STRATEGIES FOR PARSING
 
-Muldis D Plain Text is designed to be easy to parse, where one can use a
+Muldis Data Language Plain Text is designed to be easy to parse, where one can use a
 multi-stage pipeline with simple rules at each step, and typically the work
 of parsing can be done in a highly parallel fashion, where each part of the
 code can be parsed properly with very little or no knowledge of what came
@@ -1959,7 +1959,7 @@ Grammar:
 
 ## Pipeline Stage 2
 
-Broadly speaking, Muldis D Plain Text code is made up of 2 primary
+Broadly speaking, Muldis Data Language Plain Text code is made up of 2 primary
 grammatical contexts which are mutually disjoint and complementary; one of
 these is anywhere outside all quoted strings, and its complement is
 anywhere inside any quoted string; quoted strings don't overlap or nest, or
@@ -2143,12 +2143,12 @@ otherwise match a stricter numeric definition.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the **Muldis D Plain Text**
-(**MDPT**) primary component of the **Muldis D** language specification.
+This file is part of the formal specification of the **Muldis Data Language Plain Text**
+(**MDPT**) primary component of the **Muldis Data Language** language specification.
 
 MDPT is Copyright © 2002-2018, Muldis Data Systems, Inc.
 

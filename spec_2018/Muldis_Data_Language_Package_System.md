@@ -1,6 +1,6 @@
 # NAME
 
-System - Muldis D primary data types and operators
+System - Muldis Data Language primary data types and operators
 
 # VERSION
 
@@ -12,7 +12,7 @@ This document is System version 0.300.0.
  `Muldis_Content_Predicate
  MCP version https://muldis.com 0.300.0 MCP
  MCP script text Unicode 2.1 UTF-8 MCP
- MCP syntax Muldis_D_Plain_Text https://muldis.com 0.300.0 MCP
+ MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0 MCP
  MCP model Muldis_Data_Language https://muldis.com 0.300.0 MCP
  Muldis_Content_Predicate`
  (\Package : (
@@ -42,12 +42,12 @@ This document is System version 0.300.0.
 
 # DESCRIPTION
 
-This document defines the Muldis D package
+This document defines the Muldis Data Language package
 `System https://muldis.com 0.300.0` which provides the common core
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
-See also [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) to read about the **Muldis D
+See also [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) to read about the **Muldis Data Language
 Standard Library** specification, of which this document is a part.
 
 # PACKAGE
@@ -56,7 +56,7 @@ Standard Library** specification, of which this document is a part.
  `Muldis_Content_Predicate
  MCP version https://muldis.com 0.300.0 MCP
  MCP script text Unicode 2.1 UTF-8 MCP
- MCP syntax Muldis_D_Plain_Text https://muldis.com 0.300.0 MCP
+ MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0 MCP
  MCP model Muldis_Data_Language https://muldis.com 0.300.0 MCP
  Muldis_Content_Predicate`
  (\Package : (
@@ -87,9 +87,9 @@ Standard Library** specification, of which this document is a part.
         )),
 
 The selection type definer `Any` represents the infinite
-*universal type*, which is the maximal data type of the entire Muldis D
+*universal type*, which is the maximal data type of the entire Muldis Data Language
 type system and consists of all values which can possibly exist.  It also
-represents the infinite Muldis D Foundation type `foundation::Any`.  Its
+represents the infinite Muldis Data Language Foundation type `foundation::Any`.  Its
 default value is `False`.  Other programming languages may name their
 corresponding types *Object* or *Universal*.
 
@@ -101,7 +101,7 @@ corresponding types *Object* or *Universal*.
         )),
 
 The selection type definer `None` represents the finite *empty type*,
-which is the minimal data type of the entire Muldis D type system and
+which is the minimal data type of the entire Muldis Data Language type system and
 consists of exactly zero values.  It can not have any default value.
 
 ## same =
@@ -185,7 +185,7 @@ member of the type specified by its `1` argument, and `True` otherwise.
 
 The interface type definer `Orderable` is semifinite.  An `Orderable` value has
 all of the traditional comparison operators defined for it such that values
-of its type *T* can be deterministically sorted by Muldis D into a
+of its type *T* can be deterministically sorted by Muldis Data Language into a
 canonical total order.  But *T* otherwise does not necessarily have
 conceptually a total order in the normal sense or that order is different
 than what the provided comparison operators give you.  An `Orderable` type
@@ -199,10 +199,10 @@ The default value of `Orderable` is the `Integer` value `0`.  The
 minimum and maximum values of `Orderable` are `\!Before_All_Others`
 and `\!After_All_Others`, respectively; these 2 `Excuse` values are
 canonically considered to be before and after, respectively, *every* other
-value of the Muldis D type system, regardless of whether those values are
+value of the Muldis Data Language type system, regardless of whether those values are
 members a type for which an `Orderable`-composing type definer exists.  The
 primary reason for having these values `\!Before_All_Others` and
-`\!After_All_Others` is so Muldis D has an easy consistent way to
+`\!After_All_Others` is so Muldis Data Language has an easy consistent way to
 define an `Interval` that is partially or completely unbounded, and to use
 as *two-sided identity element* values for chained order-comparisons.
 
@@ -236,7 +236,7 @@ comparison operator for this role, where its possible result values are
 *before*, *same*, and *after*, and those 3 are typically represented by
 either the integers {-1,0,1} or a special 3-valued enumeration type.  Said
 operators may be named `<=>` or *cmp* or *compare* or *CompareTo*
-or *memcmp* or *strcmp*.  But Muldis D uses a `Boolean` result instead
+or *memcmp* or *strcmp*.  But Muldis Data Language uses a `Boolean` result instead
 partly to keep its core type system simpler (it would have gone the
 enumeration route) and partly because the logic for doing sorting or
 comparisons or validation is typically much simpler with this foundation.
@@ -520,7 +520,7 @@ type consisting just of prime integers does not.
 Note that while mathematics formally defines *predecessor* and
 *successor* for non-negative integers only, and some other programming
 languages extend this concept to real numbers with the meaning *minus one*
-and *plus one* respectively, Muldis D only formally associates these terms
+and *plus one* respectively, Muldis Data Language only formally associates these terms
 with the quantum of *one* for types specifically representing integers;
 for `Bicessable` types in general, the terms just mean prior or next
 values and should not be conceptualized as mathematical operations.
@@ -571,7 +571,7 @@ consistent and terse way to ask a common predicate question such as this.
 The default value of `Boolable` is `False`.  Other programming languages
 often have the concept of particular values from a wide variety of types as
 being conceptually either *false* or *true*, and `Boolable` is the
-formalization of that concept for Muldis D, allowing program code to be
+formalization of that concept for Muldis Data Language, allowing program code to be
 written in a similar style but with more type safety as any treatment of a
 value as a `Boolean` must be made explicit.
 
@@ -632,8 +632,8 @@ it results in `False`.
             default : False,
         )),
 
-The selection type definer `Boolean` represents the finite Muldis
-D Foundation type `foundation::Boolean`.  A `Boolean` value is a general purpose
+The selection type definer `Boolean` represents the finite
+Muldis Data Language Foundation type `foundation::Boolean`.  A `Boolean` value is a general purpose
 2-valued logic boolean or *truth value*, or specifically it is one of the
 2 values `False` and `True`.  Its default value is `False`.  `Boolean`
 is both `Orderable` and `Bicessable`; its minimum value is `False` and
@@ -936,7 +936,7 @@ contain that value, such as when mapping an arbitrary number to one with
 less precision, some rounding method is applied to determine which value of
 the subtype is to be mapped to while most accurately reflecting the
 original value.  The `Round_Meth` type enumerates the rounding methods
-that Muldis D operators can typically apply.
+that Muldis Data Language operators can typically apply.
 
 With `Down` (aka *floor*), `Up` (aka *ceiling*), `To_Zero` (aka
 *truncate*), and `To_Inf`, the original value will always be mapped to
@@ -1014,7 +1014,7 @@ name their corresponding types *Numeric*.
 `Numerical` is composed, directly or indirectly, by: `Integral`,
 `Integer`, `Fractional`, `Fraction`, `Quantitative`, `Quantity`.
 It is also composed by a lot of additional type definers defined by other
-Muldis D packages such as `System::Math`;
+Muldis Data Language packages such as `System::Math`;
 these include types for irrational or algebraic or complex numbers or
 quaternions or rational types with a fixed precision or scale or
 floating-point types and so on.
@@ -1509,7 +1509,7 @@ otherwise.
         )),
 
 The selection type definer `Integer` represents
-the infinite Muldis D Foundation type `foundation::Integer`.  An `Integer`
+the infinite Muldis Data Language Foundation type `foundation::Integer`.  An `Integer`
 value is a general purpose exact integral number of any magnitude, which
 explicitly does not represent any kind of thing in particular, neither
 cardinal nor ordinal nor nominal.  Its default value is `0`.  `Integer`
@@ -2841,14 +2841,14 @@ distinct `Textual`-composing type that implements `Orderable` in its own
 way, so the latter's operators will just work like users expect.
 
 The `System` package excludes the majority of useful operators specific to
-working with character strings; see instead other Muldis D packages such as
+working with character strings; see instead other Muldis Data Language packages such as
 `System::Text` for these things.  Such tasks
 include like case folding, pattern matching, whitespace trimming, Unicode
 normalization, encoding to and decoding from most binary formats, and so on.
 
-Muldis D is designed expressly to avoid mandatory external dependencies of
+Muldis Data Language is designed expressly to avoid mandatory external dependencies of
 large complexity, such as most of the details of Unicode, in contrast with
-a lot of the more modern languages of its time.  The Muldis D Foundation
+a lot of the more modern languages of its time.  The Muldis Data Language Foundation
 and `System` package are strictly limited in their knowledge of Unicode;
 they know that a code point of the Unicode repertoire is just in the integer
 set `{0..0xD7FF,0xE000..0x10FFFF}`,
@@ -2861,10 +2861,10 @@ properties (upper or lowercase, combining or not, etc), anything to do with
 normalization or folding or pattern matching, and anything to do with other
 binary encodings or character repertoires especially endian-specific, this
 is all expressly *not* part of the language core.  A
-Muldis D implementation can choose whether or not to support them, allowing
+Muldis Data Language implementation can choose whether or not to support them, allowing
 for a lower barrier to entry.  Unicode in particular requires a vast
-knowledge base to work properly with that is regularly updated, and Muldis
-D has a principle that it is better to have multiple specialized components
+knowledge base to work properly with that is regularly updated, and
+Muldis Data Language has a principle that it is better to have multiple specialized components
 that do their jobs well, such as handle Unicode intricacies, while the core
 language can focus on other core competencies that don't involve complex
 externally-defined moving targets.  The `System` package loosely just
@@ -5038,7 +5038,7 @@ the argument.
             default : [],
         )),
 
-The selection type definer `Array` represents the infinite Muldis D Foundation
+The selection type definer `Array` represents the infinite Muldis Data Language Foundation
 type `foundation::Array`.  An `Array` value is a general purpose
 arbitrarily-long ordered sequence of any other, *member* values, which
 explicitly does not represent any kind of thing in particular, and is
@@ -6073,7 +6073,7 @@ function given in its `1` argument.  This function implements the
             default : {0:0},
         )),
 
-The selection type definer `Bag` represents the infinite Muldis D Foundation
+The selection type definer `Bag` represents the infinite Muldis Data Language Foundation
 type `foundation::Bag`.  A `Bag` value is a general purpose arbitrarily-large
 unordered collection of any other, *member* values, which explicitly does
 not represent any kind of thing in particular, and is simply the sum of its
@@ -6571,7 +6571,7 @@ an arbitrarily-long sequence of Unicode 12.1 standard *character
 code points* but it is not a `Text` value; every distinct *attribute name*
 is represented canonically in the type system by a distinct
 `Attr_Name` value.  More precisely, an *attribute name* is an unqualified
-program identifier and forms the basis for Muldis D identifiers.
+program identifier and forms the basis for Muldis Data Language identifiers.
 
 If an `Attributive` value is also `Structural`, it has exactly 1 member,
 meaning the value is or is isomorphic to a `Tuple`, meaning each attribute
@@ -7292,7 +7292,7 @@ be treated abstractly as sets of attributes with minimal effort.
             default : (),
         )),
 
-The selection type definer `Tuple` represents the infinite Muldis D Foundation
+The selection type definer `Tuple` represents the infinite Muldis Data Language Foundation
 type `foundation::Tuple`.  A `Tuple` value is a general purpose
 arbitrarily-large unordered heterogeneous collection of named
 *attributes*, such that no 2 attributes have the same *attribute name*,
@@ -7302,7 +7302,7 @@ name-asset pair, the name being used to look up the attribute in a
 `Tuple`.  An *attribute name* is an unqualified program identifier,
 characterized by an arbitrarily-long sequence of Unicode 12.1 standard
 *character code points* but it is not a
-`Text` value; it forms the basis for Muldis D identifiers.
+`Text` value; it forms the basis for Muldis Data Language identifiers.
 In the general case each attribute of a tuple is of a distinct data type,
 though multiple attributes often have the same type.  The set of attribute
 names of a `Tuple` is called its *heading*, and the corresponding
@@ -8722,7 +8722,7 @@ function `select_Relational` for the composing type `Tuple_Bag`.
             default : (False : ()),
         )),
 
-The selection type definer `Article` represents the infinite Muldis D
+The selection type definer `Article` represents the infinite Muldis Data Language
 Foundation type `foundation::Article`.  An `Article` value is ...
 
 A `Article` value consists of a *label* paired with a set of 0..N
@@ -8754,13 +8754,13 @@ expression node types and concrete syntax (and Foundation functions).
             evaluates : \foundation::Handle(),
         )),
 
-The selection type definer `Handle` represents the infinite Muldis D
+The selection type definer `Handle` represents the infinite Muldis Data Language
 Foundation type `foundation::Handle`.  A `Handle` value is an opaque and
 transient reference to an entity or resource that potentially exists at
-arms length from the current Muldis D process or language environment or
+arms length from the current Muldis Data Language process or language environment or
 that otherwise has the potential to mutate in a way visible to the current
-Muldis D process either due to or independent of the actions of said
-process.  In the general case, the current Muldis D process employs
+Muldis Data Language process either due to or independent of the actions of said
+process.  In the general case, the current Muldis Data Language process employs
 *message passing* to interact with the entity such that the `Handle`
 serves as its uniform resource identifier.  In notable contrast to other
 type definers, except `None`, no `Handle` type definer has a `default`
@@ -8784,9 +8784,9 @@ associated with `Handle` by users to help the system manage such cycles.
             evaluates : \foundation::Variable(),
         )),
 
-The selection type definer `Variable` represents the infinite Muldis D
+The selection type definer `Variable` represents the infinite Muldis Data Language
 Foundation type `foundation::Variable`.  A `Variable` value is an opaque and
-transient reference to a Muldis D *variable* (the latter being a container
+transient reference to a Muldis Data Language *variable* (the latter being a container
 for an appearance of a value).  The identity of a `Variable` is just the
 identity of the (anonymous) variable that it points to, which is the
 latter's address; when `same` is given two `Variable` arguments it will
@@ -8859,13 +8859,13 @@ that this points to to hold the value of its right-hand argument.
             evaluates : \foundation::Process(),
         )),
 
-The selection type definer `Process` represents the infinite Muldis D
+The selection type definer `Process` represents the infinite Muldis Data Language
 Foundation type `foundation::Process`.  A `Process` value is an opaque
-and transient reference to a *process* running inside the Muldis D
+and transient reference to a *process* running inside the Muldis Data Language
 language environment / DBMS / virtual machine, which typically has its own
-autonomous transactional context.  Each Muldis D *process*
+autonomous transactional context.  Each Muldis Data Language *process*
 might be either self-contained or be a proxy for some entity outside the
-Muldis D language environment.
+Muldis Data Language language environment.
 
 A typical and idiomatic example use for multiple processes is to coordinate
 usage of a shared resource such as *the database*.  In this scenario, one
@@ -8883,7 +8883,7 @@ denied/failed and returns any relevant fetched data.
 
 Any translation of a message into physical actions against a file system,
 or any translation of a message into some other query language such as SQL
-for a remote execution, is done by the *database owner* Muldis D process.
+for a remote execution, is done by the *database owner* Muldis Data Language process.
 
 ## Stream
 
@@ -8892,9 +8892,9 @@ for a remote execution, is done by the *database owner* Muldis D process.
             evaluates : \foundation::Stream(),
         )),
 
-The selection type definer `Stream` represents the infinite Muldis D
+The selection type definer `Stream` represents the infinite Muldis Data Language
 Foundation type `foundation::Stream`.  A `Stream` value is an opaque and
-transient reference to a Muldis D *stream*, which represents streaming
+transient reference to a Muldis Data Language *stream*, which represents streaming
 data such as from/to user I/O or the filesystem or network services etc.
 
 ## External
@@ -8904,18 +8904,18 @@ data such as from/to user I/O or the filesystem or network services etc.
             evaluates : \foundation::External(),
         )),
 
-The selection type definer `External` represents the infinite Muldis D
+The selection type definer `External` represents the infinite Muldis Data Language
 Foundation type `foundation::External`.  An `External` value is an opaque and
 transient reference to an entity that is defined and managed externally to
-the Muldis D language environment, either internally to the Muldis D host
+the Muldis Data Language language environment, either internally to the Muldis Data Language host
 implementation or in some peer language that it mediates.
 
-As `External` values are black boxes to Muldis D, it is the responsibility
+As `External` values are black boxes to Muldis Data Language, it is the responsibility
 of their external manager to at the very least implement the `same`
 function for them in a fully deterministic manner, as well as externally
 define any other operators for them that users may wish to invoke for those
-values from Muldis D code, including any to map with or marshal with Muldis
-D values.
+values from Muldis Data Language code, including any to map with or marshal with
+Muldis Data Language values.
 
 Other programming languages may name their corresponding types *extern*
 (asmjs).
@@ -8929,8 +8929,8 @@ Other programming languages may name their corresponding types *extern*
         )),
 
 The function `External::call_function` is a proxy for invoking a function
-that is defined and managed externally to the Muldis D language
-environment.  Muldis D will assume said function is completely
+that is defined and managed externally to the Muldis Data Language language
+environment.  Muldis Data Language will assume said function is completely
 deterministic, and there would likely be problems if it isn't.  Using
 `External::call_function` as a foundation, it is possible to define an
 arbitrarily complex type graph involving `External` values.
@@ -8954,7 +8954,7 @@ The selection type definer `Excuse` is infinite.  An `Excuse` value is an
 explicitly stated reason for why, given some particular problem domain, a
 value is not being used that is ordinary for that domain.  For example, the
 typical integer division operation is not defined to give an integer result
-when the divisor is zero, and so a Muldis D function for integer division
+when the divisor is zero, and so a Muldis Data Language function for integer division
 could be defined to result in an `Excuse` value rather than throw an
 exception in that case.  For another example, an `Excuse` value could be
 used to declare that the information we are storing about a person is
@@ -9022,11 +9022,11 @@ quasi-values *null* or *nil* or *none* or *nothing* or *undef* or
 
 The singleton type definer `Before_All_Others` represents a type-agnostic
 analogy of negative infinity, an `Orderable` value that sorts *before*
-all other values in the Muldis D type system, and that is its only meaning.
+all other values in the Muldis Data Language type system, and that is its only meaning.
 This value is expressly *not* meant to represent any specific mathematical
 or physical concept of *infinity* or `∞` (of which there are many),
 including those of the IEEE floating-point standards; such things should be
-defined in other, not-`System`, Muldis D packages for the relevant domains.
+defined in other, not-`System`, Muldis Data Language packages for the relevant domains.
 
 ## After_All_Others
 
@@ -9038,11 +9038,11 @@ defined in other, not-`System`, Muldis D packages for the relevant domains.
 
 The singleton type definer `After_All_Others` represents a type-agnostic
 analogy of positive infinity, an `Orderable` value that sorts *after*
-all other values in the Muldis D type system, and that is its only meaning.
+all other values in the Muldis Data Language type system, and that is its only meaning.
 This value is expressly *not* meant to represent any specific mathematical
 or physical concept of *infinity* or `∞` (of which there are many),
 including those of the IEEE floating-point standards; such things should be
-defined in other, not-`System`, Muldis D packages for the relevant domains.
+defined in other, not-`System`, Muldis Data Language packages for the relevant domains.
 
 ## Div_By_Zero
 
@@ -9055,7 +9055,7 @@ The singleton type definer `Div_By_Zero` represents the *undefined* result of
 attempting to divide a simple number by a simple, unsigned, number zero.
 Note that IEEE floating-point standards define a negative or positive
 infinity result value when dividing by an explicitly signed (negative or
-positive) zero, but the Muldis D `System` package lacks those concepts.
+positive) zero, but the Muldis Data Language `System` package lacks those concepts.
 
 ## Zero_To_The_Zero
 
@@ -9130,7 +9130,7 @@ The function `coalesce` aka `??` results in its `0` argument iff the
 latter is not an `Excuse`, and results in its `1` argument otherwise.
 This function is designed to be chained for any number of sequenced values
 in order to pick the first non-`Excuse` in a list.
-This function has analogous stop-or-continue behaviour to the Muldis D
+This function has analogous stop-or-continue behaviour to the Muldis Data Language
 special syntax `or_else` where any `Excuse` or non-`Excuse` stands in
 for `False` and `True` respectively but it has the opposite associativity.
 Other programming languages may name their corresponding *null coalescing*
@@ -9153,7 +9153,7 @@ The function `anticoalesce` aka `!!` results in its `0` argument iff the
 latter is an `Excuse`, and results in its `1` argument otherwise.
 This function is designed to be chained for any number of sequenced values
 in order to pick the first `Excuse` in a list.
-This function has analogous stop-or-continue behaviour to the Muldis D
+This function has analogous stop-or-continue behaviour to the Muldis Data Language
 special syntax `and_then` where any `Excuse` or non-`Excuse` stands in
 for `False` and `True` respectively but it has the opposite associativity.
 
@@ -10386,12 +10386,12 @@ and would not cause a problem if missing.*
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the **Muldis D Standard
-Library** (**MDSL**) primary component of the **Muldis D** language
+This file is part of the formal specification of the **Muldis Data Language Standard
+Library** (**MDSL**) primary component of the **Muldis Data Language** language
 specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.

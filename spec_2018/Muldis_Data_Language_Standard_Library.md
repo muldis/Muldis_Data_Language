@@ -1,37 +1,37 @@
 # NAME
 
-Muldis D Standard Library (MDSL) - Muldis D common core vocabulary for regular users
+Muldis Data Language Standard Library (MDSL) - Muldis Data Language common core vocabulary for regular users
 
 # VERSION
 
-This document is Muldis D Standard Library (MDSL) version 0.300.0.
+This document is Muldis Data Language Standard Library (MDSL) version 0.300.0.
 
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis D Standard Library** (**MDSL**) primary component of the **Muldis D**
+the **Muldis Data Language Standard Library** (**MDSL**) primary component of the **Muldis Data Language**
 language.  The fully-qualified name of this document and the specification
-it contains is `Muldis_D_Standard_Library https://muldis.com 0.300.0`.
+it contains is `Muldis_Data_Language_Standard_Library https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis D** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** language meta-specification.
 
-The **Muldis D Standard Library** specification comprises a documented
-library written entirely in Muldis D which provides its common core
+The **Muldis Data Language Standard Library** specification comprises a documented
+library written entirely in Muldis Data Language which provides its common core
 vocabulary, the system-defined data types and operators that regular users
 of the language would employ directly in their applications and schemas.
 It corresponds to the "standard library" that is intrinsic to or bundled
 with typical general purpose application programming languages or SQL
-DBMSs.  It is the bulk portion of Muldis D that is self-hosted and can be
-shared by all Muldis D implementations, though the latter can choose to
+DBMSs.  It is the bulk portion of Muldis Data Language that is self-hosted and can be
+shared by all Muldis Data Language implementations, though the latter can choose to
 internally substitute behaviour-maintaining host-native versions for
-performance.  It comprises a set of Muldis D *packages* (compilation
+performance.  It comprises a set of Muldis Data Language *packages* (compilation
 units) that users can choose from as dependencies of their applications and
 schemas.  None are mandatory, and users can choose alternatives, but they
 are recommended as the default options for their functionality.
 
 # PACKAGES
 
-The **Muldis D Standard Library** comprises these Muldis D packages:
+The **Muldis Data Language Standard Library** comprises these Muldis Data Language packages:
 
 * `System https://muldis.com 0.300.0` -
 [Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) - Provides the common primary
@@ -42,12 +42,12 @@ Other packages will be added later, such as `System::Math`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the **Muldis D Standard
-Library** (**MDSL**) primary component of the **Muldis D** language
+This file is part of the formal specification of the **Muldis Data Language Standard
+Library** (**MDSL**) primary component of the **Muldis Data Language** language
 specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
