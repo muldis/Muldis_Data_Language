@@ -9,19 +9,19 @@ This document is Muldis::D version 0.300.0.
 # DESCRIPTION
 
 This document aggregate is the human readable authoritative
-formal specification of the B<Muldis D> language, and of the virtual
+formal specification of the **Muldis D** language, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one.
 
 The fully-qualified name of this document aggregate and the language
 specification it contains (as a single composition) is
-C<Muldis_D https://muldis.com 0.300.0>.  It is the
+`Muldis_D https://muldis.com 0.300.0`.  It is the
 official/original (not embraced and extended) Muldis D language
-specification by the authority Muldis Data Systems (C<https://muldis.com>),
-version number C<0.300.0> (this number matches the VERSION in this file).
+specification by the authority Muldis Data Systems (`https://muldis.com`),
+version number `0.300.0` (this number matches the VERSION in this file).
 
-The B<Muldis D> language aggregate specification assumes that Muldis D,
+The **Muldis D** language aggregate specification assumes that Muldis D,
 similar to some common programming languages, can be effectively defined
 in terms of 3 individual specifications covering in turn its semantics
 (architecture, behaviour, and type system), its syntax (grammar), and its
@@ -30,60 +30,60 @@ independent and each one can evolve on its own and have many versions over
 time, some of those under the original author's control, and some under the
 control of other parties.
 
-For the official Muldis D by authority C<https://muldis.com>, the default 3
+For the official Muldis D by authority `https://muldis.com`, the default 3
 component specifications are named, respectively:
 
 =over
 
 =item *
 
-B<Muldis D Foundation> (B<MDF>) -
-C<Muldis_D_Foundation https://muldis.com 0.300.0>.
+**Muldis D Foundation** (**MDF**) -
+`Muldis_D_Foundation https://muldis.com 0.300.0`.
 
 =item *
 
-B<Muldis D Plain Text> (B<MDPT>) -
-C<Muldis_D_Plain_Text https://muldis.com 0.300.0>.
+**Muldis D Plain Text** (**MDPT**) -
+`Muldis_D_Plain_Text https://muldis.com 0.300.0`.
 
 =item *
 
-B<Muldis D Standard Library> (B<MDSL>) -
-C<Muldis_D_Standard_Library https://muldis.com 0.300.0>.
+**Muldis D Standard Library** (**MDSL**) -
+`Muldis_D_Standard_Library https://muldis.com 0.300.0`.
 
 =back
 
-In this context, the B<Muldis D> language aggregate specification is mostly
+In this context, the **Muldis D** language aggregate specification is mostly
 just a top-level catalogue pointing to those 3 primary components, as well
 as to some other things in the ecosystem.
 
-The B<Muldis D Foundation> specification defines the fundamental
+The **Muldis D Foundation** specification defines the fundamental
 architecture, behaviour, and type system of Muldis D.  For all intents and
 purposes, it is the entire official Muldis D language specification except
 for any candidate syntaxes and any candidate standard libraries.  So it is
 generally useful to read this specification first and consider any others
 subservient to it.  While many alternative syntaxes and standard libraries
-are likely and expected to exist in a combination called B<Muldis D>,
-substituting out B<Muldis D Foundation> for something with a large degree
+are likely and expected to exist in a combination called **Muldis D**,
+substituting out **Muldis D Foundation** for something with a large degree
 of changes would likely yield a combination that is best to name something
-other than B<Muldis D>.  B<Muldis D Foundation> defines the I<native> form
+other than **Muldis D**.  **Muldis D Foundation** defines the *native* form
 of Muldis D source code, which is homoiconic data structures composed
 largely in terms of function calls, and is expressly agnostic to any
 concrete language syntax.  It defines the user-facing behaviour/API of the
 small number of foundational / low-level system-defined types and
 operators and other features which are canonically written in one or more
-third-party languages which are I<hosting> Muldis D; formally their
+third-party languages which are *hosting* Muldis D; formally their
 implementation or internals are expected to be hidden from the Muldis D
 user, and differ in arbitrarily large ways between hosts, so to take
 advantage of the strengths of each host.
-See L<Muldis::D::Foundation> for the B<Muldis D Foundation> specification.
+See L<Muldis::D::Foundation> for the **Muldis D Foundation** specification.
 
-The B<Muldis D Plain Text> specification defines the grammar of the official
+The **Muldis D Plain Text** specification defines the grammar of the official
 concrete Muldis D language syntax that every Muldis D implementation
 is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis D implementations.
 It is also expected to be the syntax of choice for users to write Muldis D
 applications or database schemas in, having the most direct correspondance
-to the I<native> homoiconic Muldis D defined by B<Muldis D Foundation>, and
+to the *native* homoiconic Muldis D defined by **Muldis D Foundation**, and
 is designed to have a similar level of conciseness and readability as what
 users get in both typical general purpose application programming languages
 as well as SQL.
@@ -92,9 +92,9 @@ language syntaxes to be used in different areas of a program, either in
 support of user tastes, or for better host/peer language integration
 (including their ORMs), or as a method of emulating other programming
 language environments or SQL DBMSs.
-See L<Muldis::D::Plain_Text> for the B<Muldis D Plain Text> specification.
+See L<Muldis::D::Plain_Text> for the **Muldis D Plain Text** specification.
 
-The B<Muldis D Standard Library> specification comprises a documented
+The **Muldis D Standard Library** specification comprises a documented
 library written entirely in Muldis D which provides its common core
 vocabulary, the system-defined data types and operators that regular users
 of the language would employ directly in their applications and schemas.
@@ -103,45 +103,45 @@ with typical general purpose application programming languages or SQL
 DBMSs.  It is the bulk portion of Muldis D that is self-hosted and can be
 shared by all Muldis D implementations, though the latter can choose to
 internally substitute behaviour-maintaining host-native versions for
-performance.  It comprises a set of Muldis D I<packages> (compilation
+performance.  It comprises a set of Muldis D *packages* (compilation
 units) that users can choose from as dependencies of their applications and
 schemas.  None are mandatory, and users can choose alternatives, but they
 are recommended as the default options for their functionality.
 See L<Muldis::D::Standard_Library> for the
-B<Muldis D Standard Library> specification.
+**Muldis D Standard Library** specification.
 
 The L</VERSIONING> section in this file presents a formal and future-proofed
 method for specifying the fully-qualified names of each versioned entity.
 
 All code written in Muldis D should begin by specifying the fully-qualified
-name of a concrete grammar it conforms to (either a B<MDPT> version or an
-alternative), except that this concept doesn't apply to the B<MDF>
-homoiconic native form.  Every Muldis D I<package> should both specify the
-fully-qualified name of a foundation (a B<MDF> version typically) that it
+name of a concrete grammar it conforms to (either a **MDPT** version or an
+alternative), except that this concept doesn't apply to the **MDF**
+homoiconic native form.  Every Muldis D *package* should both specify the
+fully-qualified name of a foundation (a **MDF** version typically) that it
 is known to work with, as well as specify the fully-qualified names of all
 other packages that satisfy its direct requirements, whether system-defined
-(typically one or more C<MDSL>) or user-defined.  Doing all of this should
+(typically one or more `MDSL`) or user-defined.  Doing all of this should
 make the code
 unambiguous to both human and machine (eg, implementing) readers of the code.
 
 # VERSIONING
 
-Every Muldis D I<package> (compilation unit) is expected to declare a
-fully-qualified name, or I<identity>, so that it can easily be referred to
+Every Muldis D *package* (compilation unit) is expected to declare a
+fully-qualified name, or *identity*, so that it can easily be referred to
 and be distinguished from every other package that does or might exist.
-One main reason for referring is when one package I<X> is defined partly in
-terms of another I<Y>, that is when I<Y uses X>, so this dependency can be
+One main reason for referring is when one package *X* is defined partly in
+terms of another *Y*, that is when *Y uses X*, so this dependency can be
 clearly stated.  A second main reason is in order to fetch a package from,
-or store a package into, a I<compilation unit repository>, or otherwise
-index a package loaded for execution.  This I<identity> requirement applies
-both to every individual package of the B<MDSL> as well as to every other
+or store a package into, a *compilation unit repository*, or otherwise
+index a package loaded for execution.  This *identity* requirement applies
+both to every individual package of the **MDSL** as well as to every other
 package regardless of origin.
 
 In addition, every Muldis D language component specification document is
 similarly expected to declare its own fully-qualified name, so that it can
 at the very least be referred to by other documentation or users.  In the
-case of the B<MDF>, its name is also referred to by each package as a
-fundamental dependency of its own kind.  In the case of the B<MDPT>, its
+case of the **MDF**, its name is also referred to by each package as a
+fundamental dependency of its own kind.  In the case of the **MDPT**, its
 name is also referred to by each source code written in that syntax, so it
 is explicitly clear on how to parse that code.
 
@@ -154,10 +154,10 @@ depending on the specific kind of entity being named:
 
 The expected fully-qualified name of each Muldis D package version is the
 same format and meaning for both declaration and reference.  It has 3 main
-parts: I<package base name>, I<authority>, and I<version number>.  The
+parts: *package base name*, *authority*, and *version number*.  The
 combination of these 3 parts is the identity of a package, and a program
 can typically (but not necessarily always) use multiple versions of any
-given package at once.  A I<package base name> is an ordered sequence of 1
+given package at once.  A *package base name* is an ordered sequence of 1
 or more nonempty character strings; while Muldis D itself places no other
 restrictions on a package base name, it is expected that the community at
 large should self-regulate reasonable names as is common for libraries or
@@ -165,19 +165,19 @@ modules for other programming languages.
 
 =item *
 
-The expected fully-qualified name of a B<Muldis D Foundation> version as
-referenced as a dependency by a package has 2 main parts: I<authority>, and
-I<version number>.
+The expected fully-qualified name of a **Muldis D Foundation** version as
+referenced as a dependency by a package has 2 main parts: *authority*, and
+*version number*.
 
 =item *
 
-The expected fully-qualified name of a B<Muldis D Plain Text> version as
+The expected fully-qualified name of a **Muldis D Plain Text** version as
 referenced by source code, where the latter declares the former to be its
-format, has 4 main parts: I<family name>, I<syntax name>, I<authority>, and
-I<version number>.  The I<family name> and I<syntax name> are simply the 2
-character strings C<Muldis_D> and C<Plain_Text> respectively, for B<MDPT>;
+format, has 4 main parts: *family name*, *syntax name*, *authority*, and
+*version number*.  The *family name* and *syntax name* are simply the 2
+character strings `Muldis_D` and `Plain_Text` respectively, for **MDPT**;
 alternative (non-legacy) concrete syntaxes can and are encouraged to use
-the same format, albeit using some other distinguishing I<syntax name>.
+the same format, albeit using some other distinguishing *syntax name*.
 Implementations of other arbitrary programming language or data formats in
 terms of treating them as a Muldis D dialect can be arbitrarily complicated
 as far as knowing how to distinguish said alternatives from each other,
@@ -189,18 +189,18 @@ a "magic number" for identifying it as being MDPT source code.
 
 The expected fully-qualified name of a Muldis D language specification
 document (component or aggregate) as declared in said document has 3 main
-parts: I<document base name>, I<authority>, and I<version number>.  The
-I<document base name> is a character string, officially used examples being
-C<Muldis_D>, C<Muldis_D_Foundation>, C<Muldis_D_Plain_Text>, and
-C<Muldis_D_Standard_Library>.
+parts: *document base name*, *authority*, and *version number*.  The
+*document base name* is a character string, officially used examples being
+`Muldis_D`, `Muldis_D_Foundation`, `Muldis_D_Plain_Text`, and
+`Muldis_D_Standard_Library`.
 
 =back
 
-The expected format and meaning of an I<authority> and a I<version number>
+The expected format and meaning of an *authority* and a *version number*
 is the same for all of the above-mentioned kinds of entities, and so their
 common definitions follow.
 
-An I<authority> is some nonempty character string whose value uniquely
+An *authority* is some nonempty character string whose value uniquely
 identifies the authority or author of the versioned entity.  Generally
 speaking, the community at large should self-regulate authority identifier
 strings so they are reasonable formats and so each prospective
@@ -208,20 +208,20 @@ authority/author has one of their own that everyone recognizes as theirs.
 Note that an authority/author doesn't have to be an individual person; it
 could be some corporate entity instead.
 
-Examples of recommended I<authority> naming schemes include a qualified
-base HTTP url belonging to the authority (example C<https://muldis.com>) or
+Examples of recommended *authority* naming schemes include a qualified
+base HTTP url belonging to the authority (example `https://muldis.com`) or
 a qualified user identifier at some well-known compilation unit repository
-(example C<https://github.com/muldis> or C<cpan:DUNCAND>).
+(example `https://github.com/muldis` or `cpan:DUNCAND`).
 
 For all official/original works by Muldis Data Systems, Inc., the
-I<authority> has always been C<https://muldis.com> and is expected to remain
+*authority* has always been `https://muldis.com` and is expected to remain
 so during the foreseeable future.
 
-If someone else wants to I<embrace and extend> Muldis D, then they must use
-their own (not C<https://muldis.com>) base authority identifier, to prevent
+If someone else wants to *embrace and extend* Muldis D, then they must use
+their own (not `https://muldis.com`) base authority identifier, to prevent
 ambiguity, assist quality control, and give due credit.
 
-In this context, I<embrace and extend> means for someone to do any of the
+In this context, *embrace and extend* means for someone to do any of the
 following:
 
 =over
@@ -240,34 +240,34 @@ official modifications following a change of who is the official maintainer.
 Releasing a delta document for a version of this current multi-document or
 any component thereof where the referenced original is released by someone
 else, and where the delta either makes incompatible semantic or syntax
-changes or makes changes to the C<System> package.
+changes or makes changes to the `System` package.
 
 =back
 
-A I<version number> is an ordered sequence of 1 or more integers.  A
-I<version number> is used to distinguish between all of the versions of a
-named entity that have a common I<authority>, per each kind of versioned
+A *version number* is an ordered sequence of 1 or more integers.  A
+*version number* is used to distinguish between all of the versions of a
+named entity that have a common *authority*, per each kind of versioned
 entity; version numbers typically indicate the release order of these
 related versions and how easily users can substitute one version for
-another.  The actual intended meaning of any given I<version number>
+another.  The actual intended meaning of any given *version number*
 regarding for example substitutability is officially dependant on each
-I<authority> and no implicit assumptions should be made that 2 I<version
-number> with different I<authority> are comparable in any meaningful way,
-aside from case-by-case where a particular I<authority> declares they use a
+*authority* and no implicit assumptions should be made that 2 *version
+number* with different *authority* are comparable in any meaningful way,
+aside from case-by-case where a particular *authority* declares they use a
 scheme compatible with another.  The only thing Muldis D requires is that
 every distinct version of an entity has a distinct fully-qualified name.
 
 For each official/original work by Muldis Data Systems related to Muldis D
 and released after 2016 April 1, except where otherwise stated, it uses
-I<semantic versioning> for each I<version number>, as described below.
+*semantic versioning* for each *version number*, as described below.
 Others are encouraged to follow the same format, but are not required to.
 
-The I<semantic versioning> described below is intended to be the same as
-that defined by the public standard B<Semantic Versioning 2.0.0> as
+The *semantic versioning* described below is intended to be the same as
+that defined by the public standard **Semantic Versioning 2.0.0** as
 published at L<https://semver.org> but it is reworded here so that the
 current document can be understood if the external standard disappears.
 
-A I<version number> for authority C<https://muldis.com> is an ordered
+A *version number* for authority `https://muldis.com` is an ordered
 sequence of integers, the order of these being from most significant to
 least, with 3 positions [MAJOR,MINOR,PATCH] and further ones
 possible.  The version sequence may have have as few as 1
@@ -290,7 +290,7 @@ When MAJOR is zero, MINOR is incremented for any kind of breaking change.
 There is no requirement that successive versions have adjacent integers,
 but they must be increases.
 
-Strictly speaking a I<version number> reflects intention of the authority's
+Strictly speaking a *version number* reflects intention of the authority's
 release and not necessarily its actuality.  If PATCH is incremented but the
 release unknowingly had a breaking change, then once this is discovered
 another release should be made which increments PATCH again and undoes that
@@ -302,15 +302,15 @@ Currently this document does not specify matters such as how to indicate
 maturity, for example production vs pre-production/beta/etc, so explicit
 markers of such can either be omitted or be based on other standards.
 
-I<This is all subject to change.>
+*This is all subject to change.*
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the B<Muldis D> language.
+This file is part of the formal specification of the **Muldis D** language.
 
 Muldis D is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
@@ -335,7 +335,7 @@ practical way of suggesting improvements to the standard version.
 
 # TRADEMARK POLICY
 
-B<MULDIS> and B<MULDIS MULTIVERSE OF DISCOURSE> are trademarks of Muldis
+**MULDIS** and **MULDIS MULTIVERSE OF DISCOURSE** are trademarks of Muldis
 Data Systems, Inc. (L<https://muldis.com>).
 The trademarks apply to computer database software and related services.
 See L<https://muldis.com/trademark_policy.html> for the full written details

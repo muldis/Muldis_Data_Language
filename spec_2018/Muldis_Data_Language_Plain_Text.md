@@ -9,19 +9,19 @@ This document is Muldis::D::Plain_Text version 0.300.0.
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the B<Muldis D Plain Text> (B<MDPT>) primary component of the B<Muldis D>
+the **Muldis D Plain Text** (**MDPT**) primary component of the **Muldis D**
 language.  The fully-qualified name of this document and the specification
-it contains is C<Muldis_D_Plain_Text https://muldis.com 0.300.0>.
+it contains is `Muldis_D_Plain_Text https://muldis.com 0.300.0`.
 
-See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
+See also L<Muldis::D> to read the **Muldis D** language meta-specification.
 
-The B<Muldis D Plain Text> specification defines the grammar of the official
+The **Muldis D Plain Text** specification defines the grammar of the official
 concrete Muldis D language syntax that every Muldis D implementation
 is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis D implementations.
 It is also expected to be the syntax of choice for users to write Muldis D
 applications or database schemas in, having the most direct correspondance
-to the I<native> homoiconic Muldis D defined by B<Muldis D Foundation>, and
+to the *native* homoiconic Muldis D defined by **Muldis D Foundation**, and
 is designed to have a similar level of conciseness and readability as what
 users get in both typical general purpose application programming languages
 as well as SQL.
@@ -33,7 +33,7 @@ language environments or SQL DBMSs.
 
 This document defines the grammar that all non-hosted plain-text Muldis D
 source code must conform to when it claims to be written in the
-C<Muldis_D Plain_Text https://muldis.com 0.300.0> (B<MDPT>) language.
+`Muldis_D Plain_Text https://muldis.com 0.300.0` (**MDPT**) language.
 
 This grammar is meant to be more illustrative to human readers than
 executable, as is typical for standards documents; you wouldn't likely be
@@ -41,15 +41,15 @@ able to just hand if off to a parser-generator and expect it to work as is.
 But it should still have enough information to derive an executable parser.
 
 Note that the standard filename extension for files with such source code
-is C<.mdpt>, though as per standard UNIX conventions, such Muldis D source
+is `.mdpt`, though as per standard UNIX conventions, such Muldis D source
 code files can in fact have any filename extension when there is other
 context to interpret them with.  Filename extensions are more for the
 benefit of the operating system or command shell or users than for a Muldis
 D implementation, the latter just cares about the content of the file.
 
-I<TODO: Comment about resolving package names to package source files;
+*TODO: Comment about resolving package names to package source files;
 the CompUnitRepo concept of Raku would be a good precedent.
-That will probably go somewhere else in the spec rather than here.>
+That will probably go somewhere else in the spec rather than here.*
 
 A primary feature of Muldis D is a grammar that is small and simple while
 still being quite rich and expressive.  As much as possible of the language
@@ -67,7 +67,7 @@ design also means it is much easier to implement the Muldis D language
 itself, a large part of the langauge can be bootstrapped, and both parsers
 and generators of Muldis D Plain Text can be simple and easy to make.
 
-Muldis D Plain Text has a I<linear syntax>, and is designed to be easily
+Muldis D Plain Text has a *linear syntax*, and is designed to be easily
 handled by a single-pass parser, or at least a single-pass lexer; all the
 context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code, or any required lookahead is
@@ -91,8 +91,8 @@ parser would use context to supply default values for those elements.
 
 # GRAMMAR INTERPRETATION
 
-I<TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
-keep in mind that the grammar is inspired by both EBNF and Raku rules.>
+*TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
+keep in mind that the grammar is inspired by both EBNF and Raku rules.*
 
     About separator-defined repetitions:
     - ** takes number or range on right
@@ -101,7 +101,7 @@ keep in mind that the grammar is inspired by both EBNF and Raku rules.>
 
 # PARSING UNITS
 
-The root grammar token for Muldis D Plain Text is C<< <MDPT> >>.
+The root grammar token for Muldis D Plain Text is `<MDPT>`.
 
 Grammar:
 
@@ -127,13 +127,13 @@ Grammar:
     <shebang_whitespace_break> ::=
         ...
 
-A C<< <shebang_line> >>, if it exists, must be the first characters of the
+A `<shebang_line>`, if it exists, must be the first characters of the
 text file, and consists of a magic number which expressed as ASCII or UTF-8
-is C<#!>, followed by a UNIX-like interpreter directive or path to an
+is `#!`, followed by a UNIX-like interpreter directive or path to an
 executable that can interpret Muldis D Plain Text files.  When a Muldis D
 Plain Text file starts with a shebang line, it can be invoked directly as
 if it were an executable on a UNIX-like system.  The format of
-C<< <shebang_directive> >> isn't defined in this document; see the appropriate
+`<shebang_directive>` isn't defined in this document; see the appropriate
 external UNIX/etc documentation for that; however, the Muldis D Plain Text
 file must have at least one line-breaking whitespace character of some kind
 following it, which is how we know where the Muldis D code begins.
@@ -226,38 +226,38 @@ Grammar:
         <-quoting_char -illegal_char -ws_restricted_outside_char>
 
 The Muldis D Plain Text grammar recognizes 7 distinct character code point
-(hereafter referred to as I<character>) classes,
+(hereafter referred to as *character*) classes,
 which are mutually disjoint proper subsets of the character repertoire
-identified by the I<script name>: I<alphanumeric>, I<quoting>, I<bracketing>,
-I<symbolic>, I<whitespace>, I<illegal>, I<nonenumerated>; the first 6 are
-collectively I<enumerated>.
+identified by the *script name*: *alphanumeric*, *quoting*, *bracketing*,
+*symbolic*, *whitespace*, *illegal*, *nonenumerated*; the first 6 are
+collectively *enumerated*.
 
-The first 5 I<enumerated> classes (all but I<illegal>) are the more
+The first 5 *enumerated* classes (all but *illegal*) are the more
 syntactically interesting ones and are generally what the grammar are
 defined in terms of.
 
 Broadly speaking, Muldis D Plain Text code is made up of 2 primary
 grammatical contexts which are mutually disjoint and complementary; one of
-these is anywhere I<outside> all quoted strings, and its complement is
-anywhere I<inside> any quoted string; it is the I<quoting> characters that
+these is anywhere *outside* all quoted strings, and its complement is
+anywhere *inside* any quoted string; it is the *quoting* characters that
 mark the transition between these 2 contexts.  Broadly speaking, all of the
-I<enumerated> classes (except I<illegal>) represent characters that are
-I<unrestricted> and may appear anywhere in Plain Text source code.  In
-contrast, I<nonenumerated> characters may only appear literally
-inside of a quoted string, and I<illegal> characters may not appear
+*enumerated* classes (except *illegal*) represent characters that are
+*unrestricted* and may appear anywhere in Plain Text source code.  In
+contrast, *nonenumerated* characters may only appear literally
+inside of a quoted string, and *illegal* characters may not appear
 literally in source code at all.
 
-All characters of the ASCII repertoire are I<enumerated>; loosely speaking,
-all printable ASCII characters are I<unrestricted>, as
-are the small number of non-printable ASCII characters named in C<<
-<whitespace_char> >>; all other (non-printable) ASCII characters are
-I<illegal>.
+All characters of the ASCII repertoire are *enumerated*; loosely speaking,
+all printable ASCII characters are *unrestricted*, as
+are the small number of non-printable ASCII characters named in
+`<whitespace_char>`; all other (non-printable) ASCII characters are
+*illegal*.
 
-The vast majority of non-ASCII Unicode characters are I<restricted> to
+The vast majority of non-ASCII Unicode characters are *restricted* to
 appearing literally inside of a quoted string, loosely speaking the
-only exceptions being the small number named in C<< <symbolic_char> >> or
-C<< <whitespace_char> >>; any non-ASCII Unicode control characters not
-otherwise named are I<illegal>.
+only exceptions being the small number named in `<symbolic_char>` or
+`<whitespace_char>`; any non-ASCII Unicode control characters not
+otherwise named are *illegal*.
 
 Regardless of character class, all characters may be logically represented
 in terms of character escape sequences, but only inside of a quoted string.
@@ -278,7 +278,7 @@ Note that, while in theory supporting bareword Greek letters may make math
 or logic expressions more pleasant, for now they aren't partly to avoid
 confusion with similar-looking ASCII letters, and because its hard to know
 where to draw the line if one wanted to include the whole un-accented Greek
-alphabet, not just C<[ Α..Ρ Σ..Ω α..ω ]>; so in the end, simplicity rules.
+alphabet, not just `[ Α..Ρ Σ..Ω α..ω ]`; so in the end, simplicity rules.
 UPDATE: A select few Greek letters are supported bareword, enumerated above.
 
 # ESCAPED CHARACTERS
@@ -304,8 +304,8 @@ The meanings of the simple character escape sequences are:
     \n  | 0xA     10 | LINE FEED (LF)  |     | ctrl char line feed / newline
     \r  | 0xD     13 | CARR. RET. (CR) |     | control char carriage return
 
-There is currently just one complex escape sequence, of the format C<<
-\c<...> >>, that supports specifying characters in terms of their Unicode
+There is currently just one complex escape sequence, of the format
+`\c<...>`, that supports specifying characters in terms of their Unicode
 abstract code point number.  One reason for this feature is to empower more
 elegant passing of Unicode-savvy Plain_Text source code through a
 communications channel that is more limited, such as to 7-bit ASCII.
@@ -320,9 +320,9 @@ Examples:
 
     \c<65>
 
-Note that Plain_Text eschews built-in support for a C<< \c<...> >> format
+Note that Plain_Text eschews built-in support for a `\c<...>` format
 that specifies characters in terms of their Unicode character name, for
-example C<< \c<LATIN SMALL LETTER OU> >>.  Instead, it is left to the
+example `\c<LATIN SMALL LETTER OU>`.  Instead, it is left to the
 domain of non-core Muldis D packages to support such a feature.  The main
 reason for this is to avoid an unconditionally-mandatory complex dependency
 that is the Unicode character database.
@@ -340,7 +340,7 @@ Grammar:
     <quoted_sp_comment_str> ::=
         '`' <-[`]>* '`'
 
-The primary function of I<dividing space>, represented by C<< <sp> >>, is
+The primary function of *dividing space*, represented by `<sp>`, is
 to disambiguate the boundaries of otherwise-consecutive grammar tokens.
 
 Once Muldis D Plain Text code is parsed, any dividing space is just
@@ -348,64 +348,64 @@ discardable non-semantic metadata for its wider context, but during a parse
 its presence is often critical to properly interpret the wider context.
 
 The grammar doesn't specify this explicitly for simplicity, but anywhere a
-C<< <sp> >> token appears, it should be interpreted as carrying a number of
+`<sp>` token appears, it should be interpreted as carrying a number of
 look-around assertions regarding adjacent tokens.
 
-In the context of any C<< <foo> <sp> <bar> >>, these syntax rules apply:
+In the context of any `<foo> <sp> <bar>`, these syntax rules apply:
 
 =over
 
 =item *
 
-If C<< <foo> >> and C<< <bar> >> are of different character classes
-(alphanumeric vs quoting vs bracketing vs symbolic vs whitespace) then C<<
-<sp> >> is allowed to be empty.
+If `<foo>` and `<bar>` are of different character classes
+(alphanumeric vs quoting vs bracketing vs symbolic vs whitespace) then
+`<sp>` is allowed to be empty.
 
 =item *
 
-Otherwise, if C<< <foo> >> and C<< <bar> >> are both alphanumeric then C<<
-<sp> >> must be nonempty.
+Otherwise, if `<foo>` and `<bar>` are both alphanumeric then
+`<sp>` must be nonempty.
 
 =item *
 
-Otherwise, if C<< <foo> >> and C<< <bar> >> are both quoting or bracketing
-or whitespace then C<< <sp> >> is allowed to be empty.
+Otherwise, if `<foo>` and `<bar>` are both quoting or bracketing
+or whitespace then `<sp>` is allowed to be empty.
 
 =item *
 
-Otherwise, C<< <foo> >> and C<< <bar> >> are both symbolic; whether or not
-C<< <sp> >> is allowed to be empty or not depends on the specific sequence
+Otherwise, `<foo>` and `<bar>` are both symbolic; whether or not
+`<sp>` is allowed to be empty or not depends on the specific sequence
 of symbolic characters in the original source code, as described by the
 subsequent syntax rules.
 
 =item *
 
-If either C<< <foo> >> or C<< <bar> >> or both are either C<,> or C<;> or
-C<\> then C<< <sp> >> is allowed to be empty.
+If either `<foo>` or `<bar>` or both are either `,` or `;` or
+`\` then `<sp>` is allowed to be empty.
 
 =item *
 
-Otherwise, if exactly one of C<< <foo> >> or C<< <bar> >> is C<:> and the
-other doesn't have that character then C<< <sp> >> is allowed to be empty.
+Otherwise, if exactly one of `<foo>` or `<bar>` is `:` and the
+other doesn't have that character then `<sp>` is allowed to be empty.
 
 =item *
 
-OBSOLETE: Otherwise, if C<< <foo> >> is C<:=> then C<< <sp> >> is allowed to be empty.
+OBSOLETE: Otherwise, if `<foo>` is `:=` then `<sp>` is allowed to be empty.
 
 =item *
 
-Otherwise, C<< <sp> >> must be nonempty.
+Otherwise, `<sp>` must be nonempty.
 
 =back
 
-I<TODO.  Some of the above points concerning ":" are outdated and need fixing.>
+*TODO.  Some of the above points concerning ":" are outdated and need fixing.*
 
-The secondary function of I<dividing space> is to empower users to format
+The secondary function of *dividing space* is to empower users to format
 their code for easier readability through appropriate linebreaks,
 indentation, and other kinds of spacing, as they see fit; what they choose
 here has no impact on the behaviour of the code.
 
-The tertiary function of I<dividing space> is to empower the placement of
+The tertiary function of *dividing space* is to empower the placement of
 code comments or visual dividers almost anywhere, but with the caveat that
 comments written this way are not introspectable as comments in the parsed
 code, and rather are treated like insignificant whitespace.  This style of
@@ -433,9 +433,9 @@ ambiguous as to whether a term is a keyword versus the name of some entity,
 the parser will always take the keyword interpretation.  For all such
 cases, Muldis D Plain Text provides syntax options that explicitly
 disambiguate in favor of the non-keyword choice.  Since every entity name
-C<foo> is allowed to be double-quoted anywhere it appears like C<'foo'>,
+`foo` is allowed to be double-quoted anywhere it appears like `'foo'`,
 while all keywords only have a single syntax each which is non-quoted, a
-non-quoted C<foo> will always favor the keyword while a quoted C<'foo'>
+non-quoted `foo` will always favor the keyword while a quoted `'foo'`
 will always favor the entity name.
 
 These are keywords:
@@ -484,7 +484,7 @@ These are used as list/pair separators:
     ;
     ,
 
-Finally, the backslash C<\> is used heavily to indicate value literals of
+Finally, the backslash `\` is used heavily to indicate value literals of
 many different kinds, disambiguating them from other things.
 
 Muldis D Plain Text purposefully keeps its set of keywords small, therefore
@@ -566,19 +566,19 @@ Grammar:
     <entry_point_rtn_name> ::=
         <absolute_name>
 
-A C<< <generic_name> >> is a I<generic context entity name>, which can be
-used in any context that is expecting I<a> Muldis D entity name in the
+A `<generic_name>` is a *generic context entity name*, which can be
+used in any context that is expecting *a* Muldis D entity name in the
 general sense, without restrictions.  Examples of use are when declaring
 any named entity or with general type/routine/etc invocation syntax that
 allows any entity of the respective kind, or for attr names.
 
-A C<< <fixed_name> >> is for use within value expressions with certain
+A `<fixed_name>` is for use within value expressions with certain
 common cases of function invocations where an unqualified
 operator name appears next to its operands without any parenthesis to group
-the operands under the operator.  The I<fixed> name comes from such
-invocations being usually qualified as I<prefix> or I<infix> or I<postfix>.
+the operands under the operator.  The *fixed* name comes from such
+invocations being usually qualified as *prefix* or *infix* or *postfix*.
 
-A C<< <pkg_entity_name> >> is for use when either declaring or referencing
+A `<pkg_entity_name>` is for use when either declaring or referencing
 package entities (types, singleton type definers, functions, procedures, aliases, etc)
 which live within a multi-level namespace.
 
@@ -636,63 +636,63 @@ Grammar:
     <fail_expr> ::=
         fail
 
-An C<< <expr> >> is a Muldis D I<generic context value expression>, which
-can be used in any context that is expecting I<a> value but has no
+An `<expr>` is a Muldis D *generic context value expression*, which
+can be used in any context that is expecting *a* value but has no
 expectation that said value belongs to a specific data type.  In the
-general case, an expression denoting any value of the C<Any> type may
-be used where you see C<< <expr> >>, any further restrictions would be
+general case, an expression denoting any value of the `Any` type may
+be used where you see `<expr>`, any further restrictions would be
 provided by the context.
 
-Iff an C<< <expr> >> is an C<< <expr_name> >>, then this means that an
-ancestor C<< <expr> >> is having at least one of its descendents declared
+Iff an `<expr>` is an `<expr_name>`, then this means that an
+ancestor `<expr>` is having at least one of its descendents declared
 with an explicit name/alias rather than being anonymous inline, and then
-the C<< <expr_name> >> is the invocation name of that child.
+the `<expr_name>` is the invocation name of that child.
 
-Iff an C<< <expr> >> is a C<< <naming_expr> >>, then the C<< <named_expr>
->> element of the C<< <naming_expr> >> is being declared with an explicit
-name/alias, and the C<< <expr_name> >> element of the C<< <naming_expr> >>
-is that name/alias.  Any C<< <expr> >> not thusly named/aliased is
+Iff an `<expr>` is a `<naming_expr>`, then the `<named_expr>
+>> element of the `< <naming_expr`` is being declared with an explicit
+name/alias, and the `<expr_name>` element of the `<naming_expr>`
+is that name/alias.  Any `<expr>` not thusly named/aliased is
 anonymous; there is no name to refer to it by in the system and it only can
 be used in the one place where it is declared.
 
-Iff an C<< <expr> >> is an C<< <annotating_expr> >>, then the C<<
-<annotated_expr> >> element of the C<< <annotating_expr> >> is being given
-an explicit introspectable code annotation whose value is the C<<
-<annotation_expr> >> element.  Keep in mind that C<note> binds tighter than
+Iff an `<expr>` is an `<annotating_expr>`, then the
+`<annotated_expr>` element of the `<annotating_expr>` is being given
+an explicit introspectable code annotation whose value is the
+`<annotation_expr>` element.  Keep in mind that `note` binds tighter than
 nearly anything, so you may have to use parenthesis when you want the
 annotation to associate with a non-leaf node.  The most typical kind of
-annotation is an internal code comment expressed as a C<Text> literal,
-or it may be a C<Tuple> of what would otherwise be individual annotations.
+annotation is an internal code comment expressed as a `Text` literal,
+or it may be a `Tuple` of what would otherwise be individual annotations.
 
-An C<< <annotation_expr> >> is subject to the additional rule that it must
-be a completely foldable singleton type definer.  It may not contain a C<< <source_expr> >>.
+An `<annotation_expr>` is subject to the additional rule that it must
+be a completely foldable singleton type definer.  It may not contain a `<source_expr>`.
 
-Iff an C<< <expr> >> is a C<< <delimiting_expr> >>, then it is interpreted
-simply as if it were its child C<< <expr> >> element; the primary reason
-that the C<< <delimiting_expr> >> grammar element exists is to assist the
-parser in determining the boundaries of an C<< <expr> >> where code
+Iff an `<expr>` is a `<delimiting_expr>`, then it is interpreted
+simply as if it were its child `<expr>` element; the primary reason
+that the `<delimiting_expr>` grammar element exists is to assist the
+parser in determining the boundaries of an `<expr>` where code
 otherwise might be ambiguous or be interpreted differently than desired due
 to nesting precedence rules.
 
-A C<< <delimiting_expr> >> is subject to the additional rule that it must
-contain exactly one C<< <result_expr> >> element, which provides its value.
+A `<delimiting_expr>` is subject to the additional rule that it must
+contain exactly one `<result_expr>` element, which provides its value.
 
-Iff an C<< <expr> >> is a C<< <source_expr> >>, then it represents the value
-of the expression-containing routine's I<source> / read-only arguments.
+Iff an `<expr>` is a `<source_expr>`, then it represents the value
+of the expression-containing routine's *source* / read-only arguments.
 
-Iff an C<< <expr> >> is a C<< <literal_expr> >>, then its child C<< <expr> >>
-is treated as completely foldable to a C<Literal>
-value even if it otherwise wouldn't be, such as when a descendant C<< <expr> >>
-is an C<< <args_expr> >>; useful for nested routine definitions.
+Iff an `<expr>` is a `<literal_expr>`, then its child `<expr>`
+is treated as completely foldable to a `Literal`
+value even if it otherwise wouldn't be, such as when a descendant `<expr>`
+is an `<args_expr>`; useful for nested routine definitions.
 
-Iff an C<< <expr> >> is a C<< <fail_expr> >>, then any attempt at runtime
+Iff an `<expr>` is a `<fail_expr>`, then any attempt at runtime
 to take that node's value will throw an exception, and so it should only
-appear as a child of a C<< <conditional_expr> >> node, one that is
+appear as a child of a `<conditional_expr>` node, one that is
 performing an assertion that its other inputs are reasonable.
 
-I<TODO: Add something like 'publish' or 'trace' etc which writes to a
+*TODO: Add something like 'publish' or 'trace' etc which writes to a
 side-channel but has no local effect.  Such as these and maybe 'fail'
-should be documented in another sub-section perhaps.>
+should be documented in another sub-section perhaps.*
 
 See the sections in this file named L</OPAQUE LITERAL EXPRESSIONS>,
 L</COLLECTION SELECTOR EXPRESSIONS>, L</INVOCATION EXPRESSIONS>, and
@@ -725,7 +725,7 @@ Examples:
     `some assertion failed`
     fail
 
-I<TODO: ADD SIGNAL SENDING AND OTHER MISC EXPRESSIONS.>
+*TODO: ADD SIGNAL SENDING AND OTHER MISC EXPRESSIONS.*
 
 # OPAQUE LITERAL AND COLLECTION SELECTOR EXPRESSIONS
 
@@ -758,16 +758,16 @@ Grammar:
         | <Excuse>
         | <Function_Call>
 
-An C<< <opaque_literal_expr> >> is an C<< <expr> >> that denotes a value
+An `<opaque_literal_expr>` is an `<expr>` that denotes a value
 literal specific to some system-defined data type that has its own special
 Muldis D Plain Text selector syntax, and this literal syntax explicitly has
-no child C<< <expr> >> nodes.  In conventional terms, one is typically for
+no child `<expr>` nodes.  In conventional terms, one is typically for
 selecting scalar values, though many cases are also simple collections.
 
-A C<< <collection_selector_expr> >> is an C<< <expr> >> that denotes a
+A `<collection_selector_expr>` is an `<expr>` that denotes a
 value literal specific to some system-defined data type that has its own
 special Muldis D Plain Text selector syntax, and this literal syntax
-explicitly does have child C<< <expr> >> nodes in the general case, as in
+explicitly does have child `<expr>` nodes in the general case, as in
 conventional terms it is for selecting values representing collections of
 other values.
 
@@ -778,9 +778,9 @@ Grammar:
     <Boolean> ::=
         ['\\?' <sp>]? [False | True]
 
-A C<< <Boolean> >> node represents a value of the Muldis D C<Boolean> type,
-which is a general purpose 2-valued logic boolean or I<truth value>.  The
-C<Boolean> type is a foundational type of the Muldis D type system, and
+A `<Boolean>` node represents a value of the Muldis D `Boolean` type,
+which is a general purpose 2-valued logic boolean or *truth value*.  The
+`Boolean` type is a foundational type of the Muldis D type system, and
 this is the canonical grammar for them.
 
 Examples:
@@ -851,17 +851,17 @@ Grammar:
     <qu_num_tail> ::=
         '"'
 
-An C<< <Integer> >> node represents a value of the Muldis D C<Integer>
+An `<Integer>` node represents a value of the Muldis D `Integer`
 type, which is a general purpose exact integral number of any magnitude,
 which explicitly does not represent any kind of thing in particular,
-neither cardinal nor ordinal nor nominal.  The C<Integer> type is a
+neither cardinal nor ordinal nor nominal.  The `Integer` type is a
 foundational type of the Muldis D type system, and this is the canonical
 grammar for them.
 
-This grammar supports writing C<Integer> literals in any of the numeric
+This grammar supports writing `Integer` literals in any of the numeric
 bases {2,8,10,16} using conventional syntax.  The literal may optionally
-contain underscore characters (C<_>), which exist just to help with visual
-formatting, such as for C<10_000_000>.
+contain underscore characters (`_`), which exist just to help with visual
+formatting, such as for `10_000_000`.
 
 This grammar is subject to the following additional rules:
 
@@ -869,24 +869,24 @@ This grammar is subject to the following additional rules:
 
 =item *
 
-If C<< <num_radix_mark> >> is omitted or is C<0d> then every
-C<< <num_char> >> must be a C<< <nc10> >>.
+If `<num_radix_mark>` is omitted or is `0d` then every
+`<num_char>` must be a `<nc10>`.
 
 =item *
 
-Otherwise, if C<< <num_radix_mark> >> is C<0b> or C<0o> or C<0x> then every
-C<< <num_char> >> must be a C<< <nc2> >> or C<< <nc8> >> or C<< <nc16> >>
+Otherwise, if `<num_radix_mark>` is `0b` or `0o` or `0x` then every
+`<num_char>` must be a `<nc2>` or `<nc8>` or `<nc16>`
 respectively.
 
 =back
 
-A quoted C<< <Integer> >> may optionally be split into 1..N quoted segments
+A quoted `<Integer>` may optionally be split into 1..N quoted segments
 where each pair of consecutive segments is separated by dividing space;
 this segmenting ability is provided to support code that contains very long
 numeric literals while still being well formatted (no extra long lines).
 
 Note that the general grammar rules of Muldis D Plain Text will treat all
-nonquoted symbolic characters {-,+,.,/} as I<fixed> operator invocations,
+nonquoted symbolic characters {-,+,.,/} as *fixed* operator invocations,
 and nonquoted digit sequences as positive integer literals.  However,
 nonquoted numeric literals have a special exception for {-,+,.,/} iff they
 appear in very specific places, such that those symbolics are treated as
@@ -896,7 +896,7 @@ concise manner while avoiding any risk of the meanings of the literals
 changing depending what Muldis D packages are in scope, which would be the
 case if the symbolics were parsed as operator calls.  When writing Muldis D
 Plain Text code with unquoted numeric literals, having dividing space
-between any {-,+,.,/} and any C<< <num_char> >> should guarantee their
+between any {-,+,.,/} and any `<num_char>` should guarantee their
 interpretation as an operator call, while ensuring no dividing space
 between them should guarantee interpretation as part of the literal iff the
 symbolics are in specific positions expected for the latter.  This special
@@ -940,29 +940,29 @@ Grammar:
     <quoted_frac> ::=
         <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
 
-A C<< <Fraction> >> node represents a value of the Muldis D C<Fraction>
+A `<Fraction>` node represents a value of the Muldis D `Fraction`
 type, which is a general purpose exact rational number of any magnitude and
-precision, expressible as a coprime I<numerator> / I<denominator> pair of
-C<Integer> whose I<denominator> is positive, which explicitly does not
+precision, expressible as a coprime *numerator* / *denominator* pair of
+`Integer` whose *denominator* is positive, which explicitly does not
 represent any kind of thing in particular, neither cardinal nor ordinal nor
 nominal.
 
-The C<Fraction> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Article> type, and
-all C<Fraction> values can be selected in terms of C<< <Article> >> grammar
-nodes.  However, C<< <Fraction> >> is the canonical grammar for all
-C<Fraction> values.
+The `Fraction` type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the `Article` type, and
+all `Fraction` values can be selected in terms of `<Article>` grammar
+nodes.  However, `<Fraction>` is the canonical grammar for all
+`Fraction` values.
 
-An entire C<< <Fraction> >> literal has the same numeric base, both the
-part before the C<< <frac_div> >> and the part after it.  When the C<<
-<frac_div> >> is a C</>, the literal portion on the left is treated as the
-integral I<numerator> and the part on the right as the integral
-I<denominator>; the literal allows that pair to not be coprime, and it will
-be normalized in the derived C<Fraction> value.  When the C<< <frac_div> >>
-is a C<.>, the anormal I<numerator> is determined by treating all of the
-C<< <num_char> >> as an integral literal as if the C<.> wasn't there, and
-the anormal I<denominator> is determined by taking the numeric base to the
-power of the number of C<< <num_char> >> on the right side of the C<.>.
+An entire `<Fraction>` literal has the same numeric base, both the
+part before the `<frac_div>` and the part after it.  When the
+`<frac_div>` is a `/`, the literal portion on the left is treated as the
+integral *numerator* and the part on the right as the integral
+*denominator*; the literal allows that pair to not be coprime, and it will
+be normalized in the derived `Fraction` value.  When the `<frac_div>`
+is a `.`, the anormal *numerator* is determined by treating all of the
+`<num_char>` as an integral literal as if the `.` wasn't there, and
+the anormal *denominator* is determined by taking the numeric base to the
+power of the number of `<num_char>` on the right side of the `.`.
 
 Examples:
 
@@ -995,19 +995,19 @@ Grammar:
             | [['"' ['0x'  <nc16>*]? '"'] % <sp>]
         ]
 
-A C<< <Bits> >> node represents a value of the Muldis D C<Bits> type, which
-is an arbitrarily-long sequence of I<bits> where each bit is represented by
-an C<Integer> in the range 0..1.
+A `<Bits>` node represents a value of the Muldis D `Bits` type, which
+is an arbitrarily-long sequence of *bits* where each bit is represented by
+an `Integer` in the range 0..1.
 
-The C<Bits> type is not a foundational type of the Muldis D type system,
-but rather is a subtype by constraint of the C<Article> type, and all
-C<Bits> values can be selected in terms of C<< <Article> >> grammar nodes.
-However, C<< <Bits> >> is the canonical grammar for all C<Bits> values.
+The `Bits` type is not a foundational type of the Muldis D type system,
+but rather is a subtype by constraint of the `Article` type, and all
+`Bits` values can be selected in terms of `<Article>` grammar nodes.
+However, `<Bits>` is the canonical grammar for all `Bits` values.
 
-This grammar supports writing C<Bits> literals in any of the numeric bases
+This grammar supports writing `Bits` literals in any of the numeric bases
 {2,8,16} using conventional syntax.  The literal may optionally contain
-underscore characters (C<_>), which exist just to help with visual
-formatting.  A C<< <Bits> >> may optionally be split into 1..N segments
+underscore characters (`_`), which exist just to help with visual
+formatting.  A `<Bits>` may optionally be split into 1..N segments
 where each pair of consecutive segments is separated by dividing space.
 
 Examples:
@@ -1032,19 +1032,19 @@ Grammar:
             | [['"' ['0x'? <nc16>*]? '"'] % <sp>]
         ]
 
-A C<< <Blob> >> node represents a value of the Muldis D C<Blob> type, which
-is an arbitrarily-long sequence of I<octets> where each octet is
-represented by an C<Integer> in the range 0..255.
+A `<Blob>` node represents a value of the Muldis D `Blob` type, which
+is an arbitrarily-long sequence of *octets* where each octet is
+represented by an `Integer` in the range 0..255.
 
-The C<Blob> type is not a foundational type of the Muldis D type system,
-but rather is a subtype by constraint of the C<Article> type, and all
-C<Blob> values can be selected in terms of C<< <Article> >> grammar nodes.
-However, C<< <Blob> >> is the canonical grammar for all C<Blob> values.
+The `Blob` type is not a foundational type of the Muldis D type system,
+but rather is a subtype by constraint of the `Article` type, and all
+`Blob` values can be selected in terms of `<Article>` grammar nodes.
+However, `<Blob>` is the canonical grammar for all `Blob` values.
 
-This grammar supports writing C<Blob> literals in any of the numeric bases
+This grammar supports writing `Blob` literals in any of the numeric bases
 {2,16} using conventional syntax.  The literal may optionally contain
-underscore characters (C<_>), which exist just to help with visual
-formatting.  A C<< <Blob> >> may optionally be split into 1..N segments
+underscore characters (`_`), which exist just to help with visual
+formatting.  A `<Blob>` may optionally be split into 1..N segments
 where each pair of consecutive segments is separated by dividing space.
 
 This grammar is subject to the following additional rules:
@@ -1053,14 +1053,14 @@ This grammar is subject to the following additional rules:
 
 =item *
 
-If the C<< <Blob> >> segments are prefixed by C<0b> then the total count of
-C<< <nc2> >> in the C<< <Blob> >> excluding C<_> must be an even multiple
+If the `<Blob>` segments are prefixed by `0b` then the total count of
+`<nc2>` in the `<Blob>` excluding `_` must be an even multiple
 of 8.
 
 =item *
 
-Otherwise, if the C<< <Blob> >> segments are prefixed by C<0x> then the
-total count of C<< <nc16> >> in the C<< <Blob> >> excluding C<_> must be an
+Otherwise, if the `<Blob>` segments are prefixed by `0x` then the
+total count of `<nc16>` in the `<Blob>` excluding `_` must be an
 even multiple of 2.
 
 =back
@@ -1094,22 +1094,22 @@ Grammar:
     <qnots_escaped_content> ::=
         '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
 
-A C<< <Text> >> node represents a value of the Muldis D C<Text> type, which
+A `<Text>` node represents a value of the Muldis D `Text` type, which
 is characterized by an arbitrarily-long sequence of Unicode 12.1 standard
-I<character code points>.
+*character code points*.
 
-The C<Text> type is not a foundational type of the Muldis D type system,
-but rather is a subtype by constraint of the C<Article> type, and all
-C<Text> values can be selected in terms of C<< <Article> >> grammar nodes.
-However, C<< <Text> >> is the canonical grammar for all C<Text> values.
+The `Text` type is not a foundational type of the Muldis D type system,
+but rather is a subtype by constraint of the `Article` type, and all
+`Text` values can be selected in terms of `<Article>` grammar nodes.
+However, `<Text>` is the canonical grammar for all `Text` values.
 
-A C<< <Text> >> may optionally be split into 1..N segments where each pair
+A `<Text>` may optionally be split into 1..N segments where each pair
 of consecutive segments is separated by dividing space.
 
-I<TODO: Change to a strict 3-level hierarchy which ranks double-quoted
+*TODO: Change to a strict 3-level hierarchy which ranks double-quoted
 strings above single-quoted strings and allows literal single-quotes inside
 double-quoted strings. This is part of the Plain_Text syntax becoming a
-proper superset of the Muldis Object Notation syntax.>
+proper superset of the Muldis Object Notation syntax.*
 
 Examples:
 
@@ -1135,8 +1135,8 @@ Grammar:
     <ord_member_commalist> ::=
         '[' <sp> <member_commalist> <sp> ']'
 
-An C<< <Array> >> node represents a value of the Muldis D
-C<Array> type, which is ...
+An `<Array>` node represents a value of the Muldis D
+`Array` type, which is ...
 
 ## Set Selectors
 
@@ -1145,13 +1145,13 @@ Grammar:
     <Set> ::=
         ['\\?' <sp>]? <nonord_member_commalist>
 
-A C<< <Set> >> node represents a value of the Muldis D
-C<Set> type, which is ...
+A `<Set>` node represents a value of the Muldis D
+`Set` type, which is ...
 
-A C<< <Set> >> is subject to the additional rule that, either its C<<
-<member_commalist> >> must not have any C<< <multiplied_member> >>
-elements, or the C<< <Set> >> must have the C<\?> prefix, so that the C<<
-<Set> >> can be distinguished from every possible C<< <Bag> >>.
+A `<Set>` is subject to the additional rule that, either its
+`<member_commalist>` must not have any `<multiplied_member>`
+elements, or the `<Set>` must have the `\?` prefix, so that the
+`<Set>` can be distinguished from every possible `<Bag>`.
 
 ## Bag / Multiset Selectors
 
@@ -1178,15 +1178,15 @@ Grammar:
     <multiplicity_expr> ::=
         <expr>
 
-A C<< <Bag> >> node represents a value of the Muldis D
-C<Bag> type, which is ...
+A `<Bag>` node represents a value of the Muldis D
+`Bag` type, which is ...
 
-A C<< <Bag> >> is subject to the additional rule that, either its C<<
-<member_commalist> >> must have at least 1 C<< <multiplied_member> >>
-element, or the C<< <Bag> >> must have the C<\+> prefix, so that the C<<
-<Bag> >> can be distinguished from every possible C<< <Set> >>.  An
-idiomatic way to represent an empty C<Bag> is to have exactly 1 C<<
-<multiplied_member> >> whose C<< <multiplicity_expr> >> is zero.
+A `<Bag>` is subject to the additional rule that, either its
+`<member_commalist>` must have at least 1 `<multiplied_member>`
+element, or the `<Bag>` must have the `\+` prefix, so that the
+`<Bag>` can be distinguished from every possible `<Set>`.  An
+idiomatic way to represent an empty `Bag` is to have exactly 1
+`<multiplied_member>` whose `<multiplicity_expr>` is zero.
 
 ## Tuple / Attribute Set Selectors
 
@@ -1219,14 +1219,14 @@ Grammar:
     <attr_asset_expr> ::=
         <expr>
 
-A C<< <Tuple> >> node represents a value of the Muldis D
-C<Tuple> type, which is ...
+A `<Tuple>` node represents a value of the Muldis D
+`Tuple` type, which is ...
 
-A C<< <Tuple> >> is subject to the additional rule that, iff its
-C<< <attr_commalist> >> has exactly 1 C<< <*_attr> >> element, either that
-element must have a leading or trailing comma, or the C<< <Tuple> >> must
-have the C<\%> prefix, so that the C<< <Tuple> >> can be distinguished from
-every possible C<< <Article> >> and C<< <delimiting_expr> >>.
+A `<Tuple>` is subject to the additional rule that, iff its
+`<attr_commalist>` has exactly 1 `<*_attr>` element, either that
+element must have a leading or trailing comma, or the `<Tuple>` must
+have the `\%` prefix, so that the `<Tuple>` can be distinguished from
+every possible `<Article>` and `<delimiting_expr>`.
 
 ## Tuple Array Selectors
 
@@ -1235,13 +1235,13 @@ Grammar:
     <Tuple_Array> ::=
         '\\~%' <sp> [<delim_attr_name_commalist> | <ord_member_commalist>]
 
-A C<< <Tuple_Array> >> node represents a value of the Muldis D
-C<Tuple_Array> type, which is ...
+A `<Tuple_Array>` node represents a value of the Muldis D
+`Tuple_Array` type, which is ...
 
-A C<< <Tuple_Array> >> with an C<< <ord_member_commalist> >> is subject to
-the additional rule that its C<< <member_commalist> >> has at least 1 C<<
-<*_member> >> element; otherwise the C<< <Tuple_Array> >> must have a C<<
-<delim_attr_name_commalist> >>.
+A `<Tuple_Array>` with an `<ord_member_commalist>` is subject to
+the additional rule that its `<member_commalist>` has at least 1
+`<*_member>` element; otherwise the `<Tuple_Array>` must have a
+`<delim_attr_name_commalist>`.
 
 ## Relation / Tuple Set Selectors
 
@@ -1250,13 +1250,13 @@ Grammar:
     <Relation> ::=
         '\\?%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
 
-A C<< <Relation> >> node represents a value of the Muldis D
-C<Relation> type, which is ...
+A `<Relation>` node represents a value of the Muldis D
+`Relation` type, which is ...
 
-A C<< <Relation> >> with a C<< <nonord_member_commalist> >> is subject to
-the additional rule that its C<< <member_commalist> >> has at least 1 C<<
-<*_member> >> element; otherwise the C<< <Relation> >> must have a C<<
-<delim_attr_name_commalist> >>.
+A `<Relation>` with a `<nonord_member_commalist>` is subject to
+the additional rule that its `<member_commalist>` has at least 1
+`<*_member>` element; otherwise the `<Relation>` must have a
+`<delim_attr_name_commalist>`.
 
 ## Tuple Bag Selectors
 
@@ -1265,13 +1265,13 @@ Grammar:
     <Tuple_Bag> ::=
         '\\+%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
 
-A C<< <Tuple_Bag> >> node represents a value of the Muldis D
-C<Tuple_Bag> type, which is ...
+A `<Tuple_Bag>` node represents a value of the Muldis D
+`Tuple_Bag` type, which is ...
 
-A C<< <Tuple_Bag> >> with a C<< <nonord_member_commalist> >> is subject to
-the additional rule that its C<< <member_commalist> >> has at least 1 C<<
-<*_member> >> element; otherwise the C<< <Tuple_Bag> >> must have a C<<
-<delim_attr_name_commalist> >>.
+A `<Tuple_Bag>` with a `<nonord_member_commalist>` is subject to
+the additional rule that its `<member_commalist>` has at least 1
+`<*_member>` element; otherwise the `<Tuple_Bag>` must have a
+`<delim_attr_name_commalist>`.
 
 ## Article / Labelled Tuple Selectors
 
@@ -1286,8 +1286,8 @@ Grammar:
     <c_attrs_expr> ::=
         <expr>
 
-A C<< <Article> >> node represents a value of the Muldis D
-C<Article> type, which is ...
+A `<Article>` node represents a value of the Muldis D
+`Article` type, which is ...
 
 Examples:
 
@@ -1300,8 +1300,8 @@ Grammar:
     <Excuse> ::=
         '\\!' <sp> <delim_attr_commalist>
 
-An C<< <Excuse> >> node represents a value of the Muldis D
-C<Excuse> type, which is ...
+An `<Excuse>` node represents a value of the Muldis D
+`Excuse` type, which is ...
 
 ## Simple Excuse Literals
 
@@ -1310,11 +1310,11 @@ Grammar:
     <Simple_Excuse> ::=
         '\\!' <sp> <attr_name>
 
-A C<< <Simple_Excuse> >> node represents a value of the Muldis D C<Excuse>
-type, and provides a terser alternative syntax to an C<< <Excuse> >> node
-for the common special case of C<Excuse> having just the C<0> attribute
-where that attribute is valued with an C<Attr_Name>, such as is the case
-for all typical Muldis D Foundation defined C<Excuse> subtypes.
+A `<Simple_Excuse>` node represents a value of the Muldis D `Excuse`
+type, and provides a terser alternative syntax to an `<Excuse>` node
+for the common special case of `Excuse` having just the `0` attribute
+where that attribute is valued with an `Attr_Name`, such as is the case
+for all typical Muldis D Foundation defined `Excuse` subtypes.
 
 Examples:
 
@@ -1333,25 +1333,25 @@ Grammar:
     <Nesting> ::=
         '\\\$' <sp> <nesting_attr_names>
 
-An C<< <Nesting> >> node represents a value of the Muldis D C<Nesting>
-type, which is an arbitrarily-long sequence of C<Attr_Name> values.  It
+An `<Nesting>` node represents a value of the Muldis D `Nesting`
+type, which is an arbitrarily-long sequence of `Attr_Name` values.  It
 typically serves as a (fully or partially) qualified identifier for referencing
 either a foundation entity, or a package or component of the latter, from
 the perspective of an entity in a (possibly same) package using it.
 
 THIS PARAGRAPH IS OBSOLETE AND DESCRIBES AFTER-PARSING BEHAVIOUR FOR CONTEXTS
 WHERE A Local_Name VALUE IS EXPECTED.
-Iff the first/only C<Attr_Name> in the sequence is one of the barewords
-C<{foundation,used,package,folder,material,floating}> then it is used
-as-is; otherwise the sequence will implicitly have the element C<floating>
+Iff the first/only `Attr_Name` in the sequence is one of the barewords
+`{foundation,used,package,folder,material,floating}` then it is used
+as-is; otherwise the sequence will implicitly have the element `floating`
 prepended to it.  Each of the non-first (post optional prepend) sequence
 elements corresponds in order to a level in a multi-level namespace.
 
-The C<Nesting> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Array> type, and all
-C<Nesting> values can be selected in terms of C<< <Array> >> grammar
-nodes.  However, C<< <Nesting> >> is the canonical grammar for all
-C<Nesting> values.
+The `Nesting` type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the `Array` type, and all
+`Nesting` values can be selected in terms of `<Array>` grammar
+nodes.  However, `<Nesting>` is the canonical grammar for all
+`Nesting` values.
 
 Examples (comments refer to their Muldis-D runtime specific interpretation):
 
@@ -1404,23 +1404,23 @@ Grammar:
     <max_ord_attr> ::=
         <ord_attr_name>
 
-A C<< <Heading> >> node represents a value of the Muldis D
-C<Heading> type, which is an arbitrarily-large unordered collection of
-attribute names.  An C<< <Attr_Name> >> node represents a value of the Muldis
-D C<Attr_Name> type, which is a subtype by constraint of the C<Heading>
-type; C<< <Attr_Name> >> provides a terser alternative syntax for the
-common special case of C<< <Heading> >> having exactly 1 attribute.
+A `<Heading>` node represents a value of the Muldis D
+`Heading` type, which is an arbitrarily-large unordered collection of
+attribute names.  An `<Attr_Name>` node represents a value of the Muldis
+D `Attr_Name` type, which is a subtype by constraint of the `Heading`
+type; `<Attr_Name>` provides a terser alternative syntax for the
+common special case of `<Heading>` having exactly 1 attribute.
 
-An C<< <ord_attr_name_range> >> is subject to the additional rule that its
-integral C<< <min_ord_attr> >> value must be less than or equal to its
-integral C<< <max_ord_attr> >> value.
+An `<ord_attr_name_range>` is subject to the additional rule that its
+integral `<min_ord_attr>` value must be less than or equal to its
+integral `<max_ord_attr>` value.
 
-The C<Heading> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Tuple> type, and all
-C<Heading> values can be selected in terms of C<< <Tuple> >> grammar
-nodes.  However, C<< <Heading> >> is the canonical grammar for all
-C<Heading> values, except for all C<Attr_Name> values, for which
-C<< <Attr_Name> >> is the canonical grammar.
+The `Heading` type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the `Tuple` type, and all
+`Heading` values can be selected in terms of `<Tuple>` grammar
+nodes.  However, `<Heading>` is the canonical grammar for all
+`Heading` values, except for all `Attr_Name` values, for which
+`<Attr_Name>` is the canonical grammar.
 
 Examples:
 
@@ -1483,27 +1483,27 @@ Grammar:
     <attr_name_after> ::=
         <nonord_attr_name>
 
-A C<< <Renaming> >> node represents a value of the Muldis D C<Renaming>
+A `<Renaming>` node represents a value of the Muldis D `Renaming`
 type, which is an arbitrarily-large unordered collection of attribute
 renaming specifications.  Each attribute renaming specification is a pair
-of attribute names marked with a C<< -> >> or a C<< <- >> element; the
-associated C<< <attr_name_before> >> and C<< <attr_name_after> >> indicate
-the name that an attribute has I<before> and I<after> the renaming
-operation, respectively.  Iff the renaming specification is a C<<
-<anon_attr_rename> >> then either the I<before> or I<after> name is an
+of attribute names marked with a `->` or a `<-` element; the
+associated `<attr_name_before>` and `<attr_name_after>` indicate
+the name that an attribute has *before* and *after* the renaming
+operation, respectively.  Iff the renaming specification is a
+`<anon_attr_rename>` then either the *before* or *after* name is an
 ordered attribute name corresponding to the ordinal position of the
-renaming specification element in the C<< <renaming_commalist> >>, starting
+renaming specification element in the `<renaming_commalist>`, starting
 at zero.
 
-A C<< <renaming_commalist> >> is subject to the additional rule that no 2
-C<< <attr_name_before> >> may be the same attribute name and that no 2
-C<< <attr_name_after> >> may be the same attribute name.
+A `<renaming_commalist>` is subject to the additional rule that no 2
+`<attr_name_before>` may be the same attribute name and that no 2
+`<attr_name_after>` may be the same attribute name.
 
-The C<Renaming> type is not a foundational type of the Muldis D type
-system, but rather is a subtype by constraint of the C<Tuple> type, and all
-C<Renaming> values can be selected in terms of C<< <Tuple> >> grammar
-nodes.  However, C<< <Renaming> >> is the canonical grammar for all
-C<Renaming> values.
+The `Renaming` type is not a foundational type of the Muldis D type
+system, but rather is a subtype by constraint of the `Tuple` type, and all
+`Renaming` values can be selected in terms of `<Tuple>` grammar
+nodes.  However, `<Renaming>` is the canonical grammar for all
+`Renaming` values.
 
 Examples:
 
@@ -1553,7 +1553,7 @@ Grammar:
     <Identity_Identifier> ::=
         ...
 
-I<TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.>
+*TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.*
 
 ## Generic Function Call Specification Selectors
 
@@ -1569,11 +1569,11 @@ Grammar:
     <postcircumfixed_func_invo_sel> ::=
         '\\' <postcircumfixed_func_invo_expr>
 
-I<TODO.>
-I<Note that, yes, the generic_func_call input is also a Function_Call value,
+*TODO.*
+*Note that, yes, the generic_func_call input is also a Function_Call value,
 same type as the result of the Function_Call expression, so that is indeed
 recursively defined in the general case.  And so other syntax would be used
-to select the most-nested Function_Call value, often postcircumfixed_func_invo_expr.>
+to select the most-nested Function_Call value, often postcircumfixed_func_invo_expr.*
 
 # COLLECTION ACCESSOR EXPRESSIONS
 
@@ -1605,7 +1605,7 @@ Grammar:
     <Variable_at> ::=
         <expr> <sp> ':&.' <sp> <expr>
 
-I<TODO.>
+*TODO.*
 
 # INVOCATION EXPRESSIONS
 
@@ -1615,9 +1615,9 @@ Grammar:
           <generic_func_invo_expr>
         | <fixed_func_invo_expr>
 
-I<TODO.>
+*TODO.*
 
-I<OBSOLETE... Also TODO is adding things like -->? and -->! etc to test if something
+*OBSOLETE... Also TODO is adding things like --*? and -->! etc to test if something
 is invokable or indicate a result if one isn't invokable.>
 
 ## Generic Function Invocation Expressions
@@ -1636,29 +1636,29 @@ Grammar:
     <postcircumfixed_func_invo_expr> ::=
         <generic_func_name> <sp> '::'? <sp> <Tuple>
 
-I<TODO.>
+*TODO.*
 
-A C<< <primed_func_call> >> denotes a C<Function_Call> value, which pairs
-a C<Function_Name> (C<Identity_Identifier>) value naming a function
-with a C<Tuple> value giving arguments to pass to it; typically this
-is defined either with a C<< <Function_Call> >> selector expression or with
-an inline-defined C<function>.
+A `<primed_func_call>` denotes a `Function_Call` value, which pairs
+a `Function_Name` (`Identity_Identifier`) value naming a function
+with a `Tuple` value giving arguments to pass to it; typically this
+is defined either with a `<Function_Call>` selector expression or with
+an inline-defined `function`.
 
-I<TODO: Also define the \foo::(...) and \(...) and \[...] syntaxes for "Routine_Call" type.>
+*TODO: Also define the \foo::(...) and \(...) and \[...] syntaxes for "Routine_Call" type.*
 
-A C<< <postcircumfixed_func_invo_expr> >> is subject to the additional rule
-that, iff its C<< <generic_func_name> >> element has no C<::> within
-itself, then that element must have a trailing C<::> element.
+A `<postcircumfixed_func_invo_expr>` is subject to the additional rule
+that, iff its `<generic_func_name>` element has no `::` within
+itself, then that element must have a trailing `::` element.
 
-A C<< <generic_func_name> >> may alternately be a singleton type definer name or a type
+A `<generic_func_name>` may alternately be a singleton type definer name or a type
 name, and not just a function name, because those can be invoked like
-functions under certain circumstances.  When the C<< <attr_commalist> >>
-has exactly zero C<< <*_attr> >> elements, either a singleton type definer or a niladic
+functions under certain circumstances.  When the `<attr_commalist>`
+has exactly zero `<*_attr>` elements, either a singleton type definer or a niladic
 function or a type (implicitly its default value) may be invoked; for
-exactly 1 C<< <*_attr> >> element which is positional, either a monadic
+exactly 1 `<*_attr>` element which is positional, either a monadic
 function or a type (implicitly its membership predicate) may be invoked;
 for other arguments, only a function of corrisponding arity may be invoked.
-I<TODO: Update this concerning type definers.>
+*TODO: Update this concerning type definers.*
 
 ## Fixed Function Invocation Expressions
 
@@ -1676,20 +1676,20 @@ Grammar:
     <special_infix_op_same> ::=
         '='
 
-I<TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
+*TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
 Say that it is just syntactic sugar for a specific foundation func invo
 but we special-case it because we don't want "=" to change based on what
 packages are in scope, same as ":=" etc don't change.
 UPDATE: ":=" is actually a regular procedure now, not special syntax, same as "=".
 Note, this only affects '=' when called like an infix op syntactically;
-calling it as `evaluates \"="::(x,y)` or `"="::(x,y)` gets the reg func if exists.>
+calling it as `evaluates \"="::(x,y)` or `"="::(x,y)` gets the reg func if exists.*
 
-I<Generic allow multi-level or quoted identifiers,
-fixed allows only single-level unquoted identifiers.>
+*Generic allow multi-level or quoted identifiers,
+fixed allows only single-level unquoted identifiers.*
 
-I<TODO.>
+*TODO.*
 
-I<TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.>
+*TODO: FORGET NOT THE ps5_nonquoted_symbolic_grouping.*
 
 # CONDITIONAL EXPRESSIONS
 
@@ -1706,7 +1706,7 @@ Grammar:
 
     if P then X else Y
 
-I<TODO.  Make 'if' keyword optional/noiseword, or not.>
+*TODO.  Make 'if' keyword optional/noiseword, or not.*
 
 ## And-Then Expressions
 
@@ -1738,13 +1738,13 @@ on P, but an explicit "guard" is still needed to actually have a guard.
 
 ## Given-When-Default Expressions
 
-I<TODO.  Make 'given' keyword optional/noiseword, or not.>
+*TODO.  Make 'given' keyword optional/noiseword, or not.*
 
 ## Guard Expressions
 
-I<TODO.  A guard forces short-circuiting in an expression where otherwise an
+*TODO.  A guard forces short-circuiting in an expression where otherwise an
 expression makes no guarantee as to whether anything is eager or lazy;
-in contrast, a conditional statement is implicitly always short-circuiting.>
+in contrast, a conditional statement is implicitly always short-circuiting.*
 
     if x != 0 then guard y/x else 42
 
@@ -1752,15 +1752,15 @@ in contrast, a conditional statement is implicitly always short-circuiting.>
 
     given #x when 0 then "empty" when 1 then guard only_member x default "too many"
 
-I<TODO.  Note that 'fail' is implicitly guarded.>
+*TODO.  Note that 'fail' is implicitly guarded.*
 
 # GENERIC STATEMENTS
 
-I<TODO.>
+*TODO.*
 
 # NESTING PRECEDENCE RULES
 
-I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
+*TODO.  These are listed from tightest at the top to loosest at the bottom.*
 
     N - terms - base literals or delimited anything or special selector syntax,
         including inline func/type/etc decls, or foo::bar::etc or foo::(...) or \foo::(...)
@@ -1784,10 +1784,10 @@ I<TODO.  These are listed from tightest at the top to loosest at the bottom.>
     R - statement annotating infix 'note'
     L - list separators ; , :
 
-I<TODO.  Loosely speaking, "L" means left-associative,
-"R" means right-associative, "N" means non-associative.>
+*TODO.  Loosely speaking, "L" means left-associative,
+"R" means right-associative, "N" means non-associative.*
 
-A C<::=> is I<what-binding> while a C<note> is I<why-binding>.
+A `::=` is *what-binding* while a `note` is *why-binding*.
 
 # SYNTACTIC MNEMONICS
 
@@ -1963,27 +1963,27 @@ For the purposes of this documentation section, we will assume that the
 source code has already been processed from any binary or other formats
 into a single character string token having a well-known
 character repertoire that is compatible with Unicode.  This may have
-involved scanning ahead for a C<< <language_name> >> or in particular a
-C<< <script_name> >> directive should that have been needed to resolve ambiguity.
+involved scanning ahead for a `<language_name>` or in particular a
+`<script_name>` directive should that have been needed to resolve ambiguity.
 
 Note that it is assumed that all parsing stages following the above
 assumption are completely lossless, and that any stages which conceptually
 would lose information actually maintain all of it in (generally)
-C<Plain_Text>-specific metadata so the original source string could be
+`Plain_Text`-specific metadata so the original source string could be
 reassembled from the parse form in all its details, including for example
 the exact character escape sequences and whitespace used.  Also maintained
 as useful for debugging is knowledge of what line numbers and character
 positions within a line each token ranged over in the original source.
 
-Note that it is assumed that every token indicated as being a I<character
-string> would in likely practice be some other type whose payload is the
+Note that it is assumed that every token indicated as being a *character
+string* would in likely practice be some other type whose payload is the
 character string and it is tagged to say how the string was interpreted,
 so that tokens can more easily be further processed in isolation, the work
 to consider their wider context having already been done.
 
 ## Pipeline Stage 1
 
-Stage 1 in the parsing pipeline is to split off any leading C<< <shebang_line> >>
+Stage 1 in the parsing pipeline is to split off any leading `<shebang_line>`
 that might prefix the code.  The primary output of stage 1 is a single
 character string token with the code itself, and any leading shebang is
 metadata.  Further stages below only consider this primary as their input.
@@ -2021,10 +2021,10 @@ single/double-quoted strings second; in either case, it is guaranteed that
 each pair of consecutive delimiters in well-formed source code is a whole
 quoted context and no serial examination of found delimiters is necessary.
 
-I<TODO: Change to a strict 3-level hierarchy which ranks double-quoted
+*TODO: Change to a strict 3-level hierarchy which ranks double-quoted
 strings above single-quoted strings and allows literal single-quotes inside
 double-quoted strings. This is part of the Plain_Text syntax becoming a
-proper superset of the Muldis Object Notation syntax.>
+proper superset of the Muldis Object Notation syntax.*
 
 Grammar:
 
@@ -2071,15 +2071,15 @@ Grammar:
 ### Pipeline Stage 4
 
 Stage 4 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<< <bracketing_char> >> into multiple tokens such that
+consisting of multiple `<bracketing_char>` into multiple tokens such that
 each such individual character becomes its own token.  The output of stage
 4 is an array of character string tokens, or parse nodes, as per stage 3.
 
 ### Pipeline Stage 5
 
 Stage 5 in the parsing pipeline is to split any nonquoted context tokens
-consisting of multiple C<< <symbolic_char> >> into multiple tokens where those
-tokens contain characters well-known to C<Plain_Text> for special uses such
+consisting of multiple `<symbolic_char>` into multiple tokens where those
+tokens contain characters well-known to `Plain_Text` for special uses such
 as meta-operator characters.  The output of stage 5 is an array of
 character string tokens, or parse nodes, as per stage 3.
 
@@ -2111,7 +2111,7 @@ syntax becomes metadata rather than something needed to execute the code.
 
 Stage 6 in the parsing pipeline is to collect any runs of consecutive
 tokens or parse nodes, where each represents either a backtick-quoted
-string or nonquoted C<< <whitespace> >>, beneath a parse node
+string or nonquoted `<whitespace>`, beneath a parse node
 representing the run; this new node is logically treated as insignificant
 (other than for its role in separating otherwise adjacent things)
 dividing space, and becomes non-semantic metadata for its wider context.
@@ -2130,14 +2130,14 @@ for matters of escape sequences) but were split for readability.
 Stage 8 in the parsing pipeline is to take any tokens from stage 2
 representing a single-quoted or double-quoted context, and for each one, if
 it contains any character escape sequences, to replace those escape
-sequences with the actual characters they represent.  Any C<"..."> or
-C<'...'> represent character data, either C<Text>
+sequences with the actual characters they represent.  Any `"..."` or
+`'...'` represent character data, either `Text`
 literals or quoted identifiers, and the valid formats for both
 within the quoted contexts are identical.  Note that for a run, each
 individual quoted context is treated in isolation, as some may be formatted
 for escape sequences and some may not.  Also using single-quoted contexts
-for some or all of their literals are the C<Bits> (C<\~?"...">) or C<Blob> (C<\~+"...">) or
-C<Integer> or C<Fraction> (C<\+"..."> for both) and they have
+for some or all of their literals are the `Bits` (`\~?"..."`) or `Blob` (`\~+"..."`) or
+`Integer` or `Fraction` (`\+"..."` for both) and they have
 their own interpretation formats different from those of character strings.
 
 Grammar:
@@ -2151,14 +2151,14 @@ Grammar:
     <ps8_chars_escaped> ::=
         '\\' [<-[\\]> | <escaped_char>]*
 
-Note that the definition of C<< <escaped_char> >> includes an escape sequence
+Note that the definition of `<escaped_char>` includes an escape sequence
 each for a single-quote and a double-quote.
 
 ### Pipeline Stage 9
 
 Stage 9 in the parsing pipeline is to isolate any literals specific to
 certain numeric types, which are a particular run of
-C<< <alphanumeric_char> >> optionally with some C<< <symbolic_char> >>,
+`<alphanumeric_char>` optionally with some `<symbolic_char>`,
 and further optionally split (when long) using dividing space.
 
 Grammar:
@@ -2179,12 +2179,12 @@ otherwise match a stricter numeric definition.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the B<Muldis D Plain Text>
-(B<MDPT>) primary component of the B<Muldis D> language specification.
+This file is part of the formal specification of the **Muldis D Plain Text**
+(**MDPT**) primary component of the **Muldis D** language specification.
 
 MDPT is Copyright © 2002-2018, Muldis Data Systems, Inc.
 

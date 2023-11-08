@@ -9,13 +9,13 @@ This document is Muldis::D::Standard_Library version 0.300.0.
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the B<Muldis D Standard Library> (B<MDSL>) primary component of the B<Muldis D>
+the **Muldis D Standard Library** (**MDSL**) primary component of the **Muldis D**
 language.  The fully-qualified name of this document and the specification
-it contains is C<Muldis_D_Standard_Library https://muldis.com 0.300.0>.
+it contains is `Muldis_D_Standard_Library https://muldis.com 0.300.0`.
 
-See also L<Muldis::D> to read the B<Muldis D> language meta-specification.
+See also L<Muldis::D> to read the **Muldis D** language meta-specification.
 
-The B<Muldis D Standard Library> specification comprises a documented
+The **Muldis D Standard Library** specification comprises a documented
 library written entirely in Muldis D which provides its common core
 vocabulary, the system-defined data types and operators that regular users
 of the language would employ directly in their applications and schemas.
@@ -24,36 +24,36 @@ with typical general purpose application programming languages or SQL
 DBMSs.  It is the bulk portion of Muldis D that is self-hosted and can be
 shared by all Muldis D implementations, though the latter can choose to
 internally substitute behaviour-maintaining host-native versions for
-performance.  It comprises a set of Muldis D I<packages> (compilation
+performance.  It comprises a set of Muldis D *packages* (compilation
 units) that users can choose from as dependencies of their applications and
 schemas.  None are mandatory, and users can choose alternatives, but they
 are recommended as the default options for their functionality.
 
 # PACKAGES
 
-The B<Muldis D Standard Library> comprises these Muldis D packages:
+The **Muldis D Standard Library** comprises these Muldis D packages:
 
 =over
 
 =item *
 
-C<System https://muldis.com 0.300.0> -
+`System https://muldis.com 0.300.0` -
 L<Muldis::D::Package::System> - Provides the common primary
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
 =back
 
-Other packages will be added later, such as C<System::Math>.
+Other packages will be added later, such as `System::Math`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the B<Muldis D Standard
-Library> (B<MDSL>) primary component of the B<Muldis D> language
+This file is part of the formal specification of the **Muldis D Standard
+Library** (**MDSL**) primary component of the **Muldis D** language
 specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
