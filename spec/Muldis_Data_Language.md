@@ -132,10 +132,6 @@ or that the authority expects frequent upcoming backwards-incompatible changes.*
 See also <http://design.raku.org/S11.html#Versioning> which was the primary
 influence for the versioning scheme described above.
 
-# SEE ALSO
-
-*TODO.*
-
 # AUTHOR
 
 Darren Duncan - darren@DarrenDuncan.net
