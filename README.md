@@ -22,7 +22,7 @@ This is the newest **MDL** version's predecessor,
 named for the year 2018 when the last major work on it was done;
 most of it has not yet been rewritten:
 
-- [spec_2018/Muldis/D.pod](spec_2018/Muldis/D.pod)
+- [spec_2018/Muldis_Data_Language.md](spec_2018/Muldis_Data_Language.md)
 
 This is the 2018 **MDL** version's predecessor,
 named for the year 2011 when the last major work on it was done;

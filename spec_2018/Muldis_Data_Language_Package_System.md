@@ -47,7 +47,7 @@ This document defines the Muldis D package
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
-See also L<Muldis::D::Standard_Library> to read about the **Muldis D
+See also [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) to read about the **Muldis D
 Standard Library** specification, of which this document is a part.
 
 # PACKAGE
@@ -1014,7 +1014,7 @@ name their corresponding types *Numeric*.
 `Numerical` is composed, directly or indirectly, by: `Integral`,
 `Integer`, `Fractional`, `Fraction`, `Quantitative`, `Quantity`.
 It is also composed by a lot of additional type definers defined by other
-Muldis D packages such as L<System::Math|Muldis::D::Package::System::Math>;
+Muldis D packages such as `System::Math`;
 these include types for irrational or algebraic or complex numbers or
 quaternions or rational types with a fixed precision or scale or
 floating-point types and so on.
@@ -2842,7 +2842,7 @@ way, so the latter's operators will just work like users expect.
 
 The `System` package excludes the majority of useful operators specific to
 working with character strings; see instead other Muldis D packages such as
-L<System::Text|Muldis::D::Package::System::Text> for these things.  Such tasks
+`System::Text` for these things.  Such tasks
 include like case folding, pattern matching, whitespace trimming, Unicode
 normalization, encoding to and decoding from most binary formats, and so on.
 
@@ -10396,4 +10396,4 @@ specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D::Standard_Library> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) for details.

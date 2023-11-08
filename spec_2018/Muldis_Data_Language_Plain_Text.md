@@ -13,7 +13,7 @@ the **Muldis D Plain Text** (**MDPT**) primary component of the **Muldis D**
 language.  The fully-qualified name of this document and the specification
 it contains is `Muldis_D_Plain_Text https://muldis.com 0.300.0`.
 
-See also L<Muldis::D> to read the **Muldis D** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis D** language meta-specification.
 
 The **Muldis D Plain Text** specification defines the grammar of the official
 concrete Muldis D language syntax that every Muldis D implementation
@@ -111,8 +111,8 @@ Grammar:
     <parsing_unit> ::=
         <shebang_line>? <sp> <parsing_unit_subject>
 
-See the sections in this file named L<SHEBANG LINE>
-and L</PARSING UNIT SUBJECTS> for more details.
+See the sections in this file named **SHEBANG LINE**
+and **PARSING UNIT SUBJECTS** for more details.
 
 # SHEBANG LINE
 
@@ -149,7 +149,7 @@ Grammar:
     <parsing_unit_subject> ::=
         <expr>
 
-See the section in this file named L</GENERIC EXPRESSIONS> for more details.
+See the section in this file named **GENERIC EXPRESSIONS** for more details.
 
 # CHARACTER CLASSES
 
@@ -414,7 +414,7 @@ likes of visual dividers or less important comments or for when you want to
 quickly "comment out" some source code rather than deleting it.
 
 For more important comments that are introspectable as such, see the
-section in this file named L<... TODO ...>.
+section in this file named **... TODO ...**.
 
 Examples:
 
@@ -694,9 +694,9 @@ performing an assertion that its other inputs are reasonable.
 side-channel but has no local effect.  Such as these and maybe 'fail'
 should be documented in another sub-section perhaps.*
 
-See the sections in this file named L</OPAQUE LITERAL EXPRESSIONS>,
-L</COLLECTION SELECTOR EXPRESSIONS>, L</INVOCATION EXPRESSIONS>, and
-L</CONDITIONAL EXPRESSIONS> for more details.
+See the sections in this file named **OPAQUE LITERAL EXPRESSIONS**,
+**COLLECTION SELECTOR EXPRESSIONS**, **INVOCATION EXPRESSIONS**, and
+**CONDITIONAL EXPRESSIONS** for more details.
 
 Examples:
 
@@ -2188,14 +2188,14 @@ This file is part of the formal specification of the **Muldis D Plain Text**
 
 MDPT is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
-L<https://muldis.com>
+<https://muldis.com>
 
 MDPT is free documentation for software; you can redistribute it and/or
 modify it under the terms of the Apache License, Version 2.0 (AL2) as
-published by the Apache Software Foundation (L<https://www.apache.org>).
+published by the Apache Software Foundation (<https://www.apache.org>).
 You should have received a copy of the AL2 as part of the MDPT
 distribution, in the file named "LICENSE/Apache-2.0.txt";
-if not, see L<https://www.apache.org/licenses/LICENSE-2.0>.
+if not, see <https://www.apache.org/licenses/LICENSE-2.0>.
 
 Any versions of MDPT that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in

@@ -13,7 +13,7 @@ the **Muldis D Foundation** (**MDF**) primary component of the **Muldis D**
 language.  The fully-qualified name of this document and the specification
 it contains is `Muldis_D_Foundation https://muldis.com 0.300.0`.
 
-See also L<Muldis::D> to read the **Muldis D** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis D** language meta-specification.
 
 The **Muldis D Foundation** specification defines the fundamental
 architecture, behaviour, and type system of Muldis D.  For all intents and
@@ -109,7 +109,7 @@ Muldis D is intended to qualify as a "**D**" language as defined by
 "*Databases, Types, and The Relational Model: The Third Manifesto*"
 (*TTM*), a formal proposal for a solid foundation for data and database
 management systems, written by Chris Date (C.J. Date) and Hugh Darwen.  See
-L<http://thethirdmanifesto.com> and its "Documents and Books" section for
+<http://thethirdmanifesto.com> and its "Documents and Books" section for
 that book, and the website also has other resources explaining what *TTM*
 is, and has copies of some documents that were used in writing Muldis D.
 
@@ -523,7 +523,7 @@ which would be considerably more difficult without them.
 
 One might say that Muldis D is using *progressive nominal typing*; or at
 least Larry Wall made up that term on the spot in reference to how Muldis D
-was perceived to work, L<http://irclog.perlgeek.de/perl6/2010-05-06/text>.
+was perceived to work, <http://irclog.perlgeek.de/perl6/2010-05-06/text>.
 Users can choose to select values before or without at all declaring the
 types of (that is, type definers for) those values, and not just after; the
 values alternately do or don't belong to named types/type definers; values can
@@ -737,7 +737,7 @@ types/operators/etc, including choices of syntax and features.  It is
 canonically written as regular Muldis D packages / code libraries just like
 user code is; users can introspect it or write their own alternatives for
 parts or the whole of it that look and function as it does.  See
-L<Muldis::D::Package::System> for the details of high-level Muldis D.
+[Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) for the details of high-level Muldis D.
 
 The *Muldis D Foundation* defines low-level Muldis D, which is the
 system-defined types and operators and other features which are canonically
@@ -1426,14 +1426,14 @@ This file is part of the formal specification of the **Muldis D Foundation**
 
 MDF is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
-L<https://muldis.com>
+<https://muldis.com>
 
 MDF is free documentation for software; you can redistribute it and/or
 modify it under the terms of the Apache License, Version 2.0 (AL2) as
-published by the Apache Software Foundation (L<https://www.apache.org>).
+published by the Apache Software Foundation (<https://www.apache.org>).
 You should have received a copy of the AL2 as part of the MDF
 distribution, in the file named "LICENSE/Apache-2.0.txt";
-if not, see L<https://www.apache.org/licenses/LICENSE-2.0>.
+if not, see <https://www.apache.org/licenses/LICENSE-2.0>.
 
 Any versions of MDF that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in

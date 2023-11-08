@@ -75,7 +75,7 @@ third-party languages which are *hosting* Muldis D; formally their
 implementation or internals are expected to be hidden from the Muldis D
 user, and differ in arbitrarily large ways between hosts, so to take
 advantage of the strengths of each host.
-See L<Muldis::D::Foundation> for the **Muldis D Foundation** specification.
+See [Muldis_Data_Language_Foundation](Muldis_Data_Language_Foundation.md) for the **Muldis D Foundation** specification.
 
 The **Muldis D Plain Text** specification defines the grammar of the official
 concrete Muldis D language syntax that every Muldis D implementation
@@ -92,7 +92,7 @@ language syntaxes to be used in different areas of a program, either in
 support of user tastes, or for better host/peer language integration
 (including their ORMs), or as a method of emulating other programming
 language environments or SQL DBMSs.
-See L<Muldis::D::Plain_Text> for the **Muldis D Plain Text** specification.
+See [Muldis_Data_Language_Plain_Text](Muldis_Data_Language_Plain_Text.md) for the **Muldis D Plain Text** specification.
 
 The **Muldis D Standard Library** specification comprises a documented
 library written entirely in Muldis D which provides its common core
@@ -107,10 +107,10 @@ performance.  It comprises a set of Muldis D *packages* (compilation
 units) that users can choose from as dependencies of their applications and
 schemas.  None are mandatory, and users can choose alternatives, but they
 are recommended as the default options for their functionality.
-See L<Muldis::D::Standard_Library> for the
+See [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) for the
 **Muldis D Standard Library** specification.
 
-The L</VERSIONING> section in this file presents a formal and future-proofed
+The **VERSIONING** section in this file presents a formal and future-proofed
 method for specifying the fully-qualified names of each versioned entity.
 
 All code written in Muldis D should begin by specifying the fully-qualified
@@ -264,7 +264,7 @@ Others are encouraged to follow the same format, but are not required to.
 
 The *semantic versioning* described below is intended to be the same as
 that defined by the public standard **Semantic Versioning 2.0.0** as
-published at L<https://semver.org> but it is reworded here so that the
+published at <https://semver.org> but it is reworded here so that the
 current document can be understood if the external standard disappears.
 
 A *version number* for authority `https://muldis.com` is an ordered
@@ -314,15 +314,15 @@ This file is part of the formal specification of the **Muldis D** language.
 
 Muldis D is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
-L<https://muldis.com>
+<https://muldis.com>
 
 Muldis D is free documentation for software;
 you can redistribute it and/or modify it under the terms of the Apache
 License, Version 2.0 (AL2) as published by the Apache Software Foundation
-(L<https://apache.org>).  You should have received a copy of the
+(<https://apache.org>).  You should have received a copy of the
 AL2 as part of the Muldis D distribution, in the file
-named "LICENSE/Apache-2.0.txt"; if not, see
-L<https://apache.org/licenses/LICENSE-2.0>.
+[LICENSE/Apache-2.0.txt](../LICENSE/Apache-2.0.txt); if not, see
+<https://apache.org/licenses/LICENSE-2.0>.
 
 Any versions of Muldis D that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
@@ -336,9 +336,9 @@ practical way of suggesting improvements to the standard version.
 # TRADEMARK POLICY
 
 **MULDIS** and **MULDIS MULTIVERSE OF DISCOURSE** are trademarks of Muldis
-Data Systems, Inc. (L<https://muldis.com>).
+Data Systems, Inc. (<https://muldis.com>).
 The trademarks apply to computer database software and related services.
-See L<https://muldis.com/trademark_policy.html> for the full written details
+See <https://muldis.com/trademark_policy.html> for the full written details
 of Muldis Data Systems' trademark policy.
 
 # ACKNOWLEDGEMENTS
