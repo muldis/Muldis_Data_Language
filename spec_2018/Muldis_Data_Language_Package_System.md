@@ -8,6 +8,7 @@ This document is Muldis::D::Package::System version 0.300.0.
 
 # SYNOPSIS
 
+```
  `Muldis_Content_Predicate
  MCP version https://muldis.com 0.300.0 MCP
  MCP script text Unicode 2.1 UTF-8 MCP
@@ -37,6 +38,7 @@ This document is Muldis::D::Package::System version 0.300.0.
         `TODO: Put example routines etc here, one is a procedure named "main".`
     ),
  ))
+```
 
 # DESCRIPTION
 
@@ -50,6 +52,7 @@ Standard Library** specification, of which this document is a part.
 
 # PACKAGE
 
+```
  `Muldis_Content_Predicate
  MCP version https://muldis.com 0.300.0 MCP
  MCP script text Unicode 2.1 UTF-8 MCP
@@ -71,6 +74,7 @@ Standard Library** specification, of which this document is a part.
         ...
     ),
  ))
+```
 
 # MAXIMAL AND MINIMAL DATA TYPES
 
