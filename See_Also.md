@@ -1,98 +1,57 @@
 # NAME
 
-See_Also - External resources to look at
+See Also - External resources to look at
 
 # DESCRIPTION
 
-**WARNING: This file is severely out of date and will be rewritten.**
-
-See <Muldis::D> first to read the **Muldis D** language meta-specification.
-
-This document is a central location within the <Muldis::D>
+This document is a central location within the Muldis Data Language
 distribution where any important recommendations of or links to external
 resources go.  This includes both resources that were helpful in making
-Muldis D, as well as resources that are or could be related to Muldis D.
+Muldis Data Language, as well as resources that are or could be related to
+Muldis Data Language.
 
-# CURRENT IMPLEMENTATIONS OF MULDIS D
+*This document is substantially out of date and will be improved later.*
 
-These externally distributed projects are full or partial implementations
-of the Muldis D language.
+# IMPLEMENTATIONS OF MULDIS DATA LANGUAGE
 
-* **Muldis D Reference Engine for Perl** - <Muldis::D::Ref_Eng>
+These externally distributed projects are in progress or partial implementations
+of Muldis Data Language.
 
-This is the first full implementation of Muldis D that is intended for
-production use, written in Perl by Muldis Data Systems, Inc., and
+* **Muldis Data Engine Reference**
+
+This is intended to be a full implementation of Muldis Data Language meant for
+production use, with versions written in a variety of host languages by
+Muldis Data Systems, Inc., and
 licensed under the Apache License version 2.  It is a full-fledged
-language implementation intended to be used in the same manner as "perl"
-itself, where a "muldisdre" binary exists that is used to compile or run
-Muldis D Plain Text source code ("foo.mdpt" files).  Alternately, its bulk
-is a Perl module that lets Muldis D be used directly by Perl programs
+language implementation intended to be used in the same manner as a typical
+other language, where a "muldisder" binary exists that is used to compile or run
+Muldis Data Language Plain Text source code ("foo.mdpt" files).  Alternately, its bulk
+is a host language module that lets Muldis Data Language be used directly by
+host language programs
 as a sub-language in the same manner as the Perl DBI module; moreover,
-users would typically specify Muldis D code in a Hosted Data format
-consisting of native Perl data structures.
+users would typically specify Muldis Data Language code in a Hosted Data format
+consisting of native host language data structures.
 
-* **Set::Relation for Perl** - <Set::Relation>
+* **Set::Relation for Perl** - <https://metacpan.org/dist/Set-Relation>
 
 Set::Relation provides a simple Perl-native facility for an application to
 organize and process information using the relational model of data,
 without having to employ a separate DBMS, and without having to employ a
-whole separate language (such as Muldis::D::Ref_Eng does).  Rather, it is
+whole separate language (such as **Muldis Data Engine Reference** does).  Rather, it is
 integrated a lot more into the Perl way of doing things, and you use it
 much like a Perl array or hash, or like some other third-party Set::
 modules available for Perl.  This is a standalone Perl object class that
-represents a Muldis D relation value, and its methods implement all
-the Muldis D relational operators.  It is intended for production use, is
+represents a Muldis Data Language relation value, and its methods implement all
+the Muldis Data Language relational operators.  It is intended for production use, is
 written by Muldis Data Systems, Inc., and is licensed under the
 Apache License version 2.
 
-* **Set::Relation for Raku**
-
-This is the Raku version of the same-named Perl module.  This version
-as it currently exists is actually a lot older than the Perl one, and the
-Perl one is a rewrite of it.  In the near future, the current Perl
-module may be ported to Raku again to replace it, unless there's no point
-in the face of a more useful Muldis::D::Ref_Eng port.
-
-# PROSPECTIVE IMPLEMENTATIONS OF MULDIS D
-
-These externally distributed projects are full or partial implementations
-of the Muldis D language.
-
-* **Muldis D Reference Engine for Not Quite Perl**
-
-The Muldis D Reference Engine would also be ported to Not Quite Perl (NQP),
-the same language that Rakudo is written in, and this would be the
-most effective way to run Muldis D Plain Text on all the backends/VMs that
-Not Quite Perl supports, including Parrot, the JVM, and MoarVM.  As NQP is
-specifically designed for writing other languages in, this would let Muldis
-D operate closer to the metal than an implementation over Perl or another
-typical high-level language would, while at the same time still saving a
-lot of the work that would be involved in writing it in C.  In any event,
-as the Muldis D Reference Engine is largely bootstrapped, most of it being
-written in Muldis D itself, each port involves relatively little manual
-translation to just get it working.
-
-* **Muldis D Reference Engine for Other Languages**
-
-The Muldis D Reference Engine would also be ported to a variety of other
-general purpose languages, giving them the same benefits that Perl
-programs have, and making Muldis D more universal.
-
-# FURTHER DOCUMENTATION
-
-Please see the separately distributed <Muldis::D::Manual> distribution for
-doc files with a potentially large collection of examples, tutorials, FAQs,
-and so on that help people learn how to employ Muldis D and its
-implementations for the things they need to do.  In particular, there
-should be a lot of help given for people migrating from other systems that
-use different paradigms than Muldis D does, for example SQL-using systems.
-
 # INFORMATION SOURCES
 
-While making the Muldis D language, the following resources were found to
+While making Muldis Data Language, the following resources were found to
 be particularly useful:
 
-* <http://www.thethirdmanifesto.com/>
+* <http://www.thethirdmanifesto.com>
 
 This is the Hugh Darwen's and Chris Date (C.J. Date)'s home on the web for
 "*The Third Manifesto*" (*TTM*), their formal proposal for a solid
@@ -113,7 +72,7 @@ simple, restricted and precise definition of the role of object orientation
 in database management systems emphasizing the few valid ideas from object
 modeling that are orthogonal to relational modeling.
 
-Muldis D has officially incorporated this blueprint into its own design,
+Muldis Data Language has officially incorporated this blueprint into its own design,
 and implements its principles without compromise, and so it is a concrete
 language that qualifies as a **D**.  The *TTM* web site contains various
 useful documents and links on the subject, some being specified further
@@ -148,12 +107,12 @@ This book is a followup to the prior-mentioned 2006 one and contains both
 an updated version of the *Manifesto* itself and also a collection of both
 new and updated writings by the authors that are related.
 
-Of particular interest for Muldis D, *Database Explorations* cites by name
-the DBMS prototype Muldis Rosetta, and its user language Muldis D, and
+Of particular interest for Muldis Data Language, *Database Explorations* cites by name
+the DBMS prototype Muldis Rosetta, and its user language Muldis Data Language, and
 their author Darren Duncan; chapter 26, "An Approach Using Relation Valued
-Attributes", is all about discussing Muldis D's canonical means to
+Attributes", is all about discussing Muldis Data Language's canonical means to
 represent missing information, which is with empty RVAs.  This is the very
-first time that Muldis D or its author or related projects have ever been
+first time that Muldis Data Language or its author or related projects have ever been
 recognized in an actual printed-on-paper book.
 
 Note that the web site for *The Third Manifesto*, mentioned above, has
@@ -169,9 +128,9 @@ complete grammar of "**Tutorial D**".
 
 Chris Date (C.J. Date) - "Database in Depth: Relational Theory for
 Practitioners, 1st edition, Oreilly, 2005 (ISBN: 0-596-10012-4)"; see
-<http://www.oreilly.com/catalog/databaseid/>.
+<http://www.oreilly.com/catalog/databaseid>.
 
-This is the first printed book that Muldis D's author had read fully, which
+This is the first printed book that Muldis Data Language's author had read fully, which
 is related to *The Third Manifesto*, and it was their main introduction.
 It explains in an easy to follow matter just what the relational data model
 really is, a solid and provable logical system, and partially contrasts
@@ -228,7 +187,7 @@ such as MySQL and SQLite were regularly consulted, and various other sites.
 
 # SOME FULLY TTM/D RELATED DBMS PROJECTS
 
-Besides the Muldis::D::Ref_Eng framework, other projects exist which attempt
+Besides **Muldis Data Engine Reference**, other projects exist which attempt
 to implement *The Third Manifesto* fully and without compromise (that lack
 anti-*TTM* features), though their current implementations may be
 incomplete and/or in development.  None of these use 'SQL' as their native
@@ -239,7 +198,7 @@ language.
 ## Free and Open Source Software
 
 These software projects are released under a free and open source license,
-as Muldis::D::Ref_Eng is, so you have the freedom to use the software for any
+as **Muldis Data Engine Reference** is, so you have the freedom to use the software for any
 purpose, to examine the project source code, change it, and redistribute
 it:
 
@@ -250,7 +209,7 @@ Rel is a relational database server, written by Dave Voorhis
 language mainly "by the book".  It is written in Java (version 1.5) and
 is operating-system independent.  It is licensed under the GNU GPL.
 
-* **DuroDBMS** - <http://duro.sourceforge.net/>
+* **DuroDBMS** - <http://duro.sourceforge.net>
 
 DuroDBMS is a relational database library, written by René Hartmann
 (`rhartmann@users.sourceforge.net`).  It is written in C (with a Tcl
@@ -258,7 +217,7 @@ interface), is implemented on top of the Berkeley DB database library, and
 runs on all POSIX/UNIX-like and 32-bit Windows operating systems.  It is
 licensed under the GNU GPL.
 
-* **Dee** - <http://www.quicksort.co.uk/>
+* **Dee** - <http://www.quicksort.co.uk>
 
 Dee is an implementation of **D** (built on the relational algebra
 operators) as an extension to Python, written by Greg Gaughan
@@ -272,7 +231,7 @@ but lack permissions on use, modification, or redistribution that are
 essential to qualify as free and open source software; some are available
 at zero cost:
 
-* **FlipDB** - <http://www.flipdb.com/>
+* **FlipDB** - <http://www.flipdb.com>
 
 FlipDB is a relational database management system written by Paul Mansour
 (`paul@carlislegroup.com`).  Pending a full implementation of the
@@ -315,7 +274,7 @@ use a SQL dialect as their command language.
 
 ## Free and Open Source Software
 
-* **Dataphor** - <http://www.alphora.com/>
+* **Dataphor** - <http://www.alphora.com>
 
 Dataphor is a *TTM*-inspired commercial database application development
 tool set, owned by Alphora (a trade name of Database Consulting Group LLC),
@@ -327,7 +286,7 @@ using a federated server; while it has a native database engine, it
 emphasizes the use of various other database engines for storage.  Dataphor
 is licensed under a modified BSD license.
 
-* **Genezzo** - <http://www.genezzo.com/>
+* **Genezzo** - <http://www.genezzo.com>
 
 Genezzo is a micro kernel style enterprise-strength SQL database server,
 written mainly by Jeffrey Cohen (`jcohen@cpan.org`), currently under
@@ -336,7 +295,7 @@ operating system.  It is licensed under the GNU GPL.
 
 ## Closed Source Software
 
-* **Teradata** - <http://www.teradata.com/>
+* **Teradata** - <http://www.teradata.com>
 
 Teradata is a commercial DBMS that, as far as the developers know, is the
 only SQL-DBMS that supports and/or defaults to set semantics.  They also
@@ -352,7 +311,7 @@ their primary or only interface; a relative few are listed here.
 
 ## Free and Open Source Software
 
-* **SQLite** - <http://www.sqlite.org/>
+* **SQLite** - <http://www.sqlite.org>
 
 SQLite is a small library that implements a fully transactional file-based
 SQL database engine, written mainly by D. Richard Hipp (Hwaci - Applied
@@ -362,7 +321,7 @@ devices.  It is committed to the public domain and can be used in any other
 license of program.  Bindings for many programming languages exist,
 including for Perl.
 
-* **PostgreSQL** - <http://www.postgresql.org/>
+* **PostgreSQL** - <http://www.postgresql.org>
 
 PostgreSQL is a powerful SQL database server, owned by the PostgreSQL
 Global Development Group.  It is written in C and runs on any operating
@@ -370,14 +329,14 @@ system.  It is licensed under a BSD-like license, specifically the license
 of the University of California.  Bindings for many programming languages
 exist, including for Perl.
 
-* **MySQL** - <http://www.mysql.com/>
+* **MySQL** - <http://www.mysql.com>
 
 MySQL is a multi-engine SQL database server, owned by MySQL AB.  It is
 written in C and runs on any operating system.  It is dual-licensed under
 the GNU GPL (at no cost) and under a proprietary license (for a fee).
 Bindings for many programming languages exist, including for Perl.
 
-* **Firebird** - <http://www.firebirdsql.org/>
+* **Firebird** - <http://www.firebirdsql.org>
 
 Firebird is a mature SQL database server, forked from the open sources of
 InterBase by Inprise/Borland; portions are owned by Inprise/Borland and
@@ -389,19 +348,19 @@ languages exist, including for Perl.
 
 ## Closed Source Software
 
-* **Oracle** - <http://www.oracle.com/database/>
+* **Oracle** - <http://www.oracle.com/database>
 
-* **Sybase** - <http://www.sybase.com/>
+* **Sybase** - <http://www.sybase.com>
 
-* **SQL Server** - <http://www.microsoft.com/sql/>
+* **SQL Server** - <http://www.microsoft.com/sql>
 
-* **Informix** - <http://www.ibm.com/software/data/informix/>
+* **Informix** - <http://www.ibm.com/software/data/informix>
 
-* **DB2** - <http://www.ibm.com/software/data/db2/>
+* **DB2** - <http://www.ibm.com/software/data/db2>
 
-* **OpenBase** - <http://www.openbase.com/>
+* **OpenBase** - <http://www.openbase.com>
 
-* **FrontBase** - <http://www.frontbase.com/>
+* **FrontBase** - <http://www.frontbase.com>
 
 # SOME OTHER DBMS PROJECTS
 
@@ -410,16 +369,16 @@ a relative few are listed here.
 
 ## Free and Open Source Software
 
-* **Berkeley DB** - <http://www.sleepycat.com/>
+* **Berkeley DB** - <http://www.sleepycat.com>
 
 ## Closed Source Software
 
-* **FileMaker Pro** - <http://www.filemaker.com/>
+* **FileMaker Pro** - <http://www.filemaker.com>
 
-* **Valentina** - <http://www.paradigmasoft.com/>
+* **Valentina** - <http://www.paradigmasoft.com>
 
 # MORE INFORMATION
 
-Muldis D is an [Acmeist](http://www.acmeism.org/) programming language for
+Muldis Data Language is an [Acmeist](http://www.acmeism.org/) programming language for
 writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
