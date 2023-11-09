@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::STDIO - Muldis D routines for basic command-line user I/O
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::STDIO version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,14 +14,14 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document defines all of the core Muldis D routines that provide
 basic command-line user input/output.
 
 I<This documentation is pending.>
 
-=head1 GENERIC SYSTEM-SERVICES FOR STANDARD I/O
+# GENERIC SYSTEM-SERVICES FOR STANDARD I/O
 
 These system-services are provided so Muldis D can do basic user
 input/output by itself, using standard input and standard output, like any
@@ -36,7 +32,7 @@ basic invoker-setup file piping, as well as display diagnostics to standard
 error.  These routines are not exhaustive, and their details are subject to
 future revision.
 
-=head2 sys.std.Core.STDIO.end_of_line_Text
+## sys.std.Core.STDIO.end_of_line_Text
 
 C<system-service end_of_line_Text (&target : Text)
 [...]>
@@ -49,7 +45,7 @@ input.  The purpose of this routine is to support users that want to
 catenate Text within Muldis D for output with a single C<write_Text> that
 is intended to display over multiple implementation-defined lines.
 
-=head2 sys.std.Core.STDIO.read_Text
+## sys.std.Core.STDIO.read_Text
 
 C<system-service read_Text (&target : Text,
 len_in_graphs : NNInt) [...]>
@@ -62,7 +58,7 @@ routine will only fetch fewer than the requested number of characters if
 the input stream is closed first.  This routine will throw an exception if
 any system errors occur.
 
-=head2 sys.std.Core.STDIO.read_Text_line
+## sys.std.Core.STDIO.read_Text_line
 
 C<system-service read_Text_line (&target : Text,
 ignore_empty_lines? : Bool) [...]>
@@ -77,7 +73,7 @@ until it reads a non-empty line, and then C<target> is only updated to hold
 that last non-empty line; otherwise, this routine will end as soon as one
 line is read, even if it is empty.
 
-=head2 sys.std.Core.STDIO.write_Text
+## sys.std.Core.STDIO.write_Text
 
 C<system-service write_Text (v : Text) [...]>
 
@@ -86,7 +82,7 @@ C<v> argument to standard output, blocking the current in-DBMS process
 until it finishes.  This routine will throw an exception if any system
 errors occur.
 
-=head2 sys.std.Core.STDIO.write_Text_line
+## sys.std.Core.STDIO.write_Text_line
 
 C<system-service write_Text_line (v? : Text) [...]>
 
@@ -95,7 +91,7 @@ except that it will additionally write an implementation-defined
 end-of-line character after writing C<v>.  If the C<v> argument is omitted,
 then this routine simply writes the end-of-line.
 
-=head2 sys.std.Core.STDIO.prompt_Text_line
+## sys.std.Core.STDIO.prompt_Text_line
 
 C<system-service prompt_Text_line (&target : Text,
 prompt : Text, ignore_empty_lines? : Bool ) [...]>
@@ -106,14 +102,14 @@ invoking C<sys.std.Core.STDIO.read_Text_line> with its C<target> argument.
 A true C<ignore_empty_lines> argument will result in I<both> of the wrapped
 routines being invoked repeatedly, not just C<read_text_line>.
 
-=head2 sys.std.Core.STDIO.error_Text
+## sys.std.Core.STDIO.error_Text
 
 C<system-service error_Text (v : Text) [...]>
 
 This system-service routine is the same as C<sys.std.Core.STDIO.write_Text>
 except that it will write to standard error rather than standard output.
 
-=head2 sys.std.Core.STDIO.error_Text_line
+## sys.std.Core.STDIO.error_Text_line
 
 C<system-service error_Text_line (v? : Text) [...]>
 
@@ -121,16 +117,14 @@ This system-service routine is the same as
 C<sys.std.Core.STDIO.write_Text_line> except that it will write to standard
 error rather than standard output.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

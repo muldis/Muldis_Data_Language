@@ -1,22 +1,18 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Ext::Spatial - Muldis D extension for spatial data types and operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Ext::Spatial version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 Muldis D has a mandatory core set of system-defined (eternally available)
 entities, which is referred to as the I<Muldis D core> or the I<core>; they
@@ -38,7 +34,7 @@ operators are defined once for all types in [Muldis_Data_Language_Core](Muldis_D
 
 I<This documentation is pending.>
 
-=head1 TYPE SUMMARY
+# TYPE SUMMARY
 
 Following are all the data types described in this document, arranged in a
 type graph according to their proper sub|supertype relationships:
@@ -67,82 +63,80 @@ type graph according to their proper sub|supertype relationships:
 
 I<This documentation is pending.>
 
-=head1 DATA TYPES FOR SPATIAL ARTIFACTS
+# DATA TYPES FOR SPATIAL ARTIFACTS
 
 These non-core scalar data types describe common kinds of spatial or
 geometric figures.  I<Of course, dealing with these types in general isn't
 a perfect science; they stand to be revised or rewritten.>
 
-=head2 sys.std.Spatial.Type.Geometry
+## sys.std.Spatial.Type.Geometry
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.Point
+## sys.std.Spatial.Type.Point
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.Curve
+## sys.std.Spatial.Type.Curve
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.LineString
+## sys.std.Spatial.Type.LineString
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.CircularString
+## sys.std.Spatial.Type.CircularString
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.CompoundCurve
+## sys.std.Spatial.Type.CompoundCurve
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.Surface
+## sys.std.Spatial.Type.Surface
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.CurvePolygon
+## sys.std.Spatial.Type.CurvePolygon
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.Polygon
+## sys.std.Spatial.Type.Polygon
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.GeometryCollection
+## sys.std.Spatial.Type.GeometryCollection
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.MultiPoint
+## sys.std.Spatial.Type.MultiPoint
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.MultiCurve
+## sys.std.Spatial.Type.MultiCurve
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.MultiLineString
+## sys.std.Spatial.Type.MultiLineString
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.MultiSurface
+## sys.std.Spatial.Type.MultiSurface
 
 I<TODO.>
 
-=head2 sys.std.Spatial.Type.MultiPolygon
+## sys.std.Spatial.Type.MultiPolygon
 
 I<TODO.>
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

@@ -1,22 +1,18 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Conventions - Style and design guidelines for Muldis D
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Conventions version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document briefly outlines various conventions used in the Muldis D
 language, and provides some style and design recommendations for code
@@ -31,9 +27,9 @@ when using any style rules.
 This document is very much an early draft, and for not just contains a bit
 of brainstorming in point form.
 
-=head1 GUIDELINES
+# GUIDELINES
 
-=head2 Entity Naming
+## Entity Naming
 
 Note that any use of the word "name" specifically refers to a C<Name>, or
 in other words the declared unqualified name of an entity, which sometimes
@@ -135,7 +131,7 @@ C<Array.T>.  2.  If the two types have a mutually even status, and it would
 be relatively easy to name both of them, then the pair should live out in a
 more public namespace, each directly under their conceptual names.
 
-=head2 Defaults and Options
+## Defaults and Options
 
 When defining a routine parameter or type attribute that is expected to
 have the same single value in a majority of usage scenarios, and that users
@@ -175,7 +171,7 @@ empty string as its name.  On the other hand, don't be hesitant to just use
 a non-empty name even when there is just one possrep, if that name results
 in better self-documentation of the type and its value selections.
 
-=head2 Syntax Ordering
+## Syntax Ordering
 
 Muldis D internally (that is, in the system catalog) organizes parts of
 syntax by name rather than by order, so in that respect the language is not
@@ -191,16 +187,14 @@ the inputs go in on the right side.  At least this is assuming you normally
 read left-to-right.  But even if you don't, practically all programming
 languages are oriented left-to-right anyway, and we can follow that.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

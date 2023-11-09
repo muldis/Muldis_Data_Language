@@ -1,22 +1,18 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Ext::Temporal - Muldis D extension for temporal data types and operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Ext::Temporal version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 Muldis D has a mandatory core set of system-defined (eternally available)
 entities, which is referred to as the I<Muldis D core> or the I<core>; they
@@ -48,7 +44,7 @@ This current document does not describe the polymorphic operators that all
 types, or some types including core types, have defined over them; said
 operators are defined once for all types in [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md).
 
-=head1 TYPE SUMMARY
+# TYPE SUMMARY
 
 Following are all the data types described in this document, which are all
 mixin types, arranged in a type graph according to their proper
@@ -59,9 +55,9 @@ that compose them:
         sys.std.Temporal.Type.Instant
         sys.std.Temporal.Type.Duration
 
-=head1 TEMPORAL MIXIN DATA TYPES
+# TEMPORAL MIXIN DATA TYPES
 
-=head2 sys.std.Temporal.Type.Instant
+## sys.std.Temporal.Type.Instant
 
 The C<Instant> type is a mixin (union) type that is intended to be
 explicitly composed by every other type where each of the values of that
@@ -76,7 +72,7 @@ intended to have exactly the same meaning as the same-named type of Raku
 (see <http://perlcabal.org/syn/S02.html> for details).  The default value
 of C<Instant> is implementation-defined.
 
-=head2 sys.std.Temporal.Type.Duration
+## sys.std.Temporal.Type.Duration
 
 The C<Duration> type is a mixin (union) type that is intended to be
 explicitly composed by every other type where each of the values of that
@@ -95,9 +91,9 @@ C<Duration> type is intended to have exactly the same meaning as the
 same-named type of Raku.  The default value of C<Duration> is
 implementation-defined.
 
-=head1 VIRTUAL FUNCTIONS FOR THE INSTANT MIXIN TYPE
+# VIRTUAL FUNCTIONS FOR THE INSTANT MIXIN TYPE
 
-=head2 sys.std.Temporal.Instant.diff
+## sys.std.Temporal.Instant.diff
 
 C<< function diff (Duration <--
 minuend@ : Instant, subtrahend@ : Instant) {...} >>
@@ -108,7 +104,7 @@ C<minuend> argument.  The result is the amount of time between the 2
 arguments, which may be positive or negative depending on which argument
 was earlier.
 
-=head2 sys.std.Temporal.Instant.abs_diff
+## sys.std.Temporal.Instant.abs_diff
 
 C<< function abs_diff (Duration <--
 topic@ : Instant, other@ : Instant) {...} >>
@@ -117,7 +113,7 @@ This virtual symmetric function results in the absolute difference between
 its 2 arguments.  The result is the amount of time between the 2 arguments,
 which is always non-negative.
 
-=head2 sys.std.Temporal.Instant.later
+## sys.std.Temporal.Instant.later
 
 C<< function later (Instant <--
 instant@ : Instant, duration@ : Duration) {...} >>
@@ -125,7 +121,7 @@ instant@ : Instant, duration@ : Duration) {...} >>
 This virtual function results in the instant that is later than its
 C<instant> argument by the amount of time in the C<duration> argument.
 
-=head2 sys.std.Temporal.Instant.earlier
+## sys.std.Temporal.Instant.earlier
 
 C<< function earlier (Instant <--
 instant@ : Instant, duration@ : Duration) {...} >>
@@ -133,15 +129,15 @@ instant@ : Instant, duration@ : Duration) {...} >>
 This virtual function results in the instant that is earlier than its
 C<instant> argument by the amount of time in the C<duration> argument.
 
-=head1 VIRTUAL FUNCTIONS FOR THE DURATION MIXIN TYPE
+# VIRTUAL FUNCTIONS FOR THE DURATION MIXIN TYPE
 
-=head2 sys.std.Temporal.Duration.abs
+## sys.std.Temporal.Duration.abs
 
 C<< function abs (Duration <-- topic@ : Duration) {...} >>
 
 This virtual function results in the absolute value of its argument.
 
-=head2 sys.std.Temporal.Duration.sum
+## sys.std.Temporal.Duration.sum
 
 C<< function sum (Duration <-- topic@ : bag_of.Duration) {...} >>
 
@@ -156,7 +152,7 @@ this virtual function itself will instead fail when C<topic> has zero
 values, because then it would lack the necessary type information to know
 which type-specific implementing function to dispatch to.
 
-=head2 sys.std.Temporal.Duration.diff
+## sys.std.Temporal.Duration.diff
 
 C<< function diff (Duration <--
 minuend@ : Duration, subtrahend@ : Duration) {...} >>
@@ -164,7 +160,7 @@ minuend@ : Duration, subtrahend@ : Duration) {...} >>
 This virtual function results in the difference when its C<subtrahend>
 argument is subtracted from its C<minuend> argument.
 
-=head2 sys.std.Temporal.Duration.abs_diff
+## sys.std.Temporal.Duration.abs_diff
 
 C<< function abs_diff (Duration <--
 topic@ : Duration, other@ : Duration) {...} >>
@@ -172,9 +168,9 @@ topic@ : Duration, other@ : Duration) {...} >>
 This virtual symmetric function results in the absolute difference between
 its 2 arguments.
 
-=head1 VIRTUAL SYSTEM-SERVICES FOR CURRENT DATES AND TIMES
+# VIRTUAL SYSTEM-SERVICES FOR CURRENT DATES AND TIMES
 
-=head2 sys.std.Temporal.Instant.fetch_trans_instant
+## sys.std.Temporal.Instant.fetch_trans_instant
 
 C<system-service fetch_trans_instant (&target@ : Instant) [...]>
 
@@ -193,16 +189,14 @@ C<fetch_trans_instant> is invoked; typically that value is the default
 of the declared type of the invoker variable which is C<target>'s argument;
 this routine might fail if said declared type isn't a subset of C<Instant>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

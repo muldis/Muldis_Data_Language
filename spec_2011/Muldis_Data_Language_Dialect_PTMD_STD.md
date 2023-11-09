@@ -1,22 +1,18 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Dialect::PTMD_STD - How to format Plain Text Muldis D
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Dialect::PTMD_STD version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document outlines the grammar of the I<Plain Text Muldis D> standard
 dialect named C<PTMD_STD>.  The fully-qualified name of this Muldis D
@@ -80,7 +76,7 @@ directly from C<PTMD_STD>, and represent possible Raku and Perl concrete
 syntax trees for it; in fact, most of the details in common with those
 other dialects are described just in the current file, for all 3 dialects.
 
-=head1 GENERAL STRUCTURE
+# GENERAL STRUCTURE
 
 A C<PTMD_STD> Muldis D code file consists just of a Muldis
 D depot definition, which begins with a language name
@@ -134,7 +130,7 @@ different definitions.
 
 The root grammar token for the entire dialect is C<Muldis_D>.
 
-=head1 START
+# START
 
 Grammar:
 
@@ -162,7 +158,7 @@ be supplied to the Muldis D VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
 Muldis D code that isn't itself qualified with a C<language_name>.
 
-=head1 LANGUAGE NAME
+# LANGUAGE NAME
 
 Grammar:
 
@@ -280,7 +276,7 @@ Examples:
         standard_syntax_extensions => {}
     }
 
-=head1 CATALOG ABSTRACTION LEVELS
+# CATALOG ABSTRACTION LEVELS
 
 The C<catalog_abstraction_level> pragma determines with a broad granularity
 how large the effective Muldis D grammar is that a programmer may employ
@@ -328,7 +324,7 @@ Specifying the C<catalog_abstraction_level> pragma in a C<language_name>
 node is mandatory, since there is no obvious abstraction level to use
 implicitly when one isn't specified.
 
-=head2 the_floor
+## the_floor
 
 When the C<catalog_abstraction_level> pragma is C<the_floor>, then the
 following grammar definitions are in effect:
@@ -404,7 +400,7 @@ Examples:
         ]
     ]
 
-=head2 code_as_data
+## code_as_data
 
 When the C<catalog_abstraction_level> pragma is C<code_as_data>, then the
 following grammar definitions are in effect:
@@ -481,7 +477,7 @@ Examples:
        }
     }
 
-=head2 plain_rtn_inv
+## plain_rtn_inv
 
 When the C<catalog_abstraction_level> pragma is C<plain_rtn_inv>, then the
 following grammar definitions are in effect:
@@ -554,7 +550,7 @@ Examples:
         }
     }
 
-=head2 DEPRECATED - rtn_inv_alt_syn
+## DEPRECATED - rtn_inv_alt_syn
 
 B<The C<rtn_inv_alt_syn> catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
@@ -626,7 +622,7 @@ Examples:
         }
     }
 
-=head1 OPERATOR CHARACTER REPERTOIRE
+# OPERATOR CHARACTER REPERTOIRE
 
 The C<op_char_repertoire> pragma determines primarily whether or not the
 various routine invocation alternate syntaxes, herein called I<operators>,
@@ -657,7 +653,7 @@ Specifying the C<op_char_repertoire> pragma in a C<language_name> node is
 mandatory, since there is no obviously best setting to use implicitly when
 one isn't specified.
 
-=head2 basic
+## basic
 
 The C<basic> operator character repertoire is the smallest one, and it only
 supports writing the proper subset of defined operator invocations and
@@ -697,7 +693,7 @@ following grammar definitions are in effect:
     <proc_nonsym_dyadic_infix_op> ::=
         <proc_nonsym_dyadic_infix_op__op_cr_basic>
 
-=head2 extended
+## extended
 
 The C<extended> operator character repertoire is the largest one, and it
 supports the entire set of defined operator invocations and special value
@@ -751,7 +747,7 @@ following grammar definitions are in effect:
     <proc_nonsym_dyadic_infix_op> ::=
         <proc_nonsym_dyadic_infix_op__op_cr_extended>
 
-=head1 STANDARD SYNTAX EXTENSIONS
+# STANDARD SYNTAX EXTENSIONS
 
 The C<standard_syntax_extensions> pragma declares which optional portions
 of the Muldis D grammar a programmer may employ with their Muldis D code.
@@ -777,7 +773,7 @@ Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
 node is optional, and when omitted it defaults to the empty set, meaning no
 extensions may be used.
 
-=head1 VALUE LITERALS AND SELECTORS
+# VALUE LITERALS AND SELECTORS
 
 Grammar:
 
@@ -852,7 +848,7 @@ D value, such that every one of these values is defined visibly in terms of
 a collection of other nodes; this includes the basic tuple and relation
 selectors.
 
-=head2 Value Literal Common Elements
+## Value Literal Common Elements
 
 A I<generic context value literal> (or I<GCVL>) is a value literal that can
 be properly interpreted in a context that is expecting I<a> value but has
@@ -1026,14 +1022,14 @@ This is mandatory for all C<value>.
 
 For GCVL and SCVL examples, see the subsequent documentation sections.
 
-=head1 OPAQUE VALUE LITERALS
+# OPAQUE VALUE LITERALS
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.SysScaValExprNodeSet>, a tuple of which is what
 every kind of C<opaque_value_literal> node distills to when it is beneath
 the context of a C<depot> node, as it describes some semantics.
 
-=head2 Singleton Literals
+## Singleton Literals
 
 Grammar:
 
@@ -1069,7 +1065,7 @@ Examples:
 
     ∞
 
-=head2 Boolean Literals
+## Boolean Literals
 
 Grammar:
 
@@ -1107,7 +1103,7 @@ Examples:
 
     ⊥
 
-=head2 Order-Determination Literals
+## Order-Determination Literals
 
 Grammar:
 
@@ -1131,7 +1127,7 @@ Examples:
 
     More
 
-=head2 Rounding Method Literals
+## Rounding Method Literals
 
 Grammar:
 
@@ -1160,7 +1156,7 @@ Examples:
 
     ToZero
 
-=head2 General Purpose Integer Numeric Literals
+## General Purpose Integer Numeric Literals
 
 Grammar:
 
@@ -1270,7 +1266,7 @@ Examples:
 
     B#A09B #`base-12`#
 
-=head2 General Purpose Rational Numeric Literals
+## General Purpose Rational Numeric Literals
 
 Grammar:
 
@@ -1349,7 +1345,7 @@ Examples:
 
     314159*10^-5
 
-=head2 General Purpose Binary String Literals
+## General Purpose Binary String Literals
 
 Grammar:
 
@@ -1404,7 +1400,7 @@ Examples:
 
     0o'523504376'
 
-=head2 General Purpose Character String Literals
+## General Purpose Character String Literals
 
 Grammar:
 
@@ -1545,7 +1541,7 @@ Examples:
 
     #`This does something.`#
 
-=head2 DBMS Entity Name Literals
+## DBMS Entity Name Literals
 
 Grammar:
 
@@ -1715,7 +1711,7 @@ Examples:
 
     PNSQNameChain:fed.data.the_db.stats."samples by order"
 
-=head2 Rational Rounding Rule Literals
+## Rational Rounding Rule Literals
 
 Grammar:
 
@@ -1754,7 +1750,7 @@ Examples:
 
     RatRoundRule:[2,-7,ToZero]
 
-=head1 COLLECTION VALUE SELECTORS
+# COLLECTION VALUE SELECTORS
 
 Note that, with each of the main value selector nodes documented in this
 main POD section (members of C<coll_value_selector> etc), any occurrences
@@ -1763,7 +1759,7 @@ contexts where instances of the main nodes are being composed beneath
 C<value> nodes.  That is, any C<expr> node options beyond what C<value>
 options exist are only valid within a C<depot> node.
 
-=head2 Scalar Selectors
+## Scalar Selectors
 
 Grammar:
 
@@ -1832,7 +1828,7 @@ Examples:
         "" => 5,
     }
 
-=head2 Tuple Selectors
+## Tuple Selectors
 
 Grammar:
 
@@ -1918,7 +1914,7 @@ Examples:
 
     %:{ w => 'foo', =>x, y => 4, =>z }
 
-=head2 Database Selectors
+## Database Selectors
 
 Grammar:
 
@@ -1944,7 +1940,7 @@ See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what
 a C<Database> node distills to same as when C<Tuple> does.
 
-=head2 Relation Selectors
+## Relation Selectors
 
 Grammar:
 
@@ -2059,7 +2055,7 @@ Examples:
         [ 'Michelle', 17 ],
     }  #`2 attrs + 1 tuple`#
 
-=head2 Set Selectors
+## Set Selectors
 
 Grammar:
 
@@ -2103,7 +2099,7 @@ Examples:
         85,
     }
 
-=head2 Maybe Selectors
+## Maybe Selectors
 
 Grammar:
 
@@ -2163,7 +2159,7 @@ Examples:
 
     ∅
 
-=head2 Array Selectors
+## Array Selectors
 
 Grammar:
 
@@ -2210,7 +2206,7 @@ Examples:
         61,
     ]
 
-=head2 Bag Selectors
+## Bag Selectors
 
 Grammar:
 
@@ -2293,7 +2289,7 @@ Examples:
         'Baz',
     }
 
-=head2 Interval Selectors
+## Interval Selectors
 
 Grammar:
 
@@ -2391,7 +2387,7 @@ Examples:
 
     {-Inf..3,14..21,29..Inf}  #`all Int besides {4..13,22..28}`#
 
-=head2 Low Level List Selectors
+## Low Level List Selectors
 
 Grammar:
 
@@ -2465,7 +2461,7 @@ Examples:
         ]
     ]
 
-=head1 DEPOT SPECIFICATION
+# DEPOT SPECIFICATION
 
 Grammar:
 
@@ -2553,7 +2549,7 @@ Examples:
         }
     }
 
-=head1 MATERIAL SPECIFICATION
+# MATERIAL SPECIFICATION
 
 Grammar:
 
@@ -2640,7 +2636,7 @@ not be a good practice; use explicit names if you want to invoke by name.
 Strictly speaking, the algorithm to generate material names should be fully
 deterministic, but the names would be non-descriptive so akin to random.
 
-=head2 Material Specification Common Elements
+## Material Specification Common Elements
 
 Every material has 2-3 elements, illustrated by this grammar:
 
@@ -2732,7 +2728,7 @@ C<named_material> is the only valid option, and so the
 C<material_declared_name> isn't optional, and the only way to embed a
 material in another is using a C<with_clause>.
 
-=head2 Function Specification
+## Function Specification
 
 Grammar:
 
@@ -2849,7 +2845,7 @@ Examples:
         topic exp 3
     }
 
-=head2 Procedure Specification
+## Procedure Specification
 
 Grammar:
 
@@ -3115,7 +3111,7 @@ Examples:
         b := b div gcd round Down
     }
 
-=head2 Scalar Type Specification
+## Scalar Type Specification
 
 Grammar:
 
@@ -3182,7 +3178,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Tuple Type Specification
+## Tuple Type Specification
 
 Grammar:
 
@@ -3309,7 +3305,7 @@ Examples:
         }
     }
 
-=head2 Relation Type Specification
+## Relation Type Specification
 
 Grammar:
 
@@ -3376,7 +3372,7 @@ Examples:
         constraint nlx.lib.sk_cd_title
     }
 
-=head2 Domain Type Specification
+## Domain Type Specification
 
 Grammar:
 
@@ -3426,7 +3422,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Subset Type Specification
+## Subset Type Specification
 
 Grammar:
 
@@ -3483,7 +3479,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Mixin Type Specification
+## Mixin Type Specification
 
 Grammar:
 
@@ -3523,7 +3519,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Key Constraint Specification
+## Key Constraint Specification
 
 Grammar:
 
@@ -3573,11 +3569,11 @@ Examples:
     #`relation type has surrogate key over both name attrs`#
     key-constraint sk_name { last_name, first_name }
 
-=head2 Distributed Key Constraint Specification
+## Distributed Key Constraint Specification
 
 I<TODO.>
 
-=head2 Subset Constraint Specification
+## Subset Constraint Specification
 
 Grammar:
 
@@ -3653,11 +3649,11 @@ Examples:
         child cds using-attrs { =>artist_id }
     }
 
-=head2 Distributed Subset Constraint Specification
+## Distributed Subset Constraint Specification
 
 I<TODO.>
 
-=head2 Stimulus-Response Rule Specification
+## Stimulus-Response Rule Specification
 
 Grammar:
 
@@ -3702,7 +3698,7 @@ Examples:
         invoke nlx.lib.main
     }
 
-=head1 GENERIC VALUE EXPRESSIONS
+# GENERIC VALUE EXPRESSIONS
 
 Grammar:
 
@@ -3791,7 +3787,7 @@ Examples:
     #`a named_expr node`#
     let bar_expr ::= factorial( foo_expr )
 
-=head2 Generic Expression Attribute Accessors
+## Generic Expression Attribute Accessors
 
 Grammar:
 
@@ -3833,7 +3829,7 @@ Examples:
     #`an accessor node of an anonymous tuple-valued node`#
     nlx.lib.tuple_res_func( arg ).quux_attr
 
-=head2 Generic Function Invocation Expressions
+## Generic Function Invocation Expressions
 
 Grammar:
 
@@ -3942,7 +3938,7 @@ Examples:
     #`three named params taking 2 same-named args, 1 diff-named arg`#
     nlx.lib.passed_thru( =>a, b => 5, =>c )
 
-=head2 Generic If-Else Expressions
+## Generic If-Else Expressions
 
 Grammar:
 
@@ -3985,7 +3981,7 @@ Examples:
 
     'My answer is: ' ~ (maybe ?? 'yes' !! 'no')
 
-=head2 Generic Given-When-Default Expressions
+## Generic Given-When-Default Expressions
 
 Grammar:
 
@@ -4028,7 +4024,7 @@ Examples:
         when 'E' then 11
         default digit
 
-=head2 Material Reference Selector Expressions
+## Material Reference Selector Expressions
 
 Grammar:
 
@@ -4085,7 +4081,7 @@ Examples:
     #`a reference to a data type`#
     <nlx.lib.foo_type>
 
-=head1 GENERIC PROCEDURE STATEMENTS
+# GENERIC PROCEDURE STATEMENTS
 
 Grammar:
 
@@ -4159,7 +4155,7 @@ Examples:
     #`a named_stmt node`#
     let bar_stmt ::= nlx.lib.swap( &=>first, &=>second )
 
-=head2 Generic Compound Statements
+## Generic Compound Statements
 
 Grammar:
 
@@ -4187,7 +4183,7 @@ Examples:
         write_Text_line( message )
     ]
 
-=head2 Multi-Update Statements
+## Multi-Update Statements
 
 Grammar:
 
@@ -4228,7 +4224,7 @@ Examples:
         )
     }
 
-=head2 Generic Procedure Invocation Statements
+## Generic Procedure Invocation Statements
 
 Grammar:
 
@@ -4324,7 +4320,7 @@ Examples:
 
     Integer.fetch_random( &rand, interval )
 
-=head2 Generic Try-Catch Statements
+## Generic Try-Catch Statements
 
 Grammar:
 
@@ -4361,7 +4357,7 @@ Examples:
     catch
         nlx.lib.deal_with_failure()
 
-=head2 Generic If-Else Statements
+## Generic If-Else Statements
 
 Grammar:
 
@@ -4391,7 +4387,7 @@ Examples:
     else
         nlx.lib.keep_going()
 
-=head2 Generic Given-When-Default Statements
+## Generic Given-When-Default Statements
 
 Grammar:
 
@@ -4433,7 +4429,7 @@ Examples:
         default
             nlx.lib.display_bad_choice_error()
 
-=head2 Procedure Leave, Iterate, and Loop Statements
+## Procedure Leave, Iterate, and Loop Statements
 
 Grammar:
 
@@ -4515,7 +4511,7 @@ Examples:
         write_Text_line( report_text )
     ]
 
-=head1 DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
+# DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
 Grammar:
 
@@ -4567,7 +4563,7 @@ mainly does likewise.  Functions get special alternate syntax if they would
 be frequently used and the syntax would significantly aid programmers in
 quickly writing understandeable code.
 
-=head2 Simple Commutative N-adic Infix Reduction Operators
+## Simple Commutative N-adic Infix Reduction Operators
 
 Grammar:
 
@@ -4670,7 +4666,7 @@ Examples:
 
     { 1, 3, 5, 7, 9 } ∩ { 3, 4, 5, 6, 7, 8 } ∩ { 2, 5, 9 }
 
-=head2 Simple Non-commutative N-adic Infix Reduction Operators
+## Simple Non-commutative N-adic Infix Reduction Operators
 
 Grammar:
 
@@ -4720,7 +4716,7 @@ Examples:
 
     a // b // 42
 
-=head2 Simple Symmetric Dyadic Infix Operators
+## Simple Symmetric Dyadic Infix Operators
 
 Grammar:
 
@@ -4777,7 +4773,7 @@ Examples:
 
     7.5 |-| 9.0
 
-=head2 Simple Non-symmetric Dyadic Infix Operators
+## Simple Non-symmetric Dyadic Infix Operators
 
 Grammar:
 
@@ -4982,7 +4978,7 @@ Examples:
 
     @:[ x, y ]:{ [ 5, 6 ], [ 3, 6 ] } ÷ @:{ { y => 6 } }
 
-=head2 Simple Monadic Prefix Operators
+## Simple Monadic Prefix Operators
 
 Grammar:
 
@@ -5041,7 +5037,7 @@ Examples:
 
     @tupvar
 
-=head2 Simple Monadic Postfix Operators
+## Simple Monadic Postfix Operators
 
 Grammar:
 
@@ -5072,7 +5068,7 @@ Examples:
 
     5!
 
-=head2 Simple Postcircumfix Operators
+## Simple Postcircumfix Operators
 
 Grammar:
 
@@ -5312,7 +5308,7 @@ Examples:
 
     ary[10..14]
 
-=head2 Numeric Operators That Do Rounding
+## Numeric Operators That Do Rounding
 
 Grammar:
 
@@ -5395,7 +5391,7 @@ Examples:
 
     17.0 log-e round RatRoundRule:[3,-5,Down]
 
-=head2 Order Comparison Operators
+## Order Comparison Operators
 
 Grammar:
 
@@ -5415,7 +5411,7 @@ Examples:
 
     foo <=> bar
 
-=head1 DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
+# DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
 Grammar:
 
@@ -5459,7 +5455,7 @@ recipes, and they are all shown in one list for simplicity.
 But only alternate syntax for recipes is valid in a recipe; all of
 these alternate syntaxes are valid in a procedure.
 
-=head2 Procedure Simple Monadic Postfix Operators
+## Procedure Simple Monadic Postfix Operators
 
 Grammar:
 
@@ -5489,7 +5485,7 @@ Examples:
 
     countdown :=--
 
-=head2 Procedure Simple Non-symmetric Dyadic Infix Operators
+## Procedure Simple Non-symmetric Dyadic Infix Operators
 
 Grammar:
 
@@ -5559,7 +5555,7 @@ Examples:
     #`delete every person in people whose age is either 10 or 20`#
     people :=!matching @:{ { age => 10 }, { age => 20 } }
 
-=head1 LANGUAGE MNEMONICS
+# LANGUAGE MNEMONICS
 
 PTMD_STD is designed to respect a variety of mnemonics that bring it some
 self-similarity and an association between syntax and semantics so that it
@@ -5570,7 +5566,7 @@ other languages.
 I<Note that some of these details aren't yet otherwise specified and
 describe near-future planned changes.>
 
-=head2 Bareword Strings
+## Bareword Strings
 
 All barewords, meaning runs of non-quoted non-whitespace alphanumeric
 characters plus {C<_>,C<->,C<.>}, are generally either of these 3 things:
@@ -5578,7 +5574,7 @@ language keywords, entity names (including declarations or invocations of
 routines/operators, types, variables), numeric literals (which may also
 contain {C<#>,C</>,C<*>,C<^>}).
 
-=head2 Quoted Strings
+## Quoted Strings
 
 All quoted strings, meaning runs of characters delimited with any of
 {C<'>,C<">,C<`>}, are generally either of these 3 things: entity names (iff
@@ -5586,7 +5582,7 @@ C<">-quoted), value literals for general purpose string-like types (if
 C<'>-quoted), code comments (iff C<`>-quoted, and typically also
 C<#>-delimited forming double-character delimiters).
 
-=head2 C<#>
+## C<#>
 
 The C<#> character is mainly associated with numbers in some way but is
 also associated with code comments, though in the latter case it always
@@ -5596,14 +5592,14 @@ Ada language, and separates the radix specifier from the main part of the
 literal that it describes.  If C<#> appears other than for a code comment
 or numeric literal then it generally means "count" or "cardinality".
 
-=head2 {C<$>,C<%>,C<@>}
+## {C<$>,C<%>,C<@>}
 
 The {C<$>,C<%>,C<@>} characters are mainly associated with scalars, tuples,
 and relations, respectively.  They are used both to distinguish value
 literals of those types as well as operators for those types.  In addition,
 the C<@> character is used to indicate routine "dispatch" parameters.
 
-=head2 Bracketing Characters
+## Bracketing Characters
 
 Pairs of corresponding bracketing characters, meaning {C<()>,C<[]>,C<{}>},
 are generally associated with groupings or lists of various kinds and serve
@@ -5621,7 +5617,7 @@ statements, delimiting value literals of {tuples, relations,
 (component-wise) scalars, sets, bags}, and in postcircumfix operators for
 those same types.
 
-=head2 List-Separating Characters
+## List-Separating Characters
 
 The C<,> and C<;> characters are mainly used to separate (or trail) each of
 the 0..N members of groupings or lists.  The C<,> comma is considered
@@ -5631,7 +5627,7 @@ operators.  The C<;> semicolon is considered looser and is used for such
 things as separating off-side-defined things like named value expressions
 or variables or statements or inner materials.
 
-=head2 C<::=>
+## C<::=>
 
 The C<::=> infix token is used for name binding; it declares that
 whatever is on the right-hand side is associated with the entity name given
@@ -5639,7 +5635,7 @@ on the left-hand side.  The C<::=> is thusly used to explicitly name value
 expressions, procedure statements, library materials, and to associate
 global variables with lexical aliases.
 
-=head2 Pairs
+## Pairs
 
 The infix tokens {C<:>,C<< => >>,C<< <- >>,C<< <-- >>} are mainly used
 between two items to designate that the they form a pair of some kind.  The
@@ -5656,9 +5652,9 @@ between 2 entity names in the postcircumfix renaming operator.  The C<< <--
 >> is used just in a function signature between the result type and
 parameter list.
 
-=head1 RESOLVING AMBIGUITY
+# RESOLVING AMBIGUITY
 
-=head2 Entity Names vs Keywords
+## Entity Names vs Keywords
 
 A user-defined entity name may be any character string at all.  In the
 general case, one must appear formatted as a C<quoted_name_str>, but if the
@@ -5676,7 +5672,7 @@ a C<quoted_name_str> in order for it to be interpreted correctly.
 Similarly, a user-defined entity name in C<quoted_name_str> format is
 guaranteed to never be confused with a language keyword.
 
-=head2 Statements vs Expressions
+## Statements vs Expressions
 
 Within a procedure, arbitrary value expressions may be used as the
 left-hand-side of infix procedure calls, and some of those expressions may
@@ -5690,7 +5686,7 @@ In these contexts, you must surround the expression with parenthesis, a
 C<delim_expr> in order for it to be interpreted correctly.  Similarly, any
 routine code within parenthesis is always one or more expressions.
 
-=head1 NESTING PRECEDENCE RULES
+# NESTING PRECEDENCE RULES
 
 This documentation section outlines Muldis D's PTMD_STD dialect's nesting
 precedence rules, meaning how it accepts Muldis D code lacking explicit
@@ -5755,16 +5751,14 @@ for binary, ternary, or N-ary operators are interpreted as follows:
     right | $a ! ($b ! $c)
     non   | ILLEGAL
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

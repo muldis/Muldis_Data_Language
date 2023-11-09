@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Array - Muldis D Array specific operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Array version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes generic operators that are specific to the
 C<Array> parameterized relation type, and said operators
@@ -26,9 +22,9 @@ are short-hands for more generic relational operators.
 
 I<This documentation is pending.>
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
 
-=head2 sys.std.Core.Array.catenation
+## sys.std.Core.Array.catenation
 
 C<< function catenation (Array <-- topic? : array_of.Array)
 implements sys.std.Core.Stringy.catenation {...} >>
@@ -42,16 +38,16 @@ C<index> values of the second one by the cardinality of the first one.  If
 C<topic> has zero values, then C<catenation> results in the empty sequence
 value, which is the identity value for catenation.
 
-=head2 sys.std.Core.Array.replication
+## sys.std.Core.Array.replication
 
 C<< function replication (Array <-- topic : Array,
 count : NNInt) implements sys.std.Core.Stringy.replication {...} >>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL COLLECTIVE FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL COLLECTIVE FUNCTIONS
 
-=head2 sys.std.Core.Array.has_elem
+## sys.std.Core.Array.has_elem
 
 C<< function has_elem (Bool <-- coll : Array, value : Universal)
 implements sys.std.Core.Collective.has_member {...} >>
@@ -62,7 +58,7 @@ is, iff conceptually C<value> is an element of C<coll>), and C<Bool:False>
 otherwise.  This function will warn if C<coll.value> and C<value> are
 incompatible as per C<update_value>.
 
-=head2 sys.std.Core.Array.has_not_elem
+## sys.std.Core.Array.has_not_elem
 
 C<< function has_not_elem (Bool <-- coll : Array, value : Universal)
 implements sys.std.Core.Collective.has_not_member {...} >>
@@ -71,7 +67,7 @@ This function is exactly the same as C<sys.std.Core.Array.has_elem> except
 that
 it results in the opposite boolean value when given the same arguments.
 
-=head2 sys.std.Core.Array.value_is_elem
+## sys.std.Core.Array.value_is_elem
 
 C<< function value_is_elem (Bool <-- value : Universal, coll : Array)
 implements sys.std.Core.Collective.value_is_member {...} >>
@@ -82,7 +78,7 @@ C<value> attribute of at least one tuple of its C<coll> argument (that is,
 iff conceptually C<value> is an element of C<coll>), and C<Bool:False>
 otherwise.
 
-=head2 sys.std.Core.Array.value_is_not_elem
+## sys.std.Core.Array.value_is_not_elem
 
 C<< function value_is_not_elem (Bool <-- value : Universal, coll : Array)
 implements sys.std.Core.Collective.value_is_not_member {...} >>
@@ -92,9 +88,9 @@ function is exactly the same as C<sys.std.Core.Array.value_is_elem> except
 that it results in the opposite boolean value when given the same
 arguments.
 
-=head1 GENERIC RELATIONAL FUNCTIONS FOR ARRAYS
+# GENERIC RELATIONAL FUNCTIONS FOR ARRAYS
 
-=head2 sys.std.Core.Array.value
+## sys.std.Core.Array.value
 
 C<< function value (Universal <-- topic : Array, index : NNInt) {...} >>
 
@@ -103,7 +99,7 @@ tuple of C<topic> whose C<index> attribute is C<index>.  This function will
 fail if no tuple exists in C<topic> with the specified index.  Note that
 this operation is also known as C<.[]>.
 
-=head2 sys.std.Core.Array.update_value
+## sys.std.Core.Array.update_value
 
 C<< function update_value (Array <-- topic : Array,
 index : NNInt, value : Universal) {...} >>
@@ -117,7 +113,7 @@ the C<value> argument and the C<value> attribute of C<topic> are
 incompatible as per C<is_same>, or otherwise if the declared type of
 C<value> isn't a subtype of the declared type of the C<value> attribute.
 
-=head2 sys.std.Core.Array.insertion
+## sys.std.Core.Array.insertion
 
 C<< function insertion (Array <-- topic : Array,
 index : NNInt, value : Universal) {...} >>
@@ -132,7 +128,7 @@ function will fail if C<index> is greater than the cardinality of C<topic>,
 or it will warn if C<topic.value> and C<value> are incompatible as per
 C<update_value>.
 
-=head2 sys.std.Core.Array.deletion
+## sys.std.Core.Array.deletion
 
 C<< function deletion (Array <-- topic : Array, index : NNInt) {...} >>
 
@@ -141,7 +137,7 @@ deleted whose C<index> is C<index>; any existing tuples with C<index>
 values greater than or equal to C<index> had theirs decremented by 1.  This
 function will fail if no tuple exists in C<topic> with the specified index.
 
-=head2 sys.std.Core.Array.reduction
+## sys.std.Core.Array.reduction
 
 C<< function reduction (Universal <-- topic : Array,
 func : ValRedPFuncNC, identity : Universal) {...} >>
@@ -154,7 +150,7 @@ and I<not> commutative; the arguments to C<v1> and C<v2> of C<func> are
 guaranteed to be consecutive input elements, with the result returning to
 their place in sequence beween the other input elements.
 
-=head2 sys.std.Core.Array.slice
+## sys.std.Core.Array.slice
 
 C<< function slice (Array <-- topic : Array,
 index_interval : sp_interval_of.NNInt) {...} >>
@@ -168,7 +164,7 @@ zero elements; in the second case, the result has all remaining elements
 starting at the lowest source-C<index>, if any.  Note that this operation
 is also known as C<[]>.
 
-=head2 sys.std.Core.Array.reverse
+## sys.std.Core.Array.reverse
 
 C<< function reverse (Array <-- topic : Array) {...} >>
 
@@ -176,7 +172,7 @@ This function results in its argument but that the order of its elements
 has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
 3=>'d'} >> results in C<< { 0=>'d', 1=>'c', 2=>'b', 3=>'a' } >>.
 
-=head2 sys.std.Core.Array.has_subarray
+## sys.std.Core.Array.has_subarray
 
 C<< function has_subarray (Bool <-- look_in : Array,
 look_for : Array) {...} >>
@@ -186,7 +182,7 @@ C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
 C<Bool:False> otherwise.  This function will fail|warn if the 2 arguments
 don't have a compatible or same heading.
 
-=head2 sys.std.Core.Array.has_not_subarray
+## sys.std.Core.Array.has_not_subarray
 
 C<< function has_not_subarray (Bool <--
 look_in : Array, look_for : Array) {...} >>
@@ -195,7 +191,7 @@ This function is exactly the same as C<sys.std.Core.Array.has_subarray>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=head2 sys.std.Core.Array.order
+## sys.std.Core.Array.order
 
 C<< function order (Order <-- topic : Array,
 other : Array, elem_ord_func? : OrdDetPFuncNC,
@@ -220,7 +216,7 @@ argument is applied to the result of this function I<after> all of the
 other arguments are applied; if it is C<Bool:False>, it does not change the
 result; if it is C<Bool:True>, then it reverses the result.
 
-=head2 sys.std.Core.Array.Array_from_wrap
+## sys.std.Core.Array.Array_from_wrap
 
 C<< function Array_from_wrap (array_of.Tuple <-- topic : Relation,
 ord_func : OrdDetPFuncNC, is_reverse_order? : Bool) {...} >>
@@ -240,7 +236,7 @@ arguments.  See also the C<sys.std.Core.Relation.rank> function, which is
 the same as C<sys.std.Core.Array.Array_from_wrap> but that it just adds an
 attribute to the source tuples and does not wrap them.
 
-=head2 sys.std.Core.Array.Array_from_wrap_by_attr_names
+## sys.std.Core.Array.Array_from_wrap_by_attr_names
 
 C<< function Array_from_wrap_by_attr_names
 (array_of.Tuple <-- topic : Relation,
@@ -255,7 +251,7 @@ SQL's "ORDER BY" where a simple list of attribute names is given to sort on
 C<Array_from_wrap> that is the analogy to the general case of "ORDER BY"
 that may contain any arbitrary value expression.
 
-=head2 sys.std.Core.Array.limit_of_Array_from_wrap
+## sys.std.Core.Array.limit_of_Array_from_wrap
 
 C<< function limit_of_Array_from_wrap
 (array_of.Tuple <-- topic : Relation, ord_func : OrdDetPFuncNC,
@@ -267,7 +263,7 @@ on its result.  This function is to C<sys.std.Core.Array.Array_from_wrap>
 what the C<sys.std.Core.Relation.limit> function is to
 C<sys.std.Core.Relation.rank>.
 
-=head2 sys.std.Core.Array.limit_of_Array_from_wrap_by_attr_names
+## sys.std.Core.Array.limit_of_Array_from_wrap_by_attr_names
 
 C<< function limit_of_Array_from_wrap_by_attr_names
 (array_of.Tuple <-- topic : Relation, order_by : array_of.OrderByName,
@@ -276,7 +272,7 @@ is_reverse_order? : Bool, index_interval : sp_interval_of.NNInt) {...} >>
 This function is to C<limit_of_Array_from_wrap> what
 C<Array_from_wrap_by_attr_names> is to C<Array_from_wrap>.
 
-=head2 sys.std.Core.Array.Array_from_attr
+## sys.std.Core.Array.Array_from_attr
 
 C<< function Array_from_attr (Array <-- topic : Relation, name : Name,
 ord_func? : OrdDetPFuncNC, is_reverse_order? : Bool) {...} >>
@@ -292,7 +288,7 @@ C<is_reverse_order> parameters is optional and defaults
 to C<sys.std.Core.Ordered.order> or
 C<Bool:False>, respectively, if no explicit argument is given to it.
 
-=head2 sys.std.Core.Array.Array_from_Set
+## sys.std.Core.Array.Array_from_Set
 
 C<< function Array_from_Set (Array <-- topic : Set,
 ord_func? : OrdDetPFuncNC, is_reverse_order? : Bool) {...} >>
@@ -301,16 +297,14 @@ This function results in an C<Array> consisting of all the values of
 C<topic>.  It is a short-hand for a C<sys.std.Core.Array.Array_from_attr>
 invocation with a C<name> argument of C<value>, and C<topic> is a C<Set>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

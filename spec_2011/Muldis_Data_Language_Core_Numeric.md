@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Numeric - Muldis D generic numeric operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Numeric version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D
 numeric operators, essentially all the generic ones that a
@@ -26,16 +22,16 @@ typical programming language should have.
 
 I<This documentation is pending.>
 
-=head1 VIRTUAL FUNCTIONS FOR THE NUMERIC MIXIN TYPE
+# VIRTUAL FUNCTIONS FOR THE NUMERIC MIXIN TYPE
 
-=head2 sys.std.Core.Numeric.abs
+## sys.std.Core.Numeric.abs
 
 C<< function abs (Numeric <-- topic@ : Numeric) {...} >>
 
 This virtual function results in the absolute value of its argument.  Note
 that this operation is also known as I<modulus>.
 
-=head2 sys.std.Core.Numeric.sum
+## sys.std.Core.Numeric.sum
 
 C<< function sum (Numeric <-- topic@ : bag_of.Numeric) {...} >>
 
@@ -51,7 +47,7 @@ because then it would lack the necessary type information to know which
 type-specific implementing function to dispatch to.  Note that this
 operation is also known as I<addition> or I<plus> or C<+>.
 
-=head2 sys.std.Core.Numeric.diff
+## sys.std.Core.Numeric.diff
 
 C<< function diff (Numeric <-- minuend@ : Numeric,
 subtrahend@ : Numeric) {...} >>
@@ -60,7 +56,7 @@ This virtual function results in the difference when its C<subtrahend>
 argument is subtracted from its C<minuend> argument.  Note that this
 operation is also known as I<subtraction> or I<minus> or C<->.
 
-=head2 sys.std.Core.Numeric.abs_diff
+## sys.std.Core.Numeric.abs_diff
 
 C<< function abs_diff (Numeric <-- topic@ : Numeric,
 other@ : Numeric) {...} >>
@@ -68,7 +64,7 @@ other@ : Numeric) {...} >>
 This virtual symmetric function results in the absolute difference between
 its 2 arguments.  Note that this operation is also known as C<|-|>.
 
-=head2 sys.std.Core.Numeric.product
+## sys.std.Core.Numeric.product
 
 C<< function product (Numeric <-- topic@ : bag_of.Numeric) {...} >>
 
@@ -84,7 +80,7 @@ values, because then it would lack the necessary type information to know
 which type-specific implementing function to dispatch to.  Note that this
 operation is also known as I<multiply> or I<times> or C<*>.
 
-=head2 sys.std.Core.Numeric.frac_quotient
+## sys.std.Core.Numeric.frac_quotient
 
 C<< function frac_quotient (Numeric <--
 dividend@ : Numeric, divisor@ : Numeric) {...} >>
@@ -94,7 +90,7 @@ C<dividend> argument is divided by its C<divisor> argument using the
 semantics of real number division.  This function will fail if C<divisor>
 is zero.  Note that this operation is also known as I<divide> or C</>.
 
-=head2 sys.std.Core.Numeric.whole_quotient
+## sys.std.Core.Numeric.whole_quotient
 
 C<< function whole_quotient (Numeric <--
 dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...} >>
@@ -107,7 +103,7 @@ rounding method specified by the C<round_meth> argument.  This function
 will fail if C<divisor> is zero.  Note that this operation is also known as
 I<divide> or C<div>.
 
-=head2 sys.std.Core.Numeric.remainder
+## sys.std.Core.Numeric.remainder
 
 C<< function remainder (Numeric <--
 dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...} >>
@@ -125,7 +121,7 @@ I<truncate>) or C<Down> (aka I<floor>), respectively.  This function will
 fail if C<divisor> is zero.  Note that this operation is also known as
 I<modulo> or C<mod>.
 
-=head2 sys.std.Core.Numeric.quot_and_rem
+## sys.std.Core.Numeric.quot_and_rem
 
 C<< function quot_and_rem (Tuple <--
 dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...} >>
@@ -136,7 +132,7 @@ C<sys.std.Core.Numeric.whole_quotient> and
 C<sys.std.Core.Numeric.remainder> would result in when given the same
 arguments.  This function will fail if C<divisor> is zero.
 
-=head2 sys.std.Core.Numeric.range
+## sys.std.Core.Numeric.range
 
 C<< function range (Numeric <-- topic@ : set_of.Numeric) {...} >>
 
@@ -144,7 +140,7 @@ This virtual function results in the difference between the lowest and
 highest element values of its argument.  If C<topic> has zero values, then
 this function will fail.
 
-=head2 sys.std.Core.Numeric.frac_mean
+## sys.std.Core.Numeric.frac_mean
 
 C<< function frac_mean (Numeric <-- topic@ : bag_of.Numeric) {...} >>
 
@@ -154,7 +150,7 @@ taking the sum of the input values, and dividing that sum by the count of
 the input values using the semantics of real number division.  If C<topic>
 has zero values, then this function will fail.
 
-=head2 sys.std.Core.Numeric.median
+## sys.std.Core.Numeric.median
 
 C<< function median (set_of.Numeric <-- topic@ : bag_of.Numeric) {...} >>
 
@@ -166,7 +162,7 @@ the single middle value, if the count of input values is odd, or taking the
 values are the same value, the output has one element).  If C<topic> has
 zero values, then the result set is empty.
 
-=head2 sys.std.Core.Numeric.frac_mean_of_median
+## sys.std.Core.Numeric.frac_mean_of_median
 
 C<< function frac_mean_of_median (Numeric <--
 topic@ : bag_of.Numeric) {...} >>
@@ -175,7 +171,7 @@ This virtual function is a wrapper over C<sys.std.Core.Numeric.median> that
 will result in the possibly-fractional mean of its result elements; it will
 fail if there are zero elements.
 
-=head2 sys.std.Core.Numeric.mode
+## sys.std.Core.Numeric.mode
 
 C<< function mode (set_of.Numeric <-- topic@ : bag_of.Numeric) {...} >>
 
@@ -186,7 +182,7 @@ if all input elements have the same count of occurrances, then they will
 all be in the output.  If C<topic> has zero values, then the result set is
 empty.
 
-=head2 sys.std.Core.Numeric.power_with_whole_exp
+## sys.std.Core.Numeric.power_with_whole_exp
 
 C<< function power_with_whole_exp (Numeric <--
 radix@ : Numeric, exponent@ : Numeric) {...} >>
@@ -203,16 +199,14 @@ is if its C<exponent> is a fractional number.  This function will result in
 1 if C<radix> and C<exponent> are both zero (rather than failing).  Note
 that this operation is also known as I<exponentiation> or C<^>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Blob - Muldis D bit string operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Blob version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
 are specific to the core data type C<Blob>, essentially all the generic
@@ -26,9 +22,9 @@ ones that a typical programming language should have.
 
 I<This documentation is pending.>
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
 
-=head2 sys.std.Core.Blob.order
+## sys.std.Core.Blob.order
 
 C<< function order (Order <-- topic : Blob,
 other : Blob, misc_args? : Tuple, is_reverse_order? : Bool)
@@ -37,9 +33,9 @@ implements sys.std.Core.Ordered.order {...} >>
 This is a (total) C<order-determination> function specific to C<Blob>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
 
-=head2 sys.std.Core.Blob.catenation
+## sys.std.Core.Blob.catenation
 
 C<< function catenation (Blob <--
 topic? : array_of.Blob) implements sys.std.Core.Stringy.catenation {...} >>
@@ -51,30 +47,30 @@ together until just one is left, which is the result.  If C<topic> has zero
 values, then C<catenation> results in the empty string value, which is the
 identity value for catenation.
 
-=head2 sys.std.Core.Blob.replication
+## sys.std.Core.Blob.replication
 
 C<< function replication (Blob <-- topic : Blob,
 count : NNInt) implements sys.std.Core.Stringy.replication {...} >>
 
 This function results in the catenation of C<count> instances of C<topic>.
 
-=head1 GENERIC FUNCTIONS FOR BLOBS
+# GENERIC FUNCTIONS FOR BLOBS
 
 These functions implement commonly used binary string operations.
 
-=head2 sys.std.Core.Blob.len_in_bits
+## sys.std.Core.Blob.len_in_bits
 
 C<< function len_in_bits (NNInt <-- topic : Blob) {...} >>
 
 This function results in the length of its argument in bits.
 
-=head2 sys.std.Core.Blob.len_in_octets
+## sys.std.Core.Blob.len_in_octets
 
 C<< function len_in_octets (NNInt <-- topic : OctetBlob) {...} >>
 
 This function results in the length of its argument in octets.
 
-=head2 sys.std.Core.Blob.has_substr_bits
+## sys.std.Core.Blob.has_substr_bits
 
 C<< function has_substr_bits (Bool <-- look_in : Blob,
 look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
@@ -89,7 +85,7 @@ constraint doesn't apply.  Each of the C<fixed_[start|end]> parameters is
 optional and defaults to C<Bool:False> if no explicit argument is given to
 it.
 
-=head2 sys.std.Core.Blob.has_not_substr_bits
+## sys.std.Core.Blob.has_not_substr_bits
 
 C<< function has_not_substr_bits (Bool <-- look_in : Blob,
 look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
@@ -98,7 +94,7 @@ This function is exactly the same as C<sys.std.Core.Blob.has_substr_bits>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=head2 sys.std.Core.Blob.has_substr_octets
+## sys.std.Core.Blob.has_substr_octets
 
 C<< function has_substr_octets (Bool <-- look_in : OctetBlob,
 look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
@@ -107,7 +103,7 @@ This function is exactly the same as C<sys.std.Core.Blob.has_substr_bits>
 except that its main arguments are C<OctetBlob> and it only looks for
 substring matches on whole-octet boundaries of the C<look_in> bit string.
 
-=head2 sys.std.Core.Blob.has_not_substr_octets
+## sys.std.Core.Blob.has_not_substr_octets
 
 C<< function has_not_substr_octets (Bool <-- look_in : OctetBlob,
 look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
@@ -115,13 +111,13 @@ look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
 This function is to C<has_substr_octets> as C<has_not_substr_bits> is to
 C<has_substr_bits>.
 
-=head2 sys.std.Core.Blob.not
+## sys.std.Core.Blob.not
 
 C<< function not (Blob <-- topic : Blob) {...} >>
 
 This function results in the bitwise I<not> of its argument.
 
-=head2 sys.std.Core.Blob.and
+## sys.std.Core.Blob.and
 
 C<< function and (Blob <-- topic : set_of.Blob) {...} >>
 
@@ -140,7 +136,7 @@ the best alternative is to require invoking code to work around the
 limitation somehow, which might mean it will supply the identity value
 explicitly as an extra C<topic> element.
 
-=head2 sys.std.Core.Blob.or
+## sys.std.Core.Blob.or
 
 C<< function or (Blob <-- topic : set_of.Blob) {...} >>
 
@@ -148,23 +144,21 @@ This function is the same as C<sys.std.Core.Blob.and> but that it
 recursively does a bitwise inclusive-or rather than a bitwise I<and>, and
 its conceptual identity value is composed of zero valued bits.
 
-=head2 sys.std.Core.Blob.xor
+## sys.std.Core.Blob.xor
 
 C<< function xor (Blob <-- topic : bag_of.Blob) {...} >>
 
 This function is the same as C<sys.std.Core.Blob.or> but that it
 recursively does a bitwise exclusive-or rather than a bitwise inclusive-or.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

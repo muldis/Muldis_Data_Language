@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Cast - Muldis D explicit type-casting operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Cast version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document's purpose is to consolidate all the core Muldis D
 type-casting routines that are conceptually monadic functions between 2
@@ -26,7 +22,7 @@ core types.  It also declares a few special data types that support them.
 
 I<This documentation is pending.>
 
-=head1 TYPE SUMMARY
+# TYPE SUMMARY
 
 Following are all the data types described in this document, arranged in a
 type graph according to their proper sub|supertype relationships:
@@ -45,15 +41,15 @@ type graph according to their proper sub|supertype relationships:
 
 I<This documentation is pending.>
 
-=head1 DATA TYPES FOR ENCODING SCALARS AS TEXTS
+# DATA TYPES FOR ENCODING SCALARS AS TEXTS
 
-=head2 sys.std.Core.Type.Cast.PInt1_4
+## sys.std.Core.Type.Cast.PInt1_4
 
 C<PInt1_4> is a proper subtype of
 C<PInt> where all member values are between 1 and 4.  Its maximum value is
 4.  The cardinality of this type is 4.
 
-=head2 sys.std.Core.Type.Cast.PInt2_36
+## sys.std.Core.Type.Cast.PInt2_36
 
 C<PInt2_36> is a proper subtype of
 C<PInt> where all member values are between 2 and 36.  (The significance of
@@ -62,9 +58,9 @@ correspond to base-10 being the default base for numeric literals in the
 STD dialects when no explicit base is given); its minimum and maximum
 values are 2 and 36, respectively.  The cardinality of this type is 35.
 
-=head1 FUNCTIONS FOR CASTING BETWEEN TUPLES AND SINGLE-TUPLE RELATIONS
+# FUNCTIONS FOR CASTING BETWEEN TUPLES AND SINGLE-TUPLE RELATIONS
 
-=head2 sys.std.Core.Cast.Tuple_from_Relation
+## sys.std.Core.Cast.Tuple_from_Relation
 
 C<< function Tuple_from_Relation (Tuple <-- topic : Relation) {...} >>
 
@@ -72,7 +68,7 @@ This function results in the C<Tuple> that is the sole member tuple of
 its argument.  This function will fail if its argument does not have
 exactly one tuple.  Note that this operation is also known as C<%>.
 
-=head2 sys.std.Core.Cast.Relation_from_Tuple
+## sys.std.Core.Cast.Relation_from_Tuple
 
 C<< function Relation_from_Tuple (Relation <-- topic : Tuple) {...} >>
 
@@ -80,28 +76,28 @@ This function results in the C<Relation> value those body has just the one
 C<Tuple> that is its argument.  Note that this operation is also known as
 C<@>.
 
-=head1 FUNCTIONS FOR CASTING BETWEEN CANONICAL SETS AND BAGS
+# FUNCTIONS FOR CASTING BETWEEN CANONICAL SETS AND BAGS
 
-=head2 sys.std.Core.Cast.Set_from_Bag
+## sys.std.Core.Cast.Set_from_Bag
 
 C<< function Set_from_Bag (Set <-- topic : Bag) {...} >>
 
 This function results in the C<Set> that is the projection of the C<value>
 attribute of its C<Bag> argument.
 
-=head2 sys.std.Core.Cast.Bag_from_Set
+## sys.std.Core.Cast.Bag_from_Set
 
 C<< function Bag_from_Set (Bag <-- topic : Set) {...} >>
 
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
 
-=head1 FUNCTIONS FOR CASTING BETWEEN INTEGERS AND RATIONALS
+# FUNCTIONS FOR CASTING BETWEEN INTEGERS AND RATIONALS
 
 These functions convert between C<Rat> values and equal or nearly equal
 C<Int> values.
 
-=head2 sys.std.Core.Cast.Int_from_Rat
+## sys.std.Core.Cast.Int_from_Rat
 
 C<< function Int_from_Rat (Int <-- rat : Rat,
 round_meth : RoundMeth) {...} >>
@@ -110,19 +106,19 @@ This selector function results in the C<Int> value that is conceptually
 equal to or otherwise nearest to its C<rat> argument, where the nearest is
 determined by the rounding method specified by the C<round_meth> argument.
 
-=head2 sys.std.Core.Cast.Rat_from_Int
+## sys.std.Core.Cast.Rat_from_Int
 
 C<< function Rat_from_Int (Rat <-- int : Int) {...} >>
 
 This selector function results in the C<Rat> value that is conceptually
 equal to its C<Int> argument.
 
-=head1 FUNCTIONS FOR ENCODING INTEGERS AS TEXTS
+# FUNCTIONS FOR ENCODING INTEGERS AS TEXTS
 
 These functions convert between C<Int> values and canonically formatted
 representations of integers as character strings.
 
-=head2 sys.std.Core.Cast.Int_from_Text
+## sys.std.Core.Cast.Int_from_Text
 
 C<< function Int_from_Text (Int <-- text : Text,
 radix? : PInt2_36) {...} >>
@@ -134,19 +130,19 @@ base-10, base-16], this function supports base-2 through base-36; to get
 the latter, the characters 0-9 and A-Z represent values in 0-35.  This
 function will fail if C<text> can't be mapped as specified.
 
-=head2 sys.std.Core.Cast.Text_from_Int
+## sys.std.Core.Cast.Text_from_Int
 
 C<< function Text_from_Int (Text <-- int : Int, radix? : PInt2_36) {...} >>
 
 This selector function results in the (not-empty) C<Text> value where its
 C<int> argument is formatted as a base-C<radix> integer.
 
-=head1 FUNCTIONS FOR ENCODING RATIONALS AS TEXTS
+# FUNCTIONS FOR ENCODING RATIONALS AS TEXTS
 
 These functions convert between C<Rat> values and canonically formatted
 representations of rationals as character strings.
 
-=head2 sys.std.Core.Cast.Rat_from_Text
+## sys.std.Core.Cast.Rat_from_Text
 
 C<< function Rat_from_Text (Rat <-- text : Text,
 radix? : PInt2_36) {...} >>
@@ -158,19 +154,19 @@ base-10, base-16], this function supports base-2 through base-36; to get
 the latter, the characters 0-9 and A-Z represent values in 0-35.  This
 function will fail if C<text> can't be mapped as specified.
 
-=head2 sys.std.Core.Cast.Text_from_Rat
+## sys.std.Core.Cast.Text_from_Rat
 
 C<< function Text_from_Rat (Text <-- rat : Rat, radix? : PInt2_36) {...} >>
 
 This selector function results in the (not-empty) C<Text> value where its
 C<rat> argument is formatted as a base-C<radix> rational.
 
-=head1 FUNCTIONS FOR ENCODING BLOBS AS TEXTS
+# FUNCTIONS FOR ENCODING BLOBS AS TEXTS
 
 These functions convert between C<Blob> values and canonically formatted
 representations of binary strings as character strings.
 
-=head2 sys.std.Core.Cast.Blob_from_Text
+## sys.std.Core.Cast.Blob_from_Text
 
 C<< function Blob_from_Text (Blob <-- text : Text, size : PInt1_4) {...} >>
 
@@ -182,7 +178,7 @@ argument; for example, if C<size> is 1, then each input character is a
 is a [0..9A..Fa..f] and represents 4 bits.  This function will fail if
 C<text> can't be mapped as specified.
 
-=head2 sys.std.Core.Cast.Text_from_Blob
+## sys.std.Core.Cast.Text_from_Blob
 
 C<< function Text_from_Blob (Text <-- blob : Blob, size : PInt1_4) {...} >>
 
@@ -192,7 +188,7 @@ per character being determined by the C<size> argument.  This function will
 fail if C<blob> doesn't have a length in bits which is a multiple of
 C<size>.  Any alpha characters in the result are in uppercase.
 
-=head1 FUNCTIONS FOR ENCODING INTEGERS AS BLOBS
+# FUNCTIONS FOR ENCODING INTEGERS AS BLOBS
 
 These functions convert between C<Int> values and canonically formatted
 representations of integers as binary strings.  I<Conjecture: These may not
@@ -200,7 +196,7 @@ actually be useful, and perhaps only operators that take an argument
 specifying a fixed-length field size, with big and little endian versions,
 would be appropriate instead.  Or maybe both kinds are necessary.>
 
-=head2 sys.std.Core.Cast.Int_from_Blob_S_VBE
+## sys.std.Core.Cast.Int_from_Blob_S_VBE
 
 C<< function Int_from_Blob_S_VBE (Int <-- blob : Blob) {...} >>
 
@@ -212,7 +208,7 @@ provide greater precision than the -1 thru 0 range.  The bit string is
 assumed to be big-endian, since it may not be possible to use little-endian
 in situations where the bit length isn't a multiple of 8.
 
-=head2 sys.std.Core.Cast.Blob_S_VBE_from_Int
+## sys.std.Core.Cast.Blob_S_VBE_from_Int
 
 C<< function Blob_S_VBE_from_Int (Blob <-- int : Int) {...} >>
 
@@ -221,30 +217,28 @@ argument is formatted as a variable-length binary (two's complement) signed
 integer of 1 or more bits in length; the smallest number of bits necessary
 to store C<int> is used.
 
-=head2 sys.std.Core.Cast.Int_from_Blob_U_VBE
+## sys.std.Core.Cast.Int_from_Blob_U_VBE
 
 C<< function Int_from_Blob_U_VBE (NNInt <-- blob : Blob) {...} >>
 
 This function is the same as C<sys.std.Core.Cast.Int_from_Blob_S_VBE> but
 that it does unsigned integers.
 
-=head2 sys.std.Core.Cast.Blob_U_VBE_from_Int
+## sys.std.Core.Cast.Blob_U_VBE_from_Int
 
 C<< function Blob_U_VBE_from_Int (NNInt <-- blob : Blob) {...} >>
 
 This function is the same as C<sys.std.Core.Cast.Blob_S_VBE_from_Int> but
 that it does unsigned integers.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

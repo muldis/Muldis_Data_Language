@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Interval - Muldis D generic interval operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Interval version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D generic
 interval operators, for the canonical interval types that are tuple or
@@ -44,9 +40,9 @@ be compared to an interval's endpoints must be compatible with them.
 Likewise, said attributes of any multiplicity of C<SPInterval>-typed
 arguments must be mutually compatible.
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL COLLECTIVE FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL COLLECTIVE FUNCTIONS
 
-=head2 sys.std.Core.Interval.SP.has_member
+## sys.std.Core.Interval.SP.has_member
 
 C<< function has_member (Bool <-- coll : SPInterval, value : Ordered)
 implements sys.std.Core.Collective.has_member {...} >>
@@ -56,7 +52,7 @@ within the interval defined by its C<coll> argument, and C<Bool:False>
 otherwise.  That is, if conceptually the interval represents a set of
 values, this function tests if C<value> is a member of C<coll>.
 
-=head2 sys.std.Core.Interval.SP.has_not_member
+## sys.std.Core.Interval.SP.has_not_member
 
 C<< function has_not_member (Bool <-- coll : SPInterval, value : Ordered)
 implements sys.std.Core.Collective.has_not_member {...} >>
@@ -65,7 +61,7 @@ This function is exactly the same as C<sys.std.Core.Interval.has_member>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=head2 sys.std.Core.Interval.SP.value_is_member
+## sys.std.Core.Interval.SP.value_is_member
 
 C<< function value_is_member (Bool <-- value : Ordered, coll : SPInterval)
 implements sys.std.Core.Collective.value_is_member {...} >>
@@ -76,7 +72,7 @@ within the interval defined by its C<coll> argument, and C<Bool:False>
 otherwise.  That is, if conceptually the interval represents a set of
 values, this function tests if C<value> is a member of C<coll>.
 
-=head2 sys.std.Core.Interval.SP.value_is_not_member
+## sys.std.Core.Interval.SP.value_is_not_member
 
 C<< function value_is_not_member (Bool <--
 value : Ordered, coll : SPInterval)
@@ -87,7 +83,7 @@ This function is exactly the same as
 C<sys.std.Core.Interval.SP.value_is_member> except that it
 results in the opposite boolean value when given the same arguments.
 
-=head2 sys.std.Core.Interval.MP.has_member
+## sys.std.Core.Interval.MP.has_member
 
 C<< function has_member (Bool <-- coll : MPInterval, value : Ordered)
 implements sys.std.Core.Collective.has_member {...} >>
@@ -97,7 +93,7 @@ within the interval defined by its C<coll> argument, and C<Bool:False>
 otherwise.  That is, if conceptually the interval represents a set of
 values, this function tests if C<value> is a member of C<coll>.
 
-=head2 sys.std.Core.Interval.MP.has_not_member
+## sys.std.Core.Interval.MP.has_not_member
 
 C<< function has_not_member (Bool <-- coll : MPInterval, value : Ordered)
 implements sys.std.Core.Collective.has_not_member {...} >>
@@ -106,7 +102,7 @@ This function is exactly the same as C<sys.std.Core.Interval.has_member>
 except that it results in the opposite boolean value when given the same
 arguments.
 
-=head2 sys.std.Core.Interval.MP.value_is_member
+## sys.std.Core.Interval.MP.value_is_member
 
 C<< function value_is_member (Bool <-- value : Ordered, coll : MPInterval)
 implements sys.std.Core.Collective.value_is_member {...} >>
@@ -117,7 +113,7 @@ within the interval defined by its C<coll> argument, and C<Bool:False>
 otherwise.  That is, if conceptually the interval represents a set of
 values, this function tests if C<value> is a member of C<coll>.
 
-=head2 sys.std.Core.Interval.MP.value_is_not_member
+## sys.std.Core.Interval.MP.value_is_not_member
 
 C<< function value_is_not_member (Bool <--
 value : Ordered, coll : MPInterval)
@@ -128,16 +124,14 @@ This function is exactly the same as
 C<sys.std.Core.Interval.MP.value_is_member> except that it
 results in the opposite boolean value when given the same arguments.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

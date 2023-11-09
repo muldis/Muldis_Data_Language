@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Types_Catalog - Muldis D catalog-defining data types
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Types_Catalog version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 These core data types are more special-purpose in nature and are intended
 for use in defining or working with the system catalog.
@@ -39,7 +35,7 @@ future spec update should change this.>
 I<To keep things simpler for now, most constraint definitions for these
 types are missing, or just defined informally.>
 
-=head1 TYPE SUMMARY
+# TYPE SUMMARY
 
 This section shows all the data types and data type factories described in
 this document, which are specific to defining the system catalog, more or
@@ -271,7 +267,7 @@ types, shown grouped under the mixin types that they compose:
                 sys.std.Core.Type.Cat.Name
                 sys.std.Core.Type.Cat.Comment
 
-=head1 LOW-LEVEL STRUCTURE TYPES
+# LOW-LEVEL STRUCTURE TYPES
 
 These types only exist in the low-level type system, and should not be used
 directly by users to define their ordinary data types or variables or
@@ -280,7 +276,7 @@ declared in [Muldis_Data_Language_Core_Types](Muldis_Data_Language_Core_Types.md
 [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **Low Level Type System** for details of these types'
 structures, how their common 5 main subtypes are defined in terms of them.
 
-=head2 sys.std.Core.Type.Cat.List
+## sys.std.Core.Type.Cat.List
 
 The C<List> type is the sub-maximal type of the entire Muldis D type
 system, and contains every non-C<Int> value that can possibly exist.  Every
@@ -297,7 +293,7 @@ with C<Universal>, and it contains values from all main value categories.
 The default value of C<List> is C<Bool:False>.  The cardinality of this
 type is infinity.
 
-=head2 sys.std.Core.Type.Cat.Structure
+## sys.std.Core.Type.Cat.Structure
 
 C<Structure> is a proper subtype of C<List> consisting of every C<List>
 value that matches one of 5 specific formats; each of those formats is
@@ -311,7 +307,7 @@ that indicates how to interpret the remainder of the C<Structure> elements.
 The default value of C<Structure> is C<Bool:False>.  The cardinality of
 this type is infinity.
 
-=head2 sys.std.Core.Type.Cat.Nonstructure
+## sys.std.Core.Type.Cat.Nonstructure
 
 C<Nonstructure> is the difference type when C<Structure> is subtracted from
 C<List>.  The only main reason why C<Nonstructure> exists as a named type
@@ -321,9 +317,9 @@ is any value which is neither a scalar nor a tuple nor a relation nor an
 external.  The default value of C<Nonstructure> is the sole C<List> value
 with zero elements.  The cardinality of this type is infinity.
 
-=head1 SIMPLE GENERIC SCALAR TYPES
+# SIMPLE GENERIC SCALAR TYPES
 
-=head2 sys.std.Core.Type.Cat.ScalarWP
+## sys.std.Core.Type.Cat.ScalarWP
 
 C<ScalarWP> (scalar with possreps) is a proper subtype of C<Scalar> where
 every one of its values has at least one possrep.  C<ScalarWP> is just the
@@ -333,7 +329,7 @@ type is infinity.  Considering the low-level type system, C<ScalarWP> is
 just a proper subtype of C<Structure> consisting of every
 C<Structure> value whose first element is the C<Int> value C<4>.
 
-=head2 sys.std.Core.Type.Cat.DHScalarWP
+## sys.std.Core.Type.Cat.DHScalarWP
 
 C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>.  Its
 default value is C<Bool:False>, same as both of its parent types.  The
@@ -341,7 +337,7 @@ cardinality of this type is infinity.  All Muldis D scalar values that are
 allowed to be stored in a global/persisting relational database, besides
 C<Int> and C<String> values, are C<DHScalarWP> values.
 
-=head2 sys.std.Core.Type.Cat.SysScalar
+## sys.std.Core.Type.Cat.SysScalar
 
 The C<SysScalar> type is explicitly defined as a domain-union type over all
 system-defined C<DHScalar> root types, which typically corresponds to
@@ -357,7 +353,7 @@ as the declared type of any user type attributes, generally speaking; if
 they would even consider it, they should be using C<DHScalar> instead.  Its
 default value is C<Bool:False>.  The cardinality of this type is infinity.
 
-=head2 sys.std.Core.Type.Cat.String
+## sys.std.Core.Type.Cat.String
 
 A C<String> is a string of integers, or more specifically it is a dense
 sequence of 0..N elements (I<not> defined over C<Relation>) where each
@@ -386,19 +382,19 @@ strings.  Considering the low-level type system, C<String> is just a proper
 subtype of C<Structure> consisting of every C<Structure> value whose first
 element is the C<Int> value C<1>.
 
-=head2 sys.std.Core.Type.Cat.BString
+## sys.std.Core.Type.Cat.BString
 
 C<BString> (bit string) is a proper subtype of C<String> where all member
 value elements are between zero and 1 inclusive.  One can be used to
 represent a string of bits.
 
-=head2 sys.std.Core.Type.Cat.OString
+## sys.std.Core.Type.Cat.OString
 
 C<OString> (octet string) is a proper subtype of C<String> where all member
 value elements are between zero and 255 inclusive.  One can be used to
 represent a string of octets.
 
-=head2 sys.std.Core.Type.Cat.CoreText
+## sys.std.Core.Type.Cat.CoreText
 
 C<CoreText> is a proper subtype of C<Text> (and of C<Text.ASCII>) where all
 member values have just the abstract characters in the 95-character
@@ -414,7 +410,7 @@ system-defined entity names in the core and in most official modules use
 only the C<CoreText> repertoire, and this type's primary purpose is to be
 used for entity names.  It can also be employed for user data though.
 
-=head2 sys.std.Core.Type.Cat.Name
+## sys.std.Core.Type.Cat.Name
 
 A C<Name> (scalar) is a canonical short
 name for any kind of DBMS entity (or named component) when declaring it;
@@ -434,7 +430,7 @@ explicitly disjoint from C<Text> due to having a different intended
 interpretation; it is specifically intended for use in naming DBMS entities
 rather than being for general-purpose user data.
 
-=head2 sys.std.Core.Type.Cat.NameChain
+## sys.std.Core.Type.Cat.NameChain
 
 A C<NameChain> (scalar) is a canonical long
 name for invoking or referring to a DBMS entity, when its name needs to be
@@ -466,7 +462,7 @@ non-empty one; otherwise, compare the first element of each of the chain
 remainders according to the default ordering algorithm of C<Name> to get
 the order of their respective chains.
 
-=head2 sys.std.Core.Type.Cat.PNSQNameChain
+## sys.std.Core.Type.Cat.PNSQNameChain
 
 C<PNSQNameChain> (primary namespace
 qualified name chain) is a proper subtype of C<NameChain> where every
@@ -482,7 +478,7 @@ pseudo-variable or parameter or named expression or statement), either a
 system-catalog or normal data variable.  Its default value is a reference
 to the C<sys.std.Core.Type.Universal> type.
 
-=head2 sys.std.Core.Type.Cat.MaterialNC
+## sys.std.Core.Type.Cat.MaterialNC
 
 C<MaterialNC> is a proper subtype of
 C<PNSQNameChain> where every member value's chain starts with one of the
@@ -492,7 +488,7 @@ material (routine or type or etc) for invocation, either system-defined or
 user-defined.  Its default value is a reference to the
 C<sys.std.Core.Type.Universal> type.
 
-=head2 sys.std.Core.Type.Cat.AbsPathMaterialNC
+## sys.std.Core.Type.Cat.AbsPathMaterialNC
 
 C<AbsPathMaterialNC> is a proper subtype
 of C<MaterialNC> where every member value's chain starts with either C<sys>
@@ -508,27 +504,27 @@ NC-argument-taking-routine.  Conceptually speaking, an C<AbsPathMaterialNC>
 that points to a routine I<is> a closure, or a higher-order function if it
 points to a function.
 
-=head2 sys.std.Core.Type.Cat.APFunctionNC
+## sys.std.Core.Type.Cat.APFunctionNC
 
 C<APFunctionNC> is a proper subtype of
 C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
 of the C<sys>-prefix values.  Its default value is a reference to the
 C<sys.std.Core.Universal.is_same> function.
 
-=head2 sys.std.Core.Type.Cat.APProcedureNC
+## sys.std.Core.Type.Cat.APProcedureNC
 
 C<APProcedureNC> is a proper subtype of
 C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
 of the C<sys>-prefix values.  Its default
 value is a reference to the C<sys.std.Core.Universal.assign> updater.
 
-=head2 sys.std.Core.Type.Cat.APTypeNC
+## sys.std.Core.Type.Cat.APTypeNC
 
 C<APTypeNC> is a proper subtype of C<AbsPathMaterialNC> that excludes a
 subset of the C<sys>-prefix values.  Its default value is a reference to
 the C<sys.std.Core.Type.Universal> data type.
 
-=head2 sys.std.Core.Type.Cat.RelPathMaterialNC
+## sys.std.Core.Type.Cat.RelPathMaterialNC
 
 C<RelPathMaterialNC> is a proper subtype
 of C<MaterialNC> where every member value's chain starts with either C<sys>
@@ -536,27 +532,27 @@ or C<nlx> or C<rtn> (or a C<type>-prefix followed by those) but not C<fed>.
 One is used in a context where a user-defined routine or type may only be
 invoked directly when both the invoker and invoked are in the same package.
 
-=head2 sys.std.Core.Type.Cat.RPFunctionNC
+## sys.std.Core.Type.Cat.RPFunctionNC
 
 C<RPFunctionNC> is a proper subtype of C<RelPathMaterialNC> that excludes
 the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
 default value is a reference to the C<sys.std.Core.Universal.is_same>
 function.
 
-=head2 sys.std.Core.Type.Cat.RPProcedureNC
+## sys.std.Core.Type.Cat.RPProcedureNC
 
 C<RPProcedureNC> is a proper subtype of C<RelPathMaterialNC> that excludes
 the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
 default value is a reference to the C<sys.std.Core.Universal.assign>
 updater.
 
-=head2 sys.std.Core.Type.Cat.RPTypeNC
+## sys.std.Core.Type.Cat.RPTypeNC
 
 C<RPTypeNC> is a proper subtype of C<RelPathMaterialNC> that excludes the
 C<rtn> value and a subset of the C<sys>-prefix values.  Its default value
 is a reference to the C<sys.std.Core.Type.Universal> data type.
 
-=head2 sys.std.Core.Type.Cat.DataNC
+## sys.std.Core.Type.Cat.DataNC
 
 C<DataNC> is a proper subtype of
 C<PNSQNameChain> where every member value's chain starts with one of the
@@ -568,7 +564,7 @@ value is a reference to the C<sys.cat> catalog relcon.
 I<Conjecture:  Subtypes like C<[Abs|Rel]PathDataNC> might also be defined
 later if we have some situation where such a restriction might be useful.>
 
-=head2 sys.std.Core.Type.Cat.Comment
+## sys.std.Core.Type.Cat.Comment
 
 A C<Comment> (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
@@ -584,7 +580,7 @@ intended use of this type is to help preserve comments in code translated
 to or from other languages; though only a subset of those (FoxPro?) keep
 comments in the AST rather than discarding them.
 
-=head2 sys.std.Core.Type.Cat.Order
+## sys.std.Core.Type.Cat.Order
 
 The C<Order> (order determination) type
 is explicitly defined as a union type over just these 3 singleton types
@@ -603,7 +599,7 @@ The C<Order> type has a default ordering algorithm that corresponds
 directly to the sequence in which its values are documented here;
 C<Less> is ordered before C<Same>, and C<Same> before C<More>.
 
-=head2 sys.std.Core.Type.Cat.Order.*
+## sys.std.Core.Type.Cat.Order.*
 
 There are exactly 3 types having C<sys.std.Core.Type.Cat.Order.*>-format;
 for the rest of this
@@ -613,7 +609,7 @@ name is the empty string and which has zero attributes.  The cardinality of
 this type is 1, and its only value is its default and minimum and maximum
 value.
 
-=head2 sys.std.Core.Type.Cat.RoundMeth
+## sys.std.Core.Type.Cat.RoundMeth
 
 The C<RoundMeth> (rounding method)
 type is explicitly defined as a union type over just these 9 singleton
@@ -645,7 +641,7 @@ sequence of operations that each round, which is especially useful in
 contexts where a rounding method is implicit.  The
 C<RoundMeth> type does I<not> have a default ordering algorithm.
 
-=head2 sys.std.Core.Type.Cat.RoundMeth.*
+## sys.std.Core.Type.Cat.RoundMeth.*
 
 There are exactly 9 types having
 C<sys.std.Core.Type.Cat.RoundMeth.*>-format names;
@@ -655,7 +651,7 @@ them.  A C<RoundMeth.Value> has 1 system-defined possrep whose name is
 the empty string and which has zero attributes.  The cardinality of this
 type is 1, and its only value is its default and minimum and maximum value.
 
-=head2 sys.std.Core.Type.Cat.RatRoundRule
+## sys.std.Core.Type.Cat.RatRoundRule
 
 A C<RatRoundRule> (scalar) specifies a
 controlled (and typically degrading) coercion of a real number into a
@@ -675,7 +671,7 @@ of C<RatRoundRule> specifies a coersion to a whole number using the
 C<HalfEven> rounding method (its radix is 2 and its min exp is 0).  The
 C<RatRoundRule> type does I<not> have a default ordering algorithm.
 
-=head2 sys.std.Core.Type.Cat.Singleton
+## sys.std.Core.Type.Cat.Singleton
 
 The C<Singleton> type is explicitly defined as a union type over just the
 system-defined core singleton types which aren't otherwise included in
@@ -684,7 +680,7 @@ only exists as a convenience for concrete Muldis D grammars that want to
 have a group type name for every system-defined opaque value.  C<Singleton>
 currently unions just these 2 types: C<-Inf>, C<Inf>.
 
-=head2 sys.std.Core.Type.Cat."-Inf"
+## sys.std.Core.Type.Cat."-Inf"
 
 C<-Inf> is a singleton scalar type whose only value represents negative
 infinity.  It is intended for use as a special value in contexts that are
@@ -696,16 +692,16 @@ zero attributes.  The cardinality of this type is 1, and its only value is
 its default and minimum and maximum value.  The only value of C<-Inf> is
 also known as C<-∞>.  C<-Inf> explicitly composes C<Ordinal>.
 
-=head2 sys.std.Core.Type.Cat.Inf
+## sys.std.Core.Type.Cat.Inf
 
 C<Inf> is a singleton scalar type whose only value represents positive
 infinity.  It is the same as C<-Inf> in every way except it is the
 canonical maximum-most value rather than minimum-most.  The only value of
 C<Inf> is also known as C<∞>.  C<Inf> explicitly composes C<Ordinal>.
 
-=head1 TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
+# TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
-=head2 sys.std.Core.Type.Cat.System
+## sys.std.Core.Type.Cat.System
 
 A C<System> is a C<Database>.  It specifies the public interfaces of
 system-defined entities, specifically all the system-defined types,
@@ -754,7 +750,7 @@ C<[sys|mnt|fed|nlx].cat>; the first is a relcon, the others not.
 
 The default value of C<System> defines a system with zero builtins.
 
-=head2 sys.std.Core.Type.Cat.SpecialNspSet
+## sys.std.Core.Type.Cat.SpecialNspSet
 
 A C<SpecialNspSet> is a C<DHRelation> that specifies the set of special
 system namespaces that exist for organizing all other DBMS public entities;
@@ -793,7 +789,7 @@ of the named entities directly within the namespace defined by C<parent>.
 A C<SpecialNspSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ModuleSet
+## sys.std.Core.Type.Cat.ModuleSet
 
 A C<ModuleSet> is a C<DHRelation> that specifies a set of system-defined
 modules, such that each tuple is a single module.
@@ -832,7 +828,7 @@ This defines the entire system catalog of the module.
 A C<ModuleSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.CatalogSet
+## sys.std.Core.Type.Cat.CatalogSet
 
 A C<CatalogSet> is a C<DHRelation> that specifies a set of system-defined
 catalog dbvars; each tuple specifies one catalog dbvar.
@@ -868,9 +864,9 @@ This is the declared data type of the catalog dbvar.
 A C<CatalogSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.
 
-=head1 TYPES FOR DEFINING MOUNT CONTROLS
+# TYPES FOR DEFINING MOUNT CONTROLS
 
-=head2 sys.std.Core.Type.Cat.MountControlCat
+## sys.std.Core.Type.Cat.MountControlCat
 
 A C<MountControlCat> is a C<Database>.  It specifies the control
 interface for mounting and unmounting (and creating and deleting) depots
@@ -900,7 +896,7 @@ These are the controls for the current depot mounts.
 
 The default value of C<MountControlCat> has zero depot mount controls.
 
-=head2 sys.std.Core.Type.Cat.MountControlSet
+## sys.std.Core.Type.Cat.MountControlSet
 
 A C<MountControlSet> is a C<DHRelation> that specifies a set of controls
 per depot mounts, such that each tuple is a single control for a depot
@@ -1050,9 +1046,9 @@ that the 3 attributes [C<is_temporary>, C<create_on_mount>,
 C<delete_on_unmount>] may be merged into a single enumerated-typed
 attribute or otherwise be reorganized.
 
-=head1 TYPES FOR DEFINING FEDERATIONS
+# TYPES FOR DEFINING FEDERATIONS
 
-=head2 sys.std.Core.Type.Cat.Federation
+## sys.std.Core.Type.Cat.Federation
 
 A C<Federation> is a C<Database>.  It specifies a federation of depot
 mounts, that is, all the depot mounts that an in-DBMS process can see or
@@ -1090,7 +1086,7 @@ that creates or otherwise works with that persistent database.
 
 The default value of C<Federation> has zero depot mounts.
 
-=head2 sys.std.Core.Type.Cat.DepotMountSet
+## sys.std.Core.Type.Cat.DepotMountSet
 
 A C<DepotMountSet> is a C<DHRelation> that specifies a set of depot
 mounts, such that each tuple is a single depot mount.  A depot mount is a
@@ -1122,7 +1118,7 @@ made visible to the DBMS.
 A C<DepotMountSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.FedTypeMapSet
+## sys.std.Core.Type.Cat.FedTypeMapSet
 
 A C<FedTypeMapSet> is a C<DHRelation> such that each tuple in it
 specifies which of multiple depots have a copy of the same data type, for
@@ -1148,9 +1144,9 @@ interchangeably by the DBMS.
 A C<FedTypeMapSet> has a primary key on the C<map> attribute.  Its
 default value is empty.
 
-=head1 TYPES FOR DEFINING PACKAGES AND SUBPACKAGES
+# TYPES FOR DEFINING PACKAGES AND SUBPACKAGES
 
-=head2 sys.std.Core.Type.Cat.Package
+## sys.std.Core.Type.Cat.Package
 
 A C<Package> is a C<Database>.  It specifies the entire system catalog of a
 single package, that is, the widest scope within which all entities must be
@@ -1234,7 +1230,7 @@ possrep attribute values of the same possrep-adding C<Text> subtype.
 The default value of C<Package> defines an empty [|sub]package
 that does not have any self-local dbvar.
 
-=head2 sys.std.Core.Type.Cat.Module
+## sys.std.Core.Type.Cat.Module
 
 A C<Module> specifies the entire system catalog of a single module (or
 submodule), which is a kind of package (or subpackage).  C<Module> is a
@@ -1243,14 +1239,14 @@ C<stim_resp_rules> and C<data> attributes are empty.  I<It is possible in
 the future that C<Module> may change to a non-proper subtype of C<Package>
 should system-defined stimulus-response rules or data dbcons be useful.>
 
-=head2 sys.std.Core.Type.Cat.Depot
+## sys.std.Core.Type.Cat.Depot
 
 A C<Depot> specifies the entire system catalog of a single depot (or
 subdepot), which is a kind of package (or subpackage).  C<Depot> is a
 proper subtype of C<Package> where for every member value its
 C<special_types> attribute is empty.
 
-=head2 sys.std.Core.Type.Cat.SubpackageSet
+## sys.std.Core.Type.Cat.SubpackageSet
 
 A C<SubpackageSet> is a C<DHRelation> that specifies the set of subpackages
 that a package might optionally have for organizing its entities;
@@ -1289,7 +1285,7 @@ of the named entities directly within the namespace defined by C<parent>.
 A C<SubpackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Function|Procedure]Set
+## sys.std.Core.Type.Cat.[Function|Procedure]Set
 
 A C<[Function|Procedure]Set> is a C<DHRelation> that
 specifies a set of functions|procedures
@@ -1335,7 +1331,7 @@ definition of a system-defined data type.
 A C<[Function|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.SpecialTypeSet
+## sys.std.Core.Type.Cat.SpecialTypeSet
 
 A C<SpecialTypeSet> is a C<DHRelation> that specifies a set of
 system-defined types which are particularly special and unlike other types;
@@ -1372,7 +1368,7 @@ the named entities directly within the namespace defined by C<parent>.
 A C<SpecialTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
+## sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
 
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a C<DHRelation>
 that specifies a set of scalar|tuple|relation|domain|subset|mixin types
@@ -1417,7 +1413,7 @@ A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
 primary key on the C<parent> plus C<name> attributes.  Its default value is
 empty.
 
-=head2 sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
+## sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
 
 A C<[|Distrib][Key|Subset]ConstrSet> is a C<DHRelation> that specifies a
 set of |distributed key|subset constraints that a [|sub]package might
@@ -1458,7 +1454,7 @@ This defines the entire |distributed key|subset constraint sans its name.
 A C<[|Distrib][Key|Subset]ConstrSet> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.StimRespRuleSet
+## sys.std.Core.Type.Cat.StimRespRuleSet
 
 A C<StimRespRuleSet> is a C<DHRelation> that specifies a set of
 stimulus-response rules that a [|sub]package might directly contain.
@@ -1498,9 +1494,9 @@ This defines the entire stimulus-response rule sans its name.
 A C<StimRespRuleSet> has a binary primary key on the C<parent> plus C<name>
 attributes.  Its default value is empty.
 
-=head1 TYPES FOR DEFINING ROUTINES
+# TYPES FOR DEFINING ROUTINES
 
-=head2 sys.std.Core.Type.Cat.Function
+## sys.std.Core.Type.Cat.Function
 
 A C<Function> is a C<DHTuple>.  It defines a new function, which has 2
 main parts, called I<heading> and I<body>:  The I<heading> defines the
@@ -1596,7 +1592,7 @@ C<params> and the C<name> attributes of all the attributes of C<expr>.  Its
 default value has zero parameters, a result type of C<Bool>, and has no
 specified I<body>.
 
-=head2 sys.std.Core.Type.Cat.NamedValFunc
+## sys.std.Core.Type.Cat.NamedValFunc
 
 A C<NamedValFunc> defines a C<named-value>, which is a kind of function.
 C<NamedValFunc> is a proper subtype of C<Function> where all member values
@@ -1604,7 +1600,7 @@ declare a function that is nullary / has exactly zero parameters.  Its
 default value is a function whose invocation unconditionally results in
 C<Bool:False>.
 
-=head2 sys.std.Core.Type.Cat.ValMapFunc
+## sys.std.Core.Type.Cat.ValMapFunc
 
 A C<ValMapFunc> defines a C<value-map>, which is a kind of function.
 C<ValMapFunc> is a proper subtype of C<Function> where all member values
@@ -1612,7 +1608,7 @@ declare a function that has at least 1 parameter, and that 1 is named
 C<topic>.  Its default value is the same as that of its C<ValMapUFunc>
 subtype.
 
-=head2 sys.std.Core.Type.Cat.ValMapUFunc
+## sys.std.Core.Type.Cat.ValMapUFunc
 
 A C<ValMapUFunc> defines a C<value-map-unary>, which is a kind of
 C<value-map>.  C<ValMapUFunc> is a proper subtype of C<ValMapFunc> where
@@ -1621,7 +1617,7 @@ parameter (just the C<topic> parameter).  Its default value is a function
 whose invocation unconditionally results in its C<topic> argument and whose
 only parameter has a declared type of C<Universal>.
 
-=head2 sys.std.Core.Type.Cat.ValFiltFunc
+## sys.std.Core.Type.Cat.ValFiltFunc
 
 A C<ValFiltFunc> defines a C<value-filter>, which is a kind of
 C<value-map>.  C<ValFiltFunc> is a proper subtype of C<ValMapFunc> where
@@ -1629,7 +1625,7 @@ all member values declare a function whose result's declared type is
 C<Bool>.  Its default value is the same as that of its C<ValConstrFunc>
 subtype.
 
-=head2 sys.std.Core.Type.Cat.ValConstrFunc
+## sys.std.Core.Type.Cat.ValConstrFunc
 
 A C<ValConstrFunc> defines a C<value-constraint>, which is a kind of
 C<value-filter> I<and> a kind of C<value-map-unary>.  C<ValConstrFunc> is
@@ -1637,7 +1633,7 @@ the intersection type of C<ValFiltFunc> and C<ValMapUFunc>.  Its default
 value is a function whose invocation unconditionally results in
 C<Bool:True> and whose only parameter has a declared type of C<Universal>.
 
-=head2 sys.std.Core.Type.Cat.ValRedFunc
+## sys.std.Core.Type.Cat.ValRedFunc
 
 A C<ValRedFunc> defines a C<value-reduction>, which is a kind of function.
 C<ValRedFunc> is a proper subtype of C<Function> where all member values
@@ -1648,7 +1644,7 @@ that of either of those 2 parameters.  Its default value is a function,
 whose invocation unconditionally results in its C<v1> argument, and that
 has exactly 2 parameters, and all 3 of its declared types are C<Universal>.
 
-=head2 sys.std.Core.Type.Cat.OrdDetFunc
+## sys.std.Core.Type.Cat.OrdDetFunc
 
 An C<OrdDetFunc> defines an C<order-determination>, which is a kind of
 function.  C<OrdDetFunc> is a proper subtype of C<Function> where all
@@ -1660,7 +1656,7 @@ result is C<Order>.  Its default value is a function, whose C<topic> and
 C<other> parameters both have the declared type of C<Bool>, which orders
 C<Bool:False> before C<Bool:True>.
 
-=head2 sys.std.Core.Type.Cat.ExprNodeSet
+## sys.std.Core.Type.Cat.ExprNodeSet
 
 An C<ExprNodeSet> is a C<Database> that specifies a set of named value
 expression nodes.  It is typically composed into a
@@ -1771,7 +1767,7 @@ the sole determinant of whether to nest any given expression node under
 another expression or statement node, or not, is based on whether its
 C<scm_vis_ord> is zero or not; zero means nested, non-zero means otherwise.
 
-=head2 sys.std.Core.Type.Cat.SysScaValExprNodeSet
+## sys.std.Core.Type.Cat.SysScaValExprNodeSet
 
 An C<SysScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal that is
@@ -1805,7 +1801,7 @@ This is the actual scalar value that the expression node represents.
 An C<SysScaValExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ScaSelExprNodeSet
+## sys.std.Core.Type.Cat.ScaSelExprNodeSet
 
 A C<ScaSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a scalar value
@@ -1853,7 +1849,7 @@ possrep of the scalar value being selected.
 A C<ScaSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.TupSelExprNodeSet
+## sys.std.Core.Type.Cat.TupSelExprNodeSet
 
 A C<TupSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a tuple value selection.
@@ -1886,7 +1882,7 @@ value being selected.
 A C<TupSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.RelSelExprNodeSet
+## sys.std.Core.Type.Cat.RelSelExprNodeSet
 
 A C<RelSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a relation value selection.
@@ -1926,7 +1922,7 @@ do not constitute a failure condition.
 A C<RelSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.SetSelExprNodeSet
+## sys.std.Core.Type.Cat.SetSelExprNodeSet
 
 A C<SetSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a set value selection.
@@ -1962,7 +1958,7 @@ failure condition.
 A C<SetSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ArySelExprNodeSet
+## sys.std.Core.Type.Cat.ArySelExprNodeSet
 
 An C<ArySelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents an array value selection.
@@ -1994,7 +1990,7 @@ These represent the elements of the array value being selected.
 An C<ArySelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.BagSelExprNodeSet
+## sys.std.Core.Type.Cat.BagSelExprNodeSet
 
 A C<BagSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a bag value selection.
@@ -2040,7 +2036,7 @@ you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
 A C<BagSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.SPIvlSelExprNodeSet
+## sys.std.Core.Type.Cat.SPIvlSelExprNodeSet
 
 An C<SPIvlSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a single-piece interval value
@@ -2083,7 +2079,7 @@ C<SPIvlSelExprNodeSet>.
 An C<SPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.MPIvlSelExprNodeSet
+## sys.std.Core.Type.Cat.MPIvlSelExprNodeSet
 
 An C<MPIvlSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a multi-piece interval value
@@ -2130,7 +2126,7 @@ C<MPIvlSelExprNodeSet>.
 An C<MPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ListSelExprNodeSet
+## sys.std.Core.Type.Cat.ListSelExprNodeSet
 
 An C<ListSelExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a low-level list value
@@ -2163,7 +2159,7 @@ These represent the elements of the low-level list value being selected.
 An C<ListSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.AccExprNodeSet
+## sys.std.Core.Type.Cat.AccExprNodeSet
 
 An C<AccExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node is an accessor or alias for an attribute
@@ -2197,7 +2193,7 @@ attribute thereof if it is tuple-valued, being accessed or aliased.
 An C<AccExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.FuncInvoExprNodeSet
+## sys.std.Core.Type.Cat.FuncInvoExprNodeSet
 
 A C<FuncInvoExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents the result of invoking a named
@@ -2237,7 +2233,7 @@ local expression node (or parameter) which defines the value.
 A C<FuncInvoExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.IfElseExprNodeSet
+## sys.std.Core.Type.Cat.IfElseExprNodeSet
 
 An C<IfElseExprNodeSet> is a C<DHRelation> that specifies a set of value
 expression nodes where each node represents a ternary if-then-else control
@@ -2304,7 +2300,7 @@ result of the whole if-then-else expression iff C<if> is C<Bool:False>.
 An C<IfElseExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
+## sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
 A C<GivenWhenDefExprNodeSet> is a C<DHRelation> that specifies a set of
 value expression nodes where each node represents an N-way
@@ -2361,7 +2357,7 @@ given-when-default.
 A C<GivenWhenDefExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.WhenThenExprMap
+## sys.std.Core.Type.Cat.WhenThenExprMap
 
 A C<WhenThenExprMap> is a C<DHRelation>.  It defines a set of dispatch
 options for a given-when-default expression.  A C<WhenThenExprMap> has 2
@@ -2372,7 +2368,7 @@ condition.  If a C<when> value is matched, then the C<then> node is
 evaluated and its result is the result of the whole g-w-d expression;
 otherwise, C<then> is not evaluated.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
+## sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
 
 An C<APMaterialNCSelExprNodeSet> is a C<DHRelation> that specifies a set of
 expression nodes where each node represents a value of the
@@ -2418,7 +2414,7 @@ An C<APMaterialNCSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
 default value is empty.
 
-=head2 sys.std.Core.Type.Cat.Procedure
+## sys.std.Core.Type.Cat.Procedure
 
 A C<Procedure> is a C<DHTuple>.  It defines a new procedure, which has 2
 main parts, called I<heading> and I<body>:  The I<heading> defines the
@@ -2575,20 +2571,20 @@ C<ro_global_params> and C<vars> and the C<name> attributes of
 all the attributes of C<stmt>.  Its default value has zero parameters and
 has no specified I<body>.
 
-=head2 sys.std.Core.Type.Cat.SystemService
+## sys.std.Core.Type.Cat.SystemService
 
 A C<SystemService> defines a C<system-service>, which is a kind of
 procedure.  C<SystemService> is a proper subtype of C<Procedure> where for
 every member value its C<is_system_service> attribute is C<Bool:True>.
 
-=head2 sys.std.Core.Type.Cat.Transaction
+## sys.std.Core.Type.Cat.Transaction
 
 A C<Transaction> defines a C<transaction>, which is a kind of procedure.
 C<Transaction> is a proper subtype of C<Procedure> where for every member
 value its C<is_transaction> attribute is C<Bool:True> and its
 C<is_system_service> attribute is C<Bool:False>.
 
-=head2 sys.std.Core.Type.Cat.Recipe
+## sys.std.Core.Type.Cat.Recipe
 
 A C<Recipe> defines a C<recipe>, which is a kind of C<transaction>.
 C<Recipe> is a proper subtype of C<Transaction> where for every member
@@ -2599,14 +2595,14 @@ has 1 subject-to-update, non-optional parameter whose name is C<topic> and
 whose declared type is C<Bool>; it has zero read-only parameters and zero
 lexical-alias variables; it has no specified I<body>.
 
-=head2 sys.std.Core.Type.Cat.Updater
+## sys.std.Core.Type.Cat.Updater
 
 An C<Updater> defines an C<updater>, which is a kind of recipe.
 C<Updater> is a proper subtype of C<Recipe> where for every member value
 its C<upd_global_params> and C<ro_global_params> attributes are empty and
 its C<upd_params> attribute is nonempty.
 
-=head2 sys.std.Core.Type.Cat.ProcGlobalVarAliasMap
+## sys.std.Core.Type.Cat.ProcGlobalVarAliasMap
 
 A C<ProcGlobalVarAliasMap> is a C<DHRelation>.  It defines a set of lexical
 variable names, with a declared global variable for each.  It is used to
@@ -2617,7 +2613,7 @@ C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
 the lexical alias, and comprises a unary key; the C<global> is the
 invocation name of the global variable.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.StmtNodeSet
+## sys.std.Core.Type.Cat.StmtNodeSet
 
 A C<StmtNodeSet> is a C<Database> that specifies a set of named
 statement nodes.  It is typically composed into a procedure.  Each
@@ -2681,7 +2677,7 @@ These are statement nodes that represent generic looping block statements.
 There is a distributed primary key over the C<name> attributes of all of a
 C<StmtNodeSet>'s attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.LeaveStmtNodeSet
+## sys.std.Core.Type.Cat.LeaveStmtNodeSet
 
 A C<LeaveStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement leaf nodes where each node represents an instruction to
@@ -2719,7 +2715,7 @@ A C<LeaveStmtNodeSet> has a unary primary key on the C<name> attribute,
 plus a unary (unique) key on the C<leave> attribute.  Its default value is
 empty.
 
-=head2 sys.std.Core.Type.Cat.CompoundStmtNodeSet
+## sys.std.Core.Type.Cat.CompoundStmtNodeSet
 
 A C<CompoundStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is a compound statement composed of a
@@ -2750,7 +2746,7 @@ execute in this given sequence.
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.MultiUpdStmtNodeSet
+## sys.std.Core.Type.Cat.MultiUpdStmtNodeSet
 
 A C<MultiUpdStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is a multi-update statement, which is a
@@ -2789,7 +2785,7 @@ recipe or an assignment; it may not be any non-deterministic statement.
 A C<MultiUpdStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
+## sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
 
 A C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node is an invocation of a named procedure
@@ -2838,7 +2834,7 @@ A C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
 key over the C<name> attributes of C<upd_args> and C<ro_args>.
 
-=head2 sys.std.Core.Type.Cat.TryCatchStmtNodeSet
+## sys.std.Core.Type.Cat.TryCatchStmtNodeSet
 
 A C<TryCatchStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents a try-catch control flow
@@ -2882,7 +2878,7 @@ C<catch> will not be caught.
 A C<TryCatchStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.IfElseStmtNodeSet
+## sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
 An C<IfElseStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents a ternary if-then-else control
@@ -2930,7 +2926,7 @@ C<Nothing>, then the whole if-else will have been a no-op.
 An C<IfElseStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
+## sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
 
 A C<GivenWhenDefStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement nodes where each node represents an N-way given-when-then-default
@@ -2978,7 +2974,7 @@ been a no-op.
 A C<GivenWhenDefStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.WhenThenExprStmtMap
+## sys.std.Core.Type.Cat.WhenThenExprStmtMap
 
 A C<WhenThenExprStmtMap> is a C<DHRelation>.  It defines a set of dispatch
 options for a given-when-default statement.  A C<WhenThenExprStmtMap> has 2
@@ -2989,7 +2985,7 @@ operand for each condition.  If a C<when> value is matched, then the
 C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
 default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.IterateStmtNodeSet
+## sys.std.Core.Type.Cat.IterateStmtNodeSet
 
 An C<IterateStmtNodeSet> is a C<DHRelation> that specifies a set of
 statement leaf nodes where each node represents an instruction to
@@ -3026,7 +3022,7 @@ An C<IterateStmtNodeSet> has a unary primary key on the C<name>
 attribute, plus a unary (unique) key on the C<iterate> attribute.  Its
 default value is empty.
 
-=head2 sys.std.Core.Type.Cat.LoopStmtNodeSet
+## sys.std.Core.Type.Cat.LoopStmtNodeSet
 
 A C<LoopStmtNodeSet> is a C<DHRelation> that specifies a set of statement
 nodes where each node represents a generic looping statement block which
@@ -3055,9 +3051,9 @@ each iteration of the loop; typically it has a sub-tree of statement nodes.
 A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
-=head1 TYPES FOR DEFINING DATA TYPES
+# TYPES FOR DEFINING DATA TYPES
 
-=head2 sys.std.Core.Type.Cat.ScalarType
+## sys.std.Core.Type.Cat.ScalarType
 
 A C<ScalarType> is a C<DHTuple>.  It defines either a new
 scalar root type with at least 1 possrep, or it defines a subtype
@@ -3176,7 +3172,7 @@ The default value of C<ScalarType> defines a scalar root type with
 a single possrep whose name is the empty string and that has no attributes;
 it is a singleton type, whose default value is its only value.
 
-=head2 sys.std.Core.Type.Cat.PossrepSet
+## sys.std.Core.Type.Cat.PossrepSet
 
 A C<PossrepSet> is a C<DHRelation> that specifies a set of possreps that
 a scalar [|sub]type might consist primarily of.
@@ -3243,7 +3239,7 @@ default value is empty.  The default value of a tuple of C<PossrepSet>
 has a C<name> that is the empty string and its C<tuple_type> is C<D0>; and
 so the default is suitable for declaring a singleton scalar type.
 
-=head2 sys.std.Core.Type.Cat.PossrepMapSet
+## sys.std.Core.Type.Cat.PossrepMapSet
 
 A C<PossrepMapSet> is a C<DHRelation> such that each tuple in it
 specifies a pair of mapping functions to bidirectionally derive a value of
@@ -3294,7 +3290,7 @@ change.>
 A C<PossrepMapSet> has a binary primary key on the C<p1> plus C<p2>
 attributes.  Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.TupleType
+## sys.std.Core.Type.Cat.TupleType
 
 A C<TupleType> is a C<DHTuple>.  It defines either a new tuple heading
 (set of attributes) with associated constraints for a tuple type having
@@ -3440,7 +3436,7 @@ defined is an alias for C<Empty>.
 The default value of C<TupleType> defines a singleton tuple type that has
 zero attributes and whose default value is its only value.
 
-=head2 sys.std.Core.Type.Cat.RelationType
+## sys.std.Core.Type.Cat.RelationType
 
 A C<RelationType> is a C<DHTuple>.  It defines either a new relation
 heading (set of attributes) with associated constraints for a relation type
@@ -3550,7 +3546,7 @@ defined is an alias for C<Empty>.
 The default value of C<RelationType> defines a relation type that has
 zero attributes and whose default value is the one with zero tuples.
 
-=head2 sys.std.Core.Type.Cat.VirtualAttrMapSet
+## sys.std.Core.Type.Cat.VirtualAttrMapSet
 
 A C<VirtualAttrMapSet> is a C<DHRelation> that defines special functional
 dependencies between attributes of a nonscalar data type, such
@@ -3696,7 +3692,7 @@ plus C<dependent_attrs> attributes; it also has a distributed primary key
 over the C<dependent_attrs> attribute of all tuples.  Its default value is
 empty.
 
-=head2 sys.std.Core.Type.Cat.DomainType
+## sys.std.Core.Type.Cat.DomainType
 
 A C<DomainType> is a C<DHTuple>.  It defines a new data type whose
 values are all drawn from a list of specified other types (which can be
@@ -3790,7 +3786,7 @@ The default value of C<DomainType> defines the C<Empty> type; it has
 zero source and filter types, both type lists are unioned, C<constraints>
 is empty (unconditionally C<Bool:True>), and there is no default value.
 
-=head2 sys.std.Core.Type.Cat.SubsetType
+## sys.std.Core.Type.Cat.SubsetType
 
 A C<SubsetType> is a C<DHTuple>.  It provides a relatively terse
 method to define a simple subset-defined subtype of a single other
@@ -3856,7 +3852,7 @@ The default value of C<SubsetType> defines an alias for C<Universal>,
 with the same default value; it has the base type C<Universal> and
 C<constraints> is empty (unconditionally C<Bool:True>).
 
-=head2 sys.std.Core.Type.Cat.MixinType
+## sys.std.Core.Type.Cat.MixinType
 
 A C<MixinType> is a C<DHTuple>.  It defines a new data type whose values
 are a union of those from the zero or more other types that
@@ -3898,7 +3894,7 @@ composing itself, directly or indirectly.
 The default value of C<MixinType> defines a mixin type has no comment and
 composes no other mixins and that in isolation has no default value.
 
-=head2 sys.std.Core.Type.Cat.ComposedMixinSet
+## sys.std.Core.Type.Cat.ComposedMixinSet
 
 A C<ComposedMixinSet> is a C<DHRelation>.  It defines a set of names of
 declared mixin data types which are being composed by another type, and for
@@ -3925,7 +3921,7 @@ type claims its default.  Iff exactly one visible type composes a mixin,
 that one will provide the mixin's default value implicitly if it doesn't
 explicitly claim to.
 
-=head2 sys.std.Core.Type.Cat.KeyConstr
+## sys.std.Core.Type.Cat.KeyConstr
 
 A C<KeyConstr> is a C<DHTuple>.  It specifies a candidate key or
 unique key constraint for a relation type.
@@ -3976,7 +3972,7 @@ automatically relate a split relation on.
 
 The default value of C<KeyConstr> defines a nullary key.
 
-=head2 sys.std.Core.Type.Cat.DistribKeyConstr
+## sys.std.Core.Type.Cat.DistribKeyConstr
 
 A C<DistribKeyConstr> is a C<DHTuple>.  It specifies a candidate
 distributed (unique) key constraint over relation-valued attributes of a
@@ -4017,7 +4013,7 @@ distributed as if the relations distributed over were one relation.
 
 The default value of C<DistribKeyConstr> has all-empty attributes.
 
-=head2 sys.std.Core.Type.Cat.SubsetConstr
+## sys.std.Core.Type.Cat.SubsetConstr
 
 A C<SubsetConstr> is a C<DHTuple>.  It specifies a (non-distributed) subset
 constraint (foreign key constraint) over relation-valued
@@ -4072,7 +4068,7 @@ not be the same.
 
 The default value of C<SubsetConstr> has all-empty attributes.
 
-=head2 sys.std.Core.Type.Cat.DistribSubsetConstr
+## sys.std.Core.Type.Cat.DistribSubsetConstr
 
 A C<DistribSubsetConstr> is a C<DHTuple>.  It specifies a distributed
 subset constraint (foreign key constraint) over relation-valued
@@ -4127,7 +4123,7 @@ may not be the same.
 
 The default value of C<DistribSubsetConstr> has all-empty attributes.
 
-=head2 sys.std.Core.Type.Cat.DKMemRelAttrMap
+## sys.std.Core.Type.Cat.DKMemRelAttrMap
 
 A C<DKMemRelAttrMap> is a C<DHRelation> that names the 0..N relation-valued
 attributes of a host tuple/database type that are participating in a
@@ -4163,7 +4159,7 @@ other words, they must all map with the same distributed key attributes.
 A C<DKMemRelAttrMap> has a unary primary key on the C<rel_name> attribute.
 Its default value is empty.
 
-=head2 sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
+## sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
 
 A C<DKRelAttrKeyAttrMap> is a C<DHRelation>.  It maps 0..N attributes of a
 relation-valued attribute of a host tuple/database type participating
@@ -4172,7 +4168,7 @@ key itself.  A C<DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
 C<key_attr>, each of those being a C<Name>, and each of those being a unary
 key.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
+## sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
 
 A C<SCChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes
 of a child relation-valued attribute of a host tuple/database type
@@ -4183,9 +4179,9 @@ attributes, C<child_attr> and C<parent_attr>, each of those being a
 C<Name>, and each of those being a unary key.  Its default value has zero
 tuples.
 
-=head1 TYPES FOR DEFINING STIMULUS-RESPONSE RULES
+# TYPES FOR DEFINING STIMULUS-RESPONSE RULES
 
-=head2 sys.std.Core.Type.Cat.StimRespRule
+## sys.std.Core.Type.Cat.StimRespRule
 
 A C<StimRespRule> is a C<DHTuple>.  It defines a new stimulus-response rule
 which invokes a procedure automatically in response to some
@@ -4213,9 +4209,9 @@ The default value of C<StimRespRule> defines a stimulus-response rule whose
 stimulus is C<after-mount> and whose response is an invocation of the
 procedure C<sys.std.Core.Cat.fail>.
 
-=head1 SIMPLE GENERIC NONSCALAR TYPES
+# SIMPLE GENERIC NONSCALAR TYPES
 
-=head2 sys.std.Core.Type.Cat.D0
+## sys.std.Core.Type.Cat.D0
 
 A C<D0> is a C<Database>.  It has exactly zero attributes; it is a
 singleton type whose only value is also known as C<Tuple:D0>.  This exists
@@ -4223,7 +4219,7 @@ as a data type as a convenience for the definition of scalar singleton
 types, which would typically use this as the tuple type which their possrep
 is defined partially in terms of.
 
-=head2 sys.std.Core.Type.Cat.NameTypeMap
+## sys.std.Core.Type.Cat.NameTypeMap
 
 A C<NameTypeMap> is a C<DHRelation>.  It defines a basic component list,
 meaning a set of names, with a declared data type name for each.  It forms
@@ -4237,7 +4233,7 @@ declared name of the attribute or parameter, and comprises a unary key; the
 C<type> is the declared data type of the attribute or parameter.  Its
 default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.NameExprMap
+## sys.std.Core.Type.Cat.NameExprMap
 
 A C<NameExprMap> is a C<DHRelation>.  It defines a basic component-values
 list, meaning a set of names, with a declared local expression node (or
@@ -4251,7 +4247,7 @@ C<expr> is the declared lexical name of the expression node (or parameter
 or variable) which defines the value for the attribute or argument.  Its
 default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.NameNCMap
+## sys.std.Core.Type.Cat.NameNCMap
 
 A C<NameNCMap> is a C<DHRelation>.  It defines an association of a short
 name with a name chain, to be used for aliasing the latter with the former
@@ -4259,7 +4255,7 @@ in a particular context.  A C<NameNCMap> has 3 attributes, C<name> (a
 C<Name>), C<nc> (a C<NameChain>), and C<scm_vis_ord> (a C<NNInt>); each of
 those is a unary key.  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.AttrRenameMap
+## sys.std.Core.Type.Cat.AttrRenameMap
 
 An C<AttrRenameMap> is a C<DHRelation>.  It is used as a specification for
 how to rename attributes of some collection.  An C<AttrRenameMap> has 3
@@ -4267,7 +4263,7 @@ attributes, C<after> and C<before>, each of those being a C<Name>, and each
 of those being a unary key; the 3rd attribute is C<scm_vis_ord> (a
 C<NNInt>).  Its default value has zero tuples.
 
-=head2 sys.std.Core.Type.Cat.OrderByName
+## sys.std.Core.Type.Cat.OrderByName
 
 An C<OrderByName> is a C<DHTuple>.  It defines an element of an order-by
 sequential expression, which is a specification for how to order tuples of
@@ -4277,9 +4273,9 @@ C<is_reverse_order> (a C<Bool>).  Its default value has the default value
 of the C<Name> and C<Bool> types for their respective attributes.  I<Maybe
 TODO:  Make C<name> a C<PNSQNameChain> instead to drill into TVAs or SVAs.>
 
-=head1 TYPES FOR POSSIBLY PRIMED HIGHER-ORDER FUNCTIONS
+# TYPES FOR POSSIBLY PRIMED HIGHER-ORDER FUNCTIONS
 
-=head2 sys.std.Core.Type.Cat.PrimedFuncNC
+## sys.std.Core.Type.Cat.PrimedFuncNC
 
 A C<PrimedFuncNC> is a (not necessarily deeply homogeneous) C<Tuple>.  It
 is conceptually a I<primed higher-order function>, that is, an
@@ -4296,25 +4292,25 @@ a C<DHTuple> rather than just a C<Tuple>.  Its default value is a reference
 to the C<sys.std.Core.Universal.is_same> function with no pre-bound
 parameters.
 
-=head2 sys.std.Core.Type.Cat.ValMapPFuncNC
+## sys.std.Core.Type.Cat.ValMapPFuncNC
 
 C<ValMapPFuncNC> is a non-proper subtype of C<PrimedFuncNC> that is
 conceptually a reference to a C<value-map> function.  Its default value is
 a reference to the C<sys.std.Core.Cat.map_to_topic> function.
 
-=head2 sys.std.Core.Type.Cat.ValFiltPFuncNC
+## sys.std.Core.Type.Cat.ValFiltPFuncNC
 
 C<ValFiltPFuncNC> is a non-proper subtype of C<ValMapPFuncNC> that is
 conceptually a reference to a C<value-filter> function.  Its default value
 is a reference to the C<sys.std.Core.Cat.pass_topic> function.
 
-=head2 sys.std.Core.Type.Cat.ValRedPFuncNC
+## sys.std.Core.Type.Cat.ValRedPFuncNC
 
 C<ValRedPFuncNC> is a non-proper subtype of C<PrimedFuncNC> that is
 conceptually a reference to a C<value-reduction> function.  Its default
 value is a reference to the C<sys.std.Core.Cat.reduce_to_v1> function.
 
-=head2 sys.std.Core.Type.Cat.OrdDetPFuncNC
+## sys.std.Core.Type.Cat.OrdDetPFuncNC
 
 C<OrdDetPFuncNC> is a non-proper subtype of C<PrimedFuncNC> that is
 conceptually a reference to an C<order-determination> function.  Its
@@ -4324,9 +4320,9 @@ routine parameter that would take the name of an C<order-determination>
 function, but that parameter is optional and should default to the
 system-defined scalar ordering function when no argument is given to it.
 
-=head1 TYPES FOR DEFINING EXCEPTIONS
+# TYPES FOR DEFINING EXCEPTIONS
 
-=head2 sys.std.Core.Type.Cat.Exception
+## sys.std.Core.Type.Cat.Exception
 
 C<Exception> is a singleton scalar type whose only value represents a
 generic thrown exception.  This type doesn't provide any means for a
@@ -4340,16 +4336,14 @@ basic exception handling in that exceptions can be thrown and can be
 caught, so that good program design involving the use of exceptions to draw
 immediate attention to problems can be supported now.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

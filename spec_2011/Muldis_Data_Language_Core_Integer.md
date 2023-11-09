@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Integer - Muldis D integer numeric operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Integer version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
 are specific to the core data type C<Int>, essentially all the generic ones
@@ -26,9 +22,9 @@ that a typical programming language should have.
 
 I<This documentation is pending.>
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
 
-=head2 sys.std.Core.Integer.order
+## sys.std.Core.Integer.order
 
 C<< function order (Order <-- topic : Int,
 other : Int, misc_args? : Tuple, is_reverse_order? : Bool)
@@ -37,9 +33,9 @@ implements sys.std.Core.Ordered.order {...} >>
 This is a (total) C<order-determination> function specific to C<Int>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
 
-=head2 sys.std.Core.Integer.pred
+## sys.std.Core.Integer.pred
 
 C<< function pred (Int <-- topic : Int)
 implements sys.std.Core.Ordered.Ordinal.pred {...} >>
@@ -47,7 +43,7 @@ implements sys.std.Core.Ordered.Ordinal.pred {...} >>
 This function results in the value that precedes its argument.  It is a
 shorthand for adding 1 to its argument.
 
-=head2 sys.std.Core.Integer.succ
+## sys.std.Core.Integer.succ
 
 C<< function succ (Int <-- topic : Int)
 implements sys.std.Core.Ordered.Ordinal.succ {...} >>
@@ -55,16 +51,16 @@ implements sys.std.Core.Ordered.Ordinal.succ {...} >>
 This function results in the value that succeeds its argument.  It is a
 shorthand for subtracting 1 from its argument.
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL NUMERIC FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL NUMERIC FUNCTIONS
 
-=head2 sys.std.Core.Integer.abs
+## sys.std.Core.Integer.abs
 
 C<< function abs (NNInt <-- topic : Int)
 implements sys.std.Core.Numeric.abs {...} >>
 
 This function results in the absolute value of its argument.
 
-=head2 sys.std.Core.Integer.sum
+## sys.std.Core.Integer.sum
 
 C<< function sum (Int <-- topic? : bag_of.Int)
 implements sys.std.Core.Numeric.sum {...} >>
@@ -76,7 +72,7 @@ just one is left, which is the result.  If C<topic> has zero values, then
 C<sum> results in the integer zero, which is the identity value for
 addition.
 
-=head2 sys.std.Core.Integer.diff
+## sys.std.Core.Integer.diff
 
 C<< function diff (Int <-- minuend : Int, subtrahend : Int)
 implements sys.std.Core.Numeric.diff {...} >>
@@ -84,7 +80,7 @@ implements sys.std.Core.Numeric.diff {...} >>
 This function results in the difference when its C<subtrahend> argument is
 subtracted from its C<minuend> argument.
 
-=head2 sys.std.Core.Integer.abs_diff
+## sys.std.Core.Integer.abs_diff
 
 C<< function abs_diff (Int <-- topic : Int, other : Int)
 implements sys.std.Core.Numeric.abs_diff {...} >>
@@ -92,7 +88,7 @@ implements sys.std.Core.Numeric.abs_diff {...} >>
 This symmetric function results in the absolute difference between its 2
 arguments.
 
-=head2 sys.std.Core.Integer.product
+## sys.std.Core.Integer.product
 
 C<< function product (Int <-- topic? : bag_of.Int)
 implements sys.std.Core.Numeric.product {...} >>
@@ -104,7 +100,7 @@ them together until just one is left, which is the result.  If C<topic>
 has zero values, then C<product> results in the integer 1, which is the
 identity value for multiplication.
 
-=head2 sys.std.Core.Integer.frac_quotient
+## sys.std.Core.Integer.frac_quotient
 
 C<< function frac_quotient (Rat <-- dividend : Int, divisor : Int)
 implements sys.std.Core.Numeric.frac_quotient {...} >>
@@ -115,7 +111,7 @@ number division.  This function will fail if C<divisor> is zero.  It is an
 alternate way to construct a C<Rat> literal at runtime in terms of 2 C<Int>
 that are its C<numerator> and C<denominator> possrep attributes.
 
-=head2 sys.std.Core.Integer.whole_quotient
+## sys.std.Core.Integer.whole_quotient
 
 C<< function whole_quotient (Int <--
 dividend : Int, divisor : Int, round_meth : RoundMeth)
@@ -128,7 +124,7 @@ integer, where the nearest is determined by the rounding method specified
 by the C<round_meth> argument.  This function will fail if C<divisor> is
 zero.
 
-=head2 sys.std.Core.Integer.remainder
+## sys.std.Core.Integer.remainder
 
 C<< function remainder (Int <--
 dividend : Int, divisor : Int, round_meth : RoundMeth)
@@ -146,7 +142,7 @@ or the divisor if C<round_meth> is C<ToZero> (aka I<truncate>) or C<Down>
 (aka I<floor>), respectively.  This function will fail if C<divisor> is
 zero.
 
-=head2 sys.std.Core.Integer.quot_and_rem
+## sys.std.Core.Integer.quot_and_rem
 
 C<< function quot_and_rem (Tuple <--
 dividend : Int, divisor : Int, round_meth : RoundMeth)
@@ -158,7 +154,7 @@ C<sys.std.Core.Integer.whole_quotient> and
 C<sys.std.Core.Integer.remainder> would result in when given the same
 arguments.  This function will fail if C<divisor> is zero.
 
-=head2 sys.std.Core.Integer.range
+## sys.std.Core.Integer.range
 
 C<< function range (Int <-- topic : set_of.Int)
 implements sys.std.Core.Numeric.range {...} >>
@@ -167,7 +163,7 @@ This function results in the difference between the lowest and highest
 element values of its argument.  If C<topic> has zero values, then
 this function will fail.
 
-=head2 sys.std.Core.Integer.frac_mean
+## sys.std.Core.Integer.frac_mean
 
 C<< function frac_mean (Rat <-- topic : bag_of.Int)
 implements sys.std.Core.Numeric.frac_mean {...} >>
@@ -178,7 +174,7 @@ of the input values, and dividing that sum by the count of the input values
 using the semantics of real number division.  If C<topic> has zero values,
 then this function will fail.
 
-=head2 sys.std.Core.Integer.median
+## sys.std.Core.Integer.median
 
 C<< function median (set_of.Int <-- topic : bag_of.Int)
 implements sys.std.Core.Numeric.median {...} >>
@@ -191,7 +187,7 @@ middle values, if the count of input values is even (but if the 2 middle
 values are the same value, the output has one element).  If C<topic> has
 zero values, then the result set is empty.
 
-=head2 sys.std.Core.Integer.frac_mean_of_median
+## sys.std.Core.Integer.frac_mean_of_median
 
 C<< function frac_mean_of_median (Rat <-- topic : bag_of.Int)
 implements sys.std.Core.Numeric.frac_mean_of_median {...} >>
@@ -200,7 +196,7 @@ This function is a wrapper over C<sys.std.Core.Integer.median> that will
 result in the rational mean of its result elements; it will fail if there
 are zero elements.
 
-=head2 sys.std.Core.Integer.mode
+## sys.std.Core.Integer.mode
 
 C<< function mode (set_of.Int <-- topic : bag_of.Int)
 implements sys.std.Core.Numeric.mode {...} >>
@@ -211,7 +207,7 @@ all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
 output.  If C<topic> has zero values, then the result set is empty.
 
-=head2 sys.std.Core.Integer.power_with_whole_exp
+## sys.std.Core.Integer.power_with_whole_exp
 
 C<< function power_with_whole_exp (Rat <--
 radix : Int, exponent : Int)
@@ -222,11 +218,11 @@ C<radix> argument taken to the power of its integer C<exponent> argument.
 This function will result in 1 if C<radix> and C<exponent> are both zero
 (rather than failing).
 
-=head1 FUNCTIONS FOR INTEGER MATH
+# FUNCTIONS FOR INTEGER MATH
 
 These functions implement commonly used integer numeric operations.
 
-=head2 sys.std.Core.Integer.whole_mean
+## sys.std.Core.Integer.whole_mean
 
 C<< function whole_mean (Int <-- topic : bag_of.Int,
 round_meth : RoundMeth) {...} >>
@@ -239,7 +235,7 @@ C<sys.std.Core.Integer.whole_quotient> (rounding the result of a real
 number division as per C<round_meth>).  If C<topic> has zero values, then
 this function will fail.
 
-=head2 sys.std.Core.Integer.whole_mean_of_median
+## sys.std.Core.Integer.whole_mean_of_median
 
 C<< function whole_mean_of_median (Int <--
 topic : bag_of.Int, round_meth : RoundMeth) {...} >>
@@ -248,7 +244,7 @@ This function is a wrapper over C<sys.std.Core.Integer.median> that will
 result in the integer mean of its result elements; it will fail if there
 are zero elements.
 
-=head2 sys.std.Core.Integer.power
+## sys.std.Core.Integer.power
 
 C<< function power (Int <-- radix : Int, exponent : NNInt) {...} >>
 
@@ -261,7 +257,7 @@ most common practice in both pure integer math contexts and computer
 languages, including SQL.  Note that this operation is also known as
 I<exponentiation> or C<exp>.
 
-=head2 sys.std.Core.Integer.factorial
+## sys.std.Core.Integer.factorial
 
 C<< function factorial (PInt <-- topic : NNInt) {...} >>
 
@@ -270,9 +266,9 @@ an argument of zero to result in 1, as per the identity value for
 multiplication of an empty set).  Note that this operation is also known as
 (postfix) C<!>.
 
-=head1 UPDATERS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
+# UPDATERS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
 
-=head2 sys.std.Core.Integer.assign_pred
+## sys.std.Core.Integer.assign_pred
 
 C<updater assign_pred (&topic : Int)
 implements sys.std.Core.Ordered.Ordinal.assign_pred {...}>
@@ -281,7 +277,7 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Core.Integer.pred> function with the same argument, and
 then assigning the result of that function to its argument.
 
-=head2 sys.std.Core.Integer.assign_succ
+## sys.std.Core.Integer.assign_succ
 
 C<updater assign_succ (&topic : Int)
 implements sys.std.Core.Ordered.Ordinal.assign_succ {...}>
@@ -290,14 +286,14 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Core.Integer.succ> function with the same argument, and
 then assigning the result of that function to its argument.
 
-=head1 SYSTEM-SERVICES FOR RANDOM NUMBER GENERATORS
+# SYSTEM-SERVICES FOR RANDOM NUMBER GENERATORS
 
 These system-service routines provide ways to get random numbers from the
 system.  Where the results are in the range between truly random and
 pseudo-random is, for the moment, an implementation detail, but the details
 of these functions is subject to become more formalized later.
 
-=head2 sys.std.Core.Integer.fetch_random
+## sys.std.Core.Integer.fetch_random
 
 C<system-service fetch_random (&target : Int,
 interval : sp_interval_of.Int) [...]>
@@ -307,16 +303,14 @@ C<target> argument so that it holds a randomly generated integer value that
 is included within the interval defined by its C<interval> argument.  This
 function will fail if C<interval> represents an empty interval.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

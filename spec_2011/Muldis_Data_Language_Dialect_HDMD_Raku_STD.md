@@ -1,22 +1,18 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Dialect::HDMD_Raku_STD - How to format Raku Hosted Data Muldis D
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Dialect::HDMD_Raku_STD version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document outlines the grammar of the I<Hosted Data Muldis D> standard
 dialect named C<HDMD_Raku_STD>.  The fully-qualified name of this Muldis D
@@ -48,7 +44,7 @@ file will mainly focus on the differences; you should read the
 [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
 a context for better understanding it.>
 
-=head1 GENERAL STRUCTURE
+# GENERAL STRUCTURE
 
 A C<HDMD_Raku_STD> Muldis D code file is actually a Raku code file that
 defines particular multi-dimensional Raku data structures which resemble
@@ -80,7 +76,7 @@ index zero, and so on.
 
 The root grammar node for the entire dialect is C<Muldis_D>.
 
-=head1 START
+# START
 
 A C<Muldis_D> node has 2 ordered elements where the first element is a
 C<language_name> node and the second element is either a C<value> node or a
@@ -100,7 +96,7 @@ be supplied to the Muldis D VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
 Muldis D code that isn't itself qualified with a C<language_name>.
 
-=head1 LANGUAGE NAME
+# LANGUAGE NAME
 
 As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
@@ -168,7 +164,7 @@ Examples:
         standard_syntax_extensions => Set.new()
     } ]
 
-=head1 CATALOG ABSTRACTION LEVELS
+# CATALOG ABSTRACTION LEVELS
 
 The C<catalog_abstraction_level> pragma determines with a broad granularity
 how large the effective Muldis D grammar is that a programmer may employ
@@ -189,7 +185,7 @@ level has a proper superset of the grammar of every other abstraction level
 that is lower than itself, so for example any code that is valid
 C<code_as_data> is also valid C<plain_rtn_inv>, and so on.
 
-=head2 the_floor
+## the_floor
 
 This abstraction level exists more as an academic exercise and is not
 intended to actually be used.
@@ -245,7 +241,7 @@ Examples:
         ]
     ]
 
-=head2 code_as_data
+## code_as_data
 
 This abstraction level is the best one for when you want to write code in
 exactly the same form as it would take in the system catalog.
@@ -302,7 +298,7 @@ Examples:
        } ] ]
     ]
 
-=head2 plain_rtn_inv
+## plain_rtn_inv
 
 This abstraction level is the lowest one that can be recommended for
 general use.
@@ -327,7 +323,7 @@ Examples:
         ] ]
     ]
 
-=head2 DEPRECATED - rtn_inv_alt_syn
+## DEPRECATED - rtn_inv_alt_syn
 
 B<The C<rtn_inv_alt_syn> catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
@@ -358,7 +354,7 @@ Examples:
         ] ]
     ]
 
-=head1 OPERATOR CHARACTER REPERTOIRE
+# OPERATOR CHARACTER REPERTOIRE
 
 The C<op_char_repertoire> pragma determines primarily whether or not the
 various routine invocation alternate syntaxes, herein called I<operators>,
@@ -374,7 +370,7 @@ Specifying the C<op_char_repertoire> pragma in a C<language_name> node is
 mandatory, since there is no obviously best setting to use implicitly when
 one isn't specified.
 
-=head2 basic
+## basic
 
 The C<basic> operator character repertoire is the smallest one, and it only
 supports writing the proper subset of defined operator invocations and
@@ -384,7 +380,7 @@ written to it should be the most universally portable as-is (with respect
 to operator character repertoires), including full support even by minimal
 Muldis D implementations and older text editors.
 
-=head2 extended
+## extended
 
 The C<extended> operator character repertoire is the largest one, and it
 supports the entire set of defined operator invocations and special value
@@ -393,7 +389,7 @@ literals, many of which are composed of Unicode characters outside the
 general use, assuming that all the Muldis D implementations and source code
 text editors you want to use support it.
 
-=head1 STANDARD SYNTAX EXTENSIONS
+# STANDARD SYNTAX EXTENSIONS
 
 The C<standard_syntax_extensions> pragma declares which optional portions
 of the Muldis D grammar a programmer may employ with their Muldis D code.
@@ -419,7 +415,7 @@ Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
 node is optional, and when omitted it defaults to the empty set, meaning no
 extensions may be used.
 
-=head1 VALUE LITERALS AND SELECTORS
+# VALUE LITERALS AND SELECTORS
 
 A C<value> node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
@@ -437,7 +433,7 @@ than Raku, each C<value> node is represented by a Raku Seq|Array, whose
 elements include both the payload Raku literal plus explicit metadata for
 how to interpret that Raku literal for mapping to Muldis D.
 
-=head2 Value Literal Common Elements
+## Value Literal Common Elements
 
 Every C<value> node is either a GCVL (generic context value literal) or a
 SCVL (specific context value literal).
@@ -513,9 +509,9 @@ might claim to do multiple type interfaces.
 
 For GCVL and SCVL examples, see the subsequent documentation sections.
 
-=head1 OPAQUE VALUE LITERALS
+# OPAQUE VALUE LITERALS
 
-=head2 Singleton Literals
+## Singleton Literals
 
 A C<Singleton> node represents a value of any of the singleton scalar types
 that C<sys.std.Core.Type.Cat.Singleton> is a union over.  The payload must
@@ -527,7 +523,7 @@ Examples:
 
     Inf
 
-=head2 Boolean Literals
+## Boolean Literals
 
 A C<Bool> node represents a logical boolean value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Bool> value as follows:  The payload must be a
@@ -539,7 +535,7 @@ Examples:
 
     Bool::False
 
-=head2 Order-Determination Literals
+## Order-Determination Literals
 
 An C<Order> node represents an order-determination.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:  The payload must
@@ -552,7 +548,7 @@ Examples:
 
     Order::More
 
-=head2 Rounding Method Literals
+## Rounding Method Literals
 
 A C<RoundMeth> node represents a rounding method.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.RoundMeth> value by
@@ -566,7 +562,7 @@ Examples:
 
     :RoundMeth<ToZero>
 
-=head2 General Purpose Integer Numeric Literals
+## General Purpose Integer Numeric Literals
 
 An C<Int> node represents an integer numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Int> value as follows:  The payload must be a
@@ -592,7 +588,7 @@ Examples:
 
     :12<A09B> # base-12 #
 
-=head2 General Purpose Rational Numeric Literals
+## General Purpose Rational Numeric Literals
 
 A C<Rat> node represents a rational numeric value.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Rat> value as follows:  The payload must
@@ -624,7 +620,7 @@ Examples:
 
     314159 * 10 ** -5
 
-=head2 General Purpose Binary String Literals
+## General Purpose Binary String Literals
 
 A C<Blob> node represents a general purpose bit string.  It is interpreted
 as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  The payload must
@@ -640,7 +636,7 @@ Examples:
 
     :8{523504376}
 
-=head2 General Purpose Character String Literals
+## General Purpose Character String Literals
 
 A C<Text> node represents a general purpose character string.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Text> value by directly
@@ -658,7 +654,7 @@ Examples:
 
     "\c[LATIN SMALL LETTER OU]\x[263A]\c[65]"
 
-=head2 DBMS Entity Name Literals
+## DBMS Entity Name Literals
 
 A C<Name> node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
@@ -723,7 +719,7 @@ Examples:
 
     :PNSQNameChain('fed.data.the_db.stats.samples by order')
 
-=head2 Rational Rounding Rule Literals
+## Rational Rounding Rule Literals
 
 A C<RatRoundRule> node represents a rational rounding rule.  It is
 interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
@@ -740,7 +736,7 @@ Examples:
 
     :RatRoundRule[2,-7,'ToZero']
 
-=head1 COLLECTION VALUE SELECTORS
+# COLLECTION VALUE SELECTORS
 
 Note that, with each of the main value selector nodes documented in this
 main POD section, any occurrences
@@ -749,7 +745,7 @@ contexts where instances of the main nodes are being composed beneath
 C<value> nodes.  That is, any C<expr> node options beyond what C<value>
 options exist are only valid within a C<depot> node.
 
-=head2 Scalar Selectors
+## Scalar Selectors
 
 A C<Scalar> node represents a literal or selector invocation for a
 not-C<Int|String> scalar subtype value.  It is interpreted as a Muldis D
@@ -795,7 +791,7 @@ Examples:
         '' => 5,
     } ]
 
-=head2 Tuple Selectors
+## Tuple Selectors
 
 A C<Tuple> node represents a literal or selector invocation for a
 tuple value.  It is interpreted as a Muldis D
@@ -820,7 +816,7 @@ Examples:
         age  => 17,
     }
 
-=head2 Database Selectors
+## Database Selectors
 
 A C<Database> node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis D
@@ -831,7 +827,7 @@ key and value are, respectively, a Raku C<Str> that specifies the attribute
 name, and an C<expr> node that specifies the attribute value, which must be
 represent a relation value.
 
-=head2 Relation Selectors
+## Relation Selectors
 
 A C<Relation> node represents a literal or selector invocation for a
 relation value.  It is interpreted as a Muldis D
@@ -898,7 +894,7 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
         [ 'Michelle', 17 ],
     ) ]  # 2 attrs + 1 tuple #
 
-=head2 Set Selectors
+## Set Selectors
 
 A C<Set> node represents a literal or selector invocation for a set
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
@@ -922,7 +918,7 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
         85,
     ) )
 
-=head2 Maybe Selectors
+## Maybe Selectors
 
 A C<Maybe> node represents a literal or selector invocation for a
 maybe value.  It is interpreted as a Muldis D
@@ -940,7 +936,7 @@ Examples:
 
     :Maybe()  # or how does Raku make a Pair with undef/default value? #
 
-=head2 Array Selectors
+## Array Selectors
 
 An C<Array> node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis D
@@ -965,7 +961,7 @@ Examples:
         61,
     ] ]
 
-=head2 Bag Selectors
+## Bag Selectors
 
 A C<Bag> node represents a literal or selector invocation for a bag
 value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value
@@ -993,7 +989,7 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
         'Baz',
     ) )
 
-=head2 Interval Selectors
+## Interval Selectors
 
 An C<SPInterval> node represents a literal or selector invocation for a
 single-piece interval value.  It is interpreted as a Muldis D
@@ -1043,7 +1039,7 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
     :MPInterval( Set.new(-Inf..3,14..21,29..Inf) )
         # all Int besides {4..13,22..28} #
 
-=head2 Low Level List Selectors
+## Low Level List Selectors
 
 A C<List> node represents a literal or selector invocation for a low-level
 list value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.List>
@@ -1100,7 +1096,7 @@ Examples:
         ]
     ]
 
-=head1 DEPOT SPECIFICATION
+# DEPOT SPECIFICATION
 
 A C<depot> node has 2-3 ordered elements such that 3 elements means the
 depot has a normal-user-data database and 2 elements means it has just a
@@ -1149,7 +1145,7 @@ Examples:
         ] ]
     ] ]
 
-=head1 MATERIAL SPECIFICATION
+# MATERIAL SPECIFICATION
 
 A C<material> node specifies a new material (routine or type) that lives in
 a depot or subdepot.
@@ -1160,7 +1156,7 @@ C<scalar_type>, C<tuple_type>, C<relation_type>, C<domain_type>,
 C<subset_type>, C<mixin_type>, C<key_constr>, C<distrib_key_constr>,
 C<subset_constr>, C<distrib_subset_constr>, C<stim_resp_rule>.
 
-=head2 Material Specification Common Elements
+## Material Specification Common Elements
 
 A C<material> node has 2-3 ordered elements, such that a material that has
 2 elements is an C<anon_material> and a material with 3 elements is a
@@ -1197,7 +1193,7 @@ C<named_material> is the only valid option, and so the
 C<material_declared_name> isn't optional, and the only way to embed a
 material in another is using a C<with_clause>.
 
-=head2 Function Specification
+## Function Specification
 
 A C<function> node specifies a new function that lives in a depot or
 subdepot.  A C<function> node has 3 ordered elements:  The first element
@@ -1237,7 +1233,7 @@ Examples:
         [ 'i-op', 'exp', [ :d<topic>, 3 ] ]
     ] ]
 
-=head2 Procedure Specification
+## Procedure Specification
 
 A C<procedure> node specifies a new procedure that lives in a depot or
 subdepot.  A C<procedure> node has 3 ordered elements:  The first element
@@ -1364,7 +1360,7 @@ Examples:
             [ :d<b>, :d<gcd>, :RoundMeth<Down> ] ] ] ],
     ] ]
 
-=head2 Scalar Type Specification
+## Scalar Type Specification
 
 A C<scalar_type> node specifies a new scalar type that lives in a depot
 or subdepot.  A C<scalar_type> node has 3 ordered elements:  The first
@@ -1376,7 +1372,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Tuple Type Specification
+## Tuple Type Specification
 
 A C<tuple_type> node specifies a new tuple type that lives in a depot or
 subdepot.  A C<tuple_type> node has 3 ordered elements:  The first element
@@ -1444,7 +1440,7 @@ Examples:
         ],
     ] ]
 
-=head2 Relation Type Specification
+## Relation Type Specification
 
 A C<relation_type> node specifies a new relation type that lives in a depot
 or subdepot.  A C<relation_type> node has 3 ordered elements:  The first
@@ -1481,7 +1477,7 @@ Examples:
         :constraint<nlx.lib.sk_cd_title>,
     ] ]
 
-=head2 Domain Type Specification
+## Domain Type Specification
 
 A C<domain_type> node specifies a new domain type that lives in a depot
 or subdepot.  A C<domain_type> node has 3 ordered elements:  The first
@@ -1493,7 +1489,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Subset Type Specification
+## Subset Type Specification
 
 A C<subset_type> node specifies a new subset type that lives in a depot
 or subdepot.  A C<subset_type> node has 3 ordered elements:  The first
@@ -1505,7 +1501,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Mixin Type Specification
+## Mixin Type Specification
 
 A C<mixin_type> node specifies a new mixin type that lives in a depot
 or subdepot.  A C<mixin_type> node has 3 ordered elements:  The first
@@ -1517,7 +1513,7 @@ I<TODO: The remaining description.>
 
 I<TODO: Examples.>
 
-=head2 Key Constraint Specification
+## Key Constraint Specification
 
 A C<key_constr> node specifies a new unique key constraint or candidate
 key, for a relation type, that lives in a depot or subdepot.  A
@@ -1541,11 +1537,11 @@ Examples:
     # relation type has surrogate key over both name attrs #
     [ 'key-constraint', 'sk_name', Set.new( 'last_name', 'first_name' ) ]
 
-=head2 Distributed Key Constraint Specification
+## Distributed Key Constraint Specification
 
 I<TODO.>
 
-=head2 Subset Constraint Specification
+## Subset Constraint Specification
 
 A C<subset_constr> node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
@@ -1573,11 +1569,11 @@ Examples:
         using-attrs => { artist_id => 'artist_id' }
     } ]
 
-=head2 Distributed Subset Constraint Specification
+## Distributed Subset Constraint Specification
 
 I<TODO.>
 
-=head2 Stimulus-Response Rule Specification
+## Stimulus-Response Rule Specification
 
 A C<stim_resp_rule> node specifies a new stimulus-response rule that lives
 in a depot or subdepot.  A C<stim_resp_rule> node has 3 ordered elements:
@@ -1595,7 +1591,7 @@ Examples:
 
     [ 'stimulus-response-rule', 'bootstrap', :after-mount<nlx.lib.main> ]
 
-=head1 GENERIC VALUE EXPRESSIONS
+# GENERIC VALUE EXPRESSIONS
 
 An C<expr_name> node has 2 ordered elements:  The first element is the Raku
 C<Str> value C<d> ("data").  The second element is a C<Name_payload>.
@@ -1617,7 +1613,7 @@ Examples:
     # a named_expr node #
     [ '::=', 'bar_expr', [ 'func-invo', 'factorial', [:d<foo_expr>] ] ]
 
-=head2 Generic Expression Attribute Accessors
+## Generic Expression Attribute Accessors
 
 An C<accessor> node has 2-3 ordered elements, such that 2 elements makes it
 an C<acc_via_named> and 3 elements makes it an C<acc_via_anon>:  The first
@@ -1636,7 +1632,7 @@ Examples:
     # an accessor node of an anonymous tuple-valued node #
     ['acc',['func-invo','nlx.lib.tuple_res_func',[:d<arg>]],'quux_attr']
 
-=head2 Generic Function Invocation Expressions
+## Generic Function Invocation Expressions
 
 A C<func_invo> node has 2-4 ordered elements:  The first element is the
 Raku C<Str> value C<func-invo>.  The second element is a
@@ -1677,7 +1673,7 @@ Examples:
     # invoke the lexically innermost routine with 2 args #
     [ 'func-invo', 'rtn', [ :d<x>, :d<y> ] ]
 
-=head2 Generic If-Else Expressions
+## Generic If-Else Expressions
 
 An C<if_else_expr> node has 4 ordered elements:  The first element is
 either of the 2 Raku C<Str> values C<if-else-expr> and C<??!!>.  The
@@ -1697,7 +1693,7 @@ Examples:
 
     [ 'i-op', '~', ['My answer is: ', [ '??!!', :d<maybe>, 'yes', 'no' ]] ]
 
-=head2 Generic Given-When-Default Expressions
+## Generic Given-When-Default Expressions
 
 A C<given_when_def_expr> node has 3-4 ordered elements:  The first element
 is the Raku C<Str> value C<given-when-def-expr>.  The second element is an
@@ -1720,7 +1716,7 @@ Examples:
         :d<digit>,
     ]
 
-=head2 Material Reference Selector Expressions
+## Material Reference Selector Expressions
 
 A C<material_ref> node has 2 ordered elements:  The first element
 is the Raku C<Str> value C<material-ref>.  The second element is a
@@ -1749,7 +1745,7 @@ Examples:
     # a reference to a data type #
     :material-ref<nlx.lib.foo_type>
 
-=head1 GENERIC PROCEDURE STATEMENTS
+# GENERIC PROCEDURE STATEMENTS
 
 A C<stmt_name> node has 2 ordered elements:  The first element is the Raku
 C<Str> value C<s>.  The second element is a C<Name_payload>.
@@ -1772,7 +1768,7 @@ Examples:
     [ '::=', 'bar_stmt', [ 'proc-invo', 'nlx.lib.swap',
         {first => ['&',:d<first>], second => ['&',:d<second>]} ] ]
 
-=head2 Generic Compound Statements
+## Generic Compound Statements
 
 A C<compound_stmt> node has 2 ordered elements:  The first element is the
 Raku C<Str> value C<compound-stmt>.  The second element is a Raku
@@ -1789,7 +1785,7 @@ Examples:
         [ 'proc-invo', 'write_Text_line', [ :d<message> ] ],
     ]
 
-=head2 Multi-Update Statements
+## Multi-Update Statements
 
 A C<multi_upd_stmt> node has 2 ordered elements:  The first element is the
 Raku C<Str> value C<multi-upd-stmt>.  The second element is a Raku
@@ -1821,7 +1817,7 @@ Examples:
         ] ],
     ]
 
-=head2 Generic Procedure Invocation Statements
+## Generic Procedure Invocation Statements
 
 A C<proc_invo> node has 2-4 ordered elements:  The first element is
 the Raku C<Str> value C<proc-invo>.  The second element is a
@@ -1863,7 +1859,7 @@ Examples:
     [ 'proc-invo', 'Integer.fetch_random',
         [ ['&',:d<rand>], :d<interval> ] ]
 
-=head2 Generic Try-Catch Statements
+## Generic Try-Catch Statements
 
 A C<try_catch_stmt> node has 2-3 ordered elements:  The first element is
 the Raku C<Str> value C<try-catch>.  The second element is a
@@ -1878,7 +1874,7 @@ Examples:
         :proc-invo<nlx.lib.deal_with_failure>
     ]
 
-=head2 Generic If-Else Statements
+## Generic If-Else Statements
 
 An C<if_else_stmt> node has 3-4 ordered elements:  The first element is the
 Raku C<Str> value C<if-else-stmt>.  The second element is the I<if>
@@ -1894,7 +1890,7 @@ Examples:
         :proc-invo<nlx.lib.keep_going>
     ]
 
-=head2 Generic Given-When-Default Statements
+## Generic Given-When-Default Statements
 
 A C<given_when_def_stmt> node has 3-4 ordered elements:  The first element
 is the Raku C<Str> value C<given-when-def-stmt>.  The second element is
@@ -1918,7 +1914,7 @@ Examples:
         :proc-invo<nlx.lib.display_bad_choice_error>,
     ]
 
-=head2 Procedure Leave, Iterate, and Loop Statements
+## Procedure Leave, Iterate, and Loop Statements
 
 A C<leave_stmt> node has 1-2 ordered elements:  The first element is the
 Raku C<Str> value C<leave>.  The optional second element is a
@@ -1953,7 +1949,7 @@ Examples:
         [ 'proc-invo', 'write_Text_line', [ :d<report_text> ] ],
     ] ]
 
-=head1 DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
+# DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
 A C<func_invo_alt_syntax> node has 3-4 ordered elements:  The first element
 is one of the 3 Raku C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
@@ -1971,7 +1967,7 @@ as when it is for a monadic operator, it may alternately be formatted as
 what is otherwise just its sole (node) element iff that node is not
 formatted as a Raku C<Seq|Array>.
 
-=head2 Simple Commutative N-adic Infix Reduction Operators
+## Simple Commutative N-adic Infix Reduction Operators
 
 A C<comm_infix_reduce_op_invo> node has 2-N main op args, each of which is
 an C<expr> node.  Note that the I<main op args> may alternately be given as
@@ -2003,7 +1999,7 @@ Examples:
     [ 'i-op', '∩', [ :Set( Set.new( 1, 3, 5, 7, 9 ) ),
         :Set( Set.new( 3, 4, 5, 6, 7, 8 ) ), :Set( Set.new( 2, 5, 9 ) ) ] ]
 
-=head2 Simple Non-commutative N-adic Infix Reduction Operators
+## Simple Non-commutative N-adic Infix Reduction Operators
 
 A C<noncomm_infix_reduce_op_invo> node has 2-N main op args, each of which
 is an C<expr> node.
@@ -2020,7 +2016,7 @@ Examples:
 
     [ 'i-op', '//', [ :d<a>, :d<b>, 42 ] ]
 
-=head2 Simple Symmetric Dyadic Infix Operators
+## Simple Symmetric Dyadic Infix Operators
 
 A C<sym_dyadic_infix_op_invo> node has exactly 2 main op args, each of
 which is an C<expr> node; which function arguments get which main op args
@@ -2038,7 +2034,7 @@ Examples:
 
     [ 'i-op', '|-|', [ 7.5, 9.0 ] ]
 
-=head2 Simple Non-symmetric Dyadic Infix Operators
+## Simple Non-symmetric Dyadic Infix Operators
 
 A C<nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each of
 which is an C<expr> node; the first and second main op args are C<lhs> and
@@ -2083,7 +2079,7 @@ Examples:
     [ 'i-op', '÷', [ '@' => <x y> => Set.new( [ 5, 6 ], [ 3, 6 ] ),
         '@' => Set.new( { y => 6 } ) ] ]
 
-=head2 Simple Monadic Prefix Operators
+## Simple Monadic Prefix Operators
 
 A C<monadic_prefix_op_invo> node has exactly 1 main op arg, which is an
 C<expr> node.
@@ -2102,7 +2098,7 @@ Examples:
 
     [ 'pre-op', '@, :d<tupvar> ]
 
-=head2 Simple Monadic Postfix Operators
+## Simple Monadic Postfix Operators
 
 A C<monadic_postfix_op_invo> node has exactly 1 main op arg, which is an
 C<expr> node.
@@ -2115,7 +2111,7 @@ Examples:
 
     [ 'post-op', '!', 5 ]
 
-=head2 Simple Postcircumfix Operators
+## Simple Postcircumfix Operators
 
 A C<postcircumfix_op_invo> node has exactly 2-3 main op args, where the
 first is an C<expr> node that defines the primary input value for the
@@ -2179,7 +2175,7 @@ Examples:
 
     [ 'post-op', '[]', [:d<ary>, 10..14] ]
 
-=head2 Numeric Operators That Do Rounding
+## Numeric Operators That Do Rounding
 
 A C<num_op_invo_with_round> node has exactly 2-3 main op args, each of
 which is an C<expr> node that defines an input value for the operator.
@@ -2203,7 +2199,7 @@ Examples:
 
     [ 'post-op', 'log-e', [ 17.0, :RatRoundRule[3,-5,'Down'] ] ]
 
-=head2 Order Comparison Operators
+## Order Comparison Operators
 
 An C<ord_compare_op_invo> node has exactly 2 main op args,
 each of which is an C<expr> node.  The first and second args are C<lhs> and
@@ -2213,7 +2209,7 @@ Examples:
 
     [ 'i-op', '<=>', [ :d<foo>, :d<bar> ] ]
 
-=head1 DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
+# DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
 A C<proc_invo_alt_syntax> node has 3-4 ordered elements:  The first element
 is one of the 3 Raku C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
@@ -2231,7 +2227,7 @@ args> would just contain a single element, such as when it is for a monadic
 operator, it may alternately be formatted as what is otherwise just its
 sole (node) element iff that node is not formatted as a Raku C<Seq|Array>.
 
-=head2 Procedure Simple Monadic Postfix Operators
+## Procedure Simple Monadic Postfix Operators
 
 An C<proc_monadic_postfix_op_invo> node has exactly 1 main op arg, which is
 an C<expr> node.
@@ -2242,7 +2238,7 @@ Examples:
 
     [ 'post-op', ':=--', :d<countdown> ]
 
-=head2 Procedure Simple Non-symmetric Dyadic Infix Operators
+## Procedure Simple Non-symmetric Dyadic Infix Operators
 
 A C<proc_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each
 of which is an C<expr> node; the first and second main op args are C<lhs>
@@ -2260,16 +2256,14 @@ Examples:
     [ 'i-op', ':=!matching', [ :d<people>,
         '@' => Set.new( { age => 10 }, { age => 20 } ) ] ]
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

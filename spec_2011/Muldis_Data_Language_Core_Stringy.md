@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Stringy - Muldis D generic stringy operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Stringy version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D
 stringy operators, essentially all the generic ones that a
@@ -26,9 +22,9 @@ typical programming language should have.
 
 I<This documentation is pending.>
 
-=head1 VIRTUAL FUNCTIONS FOR THE STRINGY MIXIN TYPE
+# VIRTUAL FUNCTIONS FOR THE STRINGY MIXIN TYPE
 
-=head2 sys.std.Core.Stringy.catenation
+## sys.std.Core.Stringy.catenation
 
 C<< function catenation (Stringy <-- topic@ : array_of.Stringy) {...} >>
 
@@ -45,7 +41,7 @@ then it would lack the necessary type information to know which
 type-specific implementing function to dispatch to.  Note that this
 operation is also known as C<~>.
 
-=head2 sys.std.Core.Stringy.replication
+## sys.std.Core.Stringy.replication
 
 C<< function replication (Stringy <--
 topic@ : Stringy, count : NNInt) {...} >>
@@ -53,16 +49,14 @@ topic@ : Stringy, count : NNInt) {...} >>
 This virtual function results in the catenation of C<count> instances of
 C<topic>.  Note that this operation is also known as C<~#>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

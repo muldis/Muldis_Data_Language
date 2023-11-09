@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Universal - Muldis D generic operators for all data types
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Universal version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,16 +14,16 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D generic
 universal operators, applicable to all data types.
 
-=head1 GENERIC FUNCTIONS FOR ALL DATA TYPES
+# GENERIC FUNCTIONS FOR ALL DATA TYPES
 
 These functions are applicable to values of any data type at all.
 
-=head2 sys.std.Core.Universal.is_same
+## sys.std.Core.Universal.is_same
 
 C<< function is_same (Bool <--
 topic : Universal, other : Universal) {...} >>
@@ -48,7 +44,7 @@ least one type is a generic (eg-C<Universal>) or incomplete
 (eg-C<Relation>) type, and it is a supertype of the other.  Note that
 this operation is also known as I<is equal> or C<=>.
 
-=head2 sys.std.Core.Universal.is_not_same
+## sys.std.Core.Universal.is_not_same
 
 C<< function is_not_same (Bool <--
 topic : Universal, other : Universal) {...} >>
@@ -58,7 +54,7 @@ C<sys.std.Core.Universal.is_same> except that it results in the
 opposite boolean value when given the same arguments.  Note that this
 operation is also known as I<is not equal> or C<≠> or C<!=>.
 
-=head2 sys.std.Core.Universal.is_value_of_type
+## sys.std.Core.Universal.is_value_of_type
 
 C<< function is_value_of_type (Bool <--
 topic : Universal, type : APTypeNC) {...} >>
@@ -71,7 +67,7 @@ C<Bool:False> if it is C<Empty>.  This function will fail if the named type
 doesn't exist in the virtual machine.  Note that this operation is also
 known as C<isa>.
 
-=head2 sys.std.Core.Universal.is_not_value_of_type
+## sys.std.Core.Universal.is_not_value_of_type
 
 C<< function is_not_value_of_type (Bool <--
 topic : Universal, type : APTypeNC) {...} >>
@@ -81,7 +77,7 @@ C<sys.std.Core.Universal.is_value_of_type> except that it results in the
 opposite boolean value when given the same arguments.  Note that this
 operation is also known as C<!isa> or C<not-isa>.
 
-=head2 sys.std.Core.Universal.treated
+## sys.std.Core.Universal.treated
 
 C<< function treated (Universal <--
 topic : Universal, as : APTypeNC) {...} >>
@@ -101,7 +97,7 @@ C<treated> will cause the compiler to let you use that variable as an
 argument to C<sys.std.Core.Integer.diff>, which it otherwise wouldn't.
 Note that this operation is also known as C<as>.
 
-=head2 sys.std.Core.Universal.default
+## sys.std.Core.Universal.default
 
 C<< function default (Universal <-- of : APTypeNC) {...} >>
 
@@ -115,7 +111,7 @@ user namespace. This function is conceptually implicitly used to provide
 default values for variables, so they always hold valid values of their
 declared type.
 
-=head2 sys.std.Core.Universal.assertion
+## sys.std.Core.Universal.assertion
 
 C<< function assertion (Universal <--
 result : Universal, is_true : Bool) {...} >>
@@ -130,11 +126,11 @@ performing calculations from multiple function arguments; this can
 potentially be done at compile time as per type constraints.  Note that
 this operation is also known as C<asserting>.
 
-=head1 GENERIC UPDATERS FOR ALL DATA TYPES
+# GENERIC UPDATERS FOR ALL DATA TYPES
 
 These update operators are applicable to values of any data type at all.
 
-=head2 sys.std.Core.Universal.assign
+## sys.std.Core.Universal.assign
 
 C<updater assign (&target : Universal, v : Universal) {...}>
 
@@ -145,16 +141,14 @@ C<target>; this function will otherwise warn if the declared type of C<v>
 isn't a subtype of the declared type of the variable behind C<target>.
 Note that this operation is also known as C<:=>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

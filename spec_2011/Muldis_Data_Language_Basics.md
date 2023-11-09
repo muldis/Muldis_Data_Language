@@ -1,28 +1,24 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Basics - 10,000 Mile View of Muldis D
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Basics version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document provides a 10,000 mile view of the Muldis D language.  It
 provides the basics of how the language is designed and works, as a
 foundation upon which to understand the other parts of the language spec.
 
-=head1 NOTES ON TERMINOLOGY
+# NOTES ON TERMINOLOGY
 
 There are a few terms that the Muldis D documentation uses which may have
 different meanings than what you may be used to, so here are a few notes to
@@ -246,7 +242,7 @@ outermost transaction.
 
 =back
 
-=head1 NOTES ON TEXT CHARACTER LITERALS
+# NOTES ON TEXT CHARACTER LITERALS
 
 The text of the Muldis D documentation includes a variety of characters
 from the Unicode character repertoire that are not in the character ASCII
@@ -403,7 +399,7 @@ Note that only various concrete Muldis D syntaxes use trans-ASCII
 characters, and the central abstract Muldis D syntax which those all
 distill to uses only ASCII characters for all system-defined entities.
 
-=head1 INTERPRETATION OF THE RELATIONAL MODEL
+# INTERPRETATION OF THE RELATIONAL MODEL
 
 The relational model of data is based on predicate logic and set theory.
 
@@ -444,7 +440,7 @@ in a relation.  While the relational algebra provides a more procedural way
 for specifying database queries, in contrast the relational calculus
 provides a more declarative way for specifying queries.
 
-=head2 Mechanics of Some Relational Operations
+## Mechanics of Some Relational Operations
 
 This documentation section takes a very informal (and possibly blatantly
 incorrect) alternate approach to describing the nature of relations,
@@ -587,7 +583,7 @@ A full list of all the relational operators having more formal (but Muldis
 D specific) descriptions occurs in the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md)
 document; that list does I<not> use the aforementioned boolean analogies.
 
-=head1 MULDIS D
+# MULDIS D
 
 Muldis D is a computationally and Turing complete (and industrial strength)
 high-level programming language with fully integrated database
@@ -656,7 +652,7 @@ design decisions of Muldis D, such as that users are able to create, store,
 read values of ostensibly user-defined types where the definitions of said
 types don't always exist, or use a database lacking a user-defined schema.
 
-=head2 Representation
+## Representation
 
 Muldis D has multiple official representation formats, each of which is
 referred to by this multi-part document as a I<dialect>.  Each official
@@ -705,7 +701,7 @@ important of those parts are the current B<Basics> file and the
 See also **SOURCE CODE METADATA** for more details on Muldis D's standard
 support for non-critical Muldis D code metadata.
 
-=head1 TYPE SYSTEM
+# TYPE SYSTEM
 
 The Muldis D type system is a formal type system, at least in intent, and
 works conceptually in the following manner.
@@ -909,7 +905,7 @@ C<Numeric> type is a mixin type.  A particularly important use of mixin
 types is doing operator overloading between disjoint types,
 which would be considerably more difficult without them.
 
-=head2 Type Identification
+## Type Identification
 
 All values in the Muldis D type system are broadly categorized into 5
 complementary sets called I<scalar values>, I<tuple values>, I<relation
@@ -1007,7 +1003,7 @@ conceptually a memory address meaningful to the external language.  But
 regardless, C<External> values are disjoint from all native Muldis D
 values, so their proprietary identity schemes have no bearing on natives.
 
-=head2 Scalar Types
+## Scalar Types
 
 Scalar types are the only conceptually (non-external) encapsulated types
 in Muldis D, and are like other languages' concepts of object classes where
@@ -1116,7 +1112,7 @@ type is a deeply homogeneous scalar type, and any subtype of this is
 forbidden from declaring any possreps having attributes that are not of
 deeply homogeneous types.
 
-=head2 Tuple Types and Relation Types
+## Tuple Types and Relation Types
 
 Tuple types are the fundamental heterogeneous conceptually
 non-encapsulated collection types in Muldis D, and are like the Pascal
@@ -1196,7 +1192,7 @@ attributes in the body, leaving the heading to keep nothing but the names
 of the attributes.  An empty relation body does not mean that any
 important metadata is lost.
 
-=head2 Distinction of Non-Homogeneous Types from Homogeneous Types
+## Distinction of Non-Homogeneous Types from Homogeneous Types
 
 A relation value can have any combination of values of C<Universal> as the
 values of the same attribute across its constituent tuples.  All generic
@@ -1297,7 +1293,7 @@ C<[|DH][Tuple|Relation]> and C<Database>, and none of those define any
 attributes at all.  (All nonscalar values have a full list of attributes
 defined, of course.)
 
-=head2 Finite Types and Infinite Types
+## Finite Types and Infinite Types
 
 A I<finite type> is a data type whose cardinality (count of member values)
 is known to be finite, and this cardinality can be deterministically
@@ -1373,7 +1369,7 @@ integer or a string of digits behind the scenes for all values of the type,
 and can do this deterministically, depending what constraint the type
 defining user chose.
 
-=head2 Universal Implicit Operators
+## Universal Implicit Operators
 
 Muldis D is universally polymorphic to at least a small degree, such that
 every data type without exception has both an C<assign> update operator
@@ -1391,7 +1387,7 @@ then must be differentiated by their argument types.  So in that respect,
 maybe Muldis D isn't so polymorphic after all, depending on whether the
 latter behaviour would be needed to call a language I<polymorphic>.
 
-=head2 Numeric Types
+## Numeric Types
 
 Conceptually speaking, Muldis D has just a single most-important numeric
 data type, which consists of every possible real rational number.  This
@@ -1444,7 +1440,7 @@ for bootstrapping a minimal Muldis D implementation or the system catalog,
 whereas C<Int> is.  I<Note: The latter, system catalog, will no longer be
 the case if the system catalog definition expands to include time-stamps.>
 
-=head2 Ordered Types
+## Ordered Types
 
 Data types in Muldis D are fundamentally unordered sets of values, and so
 in the general case, it does not make sense to use them in a context that
@@ -1529,7 +1525,7 @@ sequence of values.  But in the meantime you can make a non-privileged
 partial sort function by combining a set folding function with a totally
 ordered order-determination function, and a relational group if applicable.
 
-=head2 Type Safety
+## Type Safety
 
 Muldis D should qualify as a I<type-safe> language by many, if not all,
 definitions of the term I<type-safe>.
@@ -1644,7 +1640,7 @@ declared type, then this can't be done.  What must happen is for the
 operator to take an extra argument where the name of the type whose default
 we want is spelled out, or alternately just the default value itself.
 
-=head2 Low Level Type System
+## Low Level Type System
 
 At the lowest, most primitive levels of Muldis D, everything is integers or
 sequences of integers; data types in general are just abstractions of this.
@@ -1808,7 +1804,7 @@ C<List> payload provision is provided so that it is possible to have some
 degree of external value structure visible in Muldis D, such as for the
 purposes of easily defining C<External> proper subtypes in Muldis D.
 
-=head1 ENVIRONMENT
+# ENVIRONMENT
 
 The Muldis D DBMS / virtual machine, which by definition is the
 environment in which Muldis D executes, conceptually resembles a hardware
@@ -1865,7 +1861,7 @@ anything in reality, since it only stores values that are reasonable.
 Note that in practice, the aforementioned concept of "commands" is realized
 by "statements" or "routines".
 
-=head1 ROUTINES
+# ROUTINES
 
 B<WARNING: All statements in this documentation that mention atomicity or
 transactions or concurrency are considered out of date and partly untrue,
@@ -1880,7 +1876,7 @@ define additional features that can mimic nearly any built-in ones in both
 functionality and syntax.  There are only a few exceptions to this rule,
 where doing so has a large net benefit to the language design.
 
-=head2 Functions and Procedures
+## Functions and Procedures
 
 Every Muldis D routine is exactly one of 2 main routine kinds,
 C<function> and C<procedure>, where the 2 kinds are mutually exclusive.
@@ -2083,7 +2079,7 @@ explicitly employs resource locks, around the relevant block of its
 statements.  See **TRANSACTIONS AND CONCURRENCY** for
 more discussion on this matter.
 
-=head2 Emphasis on Purity
+## Emphasis on Purity
 
 Atomic routines constitute the vast majority of system-defined routines,
 and the vast majority of those are functions; non-recipe
@@ -2150,7 +2146,7 @@ be rendered as a procedure in Muldis D.  In practice however,
 especially if you followed good design practices in the other languages,
 such alterations shouldn't be too common.
 
-=head2 More on Parameters
+## More on Parameters
 
 Conceptually speaking, all Muldis D routines actually have exactly 1 or
 2 positional parameters behind the scenes, each of which is C<Tuple>-typed,
@@ -2181,7 +2177,7 @@ explicit argument will implicitly bind to a new anonymous variable (with
 the aforementioned default value) which is discarded after the routine
 finishes executing.
 
-=head2 Kinds of Functions by Structure
+## Kinds of Functions by Structure
 
 Various subsets from all the possible functions have special significance
 in Muldis D, each of which is intended for particular tasks, and all
@@ -2220,7 +2216,7 @@ declared types of C<topic> and C<other> are identical, and the declared
 type of C<is_reverse_order> is C<Bool>, and the declared type of the
 function's result is C<Order>.
 
-=head2 Constraint Function Kinds by Purpose
+## Constraint Function Kinds by Purpose
 
 There are 2 main kinds of constraint functions when considered in terms of
 their purpose of place of usage:  C<type-constraint>, C<state-constraint>.
@@ -2276,7 +2272,7 @@ I<total state constraint> is in effect on the variable equivalent to the
 logical C<and> of the individual constraints.  Conceptually speaking, a
 C<state-constraint> will execute after all C<type-constraint>.
 
-=head2 Other Function Kinds by Purpose
+## Other Function Kinds by Purpose
 
 There are 7 other main kinds of functions when considered in terms of their
 purpose of place of usage:  C<named-value>, C<value-map>, C<possrep-map>,
@@ -2347,7 +2343,7 @@ An C<order-determination> is structured to fill the role of a
 I<system-compatible fundamental order-determination function>; see the
 **Ordered Types** pod section in this file for more details.
 
-=head2 Kinds of Procedures
+## Kinds of Procedures
 
 A C<system-service> is a procedure whose sole purpose is to
 directly reach outside of the more deterministic DBMS
@@ -2376,7 +2372,7 @@ An C<updater> is a C<recipe> that does not see or update any global
 variables (the database) and that has at least one subject-to update
 parameter.  An updater may only invoke updaters and functions.
 
-=head2 Overloading With Virtual Routines
+## Overloading With Virtual Routines
 
 Muldis D natively supports routine/operator overloading, in the sense that
 a collection can exist of routines that differ only in the declared types
@@ -2460,7 +2456,7 @@ depot.  Or at least that is the case for all implementing functions of a
 virtual function that is used in the definition of a data type, all of
 which must be in the same depot aside from system-defined members.
 
-=head1 STIMULUS-RESPONSE RULES
+# STIMULUS-RESPONSE RULES
 
 Muldis D natively supports the concept of I<stimulus-response rules>,
 otherwise known as I<triggered routines>.  The concept involves the
@@ -2530,7 +2526,7 @@ depot; for security purposes, the booleans are false when not given,
 meaning users have to *always* say C<--allow_auto_run> in order to run a
 pure Muldis D program, so it is quite clear up front what they are risking.
 
-=head1 USERS AND PRIVILEGES
+# USERS AND PRIVILEGES
 
 The Muldis D DBMS / virtual machine itself does not have its own set of
 named users where one must authenticate to use it.  Rather, any concept of
@@ -2555,11 +2551,11 @@ update, and what routines they are allowed to execute; it also controls
 other aspects of their possible activity.  The concerns here are analogous
 to privileges on a computer's file system, or a typical SQL database.
 
-=head1 TRANSACTIONS AND CONCURRENCY
+# TRANSACTIONS AND CONCURRENCY
 
 B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
 
-=head2 ACID
+## ACID
 
 This official specification of the Muldis D DBMS includes full ACID
 compliance as part of the core feature set; moreover, all types of changes
@@ -2588,7 +2584,7 @@ data-definition outside of an explicit transaction; in this way, the
 implementation is still following all the Muldis D safety rules, and hence
 should be relatively safe to use, even if it lacks Muldis D features.>
 
-=head2 Virtual Machine
+## Virtual Machine
 
 Each individual instance of the Muldis D DBMS is conceptually a multiple
 concurrent process / multi-threaded virtual machine, and conceptually there
@@ -2631,7 +2627,7 @@ A single multi-update statement may target both catalog and non-catalog
 variables, as long as there aren't both writes to depot mount control
 variables and either catalog or data variables in a depot.
 
-=head2 Transactions and YYY
+## Transactions and YYY
 
 B<TODO: Some things that the spec calls "transaction" will instead be
 called YYY, in particular "nested transaction".>
@@ -2728,7 +2724,7 @@ C<procedure> etc or the host language, the main examples being those that
 mount or unmount a persistent repository; this is because such a change in
 the environment mid-transaction would result in an inconsistent state.
 
-=head2 Concurrency
+## Concurrency
 
 Muldis D generally doesn't specify anything related to matters of
 multi-process concurrency, such as what other processes see when one
@@ -2758,7 +2754,7 @@ to specify which they want to use.  Still to specify, details related to
 accessing and exploiting the concurrency models of the DBMS, such as how to
 set locks or such things.>
 
-=head1 RESOURCE MODULARITY AND PERSISTENCE
+# RESOURCE MODULARITY AND PERSISTENCE
 
 The architecture of Muldis D is based on collections of highly structured
 resources, where resources can be executable code (that is, data type and
@@ -2767,7 +2763,7 @@ introspect all kinds of resources, whether system-defined or user-defined,
 and it allows users to update the latter.  Resources typically have names
 within the DBMS environment, and are referred to as I<entities>.
 
-=head2 System-Defined Resources
+## System-Defined Resources
 
 The standard Muldis D language includes a complement of data types and
 routines that should be hardwired into every implementation of Muldis D as
@@ -2798,7 +2794,7 @@ they live under a different DBMS top-level namespace than the standard
 entities, so that later enhancements to the standard don't have to worry
 about name collisions with unofficial extensions.
 
-=head2 User-Defined Resources
+## User-Defined Resources
 
 All user-defined resources in Muldis D are actually data, even those that
 look like code, and these all exist in one or more I<depots>, which are
@@ -2915,7 +2911,7 @@ implement a multi-client server, then multiple in-DBMS processes may
 typically be started directly by the server request listener, so each
 client typically is autonomous from others, shared depot contention aside.
 
-=head1 ENTITY NAMES
+# ENTITY NAMES
 
 All entities that exist at some given time within a DBMS environment can be
 explicitly referenced in some manner for definition and/or use; there are
@@ -2986,7 +2982,7 @@ Conceptually speaking, there is also this, but not actually; see
 
 Further details of each namespace follow below.
 
-=head2 User Data Variables and System Catalog Variables
+## User Data Variables and System Catalog Variables
 
 All globally visible Muldis D variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
@@ -3030,7 +3026,7 @@ the "information schema" of SQL, but that the latter is just read-only.
 
 The individual catalog namespaces are described in other sections.
 
-=head2 Standard System-Defined Entities
+## Standard System-Defined Entities
 
 All system-defined data types and routines are globally visible and
 invokable.  Each of these exists in a I<module> (which is a I<package>).
@@ -3058,7 +3054,7 @@ the standard data types of these relcons are also reflected by the same
 relcons.  I<Actually, this paragraph is out of date; there is no
 C<sys.cat.system> and plain C<sys.cat> currently fills that stated role.>
 
-=head2 Implementation Specific System-Defined Entities
+## Implementation Specific System-Defined Entities
 
 Minimally speaking, the structure and contents of the catalog namespaces
 C<sys.cat.[mount|foreign|interp]> are expected to be implementation
@@ -3099,7 +3095,7 @@ catalog constant being exactly the same for all implementations.
 I<Actually, this paragraph is out of date; there is no
 C<sys.cat.[system|impl]>.>
 
-=head2 User-Defined Entities
+## User-Defined Entities
 
 Users of Muldis D can define their own data types, routines, and variables,
 and each of these exists in a I<depot> (which is a I<package>), which is
@@ -3118,7 +3114,7 @@ addressable pseudo-relvar, type, and routine unqualified names.  So the
 fully-qualified names of most user-defined entities by way of C<fed> are
 3-4 parts.
 
-=head2 Non-Lexical Entities
+## Non-Lexical Entities
 
 The C<nlx> primary namespace empowers non-lexical entities declared in the
 same [|sub]package to refer to each other using relative paths rather than
@@ -3177,7 +3173,7 @@ by the compiler rather than explicitly by the programmer.  For a routine
 whose name, C<foo>, is explicitly chosen by the programmer, saying C<rtn>
 in that routine is an alias for saying C<nlx.lib.foo>.
 
-=head2 Lexical Entities
+## Lexical Entities
 
 The C<lex> primary namespace refers to entities within
 the same private lexical scope as the referencer.  Variables
@@ -3209,7 +3205,7 @@ which case they would probably find explicit C<lex> qualification useful.
 Therefore, any documentation that happens to use a C<lex> qualifier just is
 being more clear as to what is referred to for the general case.
 
-=head2 Conceptions and Requirements
+## Conceptions and Requirements
 
 Practically speaking, the conceptions of some namespaces for user-defined
 entities are as follows.
@@ -3299,7 +3295,7 @@ they would typically be applied either at the subdepot level or to other
 individual entities under depot, and user-centered privileges can also be
 applied to parts of the dbvar such as individual (pseudo-)relvars.
 
-=head2 Terse Pseudo-Variable Syntax
+## Terse Pseudo-Variable Syntax
 
 An important feature of a B<D> language is that the components of
 variables' current values can be addressed directly as if they were normal
@@ -3360,7 +3356,7 @@ easier to implement Muldis D and easier to understand at a glance what
 Muldis D code is doing, even if the system catalog representation of the
 code is a bit more verbose due to requiring more explicit function calls.
 
-=head2 Empty-String Names
+## Empty-String Names
 
 Muldis D empowers users to give the entities they define any character
 string at all for their declared names, including strings with
@@ -3437,7 +3433,7 @@ expression node tree to have the empty string as its declared name.
 Similarly, in a procedure definition, it is mandatory for the root node in
 the statement node tree to have the empty string as its declared name.
 
-=head2 User Namespace Correspondence
+## User Namespace Correspondence
 
 The namespace hierarchies under the C<lib> and C<data> second-level
 namespaces of C<fed|nlx> are fully independent in definition, such
@@ -3561,7 +3557,7 @@ further components of that type definition can also be grouped under the
 subdepot C<bar>.  So this arrangement is the closest analogy to SQL's
 normal behaviour of embedding a table's type into the table's declaration.
 
-=head2 Referencing Data Types
+## Referencing Data Types
 
 Some data types are explicitly defined as their own distinct named
 entities, for the purpose of reuse in multiple places, the same as
@@ -3651,7 +3647,7 @@ use of referencing data types, the terse syntax may I<also> be used with
 scalar possrep and relation attributes, as described in **Terse
 Pseudo-Variable Syntax**.
 
-=head1 SOURCE CODE METADATA
+# SOURCE CODE METADATA
 
 The Muldis D system catalog supports the storage of some explicit metadata
 for Muldis D code, which is non-critical in that it has no impact on the
@@ -3671,7 +3667,7 @@ should much more closely resemble the original in every possible manner.
 Arguably, the two most important non-behavioural metadata to preserve are
 code comments and code element ordinal positions.
 
-=head2 Code Comments
+## Code Comments
 
 Many tuple and relation catalog data types have a special extra attribute
 named C<scm_comment>, a C<Comment> (a character string), which may
@@ -3686,7 +3682,7 @@ comment".  It is expected that any complete parser for a standard Muldis D
 dialect I<will> preserve any code comments that it encounters as much as is
 reasonably possible.
 
-=head2 Visible Element Order
+## Visible Element Order
 
 Many fundamental parts of Muldis D will identify code elements by name,
 rather than by ordinal position, or all they care about for behaviour's
@@ -3721,16 +3717,14 @@ as is reasonably possible, and that zero values will generally come from
 either situations where a parser finds ordering non-applicable or from
 programmers updating the system catalog at runtime.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

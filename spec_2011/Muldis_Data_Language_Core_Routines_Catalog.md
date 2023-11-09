@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Routines_Catalog - Muldis D data definition routines
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Routines_Catalog version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,14 +14,14 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 These core routines are more special-purpose in nature and are intended for
 use in working with the system catalog.
 
-=head1 FUNCTIONS FOR SIMPLE GENERIC SCALAR TYPES
+# FUNCTIONS FOR SIMPLE GENERIC SCALAR TYPES
 
-=head2 sys.std.Core.Cat.Order.reverse
+## sys.std.Core.Cat.Order.reverse
 
 C<< function reverse (Order <-- topic : Order) {...} >>
 
@@ -33,7 +29,7 @@ This function results in the reverse value of its argument; an
 C<Order:Less> or C<Order:More> argument results in the other one of
 the two; an C<Order:Same> argument results in itself.
 
-=head2 sys.std.Core.Cat.Order.conditional_reverse
+## sys.std.Core.Cat.Order.conditional_reverse
 
 C<< function conditional_reverse (Order <--
 topic : Order, is_reverse_order : Bool) {...} >>
@@ -47,7 +43,7 @@ supporting the mandatory C<is_reverse_order> parameter; they can just write
 the fundamental function body once, for the normal ascending algorithm, and
 pass the result of that algorithm through C<Order.conditional_reverse>.
 
-=head2 sys.std.Core.Cat.Order.reduction
+## sys.std.Core.Cat.Order.reduction
 
 C<< function reduction (Order <-- topic? : array_of.Order) {...} >>
 
@@ -67,9 +63,9 @@ your control for sorting a relation as per a SQL "ORDER BY" or "RANK".
 Note that this operation is also known as I<reduction over order> or
 C<< [<=>] >>.
 
-=head1 ROUTINES FOR INVOKING ROUTINES
+# ROUTINES FOR INVOKING ROUTINES
 
-=head2 sys.std.Core.Cat.func_invo
+## sys.std.Core.Cat.func_invo
 
 C<< function func_invo (Universal <--
 function : APFunctionNC, args? : Tuple) {...} >>
@@ -90,7 +86,7 @@ invoke a function whose name they take as an argument.  The C<args>
 parameter is optional and defaults to the zero-attribute tuple if no
 explicit argument is given to it.
 
-=head2 sys.std.Core.Cat.primed_func_invo
+## sys.std.Core.Cat.primed_func_invo
 
 C<< function primed_func_invo (Universal <--
 function : PrimedFuncNC) {...} >>
@@ -101,7 +97,7 @@ that C<primed_func_invo> will see the most use in practice, as
 C<PrimedFuncNC> would be the type of choice for higher-order function
 parameters of other routines.
 
-=head2 sys.std.Core.Cat.primed_func_static_exten
+## sys.std.Core.Cat.primed_func_static_exten
 
 C<< function primed_func_static_exten (PrimedFuncNC <--
 function : PrimedFuncNC, args : Tuple) >>
@@ -113,7 +109,7 @@ will fail if its C<function> and C<args> arguments have any same-named
 arguments for the primed function.  Note that this operation is also known
 as C<assuming>.
 
-=head2 sys.std.Core.Cat.proc_invo
+## sys.std.Core.Cat.proc_invo
 
 C<procedure proc_invo (procedure : APProcedureNC,
 &upd_args? : Tuple, ro_args? : Tuple) {...}>
@@ -129,37 +125,37 @@ of C<func_invo>; the C<upd_args> parameter is non-optional if the invoked
 is an updater, because an updater must always be invoked with at least one
 subject-to-update argument, and it is optional otherwise.
 
-=head1 PROCEDURES FOR WORKING WITH EXCEPTIONS
+# PROCEDURES FOR WORKING WITH EXCEPTIONS
 
-=head2 sys.std.Core.Cat.fail
+## sys.std.Core.Cat.fail
 
 C<procedure fail (topic? : Exception) {...}>
 
 This procedure will throw the exception given as its argument; this results
 in the call stack unwinding, and transaction rollbacks, until it is caught.
 
-=head1 ROUTINES FOR SPECIAL ENTITY REFERENCE DEFAULT VALUES
+# ROUTINES FOR SPECIAL ENTITY REFERENCE DEFAULT VALUES
 
 These routines are defined primarily for use in the definitions of several
 reference types that are references to routines; each one is an example
 routines of an appropriate structure such that the reference types can use
 references to these routines as their default values.
 
-=head2 sys.std.Core.Cat.pass_topic
+## sys.std.Core.Cat.pass_topic
 
 C<< function pass_topic (Bool <-- topic : Universal) {...} >>
 
 This C<value-filter> function unconditionally results in C<Bool:True>
 regardless of the values of its arguments.
 
-=head2 sys.std.Core.Cat.map_to_topic
+## sys.std.Core.Cat.map_to_topic
 
 C<< function map_to_topic (Universal <-- topic : Universal) {...} >>
 
 This C<value-map> function unconditionally results in its C<topic> argument
 regardless of the values of its arguments.
 
-=head2 sys.std.Core.Cat.reduce_to_v1
+## sys.std.Core.Cat.reduce_to_v1
 
 C<< function reduce_to_v1 (Universal <-- v1 : Universal,
 v2 : Universal) {...} >>
@@ -167,7 +163,7 @@ v2 : Universal) {...} >>
 This C<value-reduction> function unconditionally results in its C<v1>
 argument regardless of the values of its arguments.
 
-=head1 RECIPES FOR BOOTSTRAPPING A MULDIS D PROGRAM OR DATABASE
+# RECIPES FOR BOOTSTRAPPING A MULDIS D PROGRAM OR DATABASE
 
 These recipes comprise a set of commonly useful system-defined data
 definition routines, which simplify some tasks of manipulating the Muldis D
@@ -176,9 +172,9 @@ create|mount and drop|unmount depots,
 create|drop subdepots, create|drop user-defined routines and
 data types; they can not create or drop relvars.
 
-=head1 Recipes For Defining Depot Mounts
+# Recipes For Defining Depot Mounts
 
-=head2 sys.std.Core.Cat.create_depot_mount
+## sys.std.Core.Cat.create_depot_mount
 
 C<recipe create_depot_mount (name : Name,
 scm_comment? : Comment, is_temporary? : Bool, create_on_mount? : Bool,
@@ -193,7 +189,7 @@ details match the other arguments; the mount may be for either an existing
 depot or for a newly created one.  This recipe is analogous to a SQL
 CONNECT statement or SQLite ATTACH statement.
 
-=head2 sys.std.Core.Cat.drop_depot_mount
+## sys.std.Core.Cat.drop_depot_mount
 
 C<recipe drop_depot_mount (name : Name,
 &mounts ::= mnt.cat.mounts) {...}>
@@ -204,7 +200,7 @@ DBMS whose name is given by the argument; the depot behind the mount may
 then either cease to exist or persist on.  This recipe is analogous to a
 SQL DISCONNECT statement or SQLite DETACH statement.
 
-=head2 sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
+## sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
 
 C<recipe alter_depot_mount_so_we_may_not_update
 (name : Name, &mounts ::= mnt.cat.mounts) {...}>
@@ -213,9 +209,9 @@ This recipe is an abstraction over updating a tuple of the catalog
 relvar C<mnt.cat.mounts> such that its C<we_may_update> attribute is made
 C<Bool:False>.
 
-=head1 Recipes For Defining In-Depot Namespaces
+# Recipes For Defining In-Depot Namespaces
 
-=head2 sys.std.Core.Cat.create_subdepot
+## sys.std.Core.Cat.create_subdepot
 
 C<recipe create_subdepot (depot : Name,
 parent? : NameChain, name : Name, scm_comment? : Comment,
@@ -228,7 +224,7 @@ argument, whose name and other details match the other arguments.  This
 recipe is analogous to a SQL CREATE SCHEMA statement or an Oracle CREATE
 PACKAGE statement.
 
-=head2 sys.std.Core.Cat.drop_subdepot
+## sys.std.Core.Cat.drop_subdepot
 
 C<recipe drop_subdepot (depot : Name,
 parent? : NameChain, name : Name,
@@ -239,9 +235,9 @@ relvar C<fed.cat.mounts{name=depot}.depot.subdepots>.  It will drop an
 existing subdepot.  This recipe is analogous to a SQL DROP SCHEMA
 statement or an Oracle DROP PACKAGE statement.
 
-=head1 Recipes For Defining Depot Materials
+# Recipes For Defining Depot Materials
 
-=head2 sys.std.Core.Cat.create_function
+## sys.std.Core.Cat.create_function
 
 C<recipe create_function (depot : Name,
 subdepot? : NameChain, name : Name,
@@ -254,7 +250,7 @@ new function, in the depot mounted under the name given by the C<depot>
 argument, whose name and other details match the other arguments.  This
 recipe is analogous to a SQL CREATE FUNCTION statement.
 
-=head2 sys.std.Core.Cat.drop_function
+## sys.std.Core.Cat.drop_function
 
 C<recipe drop_function (depot : Name,
 subdepot? : NameChain, name : Name,
@@ -264,7 +260,7 @@ This recipe is an abstraction over deleting a tuple from the catalog relvar
 C<fed.cat.mounts{name=depot}.depot.functions>.  It will drop an existing
 depot function.  This recipe is analogous to a SQL DROP FUNCTION statement.
 
-=head2 sys.std.Core.Cat.create_procedure
+## sys.std.Core.Cat.create_procedure
 
 C<recipe create_procedure (depot : Name,
 subdepot? : NameChain, name : Name,
@@ -278,7 +274,7 @@ the name given by the C<depot> argument, whose name and other details match
 the other arguments.  This recipe is analogous to a SQL CREATE PROCEDURE
 statement.
 
-=head2 sys.std.Core.Cat.drop_procedure
+## sys.std.Core.Cat.drop_procedure
 
 C<recipe drop_procedure (depot : Name,
 subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}>
@@ -288,7 +284,7 @@ C<fed.cat.mounts{name=depot}.depot.procedures>.  It will
 drop an existing depot procedure.  This recipe is analogous
 to a SQL DROP PROCEDURE statement.
 
-=head2 sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
+## sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
 
 C<recipe create_[scalar|tuple|relation|domain|subset|mixin]_type
 (depot : Name, subdepot? : NameChain, name : Name,
@@ -303,7 +299,7 @@ It will create a new type, in the depot mounted under the name given by the
 C<depot> argument, whose name and other details match the other arguments.
 This recipe is analogous to a SQL CREATE TYPE|DOMAIN statement.
 
-=head2 sys.std.Core.Cat.drop_[scalar|tuple|relation|domain|subset|mixin]_type
+## sys.std.Core.Cat.drop_[scalar|tuple|relation|domain|subset|mixin]_type
 
 C<recipe drop_[scalar|tuple|relation|domain|subset|mixin]_type
 (depot : Name, subdepot? : NameChain, name : Name,
@@ -315,7 +311,7 @@ C<fed.cat.mounts{name=depot}.depot
 It will drop an existing depot type.  This recipe is analogous to a SQL
 DROP TYPE|DOMAIN statement.
 
-=head2 sys.std.Core.Cat.create_[|distrib_][key|subset]_constr
+## sys.std.Core.Cat.create_[|distrib_][key|subset]_constr
 
 C<recipe create_[|distrib_][key|subset]_constr
 (depot : Name, subdepot? : NameChain, name : Name,
@@ -330,7 +326,7 @@ It will create a new constraint, in the depot mounted under the name given
 by the C<depot> argument, whose name and other details match the other
 arguments.
 
-=head2 sys.std.Core.Cat.drop_[|distrib_][key|subset]_constr
+## sys.std.Core.Cat.drop_[|distrib_][key|subset]_constr
 
 C<recipe drop_[|distrib_][key|subset]_constr
 (depot : Name, subdepot? : NameChain, name : Name,
@@ -340,7 +336,7 @@ This recipe is an abstraction over deleting a tuple from the catalog relvar
 C<fed.cat.mounts{name=depot}.depot.[|distrib_][key|subset]_constrs>.
 It will drop an existing depot constraint.
 
-=head2 sys.std.Core.Cat.create_stim_resp_rule
+## sys.std.Core.Cat.create_stim_resp_rule
 
 C<recipe create_stim_resp_rule (depot : Name,
 subdepot? : NameChain, name : Name, scm_comment? : Comment,
@@ -353,7 +349,7 @@ given by the C<depot> argument, whose name and other details match the
 other arguments.  This recipe is analogous to a SQL CREATE TRIGGER
 statement.
 
-=head2 sys.std.Core.Cat.drop_stim_resp_rule
+## sys.std.Core.Cat.drop_stim_resp_rule
 
 C<recipe drop_stim_resp_rule (depot : Name,
 subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}>
@@ -363,9 +359,9 @@ C<fed.cat.mounts{name=depot}.depot.stim_resp_rules>.  It will drop an
 existing depot stimulus-response rule.  This recipe is analogous to a SQL
 DROP TRIGGER statement.
 
-=head1 SYSTEM-DEFINED CONSTRAINT MATERIALS
+# SYSTEM-DEFINED CONSTRAINT MATERIALS
 
-=head2 sys.std.Core.Cat.nil_key_constr
+## sys.std.Core.Cat.nil_key_constr
 
 C<key-constraint nil_key_constr {}>
 
@@ -375,23 +371,21 @@ This exists as a C<key-constraint> material as a convenience for the
 definition of relation types whose values are allowed to have at most one
 tuple (C<Maybe> being an example).
 
-=head2 sys.std.Core.Cat.nil_prim_key
+## sys.std.Core.Cat.nil_prim_key
 
 C<key-constraint nil_prim_key {}>
 
 This is exactly the same as C<sys.std.Core.Cat.nil_key_constr>, a key over
 zero attributes, but that it I<is> designated a I<primary key>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

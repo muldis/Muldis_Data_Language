@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Ordered - Muldis D generic ordered-sensitive operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Ordered version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D
 ordered-sensitive operators, essentially all the generic ones that a
@@ -26,14 +22,14 @@ typical programming language should have.
 
 I<This documentation is pending.>
 
-=head1 VIRTUAL FUNCTIONS FOR THE ORDERED MIXIN TYPE
+# VIRTUAL FUNCTIONS FOR THE ORDERED MIXIN TYPE
 
 Rather than having a whole set of virtual functions for the C<Ordered>
 mixin, such as before/after/min/max/between/etc, we have just the one
 C<order> for each ordered type to implement, and then all the other
 ordered-sensitive routines (before/etc) just wrap the virtual C<order>.
 
-=head2 sys.std.Core.Ordered.order
+## sys.std.Core.Ordered.order
 
 C<< function order (Order <-- topic@ : Ordered,
 other@ : Ordered, misc_args? : Tuple, is_reverse_order? : Bool) {...} >>
@@ -67,7 +63,7 @@ descending order).  The C<misc_args> and C<is_reverse_order> parameters are
 optional and default to the zero-attribute tuple and C<Bool:False>,
 respectively, if no explicit arguments are given to them.
 
-=head1 VIRTUAL FUNCTIONS FOR THE ORDINAL MIXIN TYPE
+# VIRTUAL FUNCTIONS FOR THE ORDINAL MIXIN TYPE
 
 Conceivably, the C<Ordinal> mixin could come with functions like I<first>
 or I<last>, since such are common practice for ordinal types in other
@@ -88,7 +84,7 @@ go later, for any arbitrary distance along the ordinal type's value line.
 I<In the future, if a finite-ordinal mixin type is deemed useful and is
 created, then actual "first" and "last" functions could be made for it.>
 
-=head2 sys.std.Core.Ordered.Ordinal.pred
+## sys.std.Core.Ordered.Ordinal.pred
 
 C<< function pred (Ordinal <-- topic@ : Ordinal) {...} >>
 
@@ -99,7 +95,7 @@ singleton value C<-Inf> (negative infinity), which can be tested for to
 know you've run out of values.  Note that this operation is also known as
 C<-->.
 
-=head2 sys.std.Core.Ordered.Ordinal.succ
+## sys.std.Core.Ordered.Ordinal.succ
 
 C<< function succ (Ordinal <-- topic@ : Ordinal) {...} >>
 
@@ -109,7 +105,7 @@ type of the argument; otherwise, this virtual function results in the
 singleton value C<Inf> (positive infinity), which can be tested for to know
 you've run out of values.  Note that this operation is also known as C<++>.
 
-=head1 GENERIC ORDERED-SENSITIVE FUNCTIONS FOR ALL DATA TYPES
+# GENERIC ORDERED-SENSITIVE FUNCTIONS FOR ALL DATA TYPES
 
 These are generic operators that are sensitive
 to an ordering of a type's values, and are used for such things as list
@@ -123,7 +119,7 @@ function named C<sys.std.Core.Ordered.order> when the latter function is
 primed by a C<misc_args> argument of C<Tuple:D0> and by
 a calling-function-specific C<is_reverse_order> argument value.
 
-=head2 sys.std.Core.Ordered.is_before
+## sys.std.Core.Ordered.is_before
 
 C<< function is_before (Bool <-- topic : Ordered, other : Ordered) {...} >>
 
@@ -133,7 +129,7 @@ in C<Order:Less> when given the same corresponding 2 arguments plus an
 C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
 Note that this operation is also known as I<less than> or C<< < >>.
 
-=head2 sys.std.Core.Ordered.is_after
+## sys.std.Core.Ordered.is_after
 
 C<< function is_after (Bool <-- topic : Ordered, other : Ordered) {...} >>
 
@@ -144,7 +140,7 @@ C<Order:More> when given the same corresponding 2 arguments plus an
 C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
 Note that this operation is also known as I<greater than> or C<< > >>.
 
-=head2 sys.std.Core.Ordered.is_before_or_same
+## sys.std.Core.Ordered.is_before_or_same
 
 C<< function is_before_or_same (Bool <--
 topic : Ordered, other : Ordered) {...} >>
@@ -154,7 +150,7 @@ except that it results in C<Bool:True> if its 2 primary arguments are
 identical.  Note that this operation is also known as I<less than or equal
 to> or C<≤>.
 
-=head2 sys.std.Core.Ordered.is_after_or_same
+## sys.std.Core.Ordered.is_after_or_same
 
 C<< function is_after_or_same (Bool <--
 topic : Ordered, other : Ordered) {...} >>
@@ -166,7 +162,7 @@ that it results in C<Bool:True> if its 2 primary arguments are identical.
 Note that this operation is also known as I<greater than or equal to> or
 C<≥>.
 
-=head2 sys.std.Core.Ordered.min
+## sys.std.Core.Ordered.min
 
 C<< function min (Ordered <-- topic : set_of.Ordered) {...} >>
 
@@ -177,7 +173,7 @@ the function's result.  If C<topic> has zero values, then C<min> results in
 the singleton value C<Inf> (positive infinity), which is the identity value
 for C<min>.
 
-=head2 sys.std.Core.Ordered.max
+## sys.std.Core.Ordered.max
 
 C<< function max (Ordered <-- topic : set_of.Ordered) {...} >>
 
@@ -185,7 +181,7 @@ This function is exactly the same as C<sys.std.Core.Ordered.min> except
 that it results in the maximum input element value rather than the minimum
 one, and that C<max>'s identity value is C<-Inf> (negative infinity).
 
-=head2 sys.std.Core.Ordered.minmax
+## sys.std.Core.Ordered.minmax
 
 C<< function minmax (Tuple <-- topic : set_of.Ordered) {...} >>
 
@@ -194,9 +190,9 @@ and C<max> and whose respective attribute values are what
 C<sys.std.Core.Ordered.min> and C<sys.std.Core.Ordered.max> would
 result in when given the same arguments.
 
-=head1 VIRTUAL UPDATERS FOR THE ORDINAL MIXIN TYPE
+# VIRTUAL UPDATERS FOR THE ORDINAL MIXIN TYPE
 
-=head2 sys.std.Core.Ordered.Ordinal.assign_pred
+## sys.std.Core.Ordered.Ordinal.assign_pred
 
 C<updater assign_pred (&topic@ : Ordinal) {...}>
 
@@ -205,7 +201,7 @@ C<sys.std.Core.Ordered.Ordinal.pred> function with the same argument, and
 then assigning the result of that function to its argument.  Note that this
 operation is also known as C<:=-->.
 
-=head2 sys.std.Core.Ordered.Ordinal.assign_succ
+## sys.std.Core.Ordered.Ordinal.assign_succ
 
 C<updater assign_succ (&topic@ : Ordinal) {...}>
 
@@ -214,16 +210,14 @@ C<sys.std.Core.Ordered.Ordinal.succ> function with the same argument, and
 then assigning the result of that function to its argument.  Note that this
 operation is also known as C<:=++>.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

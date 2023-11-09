@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis Data Language (MDL) - Relational database application programming language
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis Data Language version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
@@ -22,7 +18,7 @@ to follow), [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect
 [Muldis_Data_Language_Ext_Counted](Muldis_Data_Language_Ext_Counted.md), [Muldis_Data_Language_Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md),
 [Muldis_Data_Language_Ext_Spatial](Muldis_Data_Language_Ext_Spatial.md).
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This distribution / multi-part document is the human readable authoritative
 formal specification of the B<Muldis D> language, and of the virtual
@@ -94,7 +90,7 @@ Muldis D is an [Acmeist](http://acmeism.org) programming language for
 writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
 
-=head1 VERSIONING
+# VERSIONING
 
 All code written in any variant of Muldis D should begin with metadata
 that explicitly states that it is written in Muldis D, and that fully
@@ -132,7 +128,7 @@ interpret the rest of the Muldis D code, including hints as to what
 character repertoire it is written in, can be understood without ambiguity.
 For all official Muldis D variants, ASCII-only names is actually mandatory.
 
-=head2 Foundation
+## Foundation
 
 The actual formatting of a "sequence" used as this language name is
 dependent on the language variant itself, but it should be kept as simple
@@ -159,7 +155,7 @@ actual format (of the language name defining sequence and its elements) is
 simply a sequence-typed value of the host programming language.  The Muldis
 D code is written here by way of writing code in the host language.
 
-=head2 Base Name
+## Base Name
 
 The first element of the Muldis D language name is simply the character
 string C<Muldis_D>.  Any language which wants to claim to be a variant of
@@ -167,7 +163,7 @@ Muldis D should have this exact first element; only have some other value
 if you don't want to claim a connection to Muldis D at all, and in that
 case feel free to just ignore everything else in this multi-document.
 
-=head2 Base Authority
+## Base Authority
 
 The second element of the Muldis D language name is some character string
 whose value uniquely identifies the authority or author of the variant's
@@ -213,7 +209,7 @@ C<sys.std> top-level namespace (as opposed to in C<sys.imp>).
 
 =back
 
-=head2 Base Version Number
+## Base Version Number
 
 The third element of the Muldis D language name, at the very least when the
 base authority is C<https://muldis.com>, is a multi-part base version
@@ -228,7 +224,7 @@ minor, bug-fix]).  At the present time, the official spec version number to
 use is shown in the VERSION and DESCRIPTION pod of the current file, when
 corresponding to the spec containing that file.
 
-=head2 Dialect
+## Dialect
 
 The fourth element of the Muldis D language name, at the very least when
 the base authority is C<https://muldis.com>, uniquely identifies which
@@ -253,17 +249,17 @@ bundled dialects (names subject to change):
 [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md), [Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
 [Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).
 
-=head2 Extensions
+## Extensions
 
 Whether or not the Muldis D language name has a fifth or further elements
 depends on the dialect.  See the documentation for each individual dialect
 to see what it supports or requires.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan - darren@DarrenDuncan.net
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification named
 **Muldis Data Language** (**MDL**).
@@ -289,7 +285,7 @@ would appreciate being informed any time you create a modified version of
 MDL that you are willing to distribute, because that is a
 practical way of suggesting improvements to the standard version.
 
-=head1 TRADEMARK POLICY
+# TRADEMARK POLICY
 
 **MULDIS** and **MULDIS MULTIVERSE OF DISCOURSE** are trademarks of Muldis
 Data Systems, Inc. (<https://muldis.com>).
@@ -297,8 +293,6 @@ The trademarks apply to computer database software and related services.
 See <https://muldis.com/trademark_policy.html> for the full written details
 of Muldis Data Systems' trademark policy.
 
-=head1 ACKNOWLEDGEMENTS
+# ACKNOWLEDGEMENTS
 
 None yet.
-
-=cut

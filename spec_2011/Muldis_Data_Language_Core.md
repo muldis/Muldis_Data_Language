@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core - Muldis D core data types and operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
@@ -32,7 +28,7 @@ has its own tree of parts to follow, which it is the root of:
 [Muldis_Data_Language_Core_Interval](Muldis_Data_Language_Core_Interval.md), [Muldis_Data_Language_Core_STDIO](Muldis_Data_Language_Core_STDIO.md),
 [Muldis_Data_Language_Core_Routines_Catalog](Muldis_Data_Language_Core_Routines_Catalog.md).
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 Muldis D has a mandatory core set of system-defined (eternally available)
 entities, which is referred to as the I<Muldis D core> or the I<core>; they
@@ -75,16 +71,14 @@ operators for core types: [Muldis_Data_Language_Ext_Counted](Muldis_Data_Languag
 These extensions mainly define new types plus just operators for those:
 [Muldis_Data_Language_Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md), [Muldis_Data_Language_Ext_Spatial](Muldis_Data_Language_Ext_Spatial.md).
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut

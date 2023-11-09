@@ -1,16 +1,12 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 Muldis::D::Core::Boolean - Muldis D boolean logic operators
 
-=head1 VERSION
+# VERSION
 
 This document is Muldis::D::Core::Boolean version 0.148.1.
 
-=head1 PREFACE
+# PREFACE
 
 This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
@@ -18,7 +14,7 @@ you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
 are specific to the core data type C<Bool>, a superset of all the generic
@@ -26,9 +22,9 @@ ones that a typical programming language should have.
 
 I<This documentation is pending.>
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
 
-=head2 sys.std.Core.Boolean.order
+## sys.std.Core.Boolean.order
 
 C<< function order (Order <-- topic : Bool,
 other : Bool, misc_args? : Tuple, is_reverse_order? : Bool)
@@ -37,9 +33,9 @@ implements sys.std.Core.Ordered.order {...} >>
 This is a (total) C<order-determination> function specific to C<Bool>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
 
-=head1 FUNCTIONS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
+# FUNCTIONS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
 
-=head2 sys.std.Core.Boolean.pred
+## sys.std.Core.Boolean.pred
 
 C<< function pred (Bool <-- topic : Bool)
 implements sys.std.Core.Ordered.Ordinal.pred {...} >>
@@ -47,7 +43,7 @@ implements sys.std.Core.Ordered.Ordinal.pred {...} >>
 This function results in the value that precedes its argument.  It results
 in C<Bool:False> iff its argument is C<Bool:True>, and C<-Inf> otherwise.
 
-=head2 sys.std.Core.Boolean.succ
+## sys.std.Core.Boolean.succ
 
 C<< function succ (Bool <-- topic : Bool)
 implements sys.std.Core.Ordered.Ordinal.succ {...} >>
@@ -55,11 +51,11 @@ implements sys.std.Core.Ordered.Ordinal.succ {...} >>
 This function results in the value that succeeds its argument.  It results
 in C<Bool:True> iff its argument is C<Bool:False>, and C<Inf> otherwise.
 
-=head1 FUNCTIONS FOR BOOLEAN LOGIC
+# FUNCTIONS FOR BOOLEAN LOGIC
 
 These functions implement commonly used boolean logic operations.
 
-=head2 sys.std.Core.Boolean.not
+## sys.std.Core.Boolean.not
 
 C<< function not (Bool <-- topic : Bool) {...} >>
 
@@ -74,7 +70,7 @@ complement operation of I<not> or I<negation>.  Now in practice any value
 expression that is an invocation of I<so> can simply be replaced with its
 argument, so there is no reason for I<so> to exist as an actual function.
 
-=head2 sys.std.Core.Boolean.and
+## sys.std.Core.Boolean.and
 
 C<< function and (Bool <-- topic? : set_of.Bool) {...} >>
 
@@ -88,7 +84,7 @@ C<Bool:True>, which is the identity value for logical I<and>.  Note that
 this operation is also known as I<all> or I<every> or I<conjunction> or
 C<∧>.
 
-=head2 sys.std.Core.Boolean.all
+## sys.std.Core.Boolean.all
 
 C<< function all (Bool <-- topic? : set_of.Bool) {...} >>
 
@@ -97,7 +93,7 @@ results in C<Bool:True> iff all of its input element values are
 C<Bool:True> (or it has no input values), and C<Bool:False> otherwise (when
 it has at least one input value that is C<Bool:False>).
 
-=head2 sys.std.Core.Boolean.nand
+## sys.std.Core.Boolean.nand
 
 C<< function nand (Bool <-- topic : Bool, other : Bool) {...} >>
 
@@ -106,7 +102,7 @@ arguments are both C<Bool:True>, and C<Bool:True> otherwise.  Note that
 this operation is also known as I<not and> or I<not both> or I<alternative
 denial> or C<⊼> or C<↑>.
 
-=head2 sys.std.Core.Boolean.or
+## sys.std.Core.Boolean.or
 
 C<< function or (Bool <-- topic? : set_of.Bool) {...} >>
 
@@ -120,7 +116,7 @@ C<Bool:False>, which is the identity value for logical inclusive-or.  Note
 that this operation is also known as I<any> or I<some> or I<disjunction> or
 C<∨>.
 
-=head2 sys.std.Core.Boolean.any
+## sys.std.Core.Boolean.any
 
 C<< function any (Bool <-- topic? : set_of.Bool) {...} >>
 
@@ -129,7 +125,7 @@ results in C<Bool:True> iff any of its input element values are
 C<Bool:True>, and C<Bool:False> otherwise (when all of its input values are
 C<Bool:False> or if it has no input values).
 
-=head2 sys.std.Core.Boolean.nor
+## sys.std.Core.Boolean.nor
 
 C<< function nor (Bool <-- topic : Bool, other : Bool) {...} >>
 
@@ -138,7 +134,7 @@ arguments are both C<Bool:False>, and C<Bool:False> otherwise.  Note that
 this operation is also known as I<not or> or I<neither ... nor> or I<joint
 denial> or C<⊽> or C<↓>.
 
-=head2 sys.std.Core.Boolean.xnor
+## sys.std.Core.Boolean.xnor
 
 C<< function xnor (Bool <-- topic? : bag_of.Bool) {...} >>
 
@@ -156,13 +152,13 @@ of C<xnor> is exactly the same operation as a
 C<sys.std.Core.Universal.is_same> invocation whose arguments are both
 C<Bool>-typed.
 
-=head2 sys.std.Core.Boolean.iff
+## sys.std.Core.Boolean.iff
 
 C<< function iff (Bool <-- topic? : bag_of.Bool) {...} >>
 
 This function is an alias for C<sys.std.Core.Boolean.xnor>.
 
-=head2 sys.std.Core.Boolean.xor
+## sys.std.Core.Boolean.xor
 
 C<< function xor (Bool <-- topic? : bag_of.Bool) {...} >>
 
@@ -179,7 +175,7 @@ that a dyadic (2 input value) invocation of C<xor> is exactly the same
 operation as a C<sys.std.Core.Universal.is_not_same> invocation whose
 arguments are both C<Bool>-typed.
 
-=head2 sys.std.Core.Boolean.imp
+## sys.std.Core.Boolean.imp
 
 C<< function imp (Bool <-- topic : Bool, other : Bool) {...} >>
 
@@ -188,13 +184,13 @@ C<Bool:True> and its C<other> argument is C<Bool:False>, and C<Bool:True>
 otherwise.  Note that this operation is also known as I<implies> or
 I<material implication> or C<→>.
 
-=head2 sys.std.Core.Boolean.implies
+## sys.std.Core.Boolean.implies
 
 C<< function implies (Bool <-- topic : Bool, other : Bool) {...} >>
 
 This function is an alias for C<sys.std.Core.Boolean.imp>.
 
-=head2 sys.std.Core.Boolean.nimp
+## sys.std.Core.Boolean.nimp
 
 C<< function nimp (Bool <-- topic : Bool, other : Bool) {...} >>
 
@@ -203,7 +199,7 @@ that it results in the opposite boolean value when given the same
 arguments.  Note that this operation is also known as I<not implies> or
 I<material nonimplication> or C<↛>.
 
-=head2 sys.std.Core.Boolean.if
+## sys.std.Core.Boolean.if
 
 C<< function if (Bool <-- topic : Bool, other : Bool) {...} >>
 
@@ -214,7 +210,7 @@ argument is C<Bool:True>, and C<Bool:True> otherwise.  Note that this
 operation is also known as I<converse implication> or I<reverse material
 implication> or C<←>.
 
-=head2 sys.std.Core.Boolean.nif
+## sys.std.Core.Boolean.nif
 
 C<< function nif (Bool <-- topic : Bool, other : Bool) {...} >>
 
@@ -223,7 +219,7 @@ it results in the opposite boolean value when given the same arguments.
 Note that this operation is also known as I<not if> or I<converse
 nonimplication> or C<↚>.
 
-=head2 sys.std.Core.Boolean.not_all
+## sys.std.Core.Boolean.not_all
 
 C<< function not_all (Bool <-- topic? : set_of.Bool) {...} >>
 
@@ -233,7 +229,7 @@ This function results in C<Bool:True> iff not all of its input element
 values are C<Bool:True>, and C<Bool:False> otherwise (when all of its input
 values are C<Bool:True> or if it has no input values).
 
-=head2 sys.std.Core.Boolean.none
+## sys.std.Core.Boolean.none
 
 C<< function none (Bool <-- topic? : set_of.Bool) {...} >>
 
@@ -244,13 +240,13 @@ are C<Bool:True> (or it has no input values), and C<Bool:False> otherwise
 (when it has at least one input value that is C<Bool:True>).  Note that
 this operation is also known as I<not any>.
 
-=head2 sys.std.Core.Boolean.not_any
+## sys.std.Core.Boolean.not_any
 
 C<< function not_any (Bool <-- topic? : set_of.Bool) {...} >>
 
 This function is an alias for C<sys.std.Core.Boolean.none>.
 
-=head2 sys.std.Core.Boolean.one
+## sys.std.Core.Boolean.one
 
 C<< function one (Bool <-- topic? : bag_of.Bool) {...} >>
 
@@ -259,14 +255,14 @@ values is C<Bool:True>, and C<Bool:False> otherwise.  Note that in some
 contexts, this operation would alternately be known as I<xor>, but in
 Muldis D it is not.
 
-=head2 sys.std.Core.Boolean.not_one
+## sys.std.Core.Boolean.not_one
 
 C<< function not_one (Bool <-- topic? : bag_of.Bool) {...} >>
 
 This function is exactly the same as C<sys.std.Core.Boolean.one> except
 that it results in the opposite boolean value when given the same argument.
 
-=head2 sys.std.Core.Boolean.exactly
+## sys.std.Core.Boolean.exactly
 
 C<< function exactly (Bool <-- topic? : bag_of.Bool, count : NNInt) {...} >>
 
@@ -274,7 +270,7 @@ This function results in C<Bool:True> iff the count of its input element
 values that are C<Bool:True> matches the C<count> argument, and
 C<Bool:False> otherwise.
 
-=head2 sys.std.Core.Boolean.not_exactly
+## sys.std.Core.Boolean.not_exactly
 
 C<< function not_exactly (Bool <--
 topic? : bag_of.Bool, count : NNInt) {...} >>
@@ -282,23 +278,23 @@ topic? : bag_of.Bool, count : NNInt) {...} >>
 This function is exactly the same as C<sys.std.Core.Boolean.exactly> except
 that it results in the opposite boolean value when given the same argument.
 
-=head2 sys.std.Core.Boolean.true
+## sys.std.Core.Boolean.true
 
 C<< function true (NNInt <-- topic? : bag_of.Bool) {...} >>
 
 This function results in the count of its input element values that are
 C<Bool:True>.
 
-=head2 sys.std.Core.Boolean.false
+## sys.std.Core.Boolean.false
 
 C<< function false (NNInt <-- topic? : bag_of.Bool) {...} >>
 
 This function results in the count of its input element values that are
 C<Bool:False>.
 
-=head1 UPDATERS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
+# UPDATERS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
 
-=head2 sys.std.Core.Boolean.assign_pred
+## sys.std.Core.Boolean.assign_pred
 
 C<updater assign_pred (&topic : Bool)
 implements sys.std.Core.Ordered.Ordinal.assign_pred {...}>
@@ -307,7 +303,7 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Core.Boolean.pred> function with the same argument, and
 then assigning the result of that function to its argument.
 
-=head2 sys.std.Core.Boolean.assign_succ
+## sys.std.Core.Boolean.assign_succ
 
 C<updater assign_succ (&topic : Bool)
 implements sys.std.Core.Ordered.Ordinal.assign_succ {...}>
@@ -316,16 +312,14 @@ This update operator is a short-hand for first invoking the
 C<sys.std.Core.Boolean.succ> function with the same argument, and
 then assigning the result of that function to its argument.
 
-=head1 AUTHOR
+# AUTHOR
 
 Darren Duncan (C<darren@DarrenDuncan.net>)
 
-=head1 LICENSE AND COPYRIGHT
+# LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
-
-=cut
