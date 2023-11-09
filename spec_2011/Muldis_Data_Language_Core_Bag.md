@@ -26,8 +26,8 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Bag.has_member
 
-C<< function has_member (Bool <-- coll : Bag, value : Universal)
-implements sys.std.Core.Collective.has_member {...} >>
+`function has_member (Bool <-- coll : Bag, value : Universal)
+implements sys.std.Core.Collective.has_member {...}`
 
 This function is the same as C<sys.std.Core.Set.has_member>, including that
 matching of C<value> is done against the C<value> attribute, except that it
@@ -35,8 +35,8 @@ works with a C<Bag> rather than a C<Set>.
 
 ## sys.std.Core.Bag.has_not_member
 
-C<< function has_not_member (Bool <-- coll : Bag, value : Universal)
-implements sys.std.Core.Collective.has_not_member {...} >>
+`function has_not_member (Bool <-- coll : Bag, value : Universal)
+implements sys.std.Core.Collective.has_not_member {...}`
 
 This function is exactly the same as C<sys.std.Core.Bag.has_member> except
 that it results in the opposite boolean value when given the same
@@ -44,8 +44,8 @@ arguments.
 
 ## sys.std.Core.Bag.value_is_member
 
-C<< function value_is_member (Bool <-- value : Universal, coll : Bag)
-implements sys.std.Core.Collective.value_is_member {...} >>
+`function value_is_member (Bool <-- value : Universal, coll : Bag)
+implements sys.std.Core.Collective.value_is_member {...}`
 
 This function is an alias for C<sys.std.Core.Bag.has_member>.  This
 function is the same as C<sys.std.Core.Set.value_is_member>, including that
@@ -54,8 +54,8 @@ works with a C<Bag> rather than a C<Set>.
 
 ## sys.std.Core.Bag.value_is_not_member
 
-C<< function value_is_not_member (Bool <-- value : Universal, coll : Bag)
-implements sys.std.Core.Collective.value_is_not_member {...} >>
+`function value_is_not_member (Bool <-- value : Universal, coll : Bag)
+implements sys.std.Core.Collective.value_is_not_member {...}`
 
 This function is an alias for C<sys.std.Core.Bag.has_not_member>.  This
 function
@@ -66,7 +66,7 @@ results in the opposite boolean value when given the same arguments.
 
 ## sys.std.Core.Bag.cardinality
 
-C<< function cardinality (NNInt <-- topic : Bag) {...} >>
+`function cardinality (NNInt <-- topic : Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.cardinality> but that it
 accounts for the greater-than-one multiplicity of values in its argument;
@@ -75,7 +75,7 @@ this operation is also known as C<#+>.
 
 ## sys.std.Core.Bag.count
 
-C<< function count (NNInt <-- bag : Bag, value : Universal) {...} >>
+`function count (NNInt <-- bag : Bag, value : Universal) {...}`
 
 This function results in the multiplicity / count of occurrances of
 C<value> in C<bag>; if a tuple exists in C<bag> whose C<value> attribute
@@ -84,7 +84,7 @@ result is zero.
 
 ## sys.std.Core.Bag.insertion
 
-C<< function insertion (Bag <-- bag : Bag, value : Universal) {...} >>
+`function insertion (Bag <-- bag : Bag, value : Universal) {...}`
 
 This function is the same as C<sys.std.Core.Set.insertion> as per
 C<has_member> but that its result differs depending on whether C<value>
@@ -98,7 +98,7 @@ direct analogy to set union).
 
 ## sys.std.Core.Bag.deletion
 
-C<< function deletion (Bag <-- bag : Bag, value : Universal) {...} >>
+`function deletion (Bag <-- bag : Bag, value : Universal) {...}`
 
 This function is the same as C<sys.std.Core.Set.deletion> as per
 C<has_member> but that its result differs depending on what the C<count>
@@ -108,8 +108,8 @@ C<count> is greater than 1, then it is decremented by 1; if it is equal to
 
 ## sys.std.Core.Bag.reduction
 
-C<< function reduction (Universal <-- topic : Bag,
-func : ValRedPFuncNC, identity : Universal) {...} >>
+`function reduction (Universal <-- topic : Bag,
+func : ValRedPFuncNC, identity : Universal) {...}`
 
 This function is the same as C<sys.std.Core.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
@@ -119,7 +119,7 @@ might be different instances of the same value having >= 2 multiplicity.
 
 ## sys.std.Core.Bag.Bag_from_wrap
 
-C<< function Bag_from_wrap (bag_of.Tuple <-- topic : Relation) {...} >>
+`function Bag_from_wrap (bag_of.Tuple <-- topic : Relation) {...}`
 
 This function results in a C<Bag> whose C<value> attribute is tuple-typed
 and that attribute's values are all the tuples of C<topic>; it is a
@@ -129,8 +129,8 @@ extended with a C<count> attribute whose value for every tuple is 1.
 
 ## sys.std.Core.Bag.Bag_from_cmpl_group
 
-C<< function Bag_from_cmpl_group (bag_of.Tuple <--
-topic : Relation, group_per : set_of.Name) {...} >>
+`function Bag_from_cmpl_group (bag_of.Tuple <--
+topic : Relation, group_per : set_of.Name) {...}`
 
 This function is like C<sys.std.Core.Relation.cardinality_per_group> but
 that the C<count_attr_name> is C<count> and all the other attributes that
@@ -141,7 +141,7 @@ C<sys.std.Core.Relation.rank>.
 
 ## sys.std.Core.Bag.Bag_from_attr
 
-C<< function Bag_from_attr (Bag <-- topic : Relation, name : Name) {...} >>
+`function Bag_from_attr (Bag <-- topic : Relation, name : Name) {...}`
 
 This function results in a C<Bag> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for first doing
@@ -154,26 +154,26 @@ their renaming to C<value> and C<count> respectively.
 
 ## sys.std.Core.Bag.is_subset
 
-C<< function is_subset (Bool <-- topic : Bag, other : Bag) {...} >>
+`function is_subset (Bool <-- topic : Bag, other : Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.is_subset> but that it
 accounts for the greater-than-one multiplicity of values in its arguments;
 this function returns C<Bool:True> iff the multiplicity of each C<topic>
 value is less than or equal to the multiplicity of its counterpart
 C<other> value.  Note that this operation is also known as C<⊆+> or
-C<< {<=}+ >>.
+`{<=}+`.
 
 ## sys.std.Core.Bag.is_not_subset
 
-C<< function is_not_subset (Bool <-- topic : Bag, other : Bag) {...} >>
+`function is_not_subset (Bool <-- topic : Bag, other : Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.is_not_subset> as per
 C<is_subset>.  Note that this operation is also known as C<⊈+> or
-C<< {!<=}+ >>.
+`{!<=}+`.
 
 ## sys.std.Core.Bag.is_superset
 
-C<< function is_superset (Bool <-- topic : Bag, other : Bag) {...} >>
+`function is_superset (Bool <-- topic : Bag, other : Bag) {...}`
 
 This function is an alias for C<sys.std.Core.Bag.is_subset> except that it
 transposes the C<topic> and C<other> arguments.  This function is like
@@ -181,58 +181,58 @@ C<sys.std.Core.Relation.is_superset> but that it accounts for the
 greater-than-one multiplicity of values in its arguments; this function
 returns C<Bool:True> iff the multiplicity of each C<topic> value is greater
 than or equal to the multiplicity of its counterpart C<other> value.
-Note that this operation is also known as C<⊇+> or C<< {>=}+ >>.
+Note that this operation is also known as C<⊇+> or `{>=}+`.
 
 ## sys.std.Core.Bag.is_not_superset
 
-C<< function is_not_superset (Bool <-- topic : Bag, other : Bag) {...} >>
+`function is_not_superset (Bool <-- topic : Bag, other : Bag) {...}`
 
 This function is an alias for C<sys.std.Core.Bag.is_not_subset> except that
 it transposes the C<topic> and C<other> arguments.  This function is like
 C<sys.std.Core.Relation.is_not_superset> as per C<is_superset>.
-Note that this operation is also known as C<⊉+> or C<< {!>=}+ >>.
+Note that this operation is also known as C<⊉+> or `{!>=}+`.
 
 ## sys.std.Core.Bag.is_proper_subset
 
-C<< function is_proper_subset (Bool <-- topic : Bag, other : Bag) {...} >>
+`function is_proper_subset (Bool <-- topic : Bag, other : Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.is_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
-Note that this operation is also known as C<⊂+> or C<< {<}+ >>.
+Note that this operation is also known as C<⊂+> or `{<}+`.
 
 ## sys.std.Core.Bag.is_not_proper_subset
 
-C<< function is_not_proper_subset (Bool <-- topic : Bag,
-other : Bag) {...} >>
+`function is_not_proper_subset (Bool <-- topic : Bag,
+other : Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.is_not_proper_subset> as per
 C<is_subset>.  I<TODO: What is its definition?>
-Note that this operation is also known as C<⊄+> or C<< {!<}+ >>.
+Note that this operation is also known as C<⊄+> or `{!<}+`.
 
 ## sys.std.Core.Bag.is_proper_superset
 
-C<< function is_proper_superset (Bool <-- topic : Bag,
-other : Bag) {...} >>
+`function is_proper_superset (Bool <-- topic : Bag,
+other : Bag) {...}`
 
 This function is an alias for C<sys.std.Core.Bag.is_proper_subset> except
 that it transposes the C<topic> and C<other> arguments.  This function is
 like C<sys.std.Core.Relation.is_proper_superset> as per C<is_superset>.
-Note that this operation is also known as C<⊃+> or C<< {>}+ >>.
+Note that this operation is also known as C<⊃+> or `{>}+`.
 
 ## sys.std.Core.Bag.is_not_proper_superset
 
-C<< function is_not_proper_superset (Bool <--
-topic : Bag, other : Bag) {...} >>
+`function is_not_proper_superset (Bool <--
+topic : Bag, other : Bag) {...}`
 
 This function is an alias for C<sys.std.Core.Bag.is_not_proper_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
 function is like C<sys.std.Core.Relation.is_not_proper_superset> as per
 C<is_superset>.  Note that this operation is also known as C<⊅+> or
-C<< {!>}+ >>.
+`{!>}+`.
 
 ## sys.std.Core.Bag.union
 
-C<< function union (Bag <-- topic : set_of.Bag) {...} >>
+`function union (Bag <-- topic : set_of.Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.union> but that it just
 looks at the C<value> attribute of its argument elements when determining
@@ -243,7 +243,7 @@ also known as C<∪+> or C<union+>.
 
 ## sys.std.Core.Bag.union_sum
 
-C<< function union_sum (Bag <-- topic : bag_of.Bag) {...} >>
+`function union_sum (Bag <-- topic : bag_of.Bag) {...}`
 
 This function is like C<sys.std.Core.Bag.union> but that for each pair of
 argument elements being unioned, the output C<count> value is the sum of
@@ -252,7 +252,7 @@ Note that this operation is also known as C<∪++> or C<union++>.
 
 ## sys.std.Core.Bag.intersection
 
-C<< function intersection (Bag <-- topic : set_of.Bag) {...} >>
+`function intersection (Bag <-- topic : set_of.Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.intersection> as C<union> is
 like C<sys.std.Core.Relation.union>; the minimum of C<count> attribute
@@ -261,7 +261,7 @@ operation is also known as C<∩+> or C<intersect+>.
 
 ## sys.std.Core.Bag.diff
 
-C<< function diff (Bag <-- source : Bag, filter : Bag) {...} >>
+`function diff (Bag <-- source : Bag, filter : Bag) {...}`
 
 This function is like C<sys.std.Core.Relation.diff> as C<union> is
 like C<sys.std.Core.Relation.union>; for corresponding input tuples, the

@@ -445,14 +445,14 @@ how some relational operations work in practice.
 
 Herein, we shall conceptualize a relation as a long boolean expression,
 consisting of a string of basic boolean-valued expressions that are
-selectively anded or ored together.  A basic boolean-valued expression, C<<
-<attr> >>, takes the form C<< attribute <name> is <value> >>.  Each tuple
-body, C<< <tuple> >>, in the relation takes the form of a chained C<and>
-that connects N C<< <attr> >>, one per each attribute in the relation, and
-each having a distinct C<< <name> >>.  The relation body takes the form of
-a chained C<or> that connects N C<< <tuple> >>, one per each tuple in the
-relation, and each C<< <tuple> >> has the same set of C<< <name> >> as the
-others, but the set of C<< <value> >> that each C<< <tuple> >> has is
+selectively anded or ored together.  A basic boolean-valued expression,
+`<attr>`, takes the form `attribute <name> is <value>`.  Each tuple
+body, `<tuple>`, in the relation takes the form of a chained C<and>
+that connects N `<attr>`, one per each attribute in the relation, and
+each having a distinct `<name>`.  The relation body takes the form of
+a chained C<or> that connects N `<tuple>`, one per each tuple in the
+relation, and each `<tuple>` has the same set of `<name>` as the
+others, but the set of `<value>` that each `<tuple>` has is
 distinct.
 
 Take, for example, a relation having some details about people, where each
@@ -497,7 +497,7 @@ operations, that are projection, join, union.
 
 A projection of a relation derives a relation that has a subset of the
 original's attributes, and all of its tuples.  Continuing the boolean
-expression analogy, the projected relation contains fewer C<< and <attr> >>
+expression analogy, the projected relation contains fewer `and <attr>`
 than the original.  For example, lets take the projection of the C<food>
 column from the shipments relation, to get, initially:
 
@@ -524,8 +524,8 @@ saving logical redundancy is why relations never have duplicate tuples.
 A join of 2 relations derives a relation that has all of the originals'
 attributes, and its set of tuples is fundamentally the cartesian product of
 those of the originals.  Following our boolean analogy, we start off by
-pairwise connecting instances of every C<< <tuple> >> of the first relation
-with instances of every C<< <tuple> >> of the second one, with the members
+pairwise connecting instances of every `<tuple>` of the first relation
+with instances of every `<tuple>` of the second one, with the members
 of each pair then being chained together with C<and> to form a single,
 longer chain of C<and>.  Note that join is commutative, so it doesn't
 matter which of the source relations is first or second, the result is the
@@ -3491,8 +3491,8 @@ constraints can also be associated with just variables rather than types.
 
 Conceptually speaking, for the ultimate freedom from constraints, the
 declared type of C<nlx.data> can be a simple alias for the C<Database>
-type, meaning that users can update C<nlx.data> (or more specifically, C<<
-fed.data.<depot-mnt-nm> >>) with any C<Database> value at all, and
+type, meaning that users can update C<nlx.data> (or more specifically,
+`fed.data.<depot-mnt-nm>`) with any C<Database> value at all, and
 (where applicable) have it persist.  In this situation, adding a database
 relation is done by extending the database with a new relation-valued
 attribute, and removing one is removing its attribute.  But see further
@@ -3585,20 +3585,20 @@ afterwards match the other/normal primary namespaces and what follow them,
 but for 1 possible extra element following those.
 
 The grammatically simplest scenario is taking the declared type of a
-scalar variable or pseudo-variable, which takes the form C<<
-type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..* >>, for
+scalar variable or pseudo-variable, which takes the form
+`type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..*`, for
 example C<type.var.nlx.myvar>.  A similar scenario is taking the declared
-type of an attribute of a distinct type entity, which takes the form C<<
-type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**1..* >>, for
+type of an attribute of a distinct type entity, which takes the form
+`type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**1..*`, for
 example C<type.type.nlx.lib.mytyp.myattr>.  A similar scenario is taking
-the declared result type of a function, which takes the form C<<
-type.func_result[.<path-elem-to-func>]**1..*[.<path-elem-to-attr>]**0..*
->>, for example C<type.func_result.nlx.lib.myfunc>.
+the declared result type of a function, which takes the form
+`type.func_result[.<path-elem-to-func>]**1..*[.<path-elem-to-attr>]**0..*`,
+for example C<type.func_result.nlx.lib.myfunc>.
 
 A slightly more complicated scenario is taking the declared type of a
-routine parameter, which takes the form C<<
-type.param[.<path-elem-to-rtn>]**1..*.<param-name>[.<path-elem-to-attr>]**0
-..* >>, for example
+routine parameter, which takes the form
+`type.param[.<path-elem-to-rtn>]**1..*.<param-name>[.<path-elem-to-attr>]**0
+..*`, for example
 C<type.param.sys.std.Core.Integer.whole_quotient.divisor>.
 
 Another scenario is first taking the declared type of something where that

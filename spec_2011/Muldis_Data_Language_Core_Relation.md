@@ -25,16 +25,16 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Relation.degree
 
-C<< function degree (NNInt <-- topic : Relation)
-implements sys.std.Core.Attributive.degree {...} >>
+`function degree (NNInt <-- topic : Relation)
+implements sys.std.Core.Attributive.degree {...}`
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
 ## sys.std.Core.Relation.is_nullary
 
-C<< function is_nullary (Bool <-- topic : Relation)
-implements sys.std.Core.Attributive.is_nullary {...} >>
+`function is_nullary (Bool <-- topic : Relation)
+implements sys.std.Core.Attributive.is_nullary {...}`
 
 This function results in C<Bool:True> iff its argument has a degree of zero
 (that is, it has zero attributes), and C<Bool:False> otherwise.  By
@@ -43,8 +43,8 @@ result in C<Bool:True> are the values C<Relation:D0C[0|1]>.
 
 ## sys.std.Core.Relation.is_not_nullary
 
-C<< function is_not_nullary (Bool <-- topic : Relation)
-implements sys.std.Core.Attributive.is_not_nullary {...} >>
+`function is_not_nullary (Bool <-- topic : Relation)
+implements sys.std.Core.Attributive.is_not_nullary {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.is_nullary>
 except
@@ -52,9 +52,9 @@ that it results in the opposite boolean value when given the same argument.
 
 ## sys.std.Core.Relation.has_attrs
 
-C<< function has_attrs (Bool <-- topic : Relation,
+`function has_attrs (Bool <-- topic : Relation,
 attr_names : set_of.Name)
-implements sys.std.Core.Attributive.has_attrs {...} >>
+implements sys.std.Core.Attributive.has_attrs {...}`
 
 This function results in C<Bool:True> iff, for every one of the attribute
 names specified by its C<attr_names> argument, its C<topic> argument has an
@@ -64,25 +64,25 @@ empty.
 
 ## sys.std.Core.Relation.attr_names
 
-C<< function attr_names (set_of.Name <-- topic : Relation)
-implements sys.std.Core.Attributive.attr_names {...} >>
+`function attr_names (set_of.Name <-- topic : Relation)
+implements sys.std.Core.Attributive.attr_names {...}`
 
 This function results in the set of the names of the attributes of its
 argument.
 
 ## sys.std.Core.Relation.rename
 
-C<< function rename (Relation <-- topic : Relation, map : AttrRenameMap)
-implements sys.std.Core.Attributive.rename {...} >>
+`function rename (Relation <-- topic : Relation, map : AttrRenameMap)
+implements sys.std.Core.Attributive.rename {...}`
 
 This function is the same as C<sys.std.Core.Tuple.rename> but that it
 operates on and results in a C<Relation> rather than a C<Tuple>.
 
 ## sys.std.Core.Relation.projection
 
-C<< function projection (Relation <--
+`function projection (Relation <--
 topic : Relation, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.projection {...} >>
+implements sys.std.Core.Attributive.projection {...}`
 
 This function is the same as C<sys.std.Core.Tuple.projection> but that it
 operates on and results in a C<Relation> rather than a C<Tuple>.  But
@@ -91,17 +91,17 @@ any C<topic> tuples were non-distinct for just the projected attributes.
 
 ## sys.std.Core.Relation.cmpl_proj
 
-C<< function cmpl_proj (Relation <--
+`function cmpl_proj (Relation <--
 topic : Relation, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.cmpl_proj {...} >>
+implements sys.std.Core.Attributive.cmpl_proj {...}`
 
 This function is the same as C<sys.std.Core.Tuple.cmpl_proj> but
 that it operates on and results in a C<Relation> rather than a C<Tuple>.
 
 ## sys.std.Core.Relation.static_exten
 
-C<< function static_exten (Relation <-- topic : Relation, attrs : Tuple)
-implements sys.std.Core.Attributive.static_exten {...} >>
+`function static_exten (Relation <-- topic : Relation, attrs : Tuple)
+implements sys.std.Core.Attributive.static_exten {...}`
 
 This function is a simpler-syntax alternative to both
 C<sys.std.Core.Relation.extension> and C<sys.std.Core.Relation.product>
@@ -112,8 +112,8 @@ the C<attrs> argument.
 
 ## sys.std.Core.Relation.wrap
 
-C<< function wrap (Relation <-- topic : Relation, outer : Name,
-inner : set_of.Name) implements sys.std.Core.Attributive.wrap {...} >>
+`function wrap (Relation <-- topic : Relation, outer : Name,
+inner : set_of.Name) implements sys.std.Core.Attributive.wrap {...}`
 
 This function is the same as C<sys.std.Core.Tuple.wrap> but that it
 operates on and results in a C<Relation> rather than a C<Tuple>, where
@@ -123,9 +123,9 @@ as C<topic>.
 
 ## sys.std.Core.Relation.cmpl_wrap
 
-C<< function cmpl_wrap (Relation <--
+`function cmpl_wrap (Relation <--
 topic : Relation, outer : Name, cmpl_inner : set_of.Name)
-implements sys.std.Core.Attributive.cmpl_wrap {...} >>
+implements sys.std.Core.Attributive.cmpl_wrap {...}`
 
 This function is the same as C<sys.std.Core.Tuple.cmpl_wrap> but that it
 operates on and results in a C<Relation> rather than a C<Tuple>, where
@@ -134,8 +134,8 @@ C<sys.std.Core.Tuple.cmpl_wrap>.
 
 ## sys.std.Core.Relation.unwrap
 
-C<< function unwrap (Relation <-- topic : Relation, inner : set_of.Name,
-outer : Name) implements sys.std.Core.Attributive.unwrap {...} >>
+`function unwrap (Relation <-- topic : Relation, inner : set_of.Name,
+outer : Name) implements sys.std.Core.Attributive.unwrap {...}`
 
 This function is the inverse of C<sys.std.Core.Relation.wrap> as
 C<sys.std.Core.Tuple.unwrap> is to C<sys.std.Core.Tuple.wrap>.  But
@@ -161,7 +161,7 @@ in that they typically work with any relation types.
 
 ## sys.std.Core.Relation.D0C0
 
-C<< function D0C0 (Relation <--) {...} >>
+`function D0C0 (Relation <--) {...}`
 
 This C<named-value> selector function results in the only zero-attribute,
 zero-tuple Relation value, which is known by the special name
@@ -170,7 +170,7 @@ refers to this value by the special shorthand name I<TABLE_DUM>.
 
 ## sys.std.Core.Relation.D0C1
 
-C<< function D0C1 (Relation <--) {...} >>
+`function D0C1 (Relation <--) {...}`
 
 This C<named-value> selector function results in the only zero-attribute,
 single-tuple Relation value, which is known by the special name
@@ -179,7 +179,7 @@ refers to this value by the special shorthand name I<TABLE_DEE>.
 
 ## sys.std.Core.Relation.cardinality
 
-C<< function cardinality (NNInt <-- topic : Relation) {...} >>
+`function cardinality (NNInt <-- topic : Relation) {...}`
 
 This function results in the cardinality of its argument (that is, the
 count of tuples its body has).  Note that this operation is also known as
@@ -187,13 +187,13 @@ I<count> or C<#>.
 
 ## sys.std.Core.Relation.count
 
-C<< function count (NNInt <-- topic : Relation) {...} >>
+`function count (NNInt <-- topic : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.cardinality>.
 
 ## sys.std.Core.Relation.is_empty
 
-C<< function is_empty (Bool <-- topic : Relation) {...} >>
+`function is_empty (Bool <-- topic : Relation) {...}`
 
 This function results in C<Bool:True> iff its argument has a cardinality of
 zero (that is, it has zero tuples), and C<Bool:False> otherwise.  Note
@@ -203,7 +203,7 @@ C<is_empty> is analogous to testing a SQL nullable with C<is null>.
 
 ## sys.std.Core.Relation.is_not_empty
 
-C<< function is_not_empty (Bool <-- topic : Relation) {...} >>
+`function is_not_empty (Bool <-- topic : Relation) {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.is_empty>
 except that it results in the opposite boolean value when given the same
@@ -212,7 +212,7 @@ analogous to SQL's C<is not null>.
 
 ## sys.std.Core.Relation.has_member
 
-C<< function has_member (Bool <-- r : Relation, t : Tuple) {...} >>
+`function has_member (Bool <-- r : Relation, t : Tuple) {...}`
 
 This function results in C<Bool:True> iff its C<t> argument matches a
 tuple of its C<r> argument (that is, iff conceptually C<t> is a member of
@@ -223,7 +223,7 @@ known as C<@∋> or C<holds>.
 
 ## sys.std.Core.Relation.has_not_member
 
-C<< function has_not_member (Bool <-- r : Relation, t : Tuple) {...} >>
+`function has_not_member (Bool <-- r : Relation, t : Tuple) {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.has_member>
 except that it results in the opposite boolean value when given the same
@@ -232,8 +232,8 @@ C<not-holds>.
 
 ## sys.std.Core.Relation.tuple_is_member
 
-C<< function tuple_is_member (Bool <--
-t : Tuple, r : Relation) {...} >>
+`function tuple_is_member (Bool <--
+t : Tuple, r : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.has_member>.  This
 function results in C<Bool:True> iff its C<t> argument matches a tuple of
@@ -243,8 +243,8 @@ or C<inside>.
 
 ## sys.std.Core.Relation.tuple_is_not_member
 
-C<< function tuple_is_not_member (Bool <--
-t : Tuple, r : Relation) {...} >>
+`function tuple_is_not_member (Bool <--
+t : Tuple, r : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.has_not_member>.
 This function is exactly the same as
@@ -254,8 +254,8 @@ operation is also known as C<∉@> or C<!inside> or C<not-inside>.
 
 ## sys.std.Core.Relation.has_key
 
-C<< function has_key (Bool <-- topic : Relation,
-attr_names : set_of.Name) {...} >>
+`function has_key (Bool <-- topic : Relation,
+attr_names : set_of.Name) {...}`
 
 This function results in C<Bool:True> iff its C<topic> argument has a
 (unique) key over the subset of its attributes whose names are specified by
@@ -266,7 +266,7 @@ if C<topic> is empty.
 
 ## sys.std.Core.Relation.empty
 
-C<< function empty (Relation <-- topic : Relation) {...} >>
+`function empty (Relation <-- topic : Relation) {...}`
 
 This function results in the empty relation of the same heading of its
 argument, that is having the same degree and attribute names; it has zero
@@ -274,7 +274,7 @@ tuples.
 
 ## sys.std.Core.Relation.insertion
 
-C<< function insertion (Relation <-- r : Relation, t : Tuple) {...} >>
+`function insertion (Relation <-- r : Relation, t : Tuple) {...}`
 
 This function results in a C<Relation> that is the relational union of
 C<r> and a relation whose sole tuple is C<t>; that is, conceptually the
@@ -283,14 +283,14 @@ exists in C<r>, then the result is just C<r>.
 
 ## sys.std.Core.Relation.disjoint_ins
 
-C<< function disjoint_ins (Relation <-- r : Relation, t : Tuple) {...} >>
+`function disjoint_ins (Relation <-- r : Relation, t : Tuple) {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.insertion>
 except that it will fail if C<t> already exists in C<r>.
 
 ## sys.std.Core.Relation.deletion
 
-C<< function deletion (Relation <-- r : Relation, t : Tuple) {...} >>
+`function deletion (Relation <-- r : Relation, t : Tuple) {...}`
 
 This function results in a C<Relation> that is the relational difference
 from C<r> of a relation whose sole tuple is C<t>; that is, conceptually
@@ -299,8 +299,8 @@ doesn't exist in C<r>, then the result is just C<r>.
 
 ## sys.std.Core.Relation.group
 
-C<< function group (Relation <-- topic : Relation,
-outer : Name, inner : set_of.Name) {...} >>
+`function group (Relation <-- topic : Relation,
+outer : Name, inner : set_of.Name) {...}`
 
 This function is similar to C<sys.std.Core.Relation.wrap> but that the
 C<topic> attribute-wrapping transformations result in new
@@ -327,21 +327,21 @@ C<topic> does).  This function supports the new attribute having the same
 name as an old one being grouped into it.  This function will fail if
 C<inner> specifies any attribute names that C<topic> doesn't have, or if
 C<outer> is the same as C<topic> attributes that aren't being grouped.
-Note that this operation is also known as I<nest> or C<< {@<-} >>.
+Note that this operation is also known as I<nest> or `{@<-}`.
 
 ## sys.std.Core.Relation.cmpl_group
 
-C<< function cmpl_group (Relation <--
-topic : Relation, outer : Name, group_per : set_of.Name) {...} >>
+`function cmpl_group (Relation <--
+topic : Relation, outer : Name, group_per : set_of.Name) {...}`
 
 This function is the same as C<group> but that it groups the complementary
 subset of attributes of C<topic> to those specified by C<group_per>.  Note
-that this operation is also known as C<< {@<-!} >>.
+that this operation is also known as `{@<-!}`.
 
 ## sys.std.Core.Relation.ungroup
 
-C<< function ungroup (Relation <--
-topic : Relation, inner : set_of.Name, outer : Name) {...} >>
+`function ungroup (Relation <--
+topic : Relation, inner : set_of.Name, outer : Name) {...}`
 
 This function is the inverse of C<sys.std.Core.Relation.group> as
 C<sys.std.Core.Relation.unwrap> is to C<sys.std.Core.Relation.wrap>; it
@@ -359,11 +359,11 @@ a relation of the same degree and heading (attribute names); this failure
 is because there would be no consistent set of attribute names to extend
 C<topic> with (a problem that would never happen by definition with a
 deeply homogeneous relation C<topic>).  Note that this operation is also
-known as I<unnest> or C<< {<-@} >>.
+known as I<unnest> or `{<-@}`.
 
 ## sys.std.Core.Relation.power_set
 
-C<< function power_set (set_of.Relation <-- topic : Relation) {...} >>
+`function power_set (set_of.Relation <-- topic : Relation) {...}`
 
 This function results in the power set of its argument.  The result is a
 C<Set> whose sole attribute is C<Relation>-typed (its type is nominally
@@ -377,7 +377,7 @@ relation.
 
 ## sys.std.Core.Relation.tclose
 
-C<< function tclose (Relation <-- topic : Relation) {...} >>
+`function tclose (Relation <-- topic : Relation) {...}`
 
 This function results in the transitive closure of its argument.  The
 argument must be a binary relation whose attributes are both of the same
@@ -394,8 +394,8 @@ problem of finding all components, at all levels, of some specified part).
 
 ## sys.std.Core.Relation.restriction
 
-C<< function restriction (Relation <--
-topic : Relation, func : ValFiltPFuncNC) {...} >>
+`function restriction (Relation <--
+topic : Relation, func : ValFiltPFuncNC) {...}`
 
 This function results in the relational restriction of its C<topic>
 argument as determined by applying the C<value-filter> function named in
@@ -414,8 +414,8 @@ value equality.
 
 ## sys.std.Core.Relation.restr_and_cmpl
 
-C<< function restr_and_cmpl (Tuple <--
-topic : Relation, func : ValFiltPFuncNC) {...} >>
+`function restr_and_cmpl (Tuple <--
+topic : Relation, func : ValFiltPFuncNC) {...}`
 
 This function performs a 2-way partitioning of all the tuples of C<topic>
 and results in a binary tuple whose attribute values are each relations
@@ -427,8 +427,8 @@ when given the same arguments.
 
 ## sys.std.Core.Relation.cmpl_restr
 
-C<< function cmpl_restr (Relation <--
-topic : Relation, func : ValFiltPFuncNC) {...} >>
+`function cmpl_restr (Relation <--
+topic : Relation, func : ValFiltPFuncNC) {...}`
 
 This function is the same as C<restriction> but that it results in the
 complementary subset of tuples of C<topic> when given the same arguments.
@@ -437,9 +437,9 @@ operation is also known as C<!where> or C<not-where>.
 
 ## sys.std.Core.Relation.classification
 
-C<< function classification (Relation <--
+`function classification (Relation <--
 topic : Relation, func : ValMapPFuncNC, class_attr_name : Name,
-group_attr_name : Name) {...} >>
+group_attr_name : Name) {...}`
 
 This function conceptually is to C<sys.std.Core.Relation.restriction> what
 C<sys.std.Core.Relation.group> is to C<sys.std.Core.Relation.semijoin>.
@@ -461,8 +461,8 @@ into exactly 2 groups (and returning one) using arbitrary criteria.
 
 ## sys.std.Core.Relation.extension
 
-C<< function extension (Relation <--
-topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC) {...} >>
+`function extension (Relation <--
+topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC) {...}`
 
 This function results in the relational extension of its C<topic> argument
 as determined by applying the C<Tuple>-resulting C<value-map> function
@@ -488,8 +488,8 @@ those named by C<attr_names>.
 
 ## sys.std.Core.Relation.map
 
-C<< function map (Relation <-- topic : Relation,
-result_attr_names : set_of.Name, func : ValMapPFuncNC) {...} >>
+`function map (Relation <-- topic : Relation,
+result_attr_names : set_of.Name, func : ValMapPFuncNC) {...}`
 
 This function provides a convenient one-place generalization of per-tuple
 transformations that otherwise might require the chaining of up to a
@@ -518,9 +518,9 @@ attribute names to those named by C<result_attr_names>.
 
 ## sys.std.Core.Relation.summary
 
-C<< function summary (Relation <--
+`function summary (Relation <--
 topic : Relation, group_per : set_of.Name,
-summ_attr_names : set_of.Name, summ_func : ValMapPFuncNC) {...} >>
+summ_attr_names : set_of.Name, summ_func : ValMapPFuncNC) {...}`
 
 This function provides a convenient context for using aggregate functions
 to derive a per-group summary relation, which is its result, from another
@@ -558,8 +558,8 @@ matching attribute names to those named by C<summ_attr_names>.
 
 ## sys.std.Core.Relation.cardinality_per_group
 
-C<< function cardinality_per_group (Relation <--
-topic : Relation, count_attr_name : Name, group_per : set_of.Name) {...} >>
+`function cardinality_per_group (Relation <--
+topic : Relation, count_attr_name : Name, group_per : set_of.Name) {...}`
 
 This function is a convenient shorthand for the common use of C<summary>
 that is just counting the tuples of each group.  This function is like
@@ -567,20 +567,20 @@ C<cmpl_group> but that the single added attribute, rather than an RVA of
 the grouped C<topic> attributes, has the cardinality that said RVA would
 have had.  The result's heading consists of the attributes named in
 C<group_per> plus the attribute named in C<count_attr_name> (a C<PInt>).
-Note that this operation is also known as C<< {#@<-!} >>.
+Note that this operation is also known as `{#@<-!}`.
 
 ## sys.std.Core.Relation.count_per_group
 
-C<< function count_per_group (Relation <--
-topic : Relation, count_attr_name : Name, group_per : set_of.Name) {...} >>
+`function count_per_group (Relation <--
+topic : Relation, count_attr_name : Name, group_per : set_of.Name) {...}`
 
 This function is an alias for
 C<sys.std.Core.Relation.cardinality_per_group>.
 
 ## sys.std.Core.Relation.reduction
 
-C<< function reduction (Tuple <-- topic : Relation,
-func : ValRedPFuncNC, identity : Tuple) {...} >>
+`function reduction (Tuple <-- topic : Relation,
+func : ValRedPFuncNC, identity : Tuple) {...}`
 
 This function is a generic reduction operator that recursively takes each
 pair of tuples in C<topic> and applies an argument-specified tuple
@@ -601,92 +601,92 @@ in that they typically work with any relation types.
 
 ## sys.std.Core.Relation.is_subset
 
-C<< function is_subset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_subset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function results in C<Bool:True> iff the set of tuples comprising
 C<topic> is a subset of the set of tuples comprising C<other>, and
 C<Bool:False> otherwise.  This function will warn if the input relations
 common-named attributes have declared types that are incompatible as per
-C<is_same>.  Note that this operation is also known as C<⊆> or C<< {<=} >>.
+C<is_same>.  Note that this operation is also known as C<⊆> or `{<=}`.
 
 ## sys.std.Core.Relation.is_not_subset
 
-C<< function is_not_subset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_not_subset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.is_subset>
 except that it results in the opposite boolean value when given the same
-arguments.  Note that this operation is also known as C<⊈> or C<< {!<=} >>.
+arguments.  Note that this operation is also known as C<⊈> or `{!<=}`.
 
 ## sys.std.Core.Relation.is_superset
 
-C<< function is_superset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_superset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.is_subset> except
 that it transposes the C<topic> and C<other> arguments.  This function
 results in C<Bool:True> iff the set of tuples comprising C<topic> is a
 superset of the set of tuples comprising C<other>, and C<Bool:False>
-otherwise.  Note that this operation is also known as C<⊇> or C<< {>=} >>.
+otherwise.  Note that this operation is also known as C<⊇> or `{>=}`.
 
 ## sys.std.Core.Relation.is_not_superset
 
-C<< function is_not_superset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_not_superset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.is_not_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
 function is exactly the same as C<sys.std.Core.Relation.is_superset>
 except that it results in the opposite boolean value when given the same
-arguments.  Note that this operation is also known as C<⊉> or C<< {!>=} >>.
+arguments.  Note that this operation is also known as C<⊉> or `{!>=}`.
 
 ## sys.std.Core.Relation.is_proper_subset
 
-C<< function is_proper_subset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_proper_subset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.is_subset>
 except that it results in C<Bool:False> if its 2 arguments are identical.
-Note that this operation is also known as C<⊂> or C<< {<} >>.
+Note that this operation is also known as C<⊂> or `{<}`.
 
 ## sys.std.Core.Relation.is_not_proper_subset
 
-C<< function is_not_proper_subset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_not_proper_subset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is exactly the same as
 C<sys.std.Core.Relation.is_proper_subset>
 except that it results in the opposite boolean value when given the same
-arguments.  Note that this operation is also known as C<⊄> or C<< {!<} >>.
+arguments.  Note that this operation is also known as C<⊄> or `{!<}`.
 
 ## sys.std.Core.Relation.is_proper_superset
 
-C<< function is_proper_superset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_proper_superset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.is_proper_subset>
 except
 that it transposes the C<topic> and C<other> arguments.  This function
 is exactly the same as C<sys.std.Core.Relation.is_superset> except that it
 results in C<Bool:False> if its 2 arguments are identical.  Note that this
-operation is also known as C<⊃> or C<< {>} >>.
+operation is also known as C<⊃> or `{>}`.
 
 ## sys.std.Core.Relation.is_not_proper_superset
 
-C<< function is_not_proper_superset (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_not_proper_superset (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.is_not_proper_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
 function is exactly the same as C<sys.std.Core.Relation.is_proper_superset>
 except that it results in the opposite boolean value when given the same
-arguments.  Note that this operation is also known as C<⊅> or C<< {!>} >>.
+arguments.  Note that this operation is also known as C<⊅> or `{!>}`.
 
 ## sys.std.Core.Relation.is_disjoint
 
-C<< function is_disjoint (Bool <-- topic : Relation,
-other : Relation) {...} >>
+`function is_disjoint (Bool <-- topic : Relation,
+other : Relation) {...}`
 
 This symmetric function results in C<Bool:True> iff the set of tuples
 comprising each of its 2 arguments are mutually disjoint, that is, iff the
@@ -695,8 +695,8 @@ otherwise.
 
 ## sys.std.Core.Relation.is_not_disjoint
 
-C<< function is_not_disjoint (Bool <--
-topic : Relation, other : Relation) {...} >>
+`function is_not_disjoint (Bool <--
+topic : Relation, other : Relation) {...}`
 
 This symmetric function is exactly the same as
 C<sys.std.Core.Relation.is_disjoint> except that it results in the opposite
@@ -704,7 +704,7 @@ boolean value when given the same arguments.
 
 ## sys.std.Core.Relation.union
 
-C<< function union (Relation <-- topic : set_of.Relation) {...} >>
+`function union (Relation <-- topic : set_of.Relation) {...}`
 
 This function results in the relational union/inclusive-or of the N element
 values of its argument; it is a reduction operator that recursively takes
@@ -725,14 +725,14 @@ also known as C<∪>.
 
 ## sys.std.Core.Relation.disjoint_union
 
-C<< function disjoint_union (Relation <-- topic : set_of.Relation) {...} >>
+`function disjoint_union (Relation <-- topic : set_of.Relation) {...}`
 
 This function is exactly the same as C<sys.std.Core.Relation.union> except
 that it will fail if any 2 input values have a tuple in common.
 
 ## sys.std.Core.Relation.exclusion
 
-C<< function exclusion (Relation <-- topic : bag_of.Relation) {...} >>
+`function exclusion (Relation <-- topic : bag_of.Relation) {...}`
 
 This function results in the relational exclusion/exclusive-or of the N
 element values of its argument; it is a reduction operator that recursively
@@ -748,13 +748,13 @@ also known as I<symmetric difference> or C<∆>.
 
 ## sys.std.Core.Relation.symmetric_diff
 
-C<< function symmetric_diff (Relation <-- topic : bag_of.Relation) {...} >>
+`function symmetric_diff (Relation <-- topic : bag_of.Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.exclusion>.
 
 ## sys.std.Core.Relation.intersection
 
-C<< function intersection (Relation <-- topic : set_of.Relation) {...} >>
+`function intersection (Relation <-- topic : set_of.Relation) {...}`
 
 This function results in the relational intersection/and of the N element
 values of its argument; it is a reduction operator that recursively takes
@@ -785,8 +785,8 @@ operation is also known as C<∩>.
 
 ## sys.std.Core.Relation.diff
 
-C<< function diff (Relation <--
-source : Relation, filter : Relation) {...} >>
+`function diff (Relation <--
+source : Relation, filter : Relation) {...}`
 
 This function results in the relational difference when its C<filter>
 argument is subtracted from its C<source> argument.  The result relation
@@ -800,8 +800,8 @@ operation is also known as C<minus> or C<except> or C<∖>.
 
 ## sys.std.Core.Relation.semidiff
 
-C<< function semidiff (Relation <--
-source : Relation, filter : Relation) {...} >>
+`function semidiff (Relation <--
+source : Relation, filter : Relation) {...}`
 
 This function is the same as C<semijoin> but that it results in the
 complementary subset of tuples of C<source> when given the same arguments.
@@ -810,15 +810,15 @@ or C<semiminus> or C<!matching> or C<not-matching> or C<⊿>.
 
 ## sys.std.Core.Relation.antijoin
 
-C<< function antijoin (Relation <--
-source : Relation, filter : Relation) {...} >>
+`function antijoin (Relation <--
+source : Relation, filter : Relation) {...}`
 
 This function is an alias for C<sys.std.Core.Relation.semidiff>.
 
 ## sys.std.Core.Relation.semijoin_and_diff
 
-C<< function semijoin_and_diff (Tuple <--
-source : Relation, filter : Relation) {...} >>
+`function semijoin_and_diff (Tuple <--
+source : Relation, filter : Relation) {...}`
 
 This function performs a 2-way partitioning of all the tuples of
 C<source> and results in a binary tuple whose attribute values are each
@@ -830,8 +830,8 @@ when given the same arguments.
 
 ## sys.std.Core.Relation.semijoin
 
-C<< function semijoin (Relation <--
-source : Relation, filter : Relation) {...} >>
+`function semijoin (Relation <--
+source : Relation, filter : Relation) {...}`
 
 This function results in the relational semijoin of its C<source> and
 C<filter> arguments.  The result relation has the same heading as
@@ -845,7 +845,7 @@ Note that this operation is also known as C<matching> or C<⋉>.
 
 ## sys.std.Core.Relation.join
 
-C<< function join (Relation <-- topic? : set_of.Relation) {...} >>
+`function join (Relation <-- topic? : set_of.Relation) {...}`
 
 This function results in the relational join of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -874,7 +874,7 @@ known as I<natural inner join> or C<⋈>.
 
 ## sys.std.Core.Relation.product
 
-C<< function product (Relation <-- topic? : set_of.Relation) {...} >>
+`function product (Relation <-- topic? : set_of.Relation) {...}`
 
 This function results in the relational cartesian/cross product of the N
 element values of its argument; it is conceptually a special case of
@@ -885,8 +885,8 @@ C<cross-join> or C<×>.
 
 ## sys.std.Core.Relation.quotient
 
-C<< function quotient (Relation <--
-dividend : Relation, divisor : Relation) {...} >>
+`function quotient (Relation <--
+dividend : Relation, divisor : Relation) {...}`
 
 This function results in the quotient when its C<dividend> argument is
 divided by its C<divisor> argument using relational division.  Speaking
@@ -902,8 +902,8 @@ I<divideby> or C<÷>.
 
 ## sys.std.Core.Relation.composition
 
-C<< function composition (Relation <--
-topic : Relation, other : Relation) {...} >>
+`function composition (Relation <--
+topic : Relation, other : Relation) {...}`
 
 This symmetric function results in the relational composition of its
 2 arguments.  It is conceptually a short-hand for first doing
@@ -916,8 +916,8 @@ input relations.
 
 ## sys.std.Core.Relation.join_with_group
 
-C<< function join_with_group (Relation <--
-primary : Relation, secondary : Relation, group_attr : Name) {...} >>
+`function join_with_group (Relation <--
+primary : Relation, secondary : Relation, group_attr : Name) {...}`
 
 This function is a short-hand for first taking a (natural inner) C<join> of
 its C<primary> and C<secondary> arguments, and then taking a C<group> on
@@ -936,9 +936,9 @@ These additional functions are specific to supporting ranking and quotas.
 
 ## sys.std.Core.Relation.rank
 
-C<< function rank (Relation <-- topic : Relation,
+`function rank (Relation <-- topic : Relation,
 name : Name, ord_func : OrdDetPFuncNC, is_reverse_order? : Bool,
-first_rank? : NNInt) {...} >>
+first_rank? : NNInt) {...}`
 
 This function results in the relational extension of its C<topic> argument
 by a single C<NNInt>-typed attribute whose name is provided by the C<name>
@@ -967,9 +967,9 @@ is necessary for this setwise operation to remain deterministic.
 
 ## sys.std.Core.Relation.rank_by_attr_names
 
-C<< function rank_by_attr_names (Relation <--
+`function rank_by_attr_names (Relation <--
 topic : Relation, name : Name, order_by : array_of.OrderByName,
-is_reverse_order? : Bool, first_rank? : NNInt) {...} >>
+is_reverse_order? : Bool, first_rank? : NNInt) {...}`
 
 This function is a short-hand for invoking C<rank> with the function
 C<sys.std.Core.Tuple.order_by_attr_names> as its C<ord_func> argument after
@@ -977,9 +977,9 @@ the latter is primed with this function's C<order_by> argument.
 
 ## sys.std.Core.Relation.limit
 
-C<< function limit (Relation <-- topic : Relation,
+`function limit (Relation <-- topic : Relation,
 ord_func : OrdDetPFuncNC, is_reverse_order? : Bool,
-rank_interval : sp_interval_of.NNInt) {...} >>
+rank_interval : sp_interval_of.NNInt) {...}`
 
 This function results in the relational restriction of its C<topic>
 argument as determined by first ranking its tuples as per the C<rank>
@@ -998,9 +998,9 @@ C<sys.std.Core.Array.limit_of_Array_from_wrap> for an alternative).
 
 ## sys.std.Core.Relation.limit_by_attr_names
 
-C<< function limit_by_attr_names (Relation <--
+`function limit_by_attr_names (Relation <--
 topic : Relation, order_by : array_of.OrderByName,
-is_reverse_order? : Bool, rank_interval : sp_interval_of.NNInt) {...} >>
+is_reverse_order? : Bool, rank_interval : sp_interval_of.NNInt) {...}`
 
 This function is to C<limit> what C<rank_by_attr_names> is to C<rank>.
 
@@ -1010,8 +1010,8 @@ These additional functions are specific to supporting substitutions.
 
 ## sys.std.Core.Relation.substitution
 
-C<< function substitution (Relation <--
-topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC) {...} >>
+`function substitution (Relation <--
+topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC) {...}`
 
 This function is similar to C<extension> except that it substitutes values
 of existing relation attributes rather than adding new attributes.  The
@@ -1039,8 +1039,8 @@ names to those named by C<attr_names>.
 
 ## sys.std.Core.Relation.static_subst
 
-C<< function static_subst (Relation <--
-topic : Relation, attrs : Tuple) {...} >>
+`function static_subst (Relation <--
+topic : Relation, attrs : Tuple) {...}`
 
 This function is a simpler-syntax alternative to
 C<sys.std.Core.Relation.substitution> in the typical scenario where every
@@ -1050,9 +1050,9 @@ given in the C<attrs> argument.
 
 ## sys.std.Core.Relation.subst_in_restr
 
-C<< function subst_in_restr (Relation <--
+`function subst_in_restr (Relation <--
 topic : Relation, restr_func : ValFiltPFuncNC,
-subst_attr_names : set_of.Name, subst_func : ValMapPFuncNC) {...} >>
+subst_attr_names : set_of.Name, subst_func : ValMapPFuncNC) {...}`
 
 This function is like C<substitution> except that it only transforms a
 subset of the tuples of C<topic> rather than all of them.  It is a
@@ -1067,8 +1067,8 @@ simply of anded or ored tests for attribute value equality.
 
 ## sys.std.Core.Relation.static_subst_in_restr
 
-C<< function static_subst_in_restr (Relation <--
-topic : Relation, restr_func : ValFiltPFuncNC, subst : Tuple) {...} >>
+`function static_subst_in_restr (Relation <--
+topic : Relation, restr_func : ValFiltPFuncNC, subst : Tuple) {...}`
 
 This function is to C<sys.std.Core.Relation.subst_in_restr> what
 C<sys.std.Core.Relation.static_subst> is to
@@ -1077,9 +1077,9 @@ C<static_subst_in_semijoin> function.
 
 ## sys.std.Core.Relation.subst_in_semijoin
 
-C<< function subst_in_semijoin (Relation <--
+`function subst_in_semijoin (Relation <--
 topic : Relation, restr : Relation, subst_attr_names : set_of.Name,
-subst_func : ValMapPFuncNC) {...} >>
+subst_func : ValMapPFuncNC) {...}`
 
 This function is like C<subst_in_restr> except that the subset of the
 tuples of C<topic> to be transformed is determined by those matched by a
@@ -1088,8 +1088,8 @@ restriction.
 
 ## sys.std.Core.Relation.static_subst_in_semijoin
 
-C<< function static_subst_in_semijoin (Relation <--
-topic : Relation, restr : Relation, subst : Tuple) {...} >>
+`function static_subst_in_semijoin (Relation <--
+topic : Relation, restr : Relation, subst : Tuple) {...}`
 
 This function is to C<sys.std.Core.Relation.subst_in_semijoin> what
 C<sys.std.Core.Relation.static_subst> is to
@@ -1101,8 +1101,8 @@ These additional functions are specific to supporting outer-joins.
 
 ## sys.std.Core.Relation.outer_join_with_group
 
-C<< function outer_join_with_group (Relation <--
-primary : Relation, secondary : Relation, group_attr : Name) {...} >>
+`function outer_join_with_group (Relation <--
+primary : Relation, secondary : Relation, group_attr : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.join_with_group>
 except that it results in a half-outer natural join rather than an inner
@@ -1113,8 +1113,8 @@ result attribute named by C<group_attr> contains zero tuples rather than
 
 ## sys.std.Core.Relation.outer_join_with_maybes
 
-C<< function outer_join_with_maybes (Relation <--
-primary : Relation, secondary : Relation) {...} >>
+`function outer_join_with_maybes (Relation <--
+primary : Relation, secondary : Relation) {...}`
 
 This function results in a plain half-outer natural join of its C<primary>
 and C<secondary> arguments where all the result attributes that come from
@@ -1127,8 +1127,8 @@ used in result rows that were a non-match.
 
 ## sys.std.Core.Relation.outer_join_with_defaults
 
-C<< function outer_join_with_defaults (Relation <--
-primary : Relation, secondary : Relation, filler : APTypeNC) {...} >>
+`function outer_join_with_defaults (Relation <--
+primary : Relation, secondary : Relation, filler : APTypeNC) {...}`
 
 This function is the same as
 C<sys.std.Core.Relation.outer_join_with_static_exten> but that the filler
@@ -1139,8 +1139,8 @@ C<sys.std.Core.Universal.default>.
 
 ## sys.std.Core.Relation.outer_join_with_static_exten
 
-C<< function outer_join_with_static_exten (Relation <-- primary : Relation,
-secondary : Relation, filler : Tuple) {...} >>
+`function outer_join_with_static_exten (Relation <-- primary : Relation,
+secondary : Relation, filler : Tuple) {...}`
 
 This function is the same as
 C<sys.std.Core.Relation.outer_join_with_maybes>
@@ -1153,8 +1153,8 @@ use for those missing attribute values.
 
 ## sys.std.Core.Relation.outer_join_with_exten
 
-C<< function outer_join_with_exten (Relation <-- primary : Relation,
-secondary : Relation, exten_func : ValMapPFuncNC) {...} >>
+`function outer_join_with_exten (Relation <-- primary : Relation,
+secondary : Relation, exten_func : ValMapPFuncNC) {...}`
 
 This function is the same as
 C<sys.std.Core.Relation.outer_join_with_static_exten> but that the result

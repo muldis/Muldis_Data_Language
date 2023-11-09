@@ -120,7 +120,7 @@ guidelines state otherwise; this includes that square brackets mean
 grouping not optionality, and that when multiple sub-pattern alternatives
 match, the one that is the longest wins.  2. The grammar portion that
 actually declares a token, that is what associates a token name with its
-definition body, is formatted like EBNF, as C<< <footok> ::= ... >> rather
+definition body, is formatted like EBNF, as `<footok> ::= ...` rather
 than the Raku way like C<token footok { ... }> or C<rule footok { ... }>.
 3. All non-quoted whitespace is not significant and just is formatting the
 grammar itself; rather, whitespace rules in the grammar are spelled out
@@ -218,7 +218,7 @@ Grammar:
     <std_syn_ext_list_item> ::=
         ''
 
-I<Please interpret the C<''> under C<< <std_syn_ext_list_item> >> as a
+I<Please interpret the C<''> under `<std_syn_ext_list_item>` as a
 placeholder and that there are currently zero valid list items.>
 
 As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
@@ -932,7 +932,7 @@ So a C<x_value>|C<value> node has 1-3 elements in general:
 
 * C<value_kind>
 
-This is a character string of the format C<< <[A..Z]> <[ a..z A..Z ]>+ >>;
+This is a character string of the format `<[A..Z]> <[ a..z A..Z ]>+`;
 it identifies the data type of the value literal in broad terms and is the
 only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
@@ -951,7 +951,7 @@ For many values of the 3 data types [C<Bag>, C<[S|M]PInterval>], the
 C<value_kind> portion of a GCVL may be omitted for brevity; specifically,
 this may be done just for the [C<Bag>, C<[S|M]PInterval>] GCVL whose
 C<value_payload> are not valid C<value_payload> of a C<Set> GCVL.  For a
-C<Bag> GCVL, all of those formatted as C<< => >> separated pairs may have
+C<Bag> GCVL, all of those formatted as `=>` separated pairs may have
 their C<value_kind> omitted, while all of those that are not formatted as
 pairs may not.  For a C<SPInterval> GCVL, all of those that are formatted
 as a range pair with C<..>/etc may have their C<value_kind> omitted, while
@@ -1487,8 +1487,8 @@ The meanings of the simple escape sequences are:
     \f  | 0xC        | FORM FEED (FF)  |     | control char form feed
     \r  | 0xD        | CARR. RET. (CR) |     | control char carriage return
 
-There is currently just one complex escape sequence, of the format C<<
-\c<...> >>, that supports specifying characters in terms of their Unicode
+There is currently just one complex escape sequence, of the format
+`\c<...>`, that supports specifying characters in terms of their Unicode
 abstract code point name or number.  If the C<...> consists of just
 uppercased (not lowercased) letters and the space character, then the
 C<...> is interpreted as a Unicode character name.  If the C<...> looks
@@ -1874,11 +1874,11 @@ C<same_named_nonord_atvl>, which may be used only if the C<expr> of the
 otherwise-C<nonord_atvl> is an C<expr_name> and that C<expr_name> is
 identical to the C<attr_name>.  In this situation, the identical name can
 be specified just once, which is the shorthand; for example, the attribute
-C<< foo => foo >> may alternately be written out as C<< =>foo >>.
+`foo => foo` may alternately be written out as `=>foo`.
 This shorthand is to help with
 the possibly common situation where attributes of a tuple (or relation or
 scalar) selection are being valued from same-named expression nodes / etc.
-(This shorthand is like Raku's C<:$a> being short for C<< a => $a >>.)
+(This shorthand is like Raku's C<:$a> being short for `a => $a`.)
 
 See also the definition of the catalog data type
 C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what
@@ -2693,7 +2693,7 @@ So a C<x_material>|C<material> node has 2-3 elements in general:
 
 * C<material_kind>
 
-This is a character string of the format C<< [<[ a..z ]>+] ** '-' >>; it
+This is a character string of the format `[<[ a..z ]>+] ** '-'`; it
 identifies the kind of the material and is the only external metadata of
 C<material_payload> generally necessary to interpret the latter; what
 grammars are valid for C<material_payload> depend just on C<material_kind>.
@@ -3884,12 +3884,12 @@ which may be used only if the C<expr> of the otherwise-C<named_ro_arg> is
 an C<expr_name> and that C<expr_name> is identical to the
 C<invo_param_name>.
 In this situation, the identical name can be specified just once, which is
-the shorthand; for example, the named argument C<< foo => foo >> may
-alternately be written out as C<< =>foo >>.
+the shorthand; for example, the named argument `foo => foo` may
+alternately be written out as `=>foo`.
 This shorthand is to help with the possibly common
 situation where two successive routines in a call-chain have any same-named
 parameters and arguments are simply being passed through.
-(This shorthand is like Raku's C<:$a> being short for C<< a => $a >>.)
+(This shorthand is like Raku's C<:$a> being short for `a => $a`.)
 
 Examples:
 
@@ -5625,7 +5625,7 @@ global variables with lexical aliases.
 
 ## Pairs
 
-The infix tokens {C<:>,C<< => >>,C<< <- >>,C<< <-- >>} are mainly used
+The infix tokens {C<:>,`=>`,`<-`,`<--`} are mainly used
 between two items to designate that the they form a pair of some kind.  The
 C<:> is the most common and is used for any context where the left-hand
 side of the pair is always an entity name or heading, including: a
@@ -5633,11 +5633,11 @@ variable/parameter/attribute-like typed entity declaration
 (var/param/attr-name : type-name), a named argument or tuple literal
 attribute (arg/attr-name : value-expr), and a routine heading from a
 routine body; a C<:> also separates the main parts of some value literals,
-such as the literal kind keyword from the main literal.  The C<< => >> is
+such as the literal kind keyword from the main literal.  The `=>` is
 used for any context where two arbitrary value expressions are paired such
-as in a C<Bag> literal or a C<Dict> literal.  The C<< <- >> is used just
-between 2 entity names in the postcircumfix renaming operator.  The C<< <--
->> is used just in a function signature between the result type and
+as in a C<Bag> literal or a C<Dict> literal.  The `<-` is used just
+between 2 entity names in the postcircumfix renaming operator.  The `<--`
+is used just in a function signature between the result type and
 parameter list.
 
 # RESOLVING AMBIGUITY

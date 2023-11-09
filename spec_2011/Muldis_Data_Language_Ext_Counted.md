@@ -59,8 +59,8 @@ C<tcount> as C<tattrs>.
 
 ## sys.std.Counted.add_count_attr
 
-C<< function add_count_attr (Relation <--
-topic : Relation, count_attr_name : Name) {...} >>
+`function add_count_attr (Relation <--
+topic : Relation, count_attr_name : Name) {...}`
 
 This function is a shorthand for C<sys.std.Core.Relation.static_exten>
 that adds to C<topic> a single C<tcount> attribute whose value for all
@@ -69,8 +69,8 @@ bag of tuples, of multiplicity 1 per tuple.
 
 ## sys.std.Counted.remove_count_attr
 
-C<< function remove_count_attr (Relation <--
-topic : Relation, count_attr_name : Name) {...} >>
+`function remove_count_attr (Relation <--
+topic : Relation, count_attr_name : Name) {...}`
 
 This function is a shorthand for C<sys.std.Core.Relation.cmpl_proj>
 that removes from C<topic> the single C<tcount> attribute.  This function
@@ -79,8 +79,8 @@ duplicates.
 
 ## sys.std.Counted.counted_cardinality
 
-C<< function counted_cardinality (NNInt <--
-topic : Relation, count_attr_name : Name) {...} >>
+`function counted_cardinality (NNInt <--
+topic : Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.cardinality> but that it
 accounts for the greater-than-one conceptual multiplicity of tuples in
@@ -89,8 +89,8 @@ its C<topic> argument.
 
 ## sys.std.Counted.counted_has_member
 
-C<< function counted_has_member (Bool <-- r : Relation,
-t : Tuple, count_attr_name : Name) {...} >>
+`function counted_has_member (Bool <-- r : Relation,
+t : Tuple, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.has_member> except
 that C<t> must have one fewer attribute than C<r> does, specifically
@@ -98,8 +98,8 @@ C<tcount> (and otherwise they must have the same headings).
 
 ## sys.std.Counted.counted_has_not_member
 
-C<< function counted_has_not_member (Bool <--
-r : Relation, t : Tuple, count_attr_name : Name) {...} >>
+`function counted_has_not_member (Bool <--
+r : Relation, t : Tuple, count_attr_name : Name) {...}`
 
 This function is exactly the same as C<sys.std.Counted.counted_has_member>
 except that it results in the opposite boolean value when given the same
@@ -107,8 +107,8 @@ arguments.
 
 ## sys.std.Counted.counted_insertion
 
-C<< function counted_insertion (Relation <-- r : Relation,
-t : Tuple, count_attr_name : Name) {...} >>
+`function counted_insertion (Relation <-- r : Relation,
+t : Tuple, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.insertion> as per
 C<counted_has_member> but that its result differs depending on whether C<t>
@@ -123,8 +123,8 @@ union).
 
 ## sys.std.Counted.counted_deletion
 
-C<< function counted_deletion (Relation <-- r : Relation,
-t : Tuple, count_attr_name : Name) {...} >>
+`function counted_deletion (Relation <-- r : Relation,
+t : Tuple, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.deletion> as per
 C<counted_has_member> but that its result differs depending on what the
@@ -134,8 +134,8 @@ equal to 1, then the tuple whose C<tattrs> is C<t> is deleted.
 
 ## sys.std.Counted.counted_projection
 
-C<< function counted_projection (Relation <-- topic : Relation,
-attr_names : set_of.Name, count_attr_name : Name) {...} >>
+`function counted_projection (Relation <-- topic : Relation,
+attr_names : set_of.Name, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.projection> except
 that the C<counted_cardinality> of the result is guaranteed to be the same
@@ -146,8 +146,8 @@ C<attr_names> plus the C<tcount> attribute.
 
 ## sys.std.Counted.counted_cmpl_proj
 
-C<< function counted_cmpl_proj (Relation <-- topic : Relation,
-attr_names : set_of.Name, count_attr_name : Name) {...} >>
+`function counted_cmpl_proj (Relation <-- topic : Relation,
+attr_names : set_of.Name, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.cmpl_proj>
 except that the C<counted_cardinality> of the result is guaranteed to be
@@ -158,8 +158,8 @@ named by C<attr_names> including the C<tcount> attribute.
 
 ## sys.std.Counted.counted_reduction
 
-C<< function counted_reduction (Tuple <-- topic : Relation,
-func : ValRedPFuncNC, identity : Tuple, count_attr_name : Name) {...} >>
+`function counted_reduction (Tuple <-- topic : Relation,
+func : ValRedPFuncNC, identity : Tuple, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.reduction> except that
 C<func> is invoked extra times, where both its C<v1> and C<v2> arguments
@@ -171,9 +171,9 @@ attribute either.
 
 ## sys.std.Counted.counted_map
 
-C<< function counted_map (Relation <-- topic : Relation,
+`function counted_map (Relation <-- topic : Relation,
 result_attr_names : set_of.Name, func : ValMapPFuncNC,
-count_attr_name : Name) {...} >>
+count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.map> except that the
 C<counted_cardinality> of the result is guaranteed to be the same as that
@@ -185,8 +185,8 @@ C<topic> argument don't have the C<tcount> attribute.
 
 ## sys.std.Counted.counted_is_subset
 
-C<< function counted_is_subset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_subset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.is_subset> but that it
 accounts for the greater-than-one multiplicity of C<tattrs> in its
@@ -197,16 +197,16 @@ counterpart C<other> value.
 
 ## sys.std.Counted.counted_is_not_subset
 
-C<< function counted_is_not_subset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_not_subset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.is_not_subset> as per
 C<counted_is_subset>.
 
 ## sys.std.Counted.counted_is_superset
 
-C<< function counted_is_superset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_superset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is an alias for C<sys.std.Counted.counted_is_subset> except
 that it transposes the C<topic> and C<other> arguments.  This function is
@@ -218,8 +218,8 @@ equal to the multiplicity of its counterpart C<other> value.
 
 ## sys.std.Counted.counted_is_not_superset
 
-C<< function counted_is_not_superset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_not_superset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is an alias for C<sys.std.Counted.counted_is_not_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
@@ -228,24 +228,24 @@ C<counted_is_superset>.
 
 ## sys.std.Counted.counted_is_proper_subset
 
-C<< function counted_is_proper_subset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_proper_subset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.is_proper_subset> as per
 C<counted_is_subset>.  I<TODO: What is its definition?>
 
 ## sys.std.Counted.counted_is_not_proper_subset
 
-C<< function counted_is_not_proper_subset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_not_proper_subset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.is_not_proper_subset> as per
 C<counted_is_subset>.  I<TODO: What is its definition?>
 
 ## sys.std.Counted.counted_is_proper_superset
 
-C<< function counted_is_proper_superset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_proper_superset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is an alias for C<sys.std.Counted.counted_is_proper_subset>
 except that it transposes the C<topic> and C<other> arguments.  This
@@ -254,8 +254,8 @@ C<counted_is_superset>.
 
 ## sys.std.Counted.counted_is_not_proper_superset
 
-C<< function counted_is_not_proper_superset (Bool <--
-topic : Relation, other : Relation, count_attr_name : Name) {...} >>
+`function counted_is_not_proper_superset (Bool <--
+topic : Relation, other : Relation, count_attr_name : Name) {...}`
 
 This function is an alias for
 C<sys.std.Counted.counted_is_not_proper_subset> except that it transposes
@@ -265,8 +265,8 @@ C<counted_is_superset>.
 
 ## sys.std.Counted.counted_union
 
-C<< function counted_union (Relation <--
-topic : set_of.Relation, count_attr_name : Name) {...} >>
+`function counted_union (Relation <--
+topic : set_of.Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.union> but that it just
 looks at the C<tattrs> attributes of its argument elements when determining
@@ -276,8 +276,8 @@ of its corresponding input element tuples.
 
 ## sys.std.Counted.counted_union_sum
 
-C<< function counted_union_sum (Relation <--
-topic : bag_of.Relation, count_attr_name : Name) {...} >>
+`function counted_union_sum (Relation <--
+topic : bag_of.Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Counted.counted_union> but that for each
 pair of argument elements being unioned, the output C<tcount> value is the
@@ -288,8 +288,8 @@ analogy to "UNION DISTINCT".
 
 ## sys.std.Counted.counted_intersection
 
-C<< function counted_intersection (Relation <--
-topic : set_of.Relation, count_attr_name : Name) {...} >>
+`function counted_intersection (Relation <--
+topic : set_of.Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.intersection> as
 C<counted_union> is like C<sys.std.Core.Relation.union>; the minimum of
@@ -297,8 +297,8 @@ C<tcount> attribute values is used rather than the maximum.
 
 ## sys.std.Counted.counted_diff
 
-C<< function counted_diff (Relation <--
-source : Relation, filter : Relation, count_attr_name : Name) {...} >>
+`function counted_diff (Relation <--
+source : Relation, filter : Relation, count_attr_name : Name) {...}`
 
 This function is like C<sys.std.Core.Relation.diff> as C<counted_union> is
 like C<sys.std.Core.Relation.union>; for corresponding input tuples, the
@@ -308,9 +308,9 @@ the C<tcount> of the result tuple is the difference of those two.
 
 ## sys.std.Counted.counted_substitution
 
-C<< function counted_substitution (Relation <--
+`function counted_substitution (Relation <--
 topic : Relation, attr_names : set_of.Name, func : ValMapPFuncNC,
-count_attr_name : Name) {...} >>
+count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.substitution> except
 that the C<counted_cardinality> of the result is guaranteed to be the same
@@ -320,8 +320,8 @@ attribute.
 
 ## sys.std.Counted.counted_static_subst
 
-C<< function counted_static_subst (Relation <--
-topic : Relation, attrs : Tuple, count_attr_name : Name) {...} >>
+`function counted_static_subst (Relation <--
+topic : Relation, attrs : Tuple, count_attr_name : Name) {...}`
 
 This function is the same as C<sys.std.Core.Relation.static_subst>
 except that the C<counted_cardinality> of the result is guaranteed to be

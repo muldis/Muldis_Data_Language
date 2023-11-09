@@ -25,16 +25,16 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Tuple.degree
 
-C<< function degree (NNInt <-- topic : Tuple)
-implements sys.std.Core.Attributive.degree {...} >>
+`function degree (NNInt <-- topic : Tuple)
+implements sys.std.Core.Attributive.degree {...}`
 
 This function results in the degree of its argument (that is, the count of
 attributes it has).
 
 ## sys.std.Core.Tuple.is_nullary
 
-C<< function is_nullary (Bool <-- topic : Tuple)
-implements sys.std.Core.Attributive.is_nullary {...} >>
+`function is_nullary (Bool <-- topic : Tuple)
+implements sys.std.Core.Attributive.is_nullary {...}`
 
 This function results in C<Bool:True> iff its argument has a degree of zero
 (that is, it has zero attributes), and C<Bool:False> otherwise.  By
@@ -43,8 +43,8 @@ in C<Bool:True> is the value C<Tuple:D0>.
 
 ## sys.std.Core.Tuple.is_not_nullary
 
-C<< function is_not_nullary (Bool <-- topic : Tuple)
-implements sys.std.Core.Attributive.is_not_nullary {...} >>
+`function is_not_nullary (Bool <-- topic : Tuple)
+implements sys.std.Core.Attributive.is_not_nullary {...}`
 
 This function is exactly the same as C<sys.std.Core.Tuple.is_nullary>
 except
@@ -52,8 +52,8 @@ that it results in the opposite boolean value when given the same argument.
 
 ## sys.std.Core.Tuple.has_attrs
 
-C<< function has_attrs (Bool <-- topic : Tuple, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.has_attrs {...} >>
+`function has_attrs (Bool <-- topic : Tuple, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.has_attrs {...}`
 
 This function results in C<Bool:True> iff, for every one of the attribute
 names specified by its C<attr_names> argument, its C<topic> argument has an
@@ -63,16 +63,16 @@ empty.
 
 ## sys.std.Core.Tuple.attr_names
 
-C<< function attr_names (set_of.Name <-- topic : Tuple)
-implements sys.std.Core.Attributive.attr_names {...} >>
+`function attr_names (set_of.Name <-- topic : Tuple)
+implements sys.std.Core.Attributive.attr_names {...}`
 
 This function results in the set of the names of the attributes of its
 argument.
 
 ## sys.std.Core.Tuple.rename
 
-C<< function rename (Tuple <-- topic : Tuple, map : AttrRenameMap)
-implements sys.std.Core.Attributive.rename {...} >>
+`function rename (Tuple <-- topic : Tuple, map : AttrRenameMap)
+implements sys.std.Core.Attributive.rename {...}`
 
 This function results in a C<Tuple> value that is the same as its C<topic>
 argument but that some of its attributes have different names.  Each tuple
@@ -87,8 +87,8 @@ renamed.
 
 ## sys.std.Core.Tuple.projection
 
-C<< function projection (Tuple <-- topic : Tuple, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.projection {...} >>
+`function projection (Tuple <-- topic : Tuple, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.projection {...}`
 
 This function results in the projection of its C<topic> argument that has
 just the subset of attributes of C<topic> which are named in its
@@ -99,8 +99,8 @@ C<attr_names> specifies any attribute names that C<topic> doesn't have.
 
 ## sys.std.Core.Tuple.cmpl_proj
 
-C<< function cmpl_proj (Tuple <-- topic : Tuple, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.cmpl_proj {...} >>
+`function cmpl_proj (Tuple <-- topic : Tuple, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.cmpl_proj {...}`
 
 This function is the same as C<projection> but that it results in the
 complementary subset of attributes of C<topic> when given the same
@@ -108,8 +108,8 @@ arguments.
 
 ## sys.std.Core.Tuple.static_exten
 
-C<< function static_exten (Tuple <-- topic : Tuple, attrs : Tuple)
-implements sys.std.Core.Attributive.static_exten {...} >>
+`function static_exten (Tuple <-- topic : Tuple, attrs : Tuple)
+implements sys.std.Core.Attributive.static_exten {...}`
 
 This function results in the extension of its C<topic> argument by joining
 that with its C<attrs> argument; the attribute names of the 2 arguments
@@ -118,8 +118,8 @@ version of this.
 
 ## sys.std.Core.Tuple.wrap
 
-C<< function wrap (Tuple <-- topic : Tuple, outer : Name,
-inner : set_of.Name) implements sys.std.Core.Attributive.wrap {...} >>
+`function wrap (Tuple <-- topic : Tuple, outer : Name,
+inner : set_of.Name) implements sys.std.Core.Attributive.wrap {...}`
 
 This function results in a C<Tuple> value that is the same as its C<topic>
 argument but that some of its attributes have been wrapped up into a new
@@ -137,17 +137,17 @@ the same as a C<topic> attribute that isn't being wrapped.
 
 ## sys.std.Core.Tuple.cmpl_wrap
 
-C<< function cmpl_wrap (Tuple <-- topic : Tuple,
+`function cmpl_wrap (Tuple <-- topic : Tuple,
 outer : Name, cmpl_inner : set_of.Name)
-implements sys.std.Core.Attributive.cmpl_wrap {...} >>
+implements sys.std.Core.Attributive.cmpl_wrap {...}`
 
 This function is the same as C<wrap> but that it wraps the complementary
 subset of attributes of C<topic> to those specified by C<cmpl_inner>.
 
 ## sys.std.Core.Tuple.unwrap
 
-C<< function unwrap (Tuple <-- topic : Tuple, inner : set_of.Name,
-outer : Name) implements sys.std.Core.Attributive.unwrap {...} >>
+`function unwrap (Tuple <-- topic : Tuple, inner : set_of.Name,
+outer : Name) implements sys.std.Core.Attributive.unwrap {...}`
 
 This function is the inverse of C<sys.std.Core.Tuple.wrap>, such that it
 will unwrap a C<Tuple>-type attribute into its member attributes.  This
@@ -169,14 +169,14 @@ in that they typically work with any tuple types.
 
 ## sys.std.Core.Tuple.D0
 
-C<< function D0 (Tuple <--) {...} >>
+`function D0 (Tuple <--) {...}`
 
 This C<named-value> selector function results in the only zero-attribute
 Tuple value, which is known by the special name C<Tuple:D0>, aka C<D0>.
 
 ## sys.std.Core.Tuple.attr
 
-C<< function attr (Universal <-- topic : Tuple, name : Name) {...} >>
+`function attr (Universal <-- topic : Tuple, name : Name) {...}`
 
 This function results in the scalar or nonscalar value of the attribute
 of C<topic> whose name is given by C<name>.  This function will fail if
@@ -185,8 +185,8 @@ this operation is also known as C<.{}>.
 
 ## sys.std.Core.Tuple.update_attr
 
-C<< function update_attr (Tuple <-- topic : Tuple,
-name : Name, value : Universal) {...} >>
+`function update_attr (Tuple <-- topic : Tuple,
+name : Name, value : Universal) {...}`
 
 This function results in its C<topic> argument but that its attribute whose
 name is C<name> has been updated with a new scalar or nonscalar value
@@ -197,7 +197,7 @@ of the attribute.
 
 ## sys.std.Core.Tuple.multi_update
 
-C<< function multi_update (Tuple <-- topic : Tuple, attrs : Tuple) {...} >>
+`function multi_update (Tuple <-- topic : Tuple, attrs : Tuple) {...}`
 
 This function is like C<sys.std.Core.Tuple.update_attr> except that it
 handles N tuple attributes at once rather than just 1.  The heading of
@@ -208,7 +208,7 @@ I<sys.std.Core.Tuple.static_subst>.
 
 ## sys.std.Core.Tuple.product
 
-C<< function product (Tuple <-- topic : set_of.Tuple) {...} >>
+`function product (Tuple <-- topic : set_of.Tuple) {...}`
 
 This function is similar to C<sys.std.Core.Relation.product> but that it
 works with tuples rather than relations.  This function is mainly
@@ -217,7 +217,7 @@ such as for extending one tuple with additional attributes.
 
 ## sys.std.Core.Tuple.attr_from_Tuple
 
-C<< function attr_from_Tuple (Universal <-- topic : Tuple) {...} >>
+`function attr_from_Tuple (Universal <-- topic : Tuple) {...}`
 
 This function results in the scalar or nonscalar value of the sole
 attribute of its argument.  This function will fail if its argument is not
@@ -225,16 +225,16 @@ of degree 1.
 
 ## sys.std.Core.Tuple.Tuple_from_attr
 
-C<< function Tuple_from_attr (Tuple <-- name : Name,
-value : Universal) {...} >>
+`function Tuple_from_attr (Tuple <-- name : Name,
+value : Universal) {...}`
 
 This function results in the C<Tuple> value which has just one attribute
 whose name is given by C<name> and whose value is given by C<value>.
 
 ## sys.std.Core.Tuple.order_by_attr_names
 
-C<< function order_by_attr_names (Order <-- topic : Tuple, other : Tuple,
-order_by : array_of.OrderByName, is_reverse_order? : Bool) {...} >>
+`function order_by_attr_names (Order <-- topic : Tuple, other : Tuple,
+order_by : array_of.OrderByName, is_reverse_order? : Bool) {...}`
 
 This C<order-determination> function provides convenient short-hand for the
 common case of ordering tuples of a relation on a sequential list of
@@ -266,8 +266,8 @@ C<order_by_attr_names>, the C<order_by> constitutes a key or superkey.
 
 ## sys.std.Core.Tuple.subst_in_default
 
-C<< function subst_in_default (Tuple <-- of : APTypeNC,
-subst : Tuple) {...} >>
+`function subst_in_default (Tuple <-- of : APTypeNC,
+subst : Tuple) {...}`
 
 This function results in the tuple value that is the default value of the
 tuple data type whose name is given in the C<of> argument, but that zero

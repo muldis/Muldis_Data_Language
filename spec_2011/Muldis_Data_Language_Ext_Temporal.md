@@ -95,8 +95,8 @@ implementation-defined.
 
 ## sys.std.Temporal.Instant.diff
 
-C<< function diff (Duration <--
-minuend@ : Instant, subtrahend@ : Instant) {...} >>
+`function diff (Duration <--
+minuend@ : Instant, subtrahend@ : Instant) {...}`
 
 This virtual function results in the duration-typed difference when its
 instant-typed C<subtrahend> argument is subtracted from its instant-typed
@@ -106,8 +106,8 @@ was earlier.
 
 ## sys.std.Temporal.Instant.abs_diff
 
-C<< function abs_diff (Duration <--
-topic@ : Instant, other@ : Instant) {...} >>
+`function abs_diff (Duration <--
+topic@ : Instant, other@ : Instant) {...}`
 
 This virtual symmetric function results in the absolute difference between
 its 2 arguments.  The result is the amount of time between the 2 arguments,
@@ -115,16 +115,16 @@ which is always non-negative.
 
 ## sys.std.Temporal.Instant.later
 
-C<< function later (Instant <--
-instant@ : Instant, duration@ : Duration) {...} >>
+`function later (Instant <--
+instant@ : Instant, duration@ : Duration) {...}`
 
 This virtual function results in the instant that is later than its
 C<instant> argument by the amount of time in the C<duration> argument.
 
 ## sys.std.Temporal.Instant.earlier
 
-C<< function earlier (Instant <--
-instant@ : Instant, duration@ : Duration) {...} >>
+`function earlier (Instant <--
+instant@ : Instant, duration@ : Duration) {...}`
 
 This virtual function results in the instant that is earlier than its
 C<instant> argument by the amount of time in the C<duration> argument.
@@ -133,13 +133,13 @@ C<instant> argument by the amount of time in the C<duration> argument.
 
 ## sys.std.Temporal.Duration.abs
 
-C<< function abs (Duration <-- topic@ : Duration) {...} >>
+`function abs (Duration <-- topic@ : Duration) {...}`
 
 This virtual function results in the absolute value of its argument.
 
 ## sys.std.Temporal.Duration.sum
 
-C<< function sum (Duration <-- topic@ : bag_of.Duration) {...} >>
+`function sum (Duration <-- topic@ : bag_of.Duration) {...}`
 
 This virtual function results in the sum of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -154,16 +154,16 @@ which type-specific implementing function to dispatch to.
 
 ## sys.std.Temporal.Duration.diff
 
-C<< function diff (Duration <--
-minuend@ : Duration, subtrahend@ : Duration) {...} >>
+`function diff (Duration <--
+minuend@ : Duration, subtrahend@ : Duration) {...}`
 
 This virtual function results in the difference when its C<subtrahend>
 argument is subtracted from its C<minuend> argument.
 
 ## sys.std.Temporal.Duration.abs_diff
 
-C<< function abs_diff (Duration <--
-topic@ : Duration, other@ : Duration) {...} >>
+`function abs_diff (Duration <--
+topic@ : Duration, other@ : Duration) {...}`
 
 This virtual symmetric function results in the absolute difference between
 its 2 arguments.

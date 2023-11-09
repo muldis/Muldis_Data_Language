@@ -44,8 +44,8 @@ arguments must be mutually compatible.
 
 ## sys.std.Core.Interval.SP.has_member
 
-C<< function has_member (Bool <-- coll : SPInterval, value : Ordered)
-implements sys.std.Core.Collective.has_member {...} >>
+`function has_member (Bool <-- coll : SPInterval, value : Ordered)
+implements sys.std.Core.Collective.has_member {...}`
 
 This function results in C<Bool:True> iff its C<value> argument is included
 within the interval defined by its C<coll> argument, and C<Bool:False>
@@ -54,8 +54,8 @@ values, this function tests if C<value> is a member of C<coll>.
 
 ## sys.std.Core.Interval.SP.has_not_member
 
-C<< function has_not_member (Bool <-- coll : SPInterval, value : Ordered)
-implements sys.std.Core.Collective.has_not_member {...} >>
+`function has_not_member (Bool <-- coll : SPInterval, value : Ordered)
+implements sys.std.Core.Collective.has_not_member {...}`
 
 This function is exactly the same as C<sys.std.Core.Interval.has_member>
 except that it results in the opposite boolean value when given the same
@@ -63,8 +63,8 @@ arguments.
 
 ## sys.std.Core.Interval.SP.value_is_member
 
-C<< function value_is_member (Bool <-- value : Ordered, coll : SPInterval)
-implements sys.std.Core.Collective.value_is_member {...} >>
+`function value_is_member (Bool <-- value : Ordered, coll : SPInterval)
+implements sys.std.Core.Collective.value_is_member {...}`
 
 This function is an alias for C<sys.std.Core.Interval.SP.has_member>.  This
 function results in C<Bool:True> iff its C<value> argument is included
@@ -74,9 +74,9 @@ values, this function tests if C<value> is a member of C<coll>.
 
 ## sys.std.Core.Interval.SP.value_is_not_member
 
-C<< function value_is_not_member (Bool <--
+`function value_is_not_member (Bool <--
 value : Ordered, coll : SPInterval)
-implements sys.std.Core.Collective.value_is_not_member {...} >>
+implements sys.std.Core.Collective.value_is_not_member {...}`
 
 This function is an alias for C<sys.std.Core.Interval.SP.has_not_member>.
 This function is exactly the same as
@@ -85,8 +85,8 @@ results in the opposite boolean value when given the same arguments.
 
 ## sys.std.Core.Interval.MP.has_member
 
-C<< function has_member (Bool <-- coll : MPInterval, value : Ordered)
-implements sys.std.Core.Collective.has_member {...} >>
+`function has_member (Bool <-- coll : MPInterval, value : Ordered)
+implements sys.std.Core.Collective.has_member {...}`
 
 This function results in C<Bool:True> iff its C<value> argument is included
 within the interval defined by its C<coll> argument, and C<Bool:False>
@@ -95,8 +95,8 @@ values, this function tests if C<value> is a member of C<coll>.
 
 ## sys.std.Core.Interval.MP.has_not_member
 
-C<< function has_not_member (Bool <-- coll : MPInterval, value : Ordered)
-implements sys.std.Core.Collective.has_not_member {...} >>
+`function has_not_member (Bool <-- coll : MPInterval, value : Ordered)
+implements sys.std.Core.Collective.has_not_member {...}`
 
 This function is exactly the same as C<sys.std.Core.Interval.has_member>
 except that it results in the opposite boolean value when given the same
@@ -104,8 +104,8 @@ arguments.
 
 ## sys.std.Core.Interval.MP.value_is_member
 
-C<< function value_is_member (Bool <-- value : Ordered, coll : MPInterval)
-implements sys.std.Core.Collective.value_is_member {...} >>
+`function value_is_member (Bool <-- value : Ordered, coll : MPInterval)
+implements sys.std.Core.Collective.value_is_member {...}`
 
 This function is an alias for C<sys.std.Core.Interval.MP.has_member>.  This
 function results in C<Bool:True> iff its C<value> argument is included
@@ -115,9 +115,9 @@ values, this function tests if C<value> is a member of C<coll>.
 
 ## sys.std.Core.Interval.MP.value_is_not_member
 
-C<< function value_is_not_member (Bool <--
+`function value_is_not_member (Bool <--
 value : Ordered, coll : MPInterval)
-implements sys.std.Core.Collective.value_is_not_member {...} >>
+implements sys.std.Core.Collective.value_is_not_member {...}`
 
 This function is an alias for C<sys.std.Core.Interval.MP.has_not_member>.
 This function is exactly the same as

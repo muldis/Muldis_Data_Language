@@ -439,7 +439,7 @@ Every GCVL has 1-3 ordered elements:
 * C<value_kind>
 
 This is a Raku C<Str> value of the format
-C<< <[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@' >>;
+`<[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@'`;
 it identifies the data type of the value literal in broad terms and is the
 only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
@@ -1138,7 +1138,7 @@ middle element is C<material_declared_name>.
 
 * C<material_kind>
 
-This is a Raku C<Str> value of the format C<< [<[ a..z ]>+] ** '-' >>; it
+This is a Raku C<Str> value of the format `[<[ a..z ]>+] ** '-'`; it
 identifies the kind of the material and is the only external metadata of
 C<material_payload> generally necessary to interpret the latter; what
 grammars are valid for C<material_payload> depend just on C<material_kind>.

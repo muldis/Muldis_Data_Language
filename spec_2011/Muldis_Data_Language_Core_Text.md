@@ -26,9 +26,9 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Text.order
 
-C<< function order (Order <-- topic : Text,
+`function order (Order <-- topic : Text,
 other : Text, misc_args? : Tuple, is_reverse_order? : Bool)
-implements sys.std.Core.Ordered.order {...} >>
+implements sys.std.Core.Ordered.order {...}`
 
 This is a (total) C<order-determination> function specific to C<Text>.
 I<TODO: What (optional) C<misc_args> does this support?>
@@ -37,8 +37,8 @@ I<TODO: What (optional) C<misc_args> does this support?>
 
 ## sys.std.Core.Text.catenation
 
-C<< function catenation (Text <--
-topic? : array_of.Text) implements sys.std.Core.Stringy.catenation {...} >>
+`function catenation (Text <--
+topic? : array_of.Text) implements sys.std.Core.Stringy.catenation {...}`
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -49,8 +49,8 @@ identity value for catenation.
 
 ## sys.std.Core.Text.replication
 
-C<< function replication (Text <-- topic : Text,
-count : NNInt) implements sys.std.Core.Stringy.replication {...} >>
+`function replication (Text <-- topic : Text,
+count : NNInt) implements sys.std.Core.Stringy.replication {...}`
 
 This function results in the catenation of C<count> instances of C<topic>.
 
@@ -60,8 +60,8 @@ These functions implement commonly used character string operations.
 
 ## sys.std.Core.Text.cat_with_sep
 
-C<< function cat_with_sep (Text <--
-topic : array_of.Text, sep : Text) {...} >>
+`function cat_with_sep (Text <--
+topic : array_of.Text, sep : Text) {...}`
 
 This function results in the catenation of the N element values of its
 C<topic> argument such that an instance of its C<sep> argument is catenated
@@ -69,7 +69,7 @@ between each pair of consecutive C<topic> elements.
 
 ## sys.std.Core.Text.len_in_nfd_codes
 
-C<< function len_in_nfd_codes (NNInt <-- topic : Text) {...} >>
+`function len_in_nfd_codes (NNInt <-- topic : Text) {...}`
 
 This function results in the length of its argument in Unicode canonical
 decomposed normal form (NFD) abstract code points, or in other words, in the
@@ -78,15 +78,15 @@ the abstract code point abstraction level.
 
 ## sys.std.Core.Text.len_in_graphs
 
-C<< function len_in_graphs (NNInt <-- topic : Text) {...} >>
+`function len_in_graphs (NNInt <-- topic : Text) {...}`
 
 This function results in the length of its argument in language-independent
 graphemes.
 
 ## sys.std.Core.Text.has_substr
 
-C<< function has_substr (Bool <-- look_in : Text,
-look_for : Text, fixed_start? : Bool, fixed_end? : Bool) {...} >>
+`function has_substr (Bool <-- look_in : Text,
+look_for : Text, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
 This function results in C<Bool:True> iff its C<look_for> argument is a
 substring of its C<look_in> argument as per the optional C<fixed_start> and
@@ -103,8 +103,8 @@ of SQL's "LIKE", such as 'foo%bar%baz'.
 
 ## sys.std.Core.Text.has_not_substr
 
-C<< function has_not_substr (Bool <-- look_in : Text,
-look_for : Text, fixed_start? : Bool, fixed_end? : Bool) {...} >>
+`function has_not_substr (Bool <-- look_in : Text,
+look_for : Text, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Text.has_substr> except
 that
@@ -133,7 +133,7 @@ over Muldis D.
 
 ## sys.std.Core.Text.upper
 
-C<< function upper (Text <-- topic : Text) {...} >>
+`function upper (Text <-- topic : Text) {...}`
 
 This function results in the normalization of its argument where any
 letters considered to be (small) lowercase are folded to (capital)
@@ -141,7 +141,7 @@ uppercase.
 
 ## sys.std.Core.Text.lower
 
-C<< function lower (Text <-- topic : Text) {...} >>
+`function lower (Text <-- topic : Text) {...}`
 
 This function results in the normalization of its argument where any
 letters considered to be (capital) uppercase are folded to (small)
@@ -149,7 +149,7 @@ lowercase.
 
 ## sys.std.Core.Text.marks_stripped
 
-C<< function marks_stripped (Text <-- topic : Text) {...} >>
+`function marks_stripped (Text <-- topic : Text) {...}`
 
 This function results in the normalization of its argument where any accent
 marks or diacritics are removed from letters, leaving just the primary
@@ -157,7 +157,7 @@ letters.
 
 ## sys.std.Core.Text.ASCII
 
-C<< function ASCII (Text <-- topic : Text, mark? : Text) {...} >>
+`function ASCII (Text <-- topic : Text, mark? : Text) {...}`
 
 This function results in the normalization of its C<topic> argument where
 any characters not in the 7-bit ASCII repertoire are stripped out, where
@@ -170,7 +170,7 @@ string if no explicit argument is given to it.
 
 ## sys.std.Core.Text.trim
 
-C<< function trim (Text <-- topic : Text) {...} >>
+`function trim (Text <-- topic : Text) {...}`
 
 This function results in the normalization of its argument where any
 leading or trailing whitespace characters are trimmed, but no other changes
@@ -197,8 +197,8 @@ KIND, ETC.  CORE KEEPS THE TRIVIALLY SIMPLE 'LIKE' OF SQL.>
 
 ## sys.std.Core.Text.is_like
 
-C<< function is_like (Bool <-- look_in : Text,
-look_for : Text, escape? : Text) {...} >>
+`function is_like (Bool <-- look_in : Text,
+look_for : Text, escape? : Text) {...}`
 
 This function results in C<Bool:True> iff its C<look_in> argument is
 matched by the pattern given in its C<look_for> argument, and C<Bool:False>
@@ -218,8 +218,8 @@ also known as I<is match using like> or C<like>.
 
 ## sys.std.Core.Text.is_not_like
 
-C<< function is_not_like (Bool <-- look_in : Text,
-look_for : Text, escape? : Text) {...} >>
+`function is_not_like (Bool <-- look_in : Text,
+look_for : Text, escape? : Text) {...}`
 
 This function is exactly the same as C<sys.std.Core.Text.is_like>
 except that it results in the opposite boolean value when given the same

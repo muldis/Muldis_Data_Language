@@ -26,8 +26,8 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Collective.has_member
 
-C<< function has_member (Bool <--
-coll@ : Collective, value : Universal) {...} >>
+`function has_member (Bool <--
+coll@ : Collective, value : Universal) {...}`
 
 This function results in C<Bool:True> iff its C<value> argument matches a
 member of the simple homogeneous collection value that is its C<coll>
@@ -36,8 +36,8 @@ known as C<∋> or C<has>.
 
 ## sys.std.Core.Collective.has_not_member
 
-C<< function has_not_member (Bool <--
-coll@ : Collective, value : Universal) {...} >>
+`function has_not_member (Bool <--
+coll@ : Collective, value : Universal) {...}`
 
 This function is exactly the same as C<sys.std.Core.Collective.has_member>
 except that it results in the opposite boolean value when given the same
@@ -46,8 +46,8 @@ C<not-has>.
 
 ## sys.std.Core.Collective.value_is_member
 
-C<< function value_is_member (Bool <--
-value : Universal, coll@ : Collective) {...} >>
+`function value_is_member (Bool <--
+value : Universal, coll@ : Collective) {...}`
 
 This function is an alias for C<sys.std.Core.Collective.has_member>.  This
 function results in C<Bool:True> iff its C<value> argument matches a member
@@ -57,8 +57,8 @@ C<∈> or C<in>.
 
 ## sys.std.Core.Collective.value_is_not_member
 
-C<< function value_is_not_member (Bool <--
-value : Universal, coll@ : Collective) {...} >>
+`function value_is_not_member (Bool <--
+value : Universal, coll@ : Collective) {...}`
 
 This function is an alias for C<sys.std.Core.Collective.has_not_member>.
 This function is exactly the same as

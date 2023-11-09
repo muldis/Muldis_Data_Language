@@ -26,9 +26,9 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Boolean.order
 
-C<< function order (Order <-- topic : Bool,
+`function order (Order <-- topic : Bool,
 other : Bool, misc_args? : Tuple, is_reverse_order? : Bool)
-implements sys.std.Core.Ordered.order {...} >>
+implements sys.std.Core.Ordered.order {...}`
 
 This is a (total) C<order-determination> function specific to C<Bool>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
@@ -37,16 +37,16 @@ only valid C<misc_args> argument is C<Tuple:D0>.
 
 ## sys.std.Core.Boolean.pred
 
-C<< function pred (Bool <-- topic : Bool)
-implements sys.std.Core.Ordered.Ordinal.pred {...} >>
+`function pred (Bool <-- topic : Bool)
+implements sys.std.Core.Ordered.Ordinal.pred {...}`
 
 This function results in the value that precedes its argument.  It results
 in C<Bool:False> iff its argument is C<Bool:True>, and C<-Inf> otherwise.
 
 ## sys.std.Core.Boolean.succ
 
-C<< function succ (Bool <-- topic : Bool)
-implements sys.std.Core.Ordered.Ordinal.succ {...} >>
+`function succ (Bool <-- topic : Bool)
+implements sys.std.Core.Ordered.Ordinal.succ {...}`
 
 This function results in the value that succeeds its argument.  It results
 in C<Bool:True> iff its argument is C<Bool:False>, and C<Inf> otherwise.
@@ -57,7 +57,7 @@ These functions implement commonly used boolean logic operations.
 
 ## sys.std.Core.Boolean.not
 
-C<< function not (Bool <-- topic : Bool) {...} >>
+`function not (Bool <-- topic : Bool) {...}`
 
 This function results in the logical I<not> of its argument.  This function
 results in C<Bool:True> iff its argument is C<Bool:False>, and
@@ -72,7 +72,7 @@ argument, so there is no reason for I<so> to exist as an actual function.
 
 ## sys.std.Core.Boolean.and
 
-C<< function and (Bool <-- topic? : set_of.Bool) {...} >>
+`function and (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical I<and> (which is commutative,
@@ -86,7 +86,7 @@ C<∧>.
 
 ## sys.std.Core.Boolean.all
 
-C<< function all (Bool <-- topic? : set_of.Bool) {...} >>
+`function all (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is an alias for C<sys.std.Core.Boolean.and>.  This function
 results in C<Bool:True> iff all of its input element values are
@@ -95,7 +95,7 @@ it has at least one input value that is C<Bool:False>).
 
 ## sys.std.Core.Boolean.nand
 
-C<< function nand (Bool <-- topic : Bool, other : Bool) {...} >>
+`function nand (Bool <-- topic : Bool, other : Bool) {...}`
 
 This symmetric function results in C<Bool:False> iff its 2
 arguments are both C<Bool:True>, and C<Bool:True> otherwise.  Note that
@@ -104,7 +104,7 @@ denial> or C<⊼> or C<↑>.
 
 ## sys.std.Core.Boolean.or
 
-C<< function or (Bool <-- topic? : set_of.Bool) {...} >>
+`function or (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical inclusive-or (which is
@@ -118,7 +118,7 @@ C<∨>.
 
 ## sys.std.Core.Boolean.any
 
-C<< function any (Bool <-- topic? : set_of.Bool) {...} >>
+`function any (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is an alias for C<sys.std.Core.Boolean.or>.  This function
 results in C<Bool:True> iff any of its input element values are
@@ -127,7 +127,7 @@ C<Bool:False> or if it has no input values).
 
 ## sys.std.Core.Boolean.nor
 
-C<< function nor (Bool <-- topic : Bool, other : Bool) {...} >>
+`function nor (Bool <-- topic : Bool, other : Bool) {...}`
 
 This symmetric function results in C<Bool:True> iff its 2
 arguments are both C<Bool:False>, and C<Bool:False> otherwise.  Note that
@@ -136,7 +136,7 @@ denial> or C<⊽> or C<↓>.
 
 ## sys.std.Core.Boolean.xnor
 
-C<< function xnor (Bool <-- topic? : bag_of.Bool) {...} >>
+`function xnor (Bool <-- topic? : bag_of.Bool) {...}`
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical xnor (which is both
@@ -154,13 +154,13 @@ C<Bool>-typed.
 
 ## sys.std.Core.Boolean.iff
 
-C<< function iff (Bool <-- topic? : bag_of.Bool) {...} >>
+`function iff (Bool <-- topic? : bag_of.Bool) {...}`
 
 This function is an alias for C<sys.std.Core.Boolean.xnor>.
 
 ## sys.std.Core.Boolean.xor
 
-C<< function xor (Bool <-- topic? : bag_of.Bool) {...} >>
+`function xor (Bool <-- topic? : bag_of.Bool) {...}`
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a logical exclusive-or (which is both
@@ -177,7 +177,7 @@ arguments are both C<Bool>-typed.
 
 ## sys.std.Core.Boolean.imp
 
-C<< function imp (Bool <-- topic : Bool, other : Bool) {...} >>
+`function imp (Bool <-- topic : Bool, other : Bool) {...}`
 
 This function results in C<Bool:False> iff its C<topic> argument is
 C<Bool:True> and its C<other> argument is C<Bool:False>, and C<Bool:True>
@@ -186,13 +186,13 @@ I<material implication> or C<→>.
 
 ## sys.std.Core.Boolean.implies
 
-C<< function implies (Bool <-- topic : Bool, other : Bool) {...} >>
+`function implies (Bool <-- topic : Bool, other : Bool) {...}`
 
 This function is an alias for C<sys.std.Core.Boolean.imp>.
 
 ## sys.std.Core.Boolean.nimp
 
-C<< function nimp (Bool <-- topic : Bool, other : Bool) {...} >>
+`function nimp (Bool <-- topic : Bool, other : Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Boolean.imp> except
 that it results in the opposite boolean value when given the same
@@ -201,7 +201,7 @@ I<material nonimplication> or C<↛>.
 
 ## sys.std.Core.Boolean.if
 
-C<< function if (Bool <-- topic : Bool, other : Bool) {...} >>
+`function if (Bool <-- topic : Bool, other : Bool) {...}`
 
 This function is an alias for C<sys.std.Core.Boolean.imp> except that it
 transposes the C<topic> and C<other> arguments.  This function results in
@@ -212,7 +212,7 @@ implication> or C<←>.
 
 ## sys.std.Core.Boolean.nif
 
-C<< function nif (Bool <-- topic : Bool, other : Bool) {...} >>
+`function nif (Bool <-- topic : Bool, other : Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Boolean.if> except that
 it results in the opposite boolean value when given the same arguments.
@@ -221,7 +221,7 @@ nonimplication> or C<↚>.
 
 ## sys.std.Core.Boolean.not_all
 
-C<< function not_all (Bool <-- topic? : set_of.Bool) {...} >>
+`function not_all (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Boolean.all> except
 that it results in the opposite boolean value when given the same argument.
@@ -231,7 +231,7 @@ values are C<Bool:True> or if it has no input values).
 
 ## sys.std.Core.Boolean.none
 
-C<< function none (Bool <-- topic? : set_of.Bool) {...} >>
+`function none (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Boolean.any> except
 that it results in the opposite boolean value when given the same argument.
@@ -242,13 +242,13 @@ this operation is also known as I<not any>.
 
 ## sys.std.Core.Boolean.not_any
 
-C<< function not_any (Bool <-- topic? : set_of.Bool) {...} >>
+`function not_any (Bool <-- topic? : set_of.Bool) {...}`
 
 This function is an alias for C<sys.std.Core.Boolean.none>.
 
 ## sys.std.Core.Boolean.one
 
-C<< function one (Bool <-- topic? : bag_of.Bool) {...} >>
+`function one (Bool <-- topic? : bag_of.Bool) {...}`
 
 This function results in C<Bool:True> iff exactly one of its input element
 values is C<Bool:True>, and C<Bool:False> otherwise.  Note that in some
@@ -257,14 +257,14 @@ Muldis D it is not.
 
 ## sys.std.Core.Boolean.not_one
 
-C<< function not_one (Bool <-- topic? : bag_of.Bool) {...} >>
+`function not_one (Bool <-- topic? : bag_of.Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Boolean.one> except
 that it results in the opposite boolean value when given the same argument.
 
 ## sys.std.Core.Boolean.exactly
 
-C<< function exactly (Bool <-- topic? : bag_of.Bool, count : NNInt) {...} >>
+`function exactly (Bool <-- topic? : bag_of.Bool, count : NNInt) {...}`
 
 This function results in C<Bool:True> iff the count of its input element
 values that are C<Bool:True> matches the C<count> argument, and
@@ -272,22 +272,22 @@ C<Bool:False> otherwise.
 
 ## sys.std.Core.Boolean.not_exactly
 
-C<< function not_exactly (Bool <--
-topic? : bag_of.Bool, count : NNInt) {...} >>
+`function not_exactly (Bool <--
+topic? : bag_of.Bool, count : NNInt) {...}`
 
 This function is exactly the same as C<sys.std.Core.Boolean.exactly> except
 that it results in the opposite boolean value when given the same argument.
 
 ## sys.std.Core.Boolean.true
 
-C<< function true (NNInt <-- topic? : bag_of.Bool) {...} >>
+`function true (NNInt <-- topic? : bag_of.Bool) {...}`
 
 This function results in the count of its input element values that are
 C<Bool:True>.
 
 ## sys.std.Core.Boolean.false
 
-C<< function false (NNInt <-- topic? : bag_of.Bool) {...} >>
+`function false (NNInt <-- topic? : bag_of.Bool) {...}`
 
 This function results in the count of its input element values that are
 C<Bool:False>.

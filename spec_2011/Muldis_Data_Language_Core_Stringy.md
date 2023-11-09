@@ -26,7 +26,7 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Stringy.catenation
 
-C<< function catenation (Stringy <-- topic@ : array_of.Stringy) {...} >>
+`function catenation (Stringy <-- topic@ : array_of.Stringy) {...}`
 
 This virtual function results in the catenation of the N element values of
 its argument; it is a reduction operator that recursively takes each
@@ -43,8 +43,8 @@ operation is also known as C<~>.
 
 ## sys.std.Core.Stringy.replication
 
-C<< function replication (Stringy <--
-topic@ : Stringy, count : NNInt) {...} >>
+`function replication (Stringy <--
+topic@ : Stringy, count : NNInt) {...}`
 
 This virtual function results in the catenation of C<count> instances of
 C<topic>.  Note that this operation is also known as C<~#>.

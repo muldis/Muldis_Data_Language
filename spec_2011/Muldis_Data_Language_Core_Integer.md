@@ -26,9 +26,9 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Integer.order
 
-C<< function order (Order <-- topic : Int,
+`function order (Order <-- topic : Int,
 other : Int, misc_args? : Tuple, is_reverse_order? : Bool)
-implements sys.std.Core.Ordered.order {...} >>
+implements sys.std.Core.Ordered.order {...}`
 
 This is a (total) C<order-determination> function specific to C<Int>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
@@ -37,16 +37,16 @@ only valid C<misc_args> argument is C<Tuple:D0>.
 
 ## sys.std.Core.Integer.pred
 
-C<< function pred (Int <-- topic : Int)
-implements sys.std.Core.Ordered.Ordinal.pred {...} >>
+`function pred (Int <-- topic : Int)
+implements sys.std.Core.Ordered.Ordinal.pred {...}`
 
 This function results in the value that precedes its argument.  It is a
 shorthand for adding 1 to its argument.
 
 ## sys.std.Core.Integer.succ
 
-C<< function succ (Int <-- topic : Int)
-implements sys.std.Core.Ordered.Ordinal.succ {...} >>
+`function succ (Int <-- topic : Int)
+implements sys.std.Core.Ordered.Ordinal.succ {...}`
 
 This function results in the value that succeeds its argument.  It is a
 shorthand for subtracting 1 from its argument.
@@ -55,15 +55,15 @@ shorthand for subtracting 1 from its argument.
 
 ## sys.std.Core.Integer.abs
 
-C<< function abs (NNInt <-- topic : Int)
-implements sys.std.Core.Numeric.abs {...} >>
+`function abs (NNInt <-- topic : Int)
+implements sys.std.Core.Numeric.abs {...}`
 
 This function results in the absolute value of its argument.
 
 ## sys.std.Core.Integer.sum
 
-C<< function sum (Int <-- topic? : bag_of.Int)
-implements sys.std.Core.Numeric.sum {...} >>
+`function sum (Int <-- topic? : bag_of.Int)
+implements sys.std.Core.Numeric.sum {...}`
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -74,24 +74,24 @@ addition.
 
 ## sys.std.Core.Integer.diff
 
-C<< function diff (Int <-- minuend : Int, subtrahend : Int)
-implements sys.std.Core.Numeric.diff {...} >>
+`function diff (Int <-- minuend : Int, subtrahend : Int)
+implements sys.std.Core.Numeric.diff {...}`
 
 This function results in the difference when its C<subtrahend> argument is
 subtracted from its C<minuend> argument.
 
 ## sys.std.Core.Integer.abs_diff
 
-C<< function abs_diff (Int <-- topic : Int, other : Int)
-implements sys.std.Core.Numeric.abs_diff {...} >>
+`function abs_diff (Int <-- topic : Int, other : Int)
+implements sys.std.Core.Numeric.abs_diff {...}`
 
 This symmetric function results in the absolute difference between its 2
 arguments.
 
 ## sys.std.Core.Integer.product
 
-C<< function product (Int <-- topic? : bag_of.Int)
-implements sys.std.Core.Numeric.product {...} >>
+`function product (Int <-- topic? : bag_of.Int)
+implements sys.std.Core.Numeric.product {...}`
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -102,8 +102,8 @@ identity value for multiplication.
 
 ## sys.std.Core.Integer.frac_quotient
 
-C<< function frac_quotient (Rat <-- dividend : Int, divisor : Int)
-implements sys.std.Core.Numeric.frac_quotient {...} >>
+`function frac_quotient (Rat <-- dividend : Int, divisor : Int)
+implements sys.std.Core.Numeric.frac_quotient {...}`
 
 This function results in the rational quotient when its C<dividend>
 argument is divided by its C<divisor> argument using the semantics of real
@@ -113,9 +113,9 @@ that are its C<numerator> and C<denominator> possrep attributes.
 
 ## sys.std.Core.Integer.whole_quotient
 
-C<< function whole_quotient (Int <--
+`function whole_quotient (Int <--
 dividend : Int, divisor : Int, round_meth : RoundMeth)
-implements sys.std.Core.Numeric.whole_quotient {...} >>
+implements sys.std.Core.Numeric.whole_quotient {...}`
 
 This function results in the integer quotient when its C<dividend> argument
 is divided by its C<divisor> argument using the semantics of real number
@@ -126,9 +126,9 @@ zero.
 
 ## sys.std.Core.Integer.remainder
 
-C<< function remainder (Int <--
+`function remainder (Int <--
 dividend : Int, divisor : Int, round_meth : RoundMeth)
-implements sys.std.Core.Numeric.remainder {...} >>
+implements sys.std.Core.Numeric.remainder {...}`
 
 This function results in the integer remainder when its C<dividend>
 argument is divided by its C<divisor> argument using the semantics of real
@@ -144,9 +144,9 @@ zero.
 
 ## sys.std.Core.Integer.quot_and_rem
 
-C<< function quot_and_rem (Tuple <--
+`function quot_and_rem (Tuple <--
 dividend : Int, divisor : Int, round_meth : RoundMeth)
-implements sys.std.Core.Numeric.quot_and_rem {...} >>
+implements sys.std.Core.Numeric.quot_and_rem {...}`
 
 This function results in a binary tuple whose attribute names are
 C<quotient> and C<remainder> and whose respective attribute values are what
@@ -156,8 +156,8 @@ arguments.  This function will fail if C<divisor> is zero.
 
 ## sys.std.Core.Integer.range
 
-C<< function range (Int <-- topic : set_of.Int)
-implements sys.std.Core.Numeric.range {...} >>
+`function range (Int <-- topic : set_of.Int)
+implements sys.std.Core.Numeric.range {...}`
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<topic> has zero values, then
@@ -165,8 +165,8 @@ this function will fail.
 
 ## sys.std.Core.Integer.frac_mean
 
-C<< function frac_mean (Rat <-- topic : bag_of.Int)
-implements sys.std.Core.Numeric.frac_mean {...} >>
+`function frac_mean (Rat <-- topic : bag_of.Int)
+implements sys.std.Core.Numeric.frac_mean {...}`
 
 This function results in the rational mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
@@ -176,8 +176,8 @@ then this function will fail.
 
 ## sys.std.Core.Integer.median
 
-C<< function median (set_of.Int <-- topic : bag_of.Int)
-implements sys.std.Core.Numeric.median {...} >>
+`function median (set_of.Int <-- topic : bag_of.Int)
+implements sys.std.Core.Numeric.median {...}`
 
 This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
@@ -189,8 +189,8 @@ zero values, then the result set is empty.
 
 ## sys.std.Core.Integer.frac_mean_of_median
 
-C<< function frac_mean_of_median (Rat <-- topic : bag_of.Int)
-implements sys.std.Core.Numeric.frac_mean_of_median {...} >>
+`function frac_mean_of_median (Rat <-- topic : bag_of.Int)
+implements sys.std.Core.Numeric.frac_mean_of_median {...}`
 
 This function is a wrapper over C<sys.std.Core.Integer.median> that will
 result in the rational mean of its result elements; it will fail if there
@@ -198,8 +198,8 @@ are zero elements.
 
 ## sys.std.Core.Integer.mode
 
-C<< function mode (set_of.Int <-- topic : bag_of.Int)
-implements sys.std.Core.Numeric.mode {...} >>
+`function mode (set_of.Int <-- topic : bag_of.Int)
+implements sys.std.Core.Numeric.mode {...}`
 
 This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
@@ -209,9 +209,9 @@ output.  If C<topic> has zero values, then the result set is empty.
 
 ## sys.std.Core.Integer.power_with_whole_exp
 
-C<< function power_with_whole_exp (Rat <--
+`function power_with_whole_exp (Rat <--
 radix : Int, exponent : Int)
-implements sys.std.Core.Numeric.power_with_whole_exp {...} >>
+implements sys.std.Core.Numeric.power_with_whole_exp {...}`
 
 This function results in a rational number that is the result of its
 C<radix> argument taken to the power of its integer C<exponent> argument.
@@ -224,8 +224,8 @@ These functions implement commonly used integer numeric operations.
 
 ## sys.std.Core.Integer.whole_mean
 
-C<< function whole_mean (Int <-- topic : bag_of.Int,
-round_meth : RoundMeth) {...} >>
+`function whole_mean (Int <-- topic : bag_of.Int,
+round_meth : RoundMeth) {...}`
 
 This function results in the integer mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
@@ -237,8 +237,8 @@ this function will fail.
 
 ## sys.std.Core.Integer.whole_mean_of_median
 
-C<< function whole_mean_of_median (Int <--
-topic : bag_of.Int, round_meth : RoundMeth) {...} >>
+`function whole_mean_of_median (Int <--
+topic : bag_of.Int, round_meth : RoundMeth) {...}`
 
 This function is a wrapper over C<sys.std.Core.Integer.median> that will
 result in the integer mean of its result elements; it will fail if there
@@ -246,7 +246,7 @@ are zero elements.
 
 ## sys.std.Core.Integer.power
 
-C<< function power (Int <-- radix : Int, exponent : NNInt) {...} >>
+`function power (Int <-- radix : Int, exponent : NNInt) {...}`
 
 This function results in its C<radix> argument taken to the power of its
 (non-negative integer) C<exponent> argument.  This function will result in
@@ -259,7 +259,7 @@ I<exponentiation> or C<exp>.
 
 ## sys.std.Core.Integer.factorial
 
-C<< function factorial (PInt <-- topic : NNInt) {...} >>
+`function factorial (PInt <-- topic : NNInt) {...}`
 
 This function results in the factorial of its argument (it is defined for
 an argument of zero to result in 1, as per the identity value for

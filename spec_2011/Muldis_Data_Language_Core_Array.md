@@ -26,8 +26,8 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Array.catenation
 
-C<< function catenation (Array <-- topic? : array_of.Array)
-implements sys.std.Core.Stringy.catenation {...} >>
+`function catenation (Array <-- topic? : array_of.Array)
+implements sys.std.Core.Stringy.catenation {...}`
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -40,8 +40,8 @@ value, which is the identity value for catenation.
 
 ## sys.std.Core.Array.replication
 
-C<< function replication (Array <-- topic : Array,
-count : NNInt) implements sys.std.Core.Stringy.replication {...} >>
+`function replication (Array <-- topic : Array,
+count : NNInt) implements sys.std.Core.Stringy.replication {...}`
 
 This function results in the catenation of C<count> instances of C<topic>.
 
@@ -49,8 +49,8 @@ This function results in the catenation of C<count> instances of C<topic>.
 
 ## sys.std.Core.Array.has_elem
 
-C<< function has_elem (Bool <-- coll : Array, value : Universal)
-implements sys.std.Core.Collective.has_member {...} >>
+`function has_elem (Bool <-- coll : Array, value : Universal)
+implements sys.std.Core.Collective.has_member {...}`
 
 This function results in C<Bool:True> iff its C<value> argument matches the
 C<value> attribute of at least one tuple of its C<coll> argument (that
@@ -60,8 +60,8 @@ incompatible as per C<update_value>.
 
 ## sys.std.Core.Array.has_not_elem
 
-C<< function has_not_elem (Bool <-- coll : Array, value : Universal)
-implements sys.std.Core.Collective.has_not_member {...} >>
+`function has_not_elem (Bool <-- coll : Array, value : Universal)
+implements sys.std.Core.Collective.has_not_member {...}`
 
 This function is exactly the same as C<sys.std.Core.Array.has_elem> except
 that
@@ -69,8 +69,8 @@ it results in the opposite boolean value when given the same arguments.
 
 ## sys.std.Core.Array.value_is_elem
 
-C<< function value_is_elem (Bool <-- value : Universal, coll : Array)
-implements sys.std.Core.Collective.value_is_member {...} >>
+`function value_is_elem (Bool <-- value : Universal, coll : Array)
+implements sys.std.Core.Collective.value_is_member {...}`
 
 This function is an alias for C<sys.std.Core.Array.has_elem>.  This
 function results in C<Bool:True> iff its C<value> argument matches the
@@ -80,8 +80,8 @@ otherwise.
 
 ## sys.std.Core.Array.value_is_not_elem
 
-C<< function value_is_not_elem (Bool <-- value : Universal, coll : Array)
-implements sys.std.Core.Collective.value_is_not_member {...} >>
+`function value_is_not_elem (Bool <-- value : Universal, coll : Array)
+implements sys.std.Core.Collective.value_is_not_member {...}`
 
 This function is an alias for C<sys.std.Core.Array.has_elem>.  This
 function is exactly the same as C<sys.std.Core.Array.value_is_elem> except
@@ -92,7 +92,7 @@ arguments.
 
 ## sys.std.Core.Array.value
 
-C<< function value (Universal <-- topic : Array, index : NNInt) {...} >>
+`function value (Universal <-- topic : Array, index : NNInt) {...}`
 
 This function results in the scalar or nonscalar C<value> attribute of the
 tuple of C<topic> whose C<index> attribute is C<index>.  This function will
@@ -101,8 +101,8 @@ this operation is also known as C<.[]>.
 
 ## sys.std.Core.Array.update_value
 
-C<< function update_value (Array <-- topic : Array,
-index : NNInt, value : Universal) {...} >>
+`function update_value (Array <-- topic : Array,
+index : NNInt, value : Universal) {...}`
 
 This function results in its C<topic> argument but that the C<value>
 attribute of the tuple of C<topic> whose C<index> attribute is C<index>
@@ -115,8 +115,8 @@ C<value> isn't a subtype of the declared type of the C<value> attribute.
 
 ## sys.std.Core.Array.insertion
 
-C<< function insertion (Array <-- topic : Array,
-index : NNInt, value : Universal) {...} >>
+`function insertion (Array <-- topic : Array,
+index : NNInt, value : Universal) {...}`
 
 This function results in its C<topic> argument but that a new tuple has
 been inserted whose C<index> is C<index> and whose C<value> is C<value>;
@@ -130,7 +130,7 @@ C<update_value>.
 
 ## sys.std.Core.Array.deletion
 
-C<< function deletion (Array <-- topic : Array, index : NNInt) {...} >>
+`function deletion (Array <-- topic : Array, index : NNInt) {...}`
 
 This function results in its C<topic> argument but that a tuple has been
 deleted whose C<index> is C<index>; any existing tuples with C<index>
@@ -139,8 +139,8 @@ function will fail if no tuple exists in C<topic> with the specified index.
 
 ## sys.std.Core.Array.reduction
 
-C<< function reduction (Universal <-- topic : Array,
-func : ValRedPFuncNC, identity : Universal) {...} >>
+`function reduction (Universal <-- topic : Array,
+func : ValRedPFuncNC, identity : Universal) {...}`
 
 This function is the same as C<sys.std.Core.Set.reduction>, including that
 input values for the reduction come from the C<value> attribute of
@@ -152,8 +152,8 @@ their place in sequence beween the other input elements.
 
 ## sys.std.Core.Array.slice
 
-C<< function slice (Array <-- topic : Array,
-index_interval : sp_interval_of.NNInt) {...} >>
+`function slice (Array <-- topic : Array,
+index_interval : sp_interval_of.NNInt) {...}`
 
 This function results in the sub-sequence of its C<topic> argument that is
 specified by its C<index_interval> argument, which specifies the
@@ -166,16 +166,16 @@ is also known as C<[]>.
 
 ## sys.std.Core.Array.reverse
 
-C<< function reverse (Array <-- topic : Array) {...} >>
+`function reverse (Array <-- topic : Array) {...}`
 
 This function results in its argument but that the order of its elements
-has been reversed.  For example, the input C<< { 0=>'a', 1=>'b', 2=>'c',
-3=>'d'} >> results in C<< { 0=>'d', 1=>'c', 2=>'b', 3=>'a' } >>.
+has been reversed.  For example, the input `{ 0=>'a', 1=>'b', 2=>'c',
+3=>'d'}` results in `{ 0=>'d', 1=>'c', 2=>'b', 3=>'a' }`.
 
 ## sys.std.Core.Array.has_subarray
 
-C<< function has_subarray (Bool <-- look_in : Array,
-look_for : Array) {...} >>
+`function has_subarray (Bool <-- look_in : Array,
+look_for : Array) {...}`
 
 This function results in C<Bool:True> iff the sequence of values comprising
 C<look_for> is a sub-sequence of the sequence of values C<look_in>, and
@@ -184,8 +184,8 @@ don't have a compatible or same heading.
 
 ## sys.std.Core.Array.has_not_subarray
 
-C<< function has_not_subarray (Bool <--
-look_in : Array, look_for : Array) {...} >>
+`function has_not_subarray (Bool <--
+look_in : Array, look_for : Array) {...}`
 
 This function is exactly the same as C<sys.std.Core.Array.has_subarray>
 except that it results in the opposite boolean value when given the same
@@ -193,9 +193,9 @@ arguments.
 
 ## sys.std.Core.Array.order
 
-C<< function order (Order <-- topic : Array,
+`function order (Order <-- topic : Array,
 other : Array, elem_ord_func? : OrdDetPFuncNC,
-elem_is_reverse_order? : Bool, is_reverse_order? : Bool) {...} >>
+elem_is_reverse_order? : Bool, is_reverse_order? : Bool) {...}`
 
 This function is a generic (total) C<order-determination> function for
 C<Array> values, especially for homogeneous ones.  Iff
@@ -218,8 +218,8 @@ result; if it is C<Bool:True>, then it reverses the result.
 
 ## sys.std.Core.Array.Array_from_wrap
 
-C<< function Array_from_wrap (array_of.Tuple <-- topic : Relation,
-ord_func : OrdDetPFuncNC, is_reverse_order? : Bool) {...} >>
+`function Array_from_wrap (array_of.Tuple <-- topic : Relation,
+ord_func : OrdDetPFuncNC, is_reverse_order? : Bool) {...}`
 
 This function results in an C<Array> whose C<value> attribute is
 tuple-typed and that attribute's values are all the tuples of C<topic>;
@@ -238,9 +238,9 @@ attribute to the source tuples and does not wrap them.
 
 ## sys.std.Core.Array.Array_from_wrap_by_attr_names
 
-C<< function Array_from_wrap_by_attr_names
+`function Array_from_wrap_by_attr_names
 (array_of.Tuple <-- topic : Relation,
-order_by : array_of.OrderByName, is_reverse_order? : Bool) {...} >>
+order_by : array_of.OrderByName, is_reverse_order? : Bool) {...}`
 
 This function is to C<Array_from_wrap> what
 C<sys.std.Core.Relation.rank_by_attr_names> is to
@@ -253,9 +253,9 @@ that may contain any arbitrary value expression.
 
 ## sys.std.Core.Array.limit_of_Array_from_wrap
 
-C<< function limit_of_Array_from_wrap
+`function limit_of_Array_from_wrap
 (array_of.Tuple <-- topic : Relation, ord_func : OrdDetPFuncNC,
-is_reverse_order? : Bool, index_interval : sp_interval_of.NNInt) {...} >>
+is_reverse_order? : Bool, index_interval : sp_interval_of.NNInt) {...}`
 
 This function is a short-hand for invoking first
 C<sys.std.Core.Array.Array_from_wrap> and then C<sys.std.Core.Array.slice>
@@ -265,17 +265,17 @@ C<sys.std.Core.Relation.rank>.
 
 ## sys.std.Core.Array.limit_of_Array_from_wrap_by_attr_names
 
-C<< function limit_of_Array_from_wrap_by_attr_names
+`function limit_of_Array_from_wrap_by_attr_names
 (array_of.Tuple <-- topic : Relation, order_by : array_of.OrderByName,
-is_reverse_order? : Bool, index_interval : sp_interval_of.NNInt) {...} >>
+is_reverse_order? : Bool, index_interval : sp_interval_of.NNInt) {...}`
 
 This function is to C<limit_of_Array_from_wrap> what
 C<Array_from_wrap_by_attr_names> is to C<Array_from_wrap>.
 
 ## sys.std.Core.Array.Array_from_attr
 
-C<< function Array_from_attr (Array <-- topic : Relation, name : Name,
-ord_func? : OrdDetPFuncNC, is_reverse_order? : Bool) {...} >>
+`function Array_from_attr (Array <-- topic : Relation, name : Name,
+ord_func? : OrdDetPFuncNC, is_reverse_order? : Bool) {...}`
 
 This function results in an C<Array> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
@@ -290,8 +290,8 @@ C<Bool:False>, respectively, if no explicit argument is given to it.
 
 ## sys.std.Core.Array.Array_from_Set
 
-C<< function Array_from_Set (Array <-- topic : Set,
-ord_func? : OrdDetPFuncNC, is_reverse_order? : Bool) {...} >>
+`function Array_from_Set (Array <-- topic : Set,
+ord_func? : OrdDetPFuncNC, is_reverse_order? : Bool) {...}`
 
 This function results in an C<Array> consisting of all the values of
 C<topic>.  It is a short-hand for a C<sys.std.Core.Array.Array_from_attr>

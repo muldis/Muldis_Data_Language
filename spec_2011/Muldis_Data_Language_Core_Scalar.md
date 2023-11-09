@@ -36,8 +36,8 @@ no explicit argument is given to it.
 
 ## sys.std.Core.Scalar.attr
 
-C<< function attr (Universal <-- topic : ScalarWP,
-possrep? : Name, name? : Name) {...} >>
+`function attr (Universal <-- topic : ScalarWP,
+possrep? : Name, name? : Name) {...}`
 
 This function results in the scalar or nonscalar value of the possrep
 attribute of C<topic> where the possrep name is given by C<possrep> and the
@@ -48,8 +48,8 @@ this operation is also known as C<.{:}>.
 
 ## sys.std.Core.Scalar.update_attr
 
-C<< function update_attr (ScalarWP <-- topic : ScalarWP, possrep? : Name,
-name? : Name, value : Universal) {...} >>
+`function update_attr (ScalarWP <-- topic : ScalarWP, possrep? : Name,
+name? : Name, value : Universal) {...}`
 
 This function results in its C<topic> argument but that its possrep
 attribute whose possrep name is C<possrep> and whose attribute name is
@@ -63,8 +63,8 @@ attribute.
 
 ## sys.std.Core.Scalar.multi_update
 
-C<< function multi_update (ScalarWP <--
-topic : ScalarWP, possrep? : Name, attrs : Tuple) {...} >>
+`function multi_update (ScalarWP <--
+topic : ScalarWP, possrep? : Name, attrs : Tuple) {...}`
 
 This function is like C<sys.std.Core.Scalar.update_attr> except that it
 handles N scalar possrep attributes at once rather than just 1.  The
@@ -76,8 +76,8 @@ I<sys.std.Core.Scalar.static_subst>.
 
 ## sys.std.Core.Scalar.projection
 
-C<< function projection (Tuple <-- topic : ScalarWP,
-possrep? : Name, attr_names : set_of.Name) {...} >>
+`function projection (Tuple <-- topic : ScalarWP,
+possrep? : Name, attr_names : set_of.Name) {...}`
 
 This function results in the C<Tuple> that is the projection of the
 possrep (whose name is given in the C<possrep> argument) of its C<topic>
@@ -91,8 +91,8 @@ C<topic> doesn't have.  Note that this operation is also known as C<{:}>.
 
 ## sys.std.Core.Scalar.cmpl_proj
 
-C<< function cmpl_proj (Tuple <--
-topic : ScalarWP, possrep? : Name, attr_names : set_of.Name) {...} >>
+`function cmpl_proj (Tuple <--
+topic : ScalarWP, possrep? : Name, attr_names : set_of.Name) {...}`
 
 This function is the same as C<projection> but that it results in the
 complementary subset of possrep attributes of C<topic> when given the same
@@ -100,8 +100,8 @@ arguments.  Note that this operation is also known as C<{:!}>.
 
 ## sys.std.Core.Scalar.Tuple_from_Scalar
 
-C<< function Tuple_from_Scalar (Tuple <--
-topic : ScalarWP, possrep? : Name) {...} >>
+`function Tuple_from_Scalar (Tuple <--
+topic : ScalarWP, possrep? : Name) {...}`
 
 This function results in the C<Tuple> that has all the same attributes of
 the possrep of C<topic> whose name is given in C<possrep>; in other words,
@@ -111,8 +111,8 @@ that C<topic> doesn't have.
 
 ## sys.std.Core.Scalar.Scalar_from_Tuple
 
-C<< function Scalar_from_Tuple (ScalarWP <--
-topic : Tuple, type : APTypeNC, possrep? : Name) {...} >>
+`function Scalar_from_Tuple (ScalarWP <--
+topic : Tuple, type : APTypeNC, possrep? : Name) {...}`
 
 This function results in the C<ScalarWP> value whose scalar root
 [|sub]type is named by C<type>, which has a possrep whose name matches
@@ -122,8 +122,8 @@ scalar value at all that has a possrep.
 
 ## sys.std.Core.Scalar.has_possrep
 
-C<< function has_possrep (Bool <-- topic : ScalarWP,
-possrep? : Name) {...} >>
+`function has_possrep (Bool <-- topic : ScalarWP,
+possrep? : Name) {...}`
 
 This function results in C<Bool:True> iff its C<topic> argument has a
 possrep whose name is given by C<possrep>; otherwise it results in
@@ -131,14 +131,14 @@ C<Bool:False>.
 
 ## sys.std.Core.Scalar.possrep_names
 
-C<< function possrep_names (set_of.Name <-- topic : ScalarWP) {...} >>
+`function possrep_names (set_of.Name <-- topic : ScalarWP) {...}`
 
 This function results in the set of the names of the possreps of its
 argument.
 
 ## sys.std.Core.Scalar.degree
 
-C<< function degree (NNInt <-- topic : ScalarWP, possrep? : Name) {...} >>
+`function degree (NNInt <-- topic : ScalarWP, possrep? : Name) {...}`
 
 This function results in the degree of its C<topic> argument's possrep
 whose name is given by C<possrep> (that is, the count of attributes the
@@ -146,8 +146,8 @@ possrep has).
 
 ## sys.std.Core.Scalar.has_attrs
 
-C<< function has_attrs (Bool <-- topic : ScalarWP,
-possrep? : Name, attr_names : set_of.Name) {...} >>
+`function has_attrs (Bool <-- topic : ScalarWP,
+possrep? : Name, attr_names : set_of.Name) {...}`
 
 This function results in C<Bool:True> iff, for every one of the attribute
 names specified by its C<attr_names> argument, its C<topic> argument's
@@ -157,8 +157,8 @@ result is C<Bool:True> if C<attr_names> is empty.
 
 ## sys.std.Core.Scalar.attr_names
 
-C<< function attr_names (set_of.Name <--
-topic : ScalarWP, possrep? : Name) {...} >>
+`function attr_names (set_of.Name <--
+topic : ScalarWP, possrep? : Name) {...}`
 
 This function results in the set of the names of the attributes of its
 C<topic> argument's possrep whose name is given by C<possrep>.

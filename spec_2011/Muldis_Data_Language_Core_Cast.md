@@ -62,7 +62,7 @@ values are 2 and 36, respectively.  The cardinality of this type is 35.
 
 ## sys.std.Core.Cast.Tuple_from_Relation
 
-C<< function Tuple_from_Relation (Tuple <-- topic : Relation) {...} >>
+`function Tuple_from_Relation (Tuple <-- topic : Relation) {...}`
 
 This function results in the C<Tuple> that is the sole member tuple of
 its argument.  This function will fail if its argument does not have
@@ -70,7 +70,7 @@ exactly one tuple.  Note that this operation is also known as C<%>.
 
 ## sys.std.Core.Cast.Relation_from_Tuple
 
-C<< function Relation_from_Tuple (Relation <-- topic : Tuple) {...} >>
+`function Relation_from_Tuple (Relation <-- topic : Tuple) {...}`
 
 This function results in the C<Relation> value those body has just the one
 C<Tuple> that is its argument.  Note that this operation is also known as
@@ -80,14 +80,14 @@ C<@>.
 
 ## sys.std.Core.Cast.Set_from_Bag
 
-C<< function Set_from_Bag (Set <-- topic : Bag) {...} >>
+`function Set_from_Bag (Set <-- topic : Bag) {...}`
 
 This function results in the C<Set> that is the projection of the C<value>
 attribute of its C<Bag> argument.
 
 ## sys.std.Core.Cast.Bag_from_Set
 
-C<< function Bag_from_Set (Bag <-- topic : Set) {...} >>
+`function Bag_from_Set (Bag <-- topic : Set) {...}`
 
 This function results in the C<Bag> that is the extension of its C<Set>
 argument with a new C<count> attribute whose value for every tuple is 1.
@@ -99,8 +99,8 @@ C<Int> values.
 
 ## sys.std.Core.Cast.Int_from_Rat
 
-C<< function Int_from_Rat (Int <-- rat : Rat,
-round_meth : RoundMeth) {...} >>
+`function Int_from_Rat (Int <-- rat : Rat,
+round_meth : RoundMeth) {...}`
 
 This selector function results in the C<Int> value that is conceptually
 equal to or otherwise nearest to its C<rat> argument, where the nearest is
@@ -108,7 +108,7 @@ determined by the rounding method specified by the C<round_meth> argument.
 
 ## sys.std.Core.Cast.Rat_from_Int
 
-C<< function Rat_from_Int (Rat <-- int : Int) {...} >>
+`function Rat_from_Int (Rat <-- int : Int) {...}`
 
 This selector function results in the C<Rat> value that is conceptually
 equal to its C<Int> argument.
@@ -120,8 +120,8 @@ representations of integers as character strings.
 
 ## sys.std.Core.Cast.Int_from_Text
 
-C<< function Int_from_Text (Int <-- text : Text,
-radix? : PInt2_36) {...} >>
+`function Int_from_Text (Int <-- text : Text,
+radix? : PInt2_36) {...}`
 
 This selector function results in the C<Int> value that its (not-empty)
 C<text> argument maps to when the whole character string is evaluated as a
@@ -132,7 +132,7 @@ function will fail if C<text> can't be mapped as specified.
 
 ## sys.std.Core.Cast.Text_from_Int
 
-C<< function Text_from_Int (Text <-- int : Int, radix? : PInt2_36) {...} >>
+`function Text_from_Int (Text <-- int : Int, radix? : PInt2_36) {...}`
 
 This selector function results in the (not-empty) C<Text> value where its
 C<int> argument is formatted as a base-C<radix> integer.
@@ -144,8 +144,8 @@ representations of rationals as character strings.
 
 ## sys.std.Core.Cast.Rat_from_Text
 
-C<< function Rat_from_Text (Rat <-- text : Text,
-radix? : PInt2_36) {...} >>
+`function Rat_from_Text (Rat <-- text : Text,
+radix? : PInt2_36) {...}`
 
 This selector function results in the C<Rat> value that its (not-empty)
 C<text> argument maps to when the whole character string is evaluated as a
@@ -156,7 +156,7 @@ function will fail if C<text> can't be mapped as specified.
 
 ## sys.std.Core.Cast.Text_from_Rat
 
-C<< function Text_from_Rat (Text <-- rat : Rat, radix? : PInt2_36) {...} >>
+`function Text_from_Rat (Text <-- rat : Rat, radix? : PInt2_36) {...}`
 
 This selector function results in the (not-empty) C<Text> value where its
 C<rat> argument is formatted as a base-C<radix> rational.
@@ -168,7 +168,7 @@ representations of binary strings as character strings.
 
 ## sys.std.Core.Cast.Blob_from_Text
 
-C<< function Blob_from_Text (Blob <-- text : Text, size : PInt1_4) {...} >>
+`function Blob_from_Text (Blob <-- text : Text, size : PInt1_4) {...}`
 
 This selector function results in the C<Blob> value that its C<text>
 argument maps to when each input character represents a sequence of 1-4
@@ -180,7 +180,7 @@ C<text> can't be mapped as specified.
 
 ## sys.std.Core.Cast.Text_from_Blob
 
-C<< function Text_from_Blob (Text <-- blob : Blob, size : PInt1_4) {...} >>
+`function Text_from_Blob (Text <-- blob : Blob, size : PInt1_4) {...}`
 
 This selector function results in the C<Text> value where its argument is
 encoded using a character for each sequence of 1-4 bits, the number of bits
@@ -198,7 +198,7 @@ would be appropriate instead.  Or maybe both kinds are necessary.>
 
 ## sys.std.Core.Cast.Int_from_Blob_S_VBE
 
-C<< function Int_from_Blob_S_VBE (Int <-- blob : Blob) {...} >>
+`function Int_from_Blob_S_VBE (Int <-- blob : Blob) {...}`
 
 This selector function results in the C<Int> value that its C<blob>
 argument maps to when the whole bit string is treated literally as a
@@ -210,7 +210,7 @@ in situations where the bit length isn't a multiple of 8.
 
 ## sys.std.Core.Cast.Blob_S_VBE_from_Int
 
-C<< function Blob_S_VBE_from_Int (Blob <-- int : Int) {...} >>
+`function Blob_S_VBE_from_Int (Blob <-- int : Int) {...}`
 
 This selector function results in the C<Blob> value where its C<int>
 argument is formatted as a variable-length binary (two's complement) signed
@@ -219,14 +219,14 @@ to store C<int> is used.
 
 ## sys.std.Core.Cast.Int_from_Blob_U_VBE
 
-C<< function Int_from_Blob_U_VBE (NNInt <-- blob : Blob) {...} >>
+`function Int_from_Blob_U_VBE (NNInt <-- blob : Blob) {...}`
 
 This function is the same as C<sys.std.Core.Cast.Int_from_Blob_S_VBE> but
 that it does unsigned integers.
 
 ## sys.std.Core.Cast.Blob_U_VBE_from_Int
 
-C<< function Blob_U_VBE_from_Int (NNInt <-- blob : Blob) {...} >>
+`function Blob_U_VBE_from_Int (NNInt <-- blob : Blob) {...}`
 
 This function is the same as C<sys.std.Core.Cast.Blob_S_VBE_from_Int> but
 that it does unsigned integers.

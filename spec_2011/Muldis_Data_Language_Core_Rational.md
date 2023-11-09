@@ -61,9 +61,9 @@ numbers that humans typically work with.
 
 ## sys.std.Core.Rational.order
 
-C<< function order (Order <-- topic : Rat,
+`function order (Order <-- topic : Rat,
 other : Rat, misc_args? : Tuple, is_reverse_order? : Bool)
-implements sys.std.Core.Ordered.order {...} >>
+implements sys.std.Core.Ordered.order {...}`
 
 This is a (total) C<order-determination> function specific to C<Rat>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
@@ -72,15 +72,15 @@ only valid C<misc_args> argument is C<Tuple:D0>.
 
 ## sys.std.Core.Rational.abs
 
-C<< function abs (NNRat <-- topic : Rat)
-implements sys.std.Core.Numeric.abs {...} >>
+`function abs (NNRat <-- topic : Rat)
+implements sys.std.Core.Numeric.abs {...}`
 
 This function results in the absolute value of its argument.
 
 ## sys.std.Core.Rational.sum
 
-C<< function sum (Rat <-- topic? : bag_of.Rat)
-implements sys.std.Core.Numeric.sum {...} >>
+`function sum (Rat <-- topic? : bag_of.Rat)
+implements sys.std.Core.Numeric.sum {...}`
 
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
@@ -91,24 +91,24 @@ addition.
 
 ## sys.std.Core.Rational.diff
 
-C<< function diff (Rat <-- minuend : Rat,
-subtrahend : Rat) implements sys.std.Core.Numeric.diff {...} >>
+`function diff (Rat <-- minuend : Rat,
+subtrahend : Rat) implements sys.std.Core.Numeric.diff {...}`
 
 This function results in the difference when its C<subtrahend> argument is
 subtracted from its C<minuend> argument.
 
 ## sys.std.Core.Rational.abs_diff
 
-C<< function abs_diff (Rat <-- topic : Rat,
-other : Rat) implements sys.std.Core.Numeric.abs_diff {...} >>
+`function abs_diff (Rat <-- topic : Rat,
+other : Rat) implements sys.std.Core.Numeric.abs_diff {...}`
 
 This symmetric function results in the absolute difference between its 2
 arguments.
 
 ## sys.std.Core.Rational.product
 
-C<< function product (Rat <-- topic? : bag_of.Rat)
-implements sys.std.Core.Numeric.product {...} >>
+`function product (Rat <-- topic? : bag_of.Rat)
+implements sys.std.Core.Numeric.product {...}`
 
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -119,8 +119,8 @@ identity value for multiplication.
 
 ## sys.std.Core.Rational.frac_quotient
 
-C<< function frac_quotient (Rat <-- dividend : Rat,
-divisor : Rat) implements sys.std.Core.Numeric.frac_quotient {...} >>
+`function frac_quotient (Rat <-- dividend : Rat,
+divisor : Rat) implements sys.std.Core.Numeric.frac_quotient {...}`
 
 This function results in the rational quotient when its C<dividend>
 argument is divided by its C<divisor> argument using the semantics of real
@@ -128,9 +128,9 @@ number division.  This function will fail if C<divisor> is zero.
 
 ## sys.std.Core.Rational.whole_quotient
 
-C<< function whole_quotient (Int <--
+`function whole_quotient (Int <--
 dividend : Rat, divisor : Rat, round_meth : RoundMeth)
-implements sys.std.Core.Numeric.whole_quotient {...} >>
+implements sys.std.Core.Numeric.whole_quotient {...}`
 
 This function results in the integer quotient when its C<dividend> argument
 is divided by its C<divisor> argument using the semantics of real number
@@ -141,9 +141,9 @@ zero.  I<TODO: Consider making the result a whole-number C<Rat> instead.>
 
 ## sys.std.Core.Rational.remainder
 
-C<< function remainder (Rat <--
+`function remainder (Rat <--
 dividend : Rat, divisor : Rat, round_meth : RoundMeth)
-implements sys.std.Core.Numeric.remainder {...} >>
+implements sys.std.Core.Numeric.remainder {...}`
 
 This function results in the rational remainder when its C<dividend>
 argument is divided by its C<divisor> argument using the semantics of real
@@ -159,9 +159,9 @@ zero.
 
 ## sys.std.Core.Rational.quot_and_rem
 
-C<< function quot_and_rem (Tuple <--
+`function quot_and_rem (Tuple <--
 dividend : Rat, divisor : Rat, round_meth : RoundMeth)
-implements sys.std.Core.Numeric.quot_and_rem {...} >>
+implements sys.std.Core.Numeric.quot_and_rem {...}`
 
 This function results in a binary tuple whose attribute names are
 C<quotient> and C<remainder> and whose respective attribute values are what
@@ -171,8 +171,8 @@ arguments.  This function will fail if C<divisor> is zero.
 
 ## sys.std.Core.Rational.range
 
-C<< function range (Rat <-- topic : set_of.Rat)
-implements sys.std.Core.Numeric.range {...} >>
+`function range (Rat <-- topic : set_of.Rat)
+implements sys.std.Core.Numeric.range {...}`
 
 This function results in the difference between the lowest and highest
 element values of its argument.  If C<topic> has zero values, then
@@ -180,8 +180,8 @@ this function will fail.
 
 ## sys.std.Core.Rational.frac_mean
 
-C<< function frac_mean (Rat <-- topic : bag_of.Rat)
-implements sys.std.Core.Numeric.frac_mean {...} >>
+`function frac_mean (Rat <-- topic : bag_of.Rat)
+implements sys.std.Core.Numeric.frac_mean {...}`
 
 This function results in the rational mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
@@ -191,8 +191,8 @@ then this function will fail.
 
 ## sys.std.Core.Rational.median
 
-C<< function median (set_of.Rat <--
-topic : bag_of.Rat) implements sys.std.Core.Numeric.median {...} >>
+`function median (set_of.Rat <--
+topic : bag_of.Rat) implements sys.std.Core.Numeric.median {...}`
 
 This function results in the 1 or 2 median values of the N element values
 of its argument; they are returned as a set.  It is equivalent to first
@@ -204,8 +204,8 @@ zero values, then the result set is empty.
 
 ## sys.std.Core.Rational.frac_mean_of_median
 
-C<< function frac_mean_of_median (Rat <-- topic : bag_of.Rat)
-implements sys.std.Core.Numeric.frac_mean_of_median {...} >>
+`function frac_mean_of_median (Rat <-- topic : bag_of.Rat)
+implements sys.std.Core.Numeric.frac_mean_of_median {...}`
 
 This function is a wrapper over C<sys.std.Core.Rational.median> that will
 result in the rational mean of its result elements; it will fail if there
@@ -213,8 +213,8 @@ are zero elements.
 
 ## sys.std.Core.Rational.mode
 
-C<< function mode (set_of.Rat <--
-topic : bag_of.Rat) implements sys.std.Core.Numeric.mode {...} >>
+`function mode (set_of.Rat <--
+topic : bag_of.Rat) implements sys.std.Core.Numeric.mode {...}`
 
 This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
@@ -224,9 +224,9 @@ output.  If C<topic> has zero values, then the result set is empty.
 
 ## sys.std.Core.Rational.power_with_whole_exp
 
-C<< function power_with_whole_exp (Rat <--
+`function power_with_whole_exp (Rat <--
 radix : Rat, exponent : Int)
-implements sys.std.Core.Numeric.power_with_whole_exp {...} >>
+implements sys.std.Core.Numeric.power_with_whole_exp {...}`
 
 This function results in a rational number that is the result of its
 C<radix> argument taken to the power of its integer C<exponent> argument.
@@ -239,8 +239,8 @@ These functions implement commonly used rational numeric operations.
 
 ## sys.std.Core.Rational.round
 
-C<< function round (Rat <-- topic : Rat,
-round_rule : RatRoundRule) {...} >>
+`function round (Rat <-- topic : Rat,
+round_rule : RatRoundRule) {...}`
 
 This function results in the rational that is equal to or otherwise nearest
 to its C<topic> argument, where the nearest is determined by the rational
@@ -248,8 +248,8 @@ rounding rule specified by the C<round_rule> argument.
 
 ## sys.std.Core.Rational.power
 
-C<< function power (PRat <-- radix : PRat,
-exponent : Rat, round_rule : RatRoundRule) {...} >>
+`function power (PRat <-- radix : PRat,
+exponent : Rat, round_rule : RatRoundRule) {...}`
 
 This function results in its (positive rational) C<radix> argument taken to
 the power of its C<exponent> argument.  Since the result would be an
@@ -262,8 +262,8 @@ is also known as I<exponentiation> or C<**>.
 
 ## sys.std.Core.Rational.log
 
-C<< function log (Rat <-- topic : PRat,
-radix : PRat, round_rule : RatRoundRule) {...} >>
+`function log (Rat <-- topic : PRat,
+radix : PRat, round_rule : RatRoundRule) {...}`
 
 This function results in the logarithm of its C<topic> argument to the base
 given in its (positive rational) C<radix> argument.  The C<round_rule>
@@ -271,8 +271,8 @@ parameter is as per C<power>.
 
 ## sys.std.Core.Rational.natural_power
 
-C<< function natural_power (PRat <-- exponent : Rat,
-round_rule : RatRoundRule) {...} >>
+`function natural_power (PRat <-- exponent : Rat,
+round_rule : RatRoundRule) {...}`
 
 This function results in the special mathematical constant I<e> (which is
 the base of the natural logarithm) taken to the power of its C<exponent>
@@ -281,8 +281,8 @@ operation is also known as C<e**>.
 
 ## sys.std.Core.Rational.natural_log
 
-C<< function natural_log (Rat <-- topic : PRat,
-round_rule : RatRoundRule) {...} >>
+`function natural_log (Rat <-- topic : PRat,
+round_rule : RatRoundRule) {...}`
 
 This function results in the natural logarithm of its C<topic> argument.
 The C<round_rule> parameter is as per C<power>.  Note that this operation

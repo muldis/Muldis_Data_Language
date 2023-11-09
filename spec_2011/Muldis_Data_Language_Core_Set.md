@@ -26,8 +26,8 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Set.has_member
 
-C<< function has_member (Bool <-- coll : Set, value : Universal)
-implements sys.std.Core.Collective.has_member {...} >>
+`function has_member (Bool <-- coll : Set, value : Universal)
+implements sys.std.Core.Collective.has_member {...}`
 
 This function results in C<Bool:True> iff its C<value> argument matches the
 sole attribute of a tuple of its C<coll> argument (that is, iff
@@ -37,8 +37,8 @@ C<sys.std.Core.Relation.is_subset>.
 
 ## sys.std.Core.Set.has_not_member
 
-C<< function has_not_member (Bool <-- coll : Set, value : Universal)
-implements sys.std.Core.Collective.has_not_member {...} >>
+`function has_not_member (Bool <-- coll : Set, value : Universal)
+implements sys.std.Core.Collective.has_not_member {...}`
 
 This function is exactly the same as C<sys.std.Core.Set.has_member> except
 that it results in the opposite boolean value when given the same
@@ -46,8 +46,8 @@ arguments.
 
 ## sys.std.Core.Set.value_is_member
 
-C<< function value_is_member (Bool <-- value : Universal, coll : Set)
-implements sys.std.Core.Collective.value_is_member {...} >>
+`function value_is_member (Bool <-- value : Universal, coll : Set)
+implements sys.std.Core.Collective.value_is_member {...}`
 
 This function is an alias for C<sys.std.Core.Set.has_member>.  This
 function results in C<Bool:True> iff its C<value> argument matches the
@@ -57,8 +57,8 @@ otherwise.
 
 ## sys.std.Core.Set.value_is_not_member
 
-C<< function value_is_not_member (Bool <-- value : Universal, coll : Set)
-implements sys.std.Core.Collective.value_is_not_member {...} >>
+`function value_is_not_member (Bool <-- value : Universal, coll : Set)
+implements sys.std.Core.Collective.value_is_not_member {...}`
 
 This function is an alias for C<sys.std.Core.Set.has_not_member>.  This
 function is exactly the same as C<sys.std.Core.Set.value_is_member> except
@@ -69,7 +69,7 @@ arguments.
 
 ## sys.std.Core.Set.insertion
 
-C<< function insertion (Set <-- set : Set, value : Universal) {...} >>
+`function insertion (Set <-- set : Set, value : Universal) {...}`
 
 This function results in a C<Set> that is the relational union of C<set>
 and a Set whose sole tuple has the sole attribute value of C<value>;
@@ -79,14 +79,14 @@ C<set>.
 
 ## sys.std.Core.Set.disjoint_ins
 
-C<< function disjoint_ins (Set <-- set : Set, value : Universal) {...} >>
+`function disjoint_ins (Set <-- set : Set, value : Universal) {...}`
 
 This function is exactly the same as C<sys.std.Core.Set.insertion> except
 that it will fail if C<value> already exists in C<set>.
 
 ## sys.std.Core.Set.deletion
 
-C<< function deletion (Set <-- set : Set, value : Universal) {...} >>
+`function deletion (Set <-- set : Set, value : Universal) {...}`
 
 This function results in a C<Set> that is the relational difference from
 C<set> of a Set whose sole tuple has the sole attribute value of
@@ -96,8 +96,8 @@ result is just C<set>.
 
 ## sys.std.Core.Set.reduction
 
-C<< function reduction (Universal <-- topic : Set,
-func : ValRedPFuncNC, identity : Universal) {...} >>
+`function reduction (Universal <-- topic : Set,
+func : ValRedPFuncNC, identity : Universal) {...}`
 
 This function is a generic reduction operator that recursively takes each
 pair of input values in C<topic> and applies an argument-specified scalar
@@ -115,7 +115,7 @@ subtype of the |declared type of the sole attribute of C<topic>.
 
 ## sys.std.Core.Set.Set_from_wrap
 
-C<< function Set_from_wrap (set_of.Tuple <-- topic : Relation) {...} >>
+`function Set_from_wrap (set_of.Tuple <-- topic : Relation) {...}`
 
 This function results in a C<Set> whose sole attribute is tuple-typed
 and the attribute values are all the tuples of C<topic>; is a short-hand
@@ -124,7 +124,7 @@ tuple-valued attribute is named C<value>.
 
 ## sys.std.Core.Set.Set_from_attr
 
-C<< function Set_from_attr (Set <-- topic : Relation, name : Name) {...} >>
+`function Set_from_attr (Set <-- topic : Relation, name : Name) {...}`
 
 This function results in a C<Set> consisting of all the values of the
 attribute of C<topic> named by C<name>.  It is a short-hand for a unary
@@ -134,7 +134,7 @@ projection of just the named attribute plus its renaming to C<value>.
 
 ## sys.std.Core.Set.Maybe.Nothing
 
-C<< function Nothing (Maybe <--) {...} >>
+`function Nothing (Maybe <--) {...}`
 
 This C<named-value> selector function results in the only zero-tuple Maybe
 value, which is known by the special name C<Maybe:Nothing>, aka C<Nothing>,
@@ -142,14 +142,14 @@ aka I<empty set> aka C<∅>.
 
 ## sys.std.Core.Set.Maybe.just
 
-C<< function just (Just <-- value : Universal) {...} >>
+`function just (Just <-- value : Universal) {...}`
 
 This selector function results in the Maybe value with a single tuple
 whose C<value> attribute's value is the C<value> argument.
 
 ## sys.std.Core.Set.Maybe.attr
 
-C<< function attr (Universal <-- topic : Just) {...} >>
+`function attr (Universal <-- topic : Just) {...}`
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of its argument, which always exists when the
@@ -157,8 +157,8 @@ argument is a C<Just>.  Note that this operation is also known as C<.{*}>.
 
 ## sys.std.Core.Set.Maybe.attr_or_default
 
-C<< function attr_or_default (Universal <--
-topic? : array_of.Maybe, default : APTypeNC) {...} >>
+`function attr_or_default (Universal <--
+topic? : array_of.Maybe, default : APTypeNC) {...}`
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of the lowest-indexed of its N C<topic> input
@@ -170,8 +170,8 @@ from invoking C<sys.std.Core.Universal.default>.
 
 ## sys.std.Core.Set.Maybe.attr_or_value
 
-C<< function attr_or_value (Universal <--
-topic? : array_of.Maybe, value : Universal) {...} >>
+`function attr_or_value (Universal <--
+topic? : array_of.Maybe, value : Universal) {...}`
 
 This function results in the scalar or nonscalar value of the sole
 attribute of the sole tuple of the lowest-indexed of its N C<topic> input
@@ -184,9 +184,9 @@ this function is analogous to the N-adic SQL COALESCE function.
 
 ## sys.std.Core.Set.Maybe.order
 
-C<< function order (Order <-- topic : Maybe,
+`function order (Order <-- topic : Maybe,
 other : Maybe, J_ord_func? : OrdDetPFuncNC, J_is_reverse_order? : Bool,
-N_is_after_all_J : Bool, is_reverse_order? : Bool) {...} >>
+N_is_after_all_J : Bool, is_reverse_order? : Bool) {...}`
 
 This function is a generic (total) C<order-determination> function for
 C<Maybe> values.  Iff both of its C<topic> and C<other> arguments are

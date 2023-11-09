@@ -25,8 +25,8 @@ These functions are applicable to values of any data type at all.
 
 ## sys.std.Core.Universal.is_same
 
-C<< function is_same (Bool <--
-topic : Universal, other : Universal) {...} >>
+`function is_same (Bool <--
+topic : Universal, other : Universal) {...}`
 
 This symmetric function results in C<Bool:True> iff its 2
 arguments are exactly the same value, and C<Bool:False> otherwise.  When
@@ -46,8 +46,8 @@ this operation is also known as I<is equal> or C<=>.
 
 ## sys.std.Core.Universal.is_not_same
 
-C<< function is_not_same (Bool <--
-topic : Universal, other : Universal) {...} >>
+`function is_not_same (Bool <--
+topic : Universal, other : Universal) {...}`
 
 This symmetric function is exactly the same as
 C<sys.std.Core.Universal.is_same> except that it results in the
@@ -56,8 +56,8 @@ operation is also known as I<is not equal> or C<≠> or C<!=>.
 
 ## sys.std.Core.Universal.is_value_of_type
 
-C<< function is_value_of_type (Bool <--
-topic : Universal, type : APTypeNC) {...} >>
+`function is_value_of_type (Bool <--
+topic : Universal, type : APTypeNC) {...}`
 
 This function results in C<Bool:True> iff the value of its C<topic>
 argument is a member of the data type whose name is given in the C<type>
@@ -69,8 +69,8 @@ known as C<isa>.
 
 ## sys.std.Core.Universal.is_not_value_of_type
 
-C<< function is_not_value_of_type (Bool <--
-topic : Universal, type : APTypeNC) {...} >>
+`function is_not_value_of_type (Bool <--
+topic : Universal, type : APTypeNC) {...}`
 
 This function is exactly the same as
 C<sys.std.Core.Universal.is_value_of_type> except that it results in the
@@ -79,8 +79,8 @@ operation is also known as C<!isa> or C<not-isa>.
 
 ## sys.std.Core.Universal.treated
 
-C<< function treated (Universal <--
-topic : Universal, as : APTypeNC) {...} >>
+`function treated (Universal <--
+topic : Universal, as : APTypeNC) {...}`
 
 This function results in the value of its C<topic> argument, but that the
 declared type of the result is the not-C<Empty> data type whose name is
@@ -99,7 +99,7 @@ Note that this operation is also known as C<as>.
 
 ## sys.std.Core.Universal.default
 
-C<< function default (Universal <-- of : APTypeNC) {...} >>
+`function default (Universal <-- of : APTypeNC) {...}`
 
 This function is the externalization of a not-C<Empty> data type's I<type
 default> C<named-value> function.  This function results in the default
@@ -113,8 +113,8 @@ declared type.
 
 ## sys.std.Core.Universal.assertion
 
-C<< function assertion (Universal <--
-result : Universal, is_true : Bool) {...} >>
+`function assertion (Universal <--
+result : Universal, is_true : Bool) {...}`
 
 This function results in the value of its C<result> argument, when its
 C<is_true> argument is C<Bool:True>.  This function will fail if its

@@ -26,9 +26,9 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Blob.order
 
-C<< function order (Order <-- topic : Blob,
+`function order (Order <-- topic : Blob,
 other : Blob, misc_args? : Tuple, is_reverse_order? : Bool)
-implements sys.std.Core.Ordered.order {...} >>
+implements sys.std.Core.Ordered.order {...}`
 
 This is a (total) C<order-determination> function specific to C<Blob>.  Its
 only valid C<misc_args> argument is C<Tuple:D0>.
@@ -37,8 +37,8 @@ only valid C<misc_args> argument is C<Tuple:D0>.
 
 ## sys.std.Core.Blob.catenation
 
-C<< function catenation (Blob <--
-topic? : array_of.Blob) implements sys.std.Core.Stringy.catenation {...} >>
+`function catenation (Blob <--
+topic? : array_of.Blob) implements sys.std.Core.Stringy.catenation {...}`
 
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
@@ -49,8 +49,8 @@ identity value for catenation.
 
 ## sys.std.Core.Blob.replication
 
-C<< function replication (Blob <-- topic : Blob,
-count : NNInt) implements sys.std.Core.Stringy.replication {...} >>
+`function replication (Blob <-- topic : Blob,
+count : NNInt) implements sys.std.Core.Stringy.replication {...}`
 
 This function results in the catenation of C<count> instances of C<topic>.
 
@@ -60,20 +60,20 @@ These functions implement commonly used binary string operations.
 
 ## sys.std.Core.Blob.len_in_bits
 
-C<< function len_in_bits (NNInt <-- topic : Blob) {...} >>
+`function len_in_bits (NNInt <-- topic : Blob) {...}`
 
 This function results in the length of its argument in bits.
 
 ## sys.std.Core.Blob.len_in_octets
 
-C<< function len_in_octets (NNInt <-- topic : OctetBlob) {...} >>
+`function len_in_octets (NNInt <-- topic : OctetBlob) {...}`
 
 This function results in the length of its argument in octets.
 
 ## sys.std.Core.Blob.has_substr_bits
 
-C<< function has_substr_bits (Bool <-- look_in : Blob,
-look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
+`function has_substr_bits (Bool <-- look_in : Blob,
+look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
 This function results in C<Bool:True> iff its C<look_for> argument is a
 substring of its C<look_in> argument as per the optional C<fixed_start> and
@@ -87,8 +87,8 @@ it.
 
 ## sys.std.Core.Blob.has_not_substr_bits
 
-C<< function has_not_substr_bits (Bool <-- look_in : Blob,
-look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
+`function has_not_substr_bits (Bool <-- look_in : Blob,
+look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Blob.has_substr_bits>
 except that it results in the opposite boolean value when given the same
@@ -96,8 +96,8 @@ arguments.
 
 ## sys.std.Core.Blob.has_substr_octets
 
-C<< function has_substr_octets (Bool <-- look_in : OctetBlob,
-look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
+`function has_substr_octets (Bool <-- look_in : OctetBlob,
+look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
 This function is exactly the same as C<sys.std.Core.Blob.has_substr_bits>
 except that its main arguments are C<OctetBlob> and it only looks for
@@ -105,21 +105,21 @@ substring matches on whole-octet boundaries of the C<look_in> bit string.
 
 ## sys.std.Core.Blob.has_not_substr_octets
 
-C<< function has_not_substr_octets (Bool <-- look_in : OctetBlob,
-look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...} >>
+`function has_not_substr_octets (Bool <-- look_in : OctetBlob,
+look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
 This function is to C<has_substr_octets> as C<has_not_substr_bits> is to
 C<has_substr_bits>.
 
 ## sys.std.Core.Blob.not
 
-C<< function not (Blob <-- topic : Blob) {...} >>
+`function not (Blob <-- topic : Blob) {...}`
 
 This function results in the bitwise I<not> of its argument.
 
 ## sys.std.Core.Blob.and
 
-C<< function and (Blob <-- topic : set_of.Blob) {...} >>
+`function and (Blob <-- topic : set_of.Blob) {...}`
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and does a bitwise I<and> (which is commutative,
@@ -138,7 +138,7 @@ explicitly as an extra C<topic> element.
 
 ## sys.std.Core.Blob.or
 
-C<< function or (Blob <-- topic : set_of.Blob) {...} >>
+`function or (Blob <-- topic : set_of.Blob) {...}`
 
 This function is the same as C<sys.std.Core.Blob.and> but that it
 recursively does a bitwise inclusive-or rather than a bitwise I<and>, and
@@ -146,7 +146,7 @@ its conceptual identity value is composed of zero valued bits.
 
 ## sys.std.Core.Blob.xor
 
-C<< function xor (Blob <-- topic : bag_of.Blob) {...} >>
+`function xor (Blob <-- topic : bag_of.Blob) {...}`
 
 This function is the same as C<sys.std.Core.Blob.or> but that it
 recursively does a bitwise exclusive-or rather than a bitwise inclusive-or.

@@ -446,7 +446,7 @@ Every GCVL has 1-3 ordered elements:
 * C<value_kind>
 
 This is a character string of the format
-C<< <[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@' >>;
+`<[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@'`;
 it identifies the data type of the value literal in broad terms and is the
 only external metadata of C<value_payload> generally necessary to
 interpret the latter; what grammars are valid for C<value_payload> depend
@@ -541,8 +541,8 @@ An C<Order> node represents an order-determination.  It is interpreted as a
 Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:
 
 * The canonical payload is the specific result of a Perl order-determining
-expression, such as C<< (1 <=> 2) >> for C<Order:Less> or C<< (1 <=> 1)
->> for C<Order:Same> or C<< (2 <=> 1) >> for C<Order:More>; said values
+expression, such as `(1 <=> 2)` for C<Order:Less> or `(1 <=> 1)`
+for C<Order:Same> or `(2 <=> 1)` for C<Order:More>; said values
 are probably the numbers [-1,0,1], respectively.
 
 * A few alternative payload formats are supported:  The Perl value literals
@@ -579,8 +579,8 @@ Muldis D C<sys.std.Core.Type.Int> value as follows:
 * If the payload is a Perl scalar, then it must be just a canonical integer
 value according to Perl, and it is mapped directly; since native Perl
 integers are limited precision, larger integers can be represented by a
-Perl character string of the format C<0> or C<<
-'-'?<[1..9]>['_'?<[0..9]>+]* >> that is interpreted as base 10.
+Perl character string of the format C<0> or
+`'-'?<[1..9]>['_'?<[0..9]>+]*` that is interpreted as base 10.
 
 * An alternative payload format is a C<bigint> object, which is conceptually
 the closest thing Perl has in core to a "big integer".
@@ -593,7 +593,7 @@ payload>; a key of a single character is a I<max-col-val> and a
 The max-col-val must be a Perl string composed of a single
 C<[ 1..9 A..Z a..z ]>
 character, and the main payload must be a Perl character string of the
-format C<0> or C<< '-'?<[ 1..9 A..Z a..z ]>['_'?<[ 0..9 A..Z a..z ]>+]* >>.
+format C<0> or `'-'?<[ 1..9 A..Z a..z ]>['_'?<[ 0..9 A..Z a..z ]>+]*`.
 The main payload is interpreted as a base-I<N> integer where I<N> might be
 between 2 and 36, and the given max-col-val says which possible value of
 I<N> to use.  Assuming all column values are between zero and
@@ -633,9 +633,9 @@ Muldis D C<sys.std.Core.Type.Rat> value as follows:
 * If the payload is a Perl scalar, then it must be just a canonical numeric
 value according to Perl, and it is mapped directly; since native Perl
 numerics are limited precision or are inexact (IEEE float), larger numerics
-can be represented by a Perl character string of the format C<<
-0'.'['_'?<[0..9]>+]+ >> or C<<
-'-'?<[1..9]>['_'?<[0..9]>+]*'.'['_'?<[0..9]>+]+ >> that is interpreted as
+can be represented by a Perl character string of the format
+`0'.'['_'?<[0..9]>+]+` or
+`'-'?<[1..9]>['_'?<[0..9]>+]*'.'['_'?<[0..9]>+]+` that is interpreted as
 base 10.  Note that the C<0bN>,C<0N>,C<0xN> formats for Perl numeric
 literals only work for Perl integer literals, not non-integer literals.
 
@@ -658,9 +658,9 @@ payload>; a key of a single character is a I<max-col-val> and a
 The max-col-val must be a Perl string composed of a single
 C<[ 1..9 A..Z a..z ]> character.  If the main payload is a Perl scalar,
 then the main payload must be a Perl character string of the format
-C<< 0'.'['_'?<[ 0..9 A..Z a..z ]>+]+ >> or
-C<< '-'?<[ 1..9 A..Z a..z ]>['_'?<[ 0..9 A..Z a..z ]>+]*'.'['_'?<[ 0..9
-A..Z ]>+]+ >>.  The main payload is interpreted as a base-I<N> rational
+`0'.'['_'?<[ 0..9 A..Z a..z ]>+]+` or
+`'-'?<[ 1..9 A..Z a..z ]>['_'?<[ 0..9 A..Z a..z ]>+]*'.'['_'?<[ 0..9
+A..Z ]>+]+`.  The main payload is interpreted as a base-I<N> rational
 where I<N> might be between 2 and 36, and the given max-col-val says which
 possible value of I<N> to use.  Assuming all column values are between zero
 and I<N>-minus-one, the max-col-val contains that I<N>-minus-one.  So to
@@ -719,7 +719,7 @@ and value are designated, in order, I<max-col-val>|I<radix-mark> and I<main
 payload>; the max-col-val must be a Perl string composed of a single
 C<[137F]> character, the radix-mark must be one of the 3 strings
 ['0b','0o','0x'], and the main payload must be a Perl character string of
-the format C<< <[ 0..9 A..F a..f ]>* >>.  Each column of the main payload
+the format `<[ 0..9 A..F a..f ]>*`.  Each column of the main payload
 specifies a sequence of one of [1,2,3,4] bits, depending on whether
 max-col-val|radix-mark is [1|0b,3,7|0o,F|0x].
 
@@ -1282,7 +1282,7 @@ middle element is C<material_declared_name>.
 
 * C<material_kind>
 
-This is a character string of the format C<< [<[ a..z ]>+] ** '-' >>; it
+This is a character string of the format `[<[ a..z ]>+] ** '-'`; it
 identifies the kind of the material and is the only external metadata of
 C<material_payload> generally necessary to interpret the latter; what
 grammars are valid for C<material_payload> depend just on C<material_kind>.

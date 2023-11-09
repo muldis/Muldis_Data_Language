@@ -23,7 +23,7 @@ use in working with the system catalog.
 
 ## sys.std.Core.Cat.Order.reverse
 
-C<< function reverse (Order <-- topic : Order) {...} >>
+`function reverse (Order <-- topic : Order) {...}`
 
 This function results in the reverse value of its argument; an
 C<Order:Less> or C<Order:More> argument results in the other one of
@@ -31,8 +31,8 @@ the two; an C<Order:Same> argument results in itself.
 
 ## sys.std.Core.Cat.Order.conditional_reverse
 
-C<< function conditional_reverse (Order <--
-topic : Order, is_reverse_order : Bool) {...} >>
+`function conditional_reverse (Order <--
+topic : Order, is_reverse_order : Bool) {...}`
 
 This function results in the reverse value of its C<topic> argument as per
 C<Order.reverse> iff its C<is_reverse_order> argument is C<Bool:True>;
@@ -45,7 +45,7 @@ pass the result of that algorithm through C<Order.conditional_reverse>.
 
 ## sys.std.Core.Cat.Order.reduction
 
-C<< function reduction (Order <-- topic? : array_of.Order) {...} >>
+`function reduction (Order <-- topic? : array_of.Order) {...}`
 
 This function results in the lowest-indexed of its N input element values
 that isn't equal to C<Order:Same>, if there is such an input value, and
@@ -61,14 +61,14 @@ functions to derive a larger such function, such as when you want to define
 an C<order-determination> function for a tuple type, which would then be
 your control for sorting a relation as per a SQL "ORDER BY" or "RANK".
 Note that this operation is also known as I<reduction over order> or
-C<< [<=>] >>.
+`[<=>]`.
 
 # ROUTINES FOR INVOKING ROUTINES
 
 ## sys.std.Core.Cat.func_invo
 
-C<< function func_invo (Universal <--
-function : APFunctionNC, args? : Tuple) {...} >>
+`function func_invo (Universal <--
+function : APFunctionNC, args? : Tuple) {...}`
 
 This function results in the result of invoking the other function named in
 its C<function> argument with arguments supplied by this function's C<args>
@@ -88,8 +88,8 @@ explicit argument is given to it.
 
 ## sys.std.Core.Cat.primed_func_invo
 
-C<< function primed_func_invo (Universal <--
-function : PrimedFuncNC) {...} >>
+`function primed_func_invo (Universal <--
+function : PrimedFuncNC) {...}`
 
 This function is a simple wrapper for C<func_invo> that has the latter's 2
 parameters combined into a single binary tuple parameter.  It is likely
@@ -99,8 +99,8 @@ parameters of other routines.
 
 ## sys.std.Core.Cat.primed_func_static_exten
 
-C<< function primed_func_static_exten (PrimedFuncNC <--
-function : PrimedFuncNC, args : Tuple) >>
+`function primed_func_static_exten (PrimedFuncNC <--
+function : PrimedFuncNC, args : Tuple)`
 
 This function results in the C<PrimedFuncNC> value that is the same as its
 C<function> argument except that the value's C<args> attribute has been
@@ -143,22 +143,22 @@ references to these routines as their default values.
 
 ## sys.std.Core.Cat.pass_topic
 
-C<< function pass_topic (Bool <-- topic : Universal) {...} >>
+`function pass_topic (Bool <-- topic : Universal) {...}`
 
 This C<value-filter> function unconditionally results in C<Bool:True>
 regardless of the values of its arguments.
 
 ## sys.std.Core.Cat.map_to_topic
 
-C<< function map_to_topic (Universal <-- topic : Universal) {...} >>
+`function map_to_topic (Universal <-- topic : Universal) {...}`
 
 This C<value-map> function unconditionally results in its C<topic> argument
 regardless of the values of its arguments.
 
 ## sys.std.Core.Cat.reduce_to_v1
 
-C<< function reduce_to_v1 (Universal <-- v1 : Universal,
-v2 : Universal) {...} >>
+`function reduce_to_v1 (Universal <-- v1 : Universal,
+v2 : Universal) {...}`
 
 This C<value-reduction> function unconditionally results in its C<v1>
 argument regardless of the values of its arguments.

@@ -31,8 +31,8 @@ ordered-sensitive routines (before/etc) just wrap the virtual C<order>.
 
 ## sys.std.Core.Ordered.order
 
-C<< function order (Order <-- topic@ : Ordered,
-other@ : Ordered, misc_args? : Tuple, is_reverse_order? : Bool) {...} >>
+`function order (Order <-- topic@ : Ordered,
+other@ : Ordered, misc_args? : Tuple, is_reverse_order? : Bool) {...}`
 
 This virtual (total) C<order-determination> function results in
 C<Order:Same> iff its C<topic> and C<other> arguments are exactly the same
@@ -86,7 +86,7 @@ created, then actual "first" and "last" functions could be made for it.>
 
 ## sys.std.Core.Ordered.Ordinal.pred
 
-C<< function pred (Ordinal <-- topic@ : Ordinal) {...} >>
+`function pred (Ordinal <-- topic@ : Ordinal) {...}`
 
 This virtual function results in the value that precedes its argument, iff
 the argument has a preceding value according to the C<Ordinal>-composing
@@ -97,7 +97,7 @@ C<-->.
 
 ## sys.std.Core.Ordered.Ordinal.succ
 
-C<< function succ (Ordinal <-- topic@ : Ordinal) {...} >>
+`function succ (Ordinal <-- topic@ : Ordinal) {...}`
 
 This virtual function results in the value that succeeds its argument, iff
 the argument has a succeeding value according to the C<Ordinal>-composing
@@ -121,29 +121,29 @@ a calling-function-specific C<is_reverse_order> argument value.
 
 ## sys.std.Core.Ordered.is_before
 
-C<< function is_before (Bool <-- topic : Ordered, other : Ordered) {...} >>
+`function is_before (Bool <-- topic : Ordered, other : Ordered) {...}`
 
 This function results in C<Bool:True> iff C<sys.std.Core.Ordered.order>
 would result
 in C<Order:Less> when given the same corresponding 2 arguments plus an
 C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
-Note that this operation is also known as I<less than> or C<< < >>.
+Note that this operation is also known as I<less than> or `<`.
 
 ## sys.std.Core.Ordered.is_after
 
-C<< function is_after (Bool <-- topic : Ordered, other : Ordered) {...} >>
+`function is_after (Bool <-- topic : Ordered, other : Ordered) {...}`
 
 This function is an alias for C<sys.std.Core.Ordered.is_before> except
 that it transposes the C<topic> and C<other> arguments.  This function
 results in C<Bool:True> iff C<sys.std.Core.Ordered.order> would result in
 C<Order:More> when given the same corresponding 2 arguments plus an
 C<is_reverse_order> argument of C<Bool:False>, and C<Bool:False> otherwise.
-Note that this operation is also known as I<greater than> or C<< > >>.
+Note that this operation is also known as I<greater than> or `>`.
 
 ## sys.std.Core.Ordered.is_before_or_same
 
-C<< function is_before_or_same (Bool <--
-topic : Ordered, other : Ordered) {...} >>
+`function is_before_or_same (Bool <--
+topic : Ordered, other : Ordered) {...}`
 
 This function is exactly the same as C<sys.std.Core.Ordered.is_before>
 except that it results in C<Bool:True> if its 2 primary arguments are
@@ -152,8 +152,8 @@ to> or C<≤>.
 
 ## sys.std.Core.Ordered.is_after_or_same
 
-C<< function is_after_or_same (Bool <--
-topic : Ordered, other : Ordered) {...} >>
+`function is_after_or_same (Bool <--
+topic : Ordered, other : Ordered) {...}`
 
 This function is an alias for C<sys.std.Core.Ordered.is_before_or_same>
 except that it transposes the C<topic> and C<other> arguments.  This
@@ -164,7 +164,7 @@ C<≥>.
 
 ## sys.std.Core.Ordered.min
 
-C<< function min (Ordered <-- topic : set_of.Ordered) {...} >>
+`function min (Ordered <-- topic : set_of.Ordered) {...}`
 
 This function is a reduction operator that recursively takes each pair of
 its N input element values and picks the minimum of the 2 (which is
@@ -175,7 +175,7 @@ for C<min>.
 
 ## sys.std.Core.Ordered.max
 
-C<< function max (Ordered <-- topic : set_of.Ordered) {...} >>
+`function max (Ordered <-- topic : set_of.Ordered) {...}`
 
 This function is exactly the same as C<sys.std.Core.Ordered.min> except
 that it results in the maximum input element value rather than the minimum
@@ -183,7 +183,7 @@ one, and that C<max>'s identity value is C<-Inf> (negative infinity).
 
 ## sys.std.Core.Ordered.minmax
 
-C<< function minmax (Tuple <-- topic : set_of.Ordered) {...} >>
+`function minmax (Tuple <-- topic : set_of.Ordered) {...}`
 
 This function results in a binary tuple whose attribute names are C<min>
 and C<max> and whose respective attribute values are what

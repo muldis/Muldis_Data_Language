@@ -26,14 +26,14 @@ I<This documentation is pending.>
 
 ## sys.std.Core.Numeric.abs
 
-C<< function abs (Numeric <-- topic@ : Numeric) {...} >>
+`function abs (Numeric <-- topic@ : Numeric) {...}`
 
 This virtual function results in the absolute value of its argument.  Note
 that this operation is also known as I<modulus>.
 
 ## sys.std.Core.Numeric.sum
 
-C<< function sum (Numeric <-- topic@ : bag_of.Numeric) {...} >>
+`function sum (Numeric <-- topic@ : bag_of.Numeric) {...}`
 
 This virtual function results in the sum of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -49,8 +49,8 @@ operation is also known as I<addition> or I<plus> or C<+>.
 
 ## sys.std.Core.Numeric.diff
 
-C<< function diff (Numeric <-- minuend@ : Numeric,
-subtrahend@ : Numeric) {...} >>
+`function diff (Numeric <-- minuend@ : Numeric,
+subtrahend@ : Numeric) {...}`
 
 This virtual function results in the difference when its C<subtrahend>
 argument is subtracted from its C<minuend> argument.  Note that this
@@ -58,15 +58,15 @@ operation is also known as I<subtraction> or I<minus> or C<->.
 
 ## sys.std.Core.Numeric.abs_diff
 
-C<< function abs_diff (Numeric <-- topic@ : Numeric,
-other@ : Numeric) {...} >>
+`function abs_diff (Numeric <-- topic@ : Numeric,
+other@ : Numeric) {...}`
 
 This virtual symmetric function results in the absolute difference between
 its 2 arguments.  Note that this operation is also known as C<|-|>.
 
 ## sys.std.Core.Numeric.product
 
-C<< function product (Numeric <-- topic@ : bag_of.Numeric) {...} >>
+`function product (Numeric <-- topic@ : bag_of.Numeric) {...}`
 
 This virtual function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
@@ -82,8 +82,8 @@ operation is also known as I<multiply> or I<times> or C<*>.
 
 ## sys.std.Core.Numeric.frac_quotient
 
-C<< function frac_quotient (Numeric <--
-dividend@ : Numeric, divisor@ : Numeric) {...} >>
+`function frac_quotient (Numeric <--
+dividend@ : Numeric, divisor@ : Numeric) {...}`
 
 This virtual function results in the possibly-fractional quotient when its
 C<dividend> argument is divided by its C<divisor> argument using the
@@ -92,8 +92,8 @@ is zero.  Note that this operation is also known as I<divide> or C</>.
 
 ## sys.std.Core.Numeric.whole_quotient
 
-C<< function whole_quotient (Numeric <--
-dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...} >>
+`function whole_quotient (Numeric <--
+dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...}`
 
 This virtual function results in the whole-number quotient when its
 C<dividend> argument is divided by its C<divisor> argument using the
@@ -105,8 +105,8 @@ I<divide> or C<div>.
 
 ## sys.std.Core.Numeric.remainder
 
-C<< function remainder (Numeric <--
-dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...} >>
+`function remainder (Numeric <--
+dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...}`
 
 This virtual function results in the possibly-fractional remainder when its
 C<dividend> argument is divided by its C<divisor> argument using the
@@ -123,8 +123,8 @@ I<modulo> or C<mod>.
 
 ## sys.std.Core.Numeric.quot_and_rem
 
-C<< function quot_and_rem (Tuple <--
-dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...} >>
+`function quot_and_rem (Tuple <--
+dividend@ : Numeric, divisor@ : Numeric, round_meth : RoundMeth) {...}`
 
 This virtual function results in a binary tuple whose attribute names are
 C<quotient> and C<remainder> and whose respective attribute values are what
@@ -134,7 +134,7 @@ arguments.  This function will fail if C<divisor> is zero.
 
 ## sys.std.Core.Numeric.range
 
-C<< function range (Numeric <-- topic@ : set_of.Numeric) {...} >>
+`function range (Numeric <-- topic@ : set_of.Numeric) {...}`
 
 This virtual function results in the difference between the lowest and
 highest element values of its argument.  If C<topic> has zero values, then
@@ -142,7 +142,7 @@ this function will fail.
 
 ## sys.std.Core.Numeric.frac_mean
 
-C<< function frac_mean (Numeric <-- topic@ : bag_of.Numeric) {...} >>
+`function frac_mean (Numeric <-- topic@ : bag_of.Numeric) {...}`
 
 This virtual function results in the possibly-fractional mean or arithmetic
 average of the N element values of its argument.  It is equivalent to first
@@ -152,7 +152,7 @@ has zero values, then this function will fail.
 
 ## sys.std.Core.Numeric.median
 
-C<< function median (set_of.Numeric <-- topic@ : bag_of.Numeric) {...} >>
+`function median (set_of.Numeric <-- topic@ : bag_of.Numeric) {...}`
 
 This virtual function results in the 1 or 2 median values of the N element
 values of its argument; they are returned as a set.  It is equivalent to
@@ -164,8 +164,8 @@ zero values, then the result set is empty.
 
 ## sys.std.Core.Numeric.frac_mean_of_median
 
-C<< function frac_mean_of_median (Numeric <--
-topic@ : bag_of.Numeric) {...} >>
+`function frac_mean_of_median (Numeric <--
+topic@ : bag_of.Numeric) {...}`
 
 This virtual function is a wrapper over C<sys.std.Core.Numeric.median> that
 will result in the possibly-fractional mean of its result elements; it will
@@ -173,7 +173,7 @@ fail if there are zero elements.
 
 ## sys.std.Core.Numeric.mode
 
-C<< function mode (set_of.Numeric <-- topic@ : bag_of.Numeric) {...} >>
+`function mode (set_of.Numeric <-- topic@ : bag_of.Numeric) {...}`
 
 This virtual function results in the mode of the N element values of its
 argument; it is the set of values that appear the most often as input
@@ -184,8 +184,8 @@ empty.
 
 ## sys.std.Core.Numeric.power_with_whole_exp
 
-C<< function power_with_whole_exp (Numeric <--
-radix@ : Numeric, exponent@ : Numeric) {...} >>
+`function power_with_whole_exp (Numeric <--
+radix@ : Numeric, exponent@ : Numeric) {...}`
 
 This virtual function results in a possibly-fractional number that is the
 result of its possibly-fractional C<radix> argument taken to the power of
