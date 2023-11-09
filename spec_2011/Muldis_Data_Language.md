@@ -189,25 +189,17 @@ ambiguity, assist quality control, and give due credit.
 In this context, I<embrace and extend> means for someone to do any of the
 following:
 
-=over
-
-=item *
-
-Releasing a modified version of this current multi-document where the
+* Releasing a modified version of this current multi-document where the
 original of the modified version was released by someone else (the original
 typically being the official release), as opposed to just releasing a delta
 document that references the current multi-document as a foundation.  This
 applies both for unofficial modifications and for official modifications
 following a change of who is the official maintainer.
 
-=item *
-
-Releasing a delta document for a version of this current multi-document
+* Releasing a delta document for a version of this current multi-document
 where the referenced original is released by someone else, and where the
 delta either makes incompatible changes or adds DBMS entities in the
 C<sys.std> top-level namespace (as opposed to in C<sys.imp>).
-
-=back
 
 ## Base Version Number
 

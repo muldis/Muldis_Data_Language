@@ -799,9 +799,7 @@ using an infinity for either or both endpoint values.
 
 An C<SPInterval> has these 4 attributes:
 
-=over
-
-=item C<min|max> - C<Universal>
+* C<min|max> - C<Universal>
 
 These are the interval endpoint values; C<min> defines the
 I<left|start|from> endpoint and C<max> defines the I<right|end|to>
@@ -811,7 +809,7 @@ C<TAIInstant>, etc), although strictly speaking they may be of any types at
 all; in the latter case, to actually make practical use of such intervals,
 an C<order-determination> function must explicitly be employed.
 
-=item C<excludes_[min|max]> - C<Bool>
+* C<excludes_[min|max]> - C<Bool>
 
 If C<excludes_min> or C<excludes_max> are C<Bool:True>, then C<min> or
 C<max> I<is not> considered to be included within the interval,
@@ -819,8 +817,6 @@ respectively; otherwise, it I<is> considered to be included within the
 interval.  If both endpoints are within the interval (the use case which
 Muldis D optimizes its syntax for), the interval is I<closed>; otherwise if
 both endpoints are not in the interval, the interval is I<open>.
-
-=back
 
 The C<SPInterval> type supports empty intervals (which include no values at
 all) at least as a matter of simplicity in that it doesn't place any

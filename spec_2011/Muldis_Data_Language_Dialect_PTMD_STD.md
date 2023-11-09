@@ -226,14 +226,12 @@ must start by declaring the fully-qualified Muldis D language name it is
 written in.  The C<PTMD_STD> dialect formats this name as a
 C<language_name> node having 5 ordered elements:
 
-=over
-
-=item C<ln_base_name>
+* C<ln_base_name>
 
 This is the Muldis D language base name; it is simply the bareword
 character string C<Muldis_D>.
 
-=item C<ln_base_authority>
+* C<ln_base_authority>
 
 This is the base authority; it is a character string formatted as per a
 specific-context C<Name> value literal, except that it must be nonempty and
@@ -241,17 +239,17 @@ it is expressly limited to using non-control characters in the ASCII
 repertoire, and its nonquoted variant has fewer limitations than C<Name>'s;
 it is typically the delimited character string C<https://muldis.com>.
 
-=item C<ln_base_version_number>
+* C<ln_base_version_number>
 
 This is the base version number; it is a character string formatted as per
 C<ln_base_authority>; it is typically a character string like C<0.148.1>.
 
-=item C<ln_dialect>
+* C<ln_dialect>
 
 This is the dialect name; it is simply the bareword character string
 C<PTMD_STD>.
 
-=item C<ln_extensions>
+* C<ln_extensions>
 
 This is a set of chosen pragma/parser-config options, which is formatted
 similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
@@ -260,8 +258,6 @@ section) and C<op_char_repertoire> (see **OPERATOR CHARACTER REPERTOIRE**).
 The only optional pragma is C<standard_syntax_extensions> (see the
 **STANDARD SYNTAX EXTENSIONS** pod section).  Other pragmas may be added
 later, which would likely be optional.
-
-=back
 
 Examples:
 
@@ -934,9 +930,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
 
 So a C<x_value>|C<value> node has 1-3 elements in general:
 
-=over
-
-=item C<value_kind>
+* C<value_kind>
 
 This is a character string of the format C<< <[A..Z]> <[ a..z A..Z ]>+ >>;
 it identifies the data type of the value literal in broad terms and is the
@@ -975,7 +969,7 @@ For just these certain special values of other data types, the same option
 of omitting the C<value_kind> (and C<type_name>) applies: C<Tuple:D0>,
 C<Relation:D0C0>, C<Relation:D0C1>.
 
-=item C<type_name>
+* C<type_name>
 
 This is a Muldis D data type name, for example C<sys.std.Core.Type.Int>; it
 identifies a specific subtype of the generic type denoted by C<value_kind>,
@@ -1014,11 +1008,9 @@ attribute generation is done per tuple.  Since it only works for
 system-defined types, this special case is primarily useful for code
 involving values that represent code.
 
-=item C<value_payload>
+* C<value_payload>
 
 This is mandatory for all C<value>.
-
-=back
 
 For GCVL and SCVL examples, see the subsequent documentation sections.
 
@@ -2699,27 +2691,23 @@ Every material has 2-3 elements, illustrated by this grammar:
 
 So a C<x_material>|C<material> node has 2-3 elements in general:
 
-=over
-
-=item C<material_kind>
+* C<material_kind>
 
 This is a character string of the format C<< [<[ a..z ]>+] ** '-' >>; it
 identifies the kind of the material and is the only external metadata of
 C<material_payload> generally necessary to interpret the latter; what
 grammars are valid for C<material_payload> depend just on C<material_kind>.
 
-=item C<material_declared_name>
+* C<material_declared_name>
 
 This is the declared name of the material within the namespace defined by
 its subdepot (or depot).  It is explicitly specified iff the C<material> is
 a C<named_material>
 
-=item C<material_payload>
+* C<material_payload>
 
 This is mandatory for all C<material>.  It specifies the entire material
 sans its name.  Format varies with C<material_kind>.
-
-=back
 
 For material examples, see the subsequent documentation sections.
 

@@ -103,31 +103,29 @@ must start by declaring the fully-qualified Muldis D language name it is
 written in.  The C<HDMD_Raku_STD> dialect formats this name as a
 C<language_name> node having 5 ordered elements:
 
-=over
-
-=item C<ln_base_name>
+* C<ln_base_name>
 
 This is the Muldis D language base name; it is simply the Raku C<Str> value
 C<Muldis_D>.
 
-=item C<ln_base_authority>
+* C<ln_base_authority>
 
 This is the base authority; it is a Raku C<Str> formatted as per a
 specific-context C<Name> value literal, except that must be nonempty and it
 is expressly limited to using non-control characters in the ASCII
 repertoire; it is typically the Raku C<Str> value C<https://muldis.com>.
 
-=item C<ln_base_version_number>
+* C<ln_base_version_number>
 
 This is the base version number; it is a Raku C<Str> formatted as per
 C<ln_base_authority>; it is typically a Raku C<Str> value like C<0.148.1>.
 
-=item C<ln_dialect>
+* C<ln_dialect>
 
 This is the dialect name; it is simply the Raku C<Str> value
 C<HDMD_Raku_STD>.
 
-=item C<ln_extensions>
+* C<ln_extensions>
 
 This is a set of chosen pragma/parser-config options, which is formatted
 similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
@@ -148,8 +146,6 @@ C<basic>, C<extended>.
 The value associated with the C<ln_extensions> attribute named
 C<standard_syntax_extensions> must be formatted similarly to a C<Set> SCVL;
 each of the value's elements must be one of these 0 Raku C<Str> values.
-
-=back
 
 Examples:
 
@@ -440,9 +436,7 @@ SCVL (specific context value literal).
 
 Every GCVL has 1-3 ordered elements:
 
-=over
-
-=item C<value_kind>
+* C<value_kind>
 
 This is a Raku C<Str> value of the format
 C<< <[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@' >>;
@@ -461,7 +455,7 @@ C<List>.
 
 For just some data types, the C<value_kind> may be omitted; see below.
 
-=item C<type_name>
+* C<type_name>
 
 Only when the C<value> node has 3 elements:  This is a Muldis D data type
 name, for example C<sys.std.Core.Type.Int>; it identifies a specific
@@ -474,11 +468,9 @@ omitted when C<value_kind> is one of the 3 [C<Singleton>, C<Bool>,
 C<Order>]; this isn't because those 3 types can't be subtyped, but because
 in practice doing so isn't useful.
 
-=item C<value_payload>
+* C<value_payload>
 
 This is mandatory for all C<value>.  Format varies with C<value_kind>.
-
-=back
 
 A Raku Pair may alternately be used to represent a GCVL iff that node has
 exactly 2 elements (C<value_kind> and C<value_payload>); in that case, the
@@ -668,18 +660,12 @@ names.  Its payload is a Raku C<Seq|Array> value or C<Str> value.  This
 node is interpreted as a Muldis D C<sys.std.Core.Type.Cat.NameChain> value
 as follows:
 
-=over
-
-=item *
-
-If the payload is a C<Seq|Array>, then
+* If the payload is a C<Seq|Array>, then
 every element must be a valid payload for a C<Name> node (that
 is, any Raku character string).  Each element of the payload, in order,
 defines an element of the C<array> possrep's attribute of a C<NameChain>.
 
-=item *
-
-If the payload is a C<Str>, then it must be formatted as a catenation
+* If the payload is a C<Str>, then it must be formatted as a catenation
 (using period (C<.>) separators) of at least 1 part, where each part can
 not have any literal period (C<.>) characters (if you want literal periods
 then you can only use the C<Seq|Array> payload format to express it).  The
@@ -688,8 +674,6 @@ into the C<Seq|Array> format, then processed as per the latter.  A zero
 part chain can only be expressed with the C<Seq|Array> payload format; an
 empty string C<Str> format will be interpreted as having a single element
 that is the empty string.
-
-=back
 
 Fundamentally a C<PNSQNameChain> node is exactly the same as a C<NameChain>
 node in format and interpretation, with the primary difference being that
@@ -834,22 +818,14 @@ relation value.  It is interpreted as a Muldis D
 C<sys.std.Core.Type.Relation> value whose attributes and tuples are
 defined by the payload, which is interpreted as follows:
 
-=over
-
-=item *
-
-Iff the payload is a Raku C<Set|KeySet> with zero elements, then it
+* Iff the payload is a Raku C<Set|KeySet> with zero elements, then it
 defines the only relation value having zero attributes and zero tuples.
 
-=item *
-
-Iff the payload is a Raku C<Set|KeySet> with at least one element, and
+* Iff the payload is a Raku C<Set|KeySet> with at least one element, and
 every element is a Raku C<Str> (as per a valid payload for a C<Name> node),
 then it defines the attribute names of a relation having zero tuples.
 
-=item *
-
-Iff the payload is a Raku C<Set|KeySet> with at least one element, and
+* Iff the payload is a Raku C<Set|KeySet> with at least one element, and
 every element is a Raku C<Mapping|Hash> (as per a valid payload for a
 C<Tuple> node), then each element of the payload defines a tuple of
 the new relation; every tuple-defining element of the payload must be of
@@ -857,9 +833,7 @@ the same degree and have the same attribute names as its sibling elements;
 these are the degree and attribute names of the relation as a whole, which
 is its heading for the current purposes.
 
-=item *
-
-Iff the payload is a Raku C<Pair>, then:  The new relation value's
+* Iff the payload is a Raku C<Pair>, then:  The new relation value's
 attribute names are defined by the payload's key, which is a Raku
 C<Seq|Array> of C<Str> (each as per a C<Name> node payload), and the
 relation body's tuples' attribute values are defined by the payload's
@@ -871,8 +845,6 @@ trade-off, the attribute values per tuple from the payload value must
 appear in the same order as their corresponding attribute names appear in
 the payload key, as the names and values in the relation literal are
 matched up by ordinal position here.
-
-=back
 
 Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
@@ -1164,27 +1136,23 @@ C<named_material>:  The first element is C<material_kind>.  The last
 element is C<material_payload>.  Iff there are 3 elements then the
 middle element is C<material_declared_name>.
 
-=over
-
-=item C<material_kind>
+* C<material_kind>
 
 This is a Raku C<Str> value of the format C<< [<[ a..z ]>+] ** '-' >>; it
 identifies the kind of the material and is the only external metadata of
 C<material_payload> generally necessary to interpret the latter; what
 grammars are valid for C<material_payload> depend just on C<material_kind>.
 
-=item C<material_declared_name>
+* C<material_declared_name>
 
 This is the declared name of the material within the namespace defined by
 its subdepot (or depot).  It is explicitly specified iff the C<material> is
 a C<named_material>
 
-=item C<material_payload>
+* C<material_payload>
 
 This is mandatory for all C<material>.  It specifies the entire material
 sans its name.  Format varies with C<material_kind>.
-
-=back
 
 For material examples, see the subsequent documentation sections.
 

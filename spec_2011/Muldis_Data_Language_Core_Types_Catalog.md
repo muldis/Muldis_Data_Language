@@ -713,14 +713,12 @@ C<sys.cat> is of the C<System> type.
 
 A C<System> has these 4 attributes:
 
-=over
-
-=item C<scm_comment> - C<just_of.Comment>
+* C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the collection of
 system-defined entities as a whole.
 
-=item C<special_namespaces> - C<SpecialNspSet>
+* C<special_namespaces> - C<SpecialNspSet>
 
 These are all the special system-defined namespaces where not-lexical DBMS
 entities may live, or that otherwise always exist due to being
@@ -733,20 +731,18 @@ value, that isn't also declared here), C<sys.[cat|std|imp]>,
 C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>; it also declares,
 where applicable, implementation-specific extensions (none are yet known).
 
-=item C<modules> - C<ModuleSet>
+* C<modules> - C<ModuleSet>
 
 These are all the system-defined modules, which have all the system-defined
 routines and types.  This always contains at least the single standard
 C<Core> module and optionally contains other standard or
 implementation-specific modules, as the current DBMS provides.
 
-=item C<catalogs> - C<CatalogSet>
+* C<catalogs> - C<CatalogSet>
 
 These are the interfaces of all the catalog relcons and relvars.
 Specifically, it declares these 4 standard catalogs:
 C<[sys|mnt|fed|nlx].cat>; the first is a relcon, the others not.
-
-=back
 
 The default value of C<System> defines a system with zero builtins.
 
@@ -761,30 +757,26 @@ contains it for that.
 
 A C<SpecialNspSet> has these 4 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the special system namespace's parent special system namespace.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the special system namespace within the
 special namespace defined by C<parent>; other Muldis D code would reference
 it with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific special system
 namespace.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this namespace's declaration relative to all
 of the named entities directly within the namespace defined by C<parent>.
-
-=back
 
 A C<SpecialNspSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
@@ -796,34 +788,30 @@ modules, such that each tuple is a single module.
 
 A C<ModuleSet> has these 5 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the module's parent special system namespace.  This is always either
 C<sys.std> or C<sys.imp>.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the module within the
 special namespace defined by C<parent>; other Muldis D code would reference
 it with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific module.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this module's declaration relative to all
 of the named entities directly within the namespace defined by C<parent>.
 
-=item C<module> - C<Module>
+* C<module> - C<Module>
 
 This defines the entire system catalog of the module.
-
-=back
 
 A C<ModuleSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
@@ -835,31 +823,27 @@ catalog dbvars; each tuple specifies one catalog dbvar.
 
 A C<CatalogSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<DataNC>
+* C<name> - C<DataNC>
 
 This is the fully-qualified name of the catalog dbvar.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the catalog dbvar as a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this catalog's declaration relative to all of
 the other catalogs.
 
-=item C<is_readonly> - C<Bool>
+* C<is_readonly> - C<Bool>
 
 This is C<Bool:True> if a catalog relcon is being described; it is
 C<Bool:False> if a catalog relvar is being described.
 
-=item C<catalog> - C<MaterialNC>
+* C<catalog> - C<MaterialNC>
 
 This is the declared data type of the catalog dbvar.
-
-=back
 
 A C<CatalogSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.
@@ -881,18 +865,14 @@ catalog variable named C<mnt.cat> is of the C<MountControlCat> type.
 
 A C<MountControlCat> has these 2 attributes:
 
-=over
-
-=item C<scm_comment> - C<just_of.Comment>
+* C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the depot mount control
 catalog as a whole.
 
-=item C<mounts> - C<MountControlSet>
+* C<mounts> - C<MountControlSet>
 
 These are the controls for the current depot mounts.
-
-=back
 
 The default value of C<MountControlCat> has zero depot mount controls.
 
@@ -909,19 +889,17 @@ unmounted or unmounted plus deleted (if possible).
 
 A C<MountControlSet> has these 8 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the depot mount; other Muldis D code would
 reference it with this name.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific mount of the
 depot.
 
-=item C<is_temporary> - C<Bool>
+* C<is_temporary> - C<Bool>
 
 This is C<Bool:True> if the depot mount is for a transient depot that would
 automatically be created when mounted I<and> automatically be deleted when
@@ -937,7 +915,7 @@ to be reusable by multiple depot mounts or processes.  The C<is_temporary>
 status may not be updated on an existing depot mount control.  I<These
 details are subject to revision.>
 
-=item C<create_on_mount> - C<Bool>
+* C<create_on_mount> - C<Bool>
 
 This is C<Bool:True> if the depot mount must represent a depot that was
 newly created at the time the depot mount was created, where the depot
@@ -951,7 +929,7 @@ mount control with this attribute C<Bool:False>, and if that fails due to
 nonexistence, then try again with it set to C<Bool:True>.  This attribute
 is ignored / not applicable when C<is_temporary> is true.
 
-=item C<delete_on_unmount> - C<Bool>
+* C<delete_on_unmount> - C<Bool>
 
 This is C<Bool:True> if the depot should be deleted at the same time it is
 unmounted, that is, when this depot mount control tuple is deleted.  This
@@ -959,7 +937,7 @@ is C<Bool:False> (the default) if the depot should not be deleted as part
 of the unmount process.  This attribute is ignored / not applicable when
 C<is_temporary> is true.
 
-=item C<we_may_update> - C<Bool>
+* C<we_may_update> - C<Bool>
 
 This is C<Bool:True> if the depot mount will permit the current in-DBMS
 process to make any kind of update to the depot, such as data manipulation,
@@ -980,7 +958,7 @@ reads between distinct statements outside of transactions are not
 guaranteed.  I<These details are subject to revision, such as in regards to
 what autonomous child processes of the current process may do.>
 
-=item C<allow_auto_run> - C<Bool>
+* C<allow_auto_run> - C<Bool>
 
 This is C<Bool:True> if the depot mount will permit any stimulus-response
 rules defined in the depot to automatically execute when triggering events
@@ -1021,7 +999,7 @@ the malware can still do all sorts of harm, since stimulus-response rules
 in general can do anything a C<procedure> can, including various I/O or
 manipulating other depots.
 
-=item C<details> - C<SysScaValExprNodeSet>
+* C<details> - C<SysScaValExprNodeSet>
 
 These are the 0..N other miscellaneous details that define this depot mount
 control.  Each tuple in C<details> specifies an implementation-specific
@@ -1036,8 +1014,6 @@ native Muldis D equivalents, or maybe information on where to find extra
 metadata that has such info, or info to instruct a Muldis D interface to
 fill in functionality missing in the actual depot of a less capable DBMS,
 like constraints or stored invokable routines.
-
-=back
 
 A C<MountControlSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.  C<mnt.cat> also has a transition constraint that
@@ -1058,17 +1034,15 @@ catalog variable named C<fed.cat> is of the C<Federation> type.
 
 A C<Federation> has these 3 attributes:
 
-=over
-
-=item C<scm_comment> - C<just_of.Comment>
+* C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the federation as a whole.
 
-=item C<mounts> - C<DepotMountSet>
+* C<mounts> - C<DepotMountSet>
 
 These are the depot mounts that comprise the federation.
 
-=item C<type_maps> - C<FedTypeMapSet>
+* C<type_maps> - C<FedTypeMapSet>
 
 When this federation has more than one depot mount, and the depots have
 copies of the same data types, then C<type_maps> is used to specify which
@@ -1082,8 +1056,6 @@ common use case would be when there are 2 depot mounts, one being a
 persistent database and the other being transient application-specific code
 that creates or otherwise works with that persistent database.
 
-=back
-
 The default value of C<Federation> has zero depot mounts.
 
 ## sys.std.Core.Type.Cat.DepotMountSet
@@ -1096,24 +1068,20 @@ content of the depot itself.
 
 A C<DepotMountSet> has these 3 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the depot mount; other Muldis D code would
 reference it with this name.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific mount of the
 depot.
 
-=item C<depot> - C<Depot>
+* C<depot> - C<Depot>
 
 This defines the entire system catalog of the depot that this mount has
 made visible to the DBMS.
-
-=back
 
 A C<DepotMountSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
@@ -1127,19 +1095,15 @@ support cross-depot interaction.
 
 A C<FedTypeMapSet> has these 2 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this type mapping.
 
-=item C<types> - C<set_of.APTypeNC>
+* C<types> - C<set_of.APTypeNC>
 
 This lists the C<fed.>-qualified names of 0..N data types that are all
 considered to be copies of the same 1 type, and should be treated
 interchangeably by the DBMS.
-
-=back
 
 A C<FedTypeMapSet> has a primary key on the C<map> attribute.  Its
 default value is empty.
@@ -1160,23 +1124,21 @@ the C<Package> type.
 
 A C<Package> has these 17 attributes:
 
-=over
-
-=item C<scm_comment> - C<just_of.Comment>
+* C<scm_comment> - C<just_of.Comment>
 
 This is an optional programmer comment about the [|sub]package as a whole.
 
-=item C<subpackages> - C<SubpackageSet>
+* C<subpackages> - C<SubpackageSet>
 
 These are all the subpackages that this system catalog contains (which
 might be none).
 
-=item C<functions|procedures> - C<[Function|Procedure]Set>
+* C<functions|procedures> - C<[Function|Procedure]Set>
 
 These are all the definitions that this [|sub]package contains of
 functions, procedures.
 
-=item C<special_types> - C<SpecialTypeSet>
+* C<special_types> - C<SpecialTypeSet>
 
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
@@ -1187,7 +1149,7 @@ namespace: C<Int>; in the C<Type.Cat> namespace: C<List>.
 B<Only the C<Core> module has a nonempty C<special_types>; all other
 packages must have an empty one.>
 
-=item C<[scalar|tuple|relation|domain|subset|mixin]_types> -
+* C<[scalar|tuple|relation|domain|subset|mixin]_types> -
 C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
 
 These are all the definitions that this [|sub]package contains of scalar
@@ -1196,26 +1158,24 @@ subset types, and mixin types.  This includes the 2 Muldis D type system
 maximal and minimal (enumeration) types, C<Universal> and C<Empty>, which
 are declared as domain types.  This includes all enumeration types, period.
 
-=item C<[|distrib_][key|subset]_constrs> -
+* C<[|distrib_][key|subset]_constrs> -
 C<[|Distrib][Key|Subset]ConstrSet>
 
 These are all the definitions that this [|sub]package contains of
 |distributed key|subset constraints.
 
-=item C<stim_resp_rules> - C<StimRespRuleSet>
+* C<stim_resp_rules> - C<StimRespRuleSet>
 
 These are all the definitions that this [|sub]package contains of
 stimulus-response rules.  I<For any system-defined package,
 C<stim_resp_rules> is probably always empty.>
 
-=item C<data> - C<maybe_of.RPTypeNC>
+* C<data> - C<maybe_of.RPTypeNC>
 
 This is the declared data type of the self-local dbvar that this
 [|sub]package contains, iff C<data> is a C<Just>; if C<data> is C<Nothing>
 (the default), then this [|sub]package does not have a self-local dbvar.
 I<For any system-defined package, C<data> is probably always C<Nothing>.>
-
-=back
 
 There is a distributed binary primary key over the C<parent> plus C<name>
 attributes of all 8 of a C<Package>'s main C<DHRelation>-typed attributes.
@@ -1256,31 +1216,27 @@ entities it contains; see the C<Package> which contains it for that.
 
 A C<SubpackageSet> has these 4 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
 subpackage's parent subpackage, which is often just the package itself.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the subpackage within the namespace defined by
 C<parent>; other Muldis D code would reference it with the combination of
 C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this specific subpackage as
 associated with this subpackage name.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this subpackage's declaration relative to all
 of the named entities directly within the namespace defined by C<parent>.
-
-=back
 
 A C<SubpackageSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
@@ -1294,39 +1250,35 @@ either public for the DBMS as a whole or private to the subpackage.>
 
 A C<[Function|Procedure]Set> has these 5 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
 function|procedure's parent [|sub]package.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the function|procedure within
 the namespace defined by C<parent>; other Muldis D code would reference it
 with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the
 function|procedure as a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this routine's declaration relative to all of
 the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<Function|Procedure>
+* C<material> - C<Function|Procedure>
 
 This defines the entire function|procedure sans its name.
 Note that it is not mandatory for a system-defined routine to have a
 specified I<body> (just a specified I<heading> is mandatory), and often it
 won't; but often it will, especially if it is a function used in the
 definition of a system-defined data type.
-
-=back
 
 A C<[Function|Procedure]Set> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
@@ -1340,30 +1292,26 @@ types.  It is only nonempty for the C<Core> module.
 
 A C<SpecialTypeSet> has these 4 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
 special type's parent [|sub]package.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the special type within the namespace defined
 by C<parent>; other Muldis D code would reference it with the combination
 of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the special type as a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this type's declaration relative to all of
 the named entities directly within the namespace defined by C<parent>.
-
-=back
 
 A C<SpecialTypeSet> has a binary primary key on the C<parent> plus
 C<name> attributes.  Its default value is empty.
@@ -1378,36 +1326,32 @@ either public for the DBMS as a whole or private to the subpackage.>
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 5
 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
 scalar|tuple|relation|domain|subset|mixin type's parent [|sub]package.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the scalar|tuple|relation|domain|subset|mixin
 type within the namespace defined by C<parent>; other Muldis D code would
 reference it with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the
 scalar|tuple|relation|domain|subset|mixin type as a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this type's declaration relative to all of
 the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type>
+* C<material> - C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type>
 
 This defines the entire scalar|tuple|relation|domain|subset|mixin type sans
 its name.
-
-=back
 
 A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
 primary key on the C<parent> plus C<name> attributes.  Its default value is
@@ -1421,35 +1365,31 @@ directly contain.
 
 A C<[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
 |distributed key|subset constraint's parent [|sub]package.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the |distributed key|subset constraint within
 the namespace defined by C<parent>; other Muldis D code would reference it
 with the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the |distributed key|subset
 constraint as a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this constraint's declaration relative to all
 of the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<[|Distrib][Key|Subset]Constr>
+* C<material> - C<[|Distrib][Key|Subset]Constr>
 
 This defines the entire |distributed key|subset constraint sans its name.
-
-=back
 
 A C<[|Distrib][Key|Subset]ConstrSet> has a binary primary key on the
 C<parent> plus C<name> attributes.  Its default value is empty.
@@ -1461,35 +1401,31 @@ stimulus-response rules that a [|sub]package might directly contain.
 
 A C<StimRespRuleSet> has these 5 attributes:
 
-=over
-
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
 of any hypothetical immediate child namespace of the package, of the
 stimulus-response rule's parent [|sub]package.
 
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the stimulus-response rule within the
 namespace defined by C<parent>; other Muldis D code would reference it with
 the combination of C<parent> and C<name>.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the stimulus-response rule as
 a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this rule's declaration relative to all of
 the named entities directly within the namespace defined by C<parent>.
 
-=item C<material> - C<StimRespRule>
+* C<material> - C<StimRespRule>
 
 This defines the entire stimulus-response rule sans its name.
-
-=back
 
 A C<StimRespRuleSet> has a binary primary key on the C<parent> plus C<name>
 attributes.  Its default value is empty.
@@ -1517,22 +1453,20 @@ A C<Function> has these 7 attributes, of which the 5 C<result_type>,
 C<params>, C<opt_params>, C<dispatch_params>, C<implements> define the
 I<heading> and the 1 C<expr> defines the I<body>:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the function as a whole.
 
-=item C<result_type> - C<RPTypeNC>
+* C<result_type> - C<RPTypeNC>
 
 This is the declared result data type of the function as a whole.
 
-=item C<params> - C<NameTypeMap>
+* C<params> - C<NameTypeMap>
 
 This is the declared parameter list of the function, which has 0..N named
 and typed parameters.
 
-=item C<opt_params> - C<set_of.Name>
+* C<opt_params> - C<set_of.Name>
 
 This indicates the subset of the function's parameters that are optional,
 that is, do not need to be supplied explicit arguments when the function is
@@ -1541,7 +1475,7 @@ arguments.  Any parameter marked as optional which is not given an explicit
 argument will implicitly default to the default value of its declared type.
 Each element of C<opt_params> must match a parameter name in C<params>.
 
-=item C<dispatch_params> - C<set_of.Name>
+* C<dispatch_params> - C<set_of.Name>
 
 Iff C<dispatch_params> is nonempty then this function is a virtual
 function; otherwise, empty means not virtual.  A virtual function must
@@ -1552,7 +1486,7 @@ one, is automatically dispatched to.  Each element of C<dispatch_params>
 must match a parameter name in C<params>.  Any given parameter can not be
 both a dispatch parameter and an optional parameter.
 
-=item C<implements> - C<set_of.RPFunctionNC>
+* C<implements> - C<set_of.RPFunctionNC>
 
 Iff C<implements> is nonempty then this function is explicitly declaring
 that it implements the other (typically just one), virtual functions named
@@ -1561,12 +1495,10 @@ implementing function must have the same parameter list as its virtuals,
 save that the implementer's parameters' and result's declared types must be
 subtypes of the corresponding ones of the virtuals.
 
-=item C<expr> - C<ExprNodeSet>
+* C<expr> - C<ExprNodeSet>
 
 This defines the value expression tree that comprises the entire
 function body.
-
-=back
 
 Iff a C<Function> has no specified I<body>, then C<expr> must have zero
 member nodes; otherwise, C<expr> must have at least 1 member node.
@@ -1677,9 +1609,7 @@ variable of the expression-containing procedure.
 
 An C<ExprNodeSet> has these 15 attributes:
 
-=over
-
-=item C<sys_sca_val_exprs> - C<SysScaValExprNodeSet>
+* C<sys_sca_val_exprs> - C<SysScaValExprNodeSet>
 
 These are expression nodes that represent scalar values of types such that
 all of the standard Muldis D dialects provide special "opaque value
@@ -1687,69 +1617,67 @@ literal" syntax specific to the type.  These are expression nodes that
 represent scalar value literals that are I<not> specified simply in terms
 of possrep attributes.
 
-=item C<sca_sel_exprs> - C<ScaSelExprNodeSet>
+* C<sca_sel_exprs> - C<ScaSelExprNodeSet>
 
 These are expression nodes that represent generic scalar value
 selections specified just in terms of possrep attributes.
 
-=item C<tup_sel_exprs> - C<TupSelExprNodeSet>
+* C<tup_sel_exprs> - C<TupSelExprNodeSet>
 
 These are expression nodes that represent tuple value selections.
 
-=item C<rel_sel_exprs> - C<RelSelExprNodeSet>
+* C<rel_sel_exprs> - C<RelSelExprNodeSet>
 
 These are expression nodes that represent generic relation value
 selections.
 
-=item C<set_sel_exprs> - C<SetSelExprNodeSet>
+* C<set_sel_exprs> - C<SetSelExprNodeSet>
 
 These are expression nodes that represent set value selections.
 
-=item C<ary_sel_exprs> - C<ArySelExprNodeSet>
+* C<ary_sel_exprs> - C<ArySelExprNodeSet>
 
 These are expression nodes that represent array value selections.
 
-=item C<bag_sel_exprs> - C<BagSelExprNodeSet>
+* C<bag_sel_exprs> - C<BagSelExprNodeSet>
 
 These are expression nodes that represent bag value selections.
 
-=item C<sp_ivl_sel_exprs> - C<SPIvlSelExprNodeSet>
+* C<sp_ivl_sel_exprs> - C<SPIvlSelExprNodeSet>
 
 These are expression nodes that represent single-piece interval value
 selections.
 
-=item C<mp_ivl_sel_exprs> - C<MPIvlSelExprNodeSet>
+* C<mp_ivl_sel_exprs> - C<MPIvlSelExprNodeSet>
 
 These are expression nodes that represent multi-piece interval value
 selections.
 
-=item C<list_sel_exprs> - C<ListSelExprNodeSet>
+* C<list_sel_exprs> - C<ListSelExprNodeSet>
 
 These are expression nodes that represent low-level list value selections.
 
-=item C<acc_exprs> - C<AccExprNodeSet>
+* C<acc_exprs> - C<AccExprNodeSet>
 
 These are expression nodes that represent accessors of attributes of other,
 tuple-valued expression nodes, or aliases of other expression nodes.
 
-=item C<func_invo_exprs> - C<FuncInvoExprNodeSet>
+* C<func_invo_exprs> - C<FuncInvoExprNodeSet>
 
 These are expression nodes that represent function invocations.
 
-=item C<if_else_exprs> - C<IfElseExprNodeSet>
+* C<if_else_exprs> - C<IfElseExprNodeSet>
 
 These are expression nodes that represent if-else control flow expressions.
 
-=item C<given_when_def_exprs> - C<GivenWhenDefExprNodeSet>
+* C<given_when_def_exprs> - C<GivenWhenDefExprNodeSet>
 
 These are expression nodes that represent given-when-default control flow
 expressions.
 
-=item C<ap_material_nc_sel_exprs> - C<APMaterialNCSelExprNodeSet>
+* C<ap_material_nc_sel_exprs> - C<APMaterialNCSelExprNodeSet>
 
 These are expression nodes that define routine or type reference literals.
-
-=back
 
 There is a distributed primary key over the C<name> attributes of all of an
 C<ExprNodeSet>'s attributes.  Its default value is empty.
@@ -1777,26 +1705,22 @@ of the Muldis D standard dialects provide.
 
 An C<SysScaValExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<value> - C<SysScalar>
+* C<value> - C<SysScalar>
 
 This is the actual scalar value that the expression node represents.
-
-=back
 
 An C<SysScaValExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -1814,37 +1738,33 @@ can do so instead of C<ScaSelExprNodeSet>.
 
 A C<ScaSelExprNodeSet> has these 6 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<type_name> - C<RPTypeNC>
+* C<type_name> - C<RPTypeNC>
 
 This is the name of the type that the scalar value belongs to.
 
-=item C<possrep_name> - C<Name>
+* C<possrep_name> - C<Name>
 
 This is the name of the possrep, of the type named by C<type_name>, in
 terms of whose attributes the scalar value is being selected.
 
-=item C<possrep_attrs> - C<NameExprMap>
+* C<possrep_attrs> - C<NameExprMap>
 
 These represent the attributes (names and values) of the C<possrep_name>
 possrep of the scalar value being selected.
-
-=back
 
 A C<ScaSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -1856,28 +1776,24 @@ expression nodes where each node represents a tuple value selection.
 
 A C<TupSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<attrs> - C<NameExprMap>
+* C<attrs> - C<NameExprMap>
 
 These represent the attributes (names and values) of the tuple
 value being selected.
-
-=back
 
 A C<TupSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -1889,35 +1805,31 @@ expression nodes where each node represents a relation value selection.
 
 A C<RelSelExprNodeSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<head> - C<set_of.Name>
+* C<head> - C<set_of.Name>
 
 These are the names of all of this relation value's attributes.
 
-=item C<body> - C<set_of.NameExprMap>
+* C<body> - C<set_of.NameExprMap>
 
 These represent the tuples of the relation value being
 selected.  When this value expression is evaluated, if any child expression
 nodes are such that any duplicate tuples might be input to this
 C<RelSelExprNodeSet> selector, the duplicates are silently eliminated and
 do not constitute a failure condition.
-
-=back
 
 A C<RelSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -1929,31 +1841,27 @@ expression nodes where each node represents a set value selection.
 
 A C<SetSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<elems> - C<set_of.Name>
+* C<elems> - C<set_of.Name>
 
 These represent the elements of the set value being selected.
 When this value expression is evaluated, if any child expression nodes are
 such that any duplicate tuples might be input to this C<SetSelExprNodeSet>
 selector, the duplicates are silently eliminated and do not constitute a
 failure condition.
-
-=back
 
 A C<SetSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -1965,27 +1873,23 @@ expression nodes where each node represents an array value selection.
 
 An C<ArySelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<elems> - C<array_of.Name>
+* C<elems> - C<array_of.Name>
 
 These represent the elements of the array value being selected.
-
-=back
 
 An C<ArySelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -1997,23 +1901,21 @@ expression nodes where each node represents a bag value selection.
 
 A C<BagSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<elems> - C<bag_of.Name>
+* C<elems> - C<bag_of.Name>
 
 These represent the elements of the bag value being selected.
 When this value expression is evaluated, if any child expression nodes are
@@ -2031,8 +1933,6 @@ expression node like with C<value>; if you actually want the bag value
 being selected at runtime to have runtime-determined C<count> values, then
 you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
 
-=back
-
 A C<BagSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
 
@@ -2044,23 +1944,21 @@ selection.
 
 An C<SPIvlSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<interval> - C<sp_interval_of.Name>
+* C<interval> - C<sp_interval_of.Name>
 
 These represent the attributes of the single-piece interval value being
 selected.
@@ -2074,8 +1972,6 @@ being selected at runtime to have runtime-determined C<excludes_[min|max]>
 attribute values, then you must use a C<TupSelExprNodeSet> rather than an
 C<SPIvlSelExprNodeSet>.
 
-=back
-
 An C<SPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
@@ -2087,23 +1983,21 @@ selection.
 
 An C<MPIvlSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<elems> - C<mp_interval_of.Name>
+* C<elems> - C<mp_interval_of.Name>
 
 These represent the elements, each of which is a single-piece interval, of
 the multi-piece interval value being selected.  When this value expression
@@ -2121,8 +2015,6 @@ being selected at runtime to have runtime-determined C<excludes_[min|max]>
 attribute values, then you must use a C<RelSelExprNodeSet> rather than an
 C<MPIvlSelExprNodeSet>.
 
-=back
-
 An C<MPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
 
@@ -2134,27 +2026,23 @@ selection.
 
 An C<ListSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<elems> - C<array_of.Name>
+* C<elems> - C<array_of.Name>
 
 These represent the elements of the low-level list value being selected.
-
-=back
 
 An C<ListSelExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2168,27 +2056,23 @@ expression node, defined in terms of a C<NameChain>.
 
 An C<AccExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<target> - C<NameChain>
+* C<target> - C<NameChain>
 
 This is the fully-qualified invocation name of the expression node, or
 attribute thereof if it is tuple-valued, being accessed or aliased.
-
-=back
 
 An C<AccExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2201,34 +2085,30 @@ function with specific arguments.
 
 A C<FuncInvoExprNodeSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<function> - C<MaterialNC>
+* C<function> - C<MaterialNC>
 
 This is the name of the function being invoked.
 
-=item C<args> - C<NameExprMap>
+* C<args> - C<NameExprMap>
 
 These are the arguments for the function invocation.  Each element
 defines one argument value, with the element C<name> matching the invoked
 function's parameter name, and the element C<expr> naming another
 local expression node (or parameter) which defines the value.
-
-=back
 
 A C<FuncInvoExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2264,38 +2144,34 @@ evaluated.
 
 An C<IfElseExprNodeSet> has these 6 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<if> - C<Name>
+* C<if> - C<Name>
 
 This is the name of the local C<Bool>-resulting conditional expression node
 that is unconditionally evaluated first.
 
-=item C<then> - C<Name>
+* C<then> - C<Name>
 
 This is the name of the local expression node whose evaluation provides the
 result of the whole if-then-else expression iff C<if> is C<Bool:True>.
 
-=item C<else> - C<Name>
+* C<else> - C<Name>
 
 This is the name of the local expression node whose evaluation provides the
 result of the whole if-then-else expression iff C<if> is C<Bool:False>.
-
-=back
 
 An C<IfElseExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2315,28 +2191,26 @@ matter what order the conditionals are tested to find a true resulting one.
 
 A C<GivenWhenDefExprNodeSet> has these 6 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<given> - C<Name>
+* C<given> - C<Name>
 
 This is the single operand value that is common to all the conditions; it
 is the control value for the expression.
 
-=item C<when_then> - C<WhenThenExprMap>
+* C<when_then> - C<WhenThenExprMap>
 
 This is a set of distinct condition operand values, each of which has an
 associated result expression.  If a condition operand matches the value of
@@ -2344,15 +2218,13 @@ C<given>, its associated result expression will evaluate and be the result
 of the larger if-else sequence; no result expressions will be evaluated
 except the one with the matching conditional operand.
 
-=item C<default> - C<Name>
+* C<default> - C<Name>
 
 Iff none of the condition operand values in C<when_then> matches the value
 of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
 result expression represented by the local expression node (or parameter)
 named by C<default> will be evaluated, and be the result of the larger
 given-when-default.
-
-=back
 
 A C<GivenWhenDefExprNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2387,28 +2259,24 @@ literal in the source code.
 
 An C<APMaterialNCSelExprNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the expression node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the expression (leaf) node.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-=item C<referencing> - C<RelPathMaterialNC>
+* C<referencing> - C<RelPathMaterialNC>
 
 This is the name, from the point of view of the routine embedding this
 expression node, of the routine or type that the new C<AbsPathMaterialNC>
 value is supposed to facilitate portable invoking of.
-
-=back
 
 An C<APMaterialNCSelExprNodeSet> has a unary (unique) key on the C<name>
 attribute, plus another such key on the C<referencing> attribute.  Its
@@ -2437,23 +2305,21 @@ C<dispatch_params>, C<implements>, C<is_system_service>, C<is_transaction>
 define the I<heading> and the 3 C<vars>, C<exprs>, C<stmt> define the
 I<body>:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the procedure as a whole.
 
-=item C<upd_params> - C<NameTypeMap>
+* C<upd_params> - C<NameTypeMap>
 
 This is the declared subject-to-update parameter list of the procedure,
 which has 0..N named and typed such parameters.
 
-=item C<ro_params> - C<NameTypeMap>
+* C<ro_params> - C<NameTypeMap>
 
 This is the declared read-only parameter list of the procedure, which has
 0..N named and typed such parameters.
 
-=item C<opt_params> - C<set_of.Name>
+* C<opt_params> - C<set_of.Name>
 
 This indicates the subset of the procedure's subject-to-update or read-only
 parameters that are optional, that is, do not need to be supplied explicit
@@ -2467,17 +2333,17 @@ discarded after the procedure finishes executing.  Each element of
 C<opt_params> must match a parameter name in either C<upd_params> or
 C<ro_params>.
 
-=item C<upd_global_params> - C<ProcGlobalVarAliasMap>
+* C<upd_global_params> - C<ProcGlobalVarAliasMap>
 
 This declares 0..N lexical aliases for global variables which will
 serve as implicit subject-to-update parameters of the procedure.
 
-=item C<ro_global_params> - C<ProcGlobalVarAliasMap>
+* C<ro_global_params> - C<ProcGlobalVarAliasMap>
 
 This declares 0..N lexical aliases for global variables which will
 serve as implicit read-only parameters of the procedure.
 
-=item C<dispatch_params> - C<set_of.Name>
+* C<dispatch_params> - C<set_of.Name>
 
 Iff C<dispatch_params> is nonempty then this procedure is a virtual
 procedure; otherwise, empty means not virtual.  A virtual procedure must
@@ -2488,7 +2354,7 @@ one, is automatically dispatched to.  Each element of C<dispatch_params>
 must match a parameter name in C<upd_params> or C<ro_params>.  Any given
 parameter can not be both a dispatch parameter and an optional parameter.
 
-=item C<implements> - C<set_of.RPProcedureNC>
+* C<implements> - C<set_of.RPProcedureNC>
 
 Iff C<implements> is nonempty then this procedure is explicitly declaring
 that it implements the other (typically just one), virtual procedures named
@@ -2497,7 +2363,7 @@ implementing procedure must have the same parameter list as its virtuals,
 save that the implementer's parameters' declared types must be
 subtypes of the corresponding ones of the virtuals.
 
-=item C<is_system_service> - C<Bool>
+* C<is_system_service> - C<Bool>
 
 Iff this is C<Bool:True> then the procedure is explicitly declared to be a
 C<system-service>, meaning it will be subject to tighter constraints on its
@@ -2508,7 +2374,7 @@ iff this is C<Bool:False> then the procedure is I<not> explicitly declared
 to be a C<system-service>, and the other restrictions or automatic wrapper
 transaction won't be present for supporting a C<system-service>.
 
-=item C<is_transaction> - C<Bool>
+* C<is_transaction> - C<Bool>
 
 If this is C<Bool:True> then the procedure constitutes an explicit (main or
 child) transaction of its own; the transaction will commit if the procedure
@@ -2519,12 +2385,12 @@ procedure's C<is_transaction> must be C<Bool:True> if its
 C<is_system_service> is C<Bool:True>; otherwise,
 C<is_transaction> may be either C<Bool:True> or C<Bool:False>.
 
-=item C<vars> - C<NameTypeMap>
+* C<vars> - C<NameTypeMap>
 
 This defines the 0..N (non-parameter) lexical variables of the
 procedure; they initialize to the default values of their declared types.
 
-=item C<exprs> - C<ExprNodeSet>
+* C<exprs> - C<ExprNodeSet>
 
 This defines the expression trees that are composed into the statements
 comprising the procedure body.  They may either be defined inline of the
@@ -2532,11 +2398,9 @@ statements or offside; in the latter case they are given explicit names by
 the programmers and common expression trees may be reused in multiple
 statements, wherein they are semantically like macros.
 
-=item C<stmt> - C<StmtNodeSet>
+* C<stmt> - C<StmtNodeSet>
 
 This defines the statement tree that comprises the entire procedure body.
-
-=back
 
 Iff a C<Procedure> has no specified I<body>, then C<stmt> and
 C<exprs> must have zero
@@ -2627,19 +2491,17 @@ and Perl have native counterpart features in the form of block labels.
 
 A C<StmtNodeSet> has these 9 attributes:
 
-=over
-
-=item C<leave_stmts> - C<LeaveStmtNodeSet>
+* C<leave_stmts> - C<LeaveStmtNodeSet>
 
 These are statement nodes that represent abnormal block exit statements.
 
-=item C<compound_stmts> - C<CompoundStmtNodeSet>
+* C<compound_stmts> - C<CompoundStmtNodeSet>
 
 These are statement nodes that each represent a compound statement having a
 sequence of 0..N procedure statements that conceptually are executed in
 order and at distinct points in time.
 
-=item C<multi_upd_stmts> - C<MultiUpdStmtNodeSet>
+* C<multi_upd_stmts> - C<MultiUpdStmtNodeSet>
 
 These are statement nodes that each represent a multi-update statement,
 which is a compound statement having a set of 0..N procedure statements
@@ -2647,32 +2509,30 @@ that conceptually are executed all as one and collectively at a single
 point in time, as if the collection were a single statement that did all
 the work of the component statements itself.
 
-=item C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
+* C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
 
 These are statement nodes that represent procedure invocations.
 
-=item C<try_catch_stmts> - C<TryCatchStmtNodeSet>
+* C<try_catch_stmts> - C<TryCatchStmtNodeSet>
 
 These are statement nodes that represent try-catch control flow statements.
 
-=item C<if_else_stmts> - C<IfElseStmtNodeSet>
+* C<if_else_stmts> - C<IfElseStmtNodeSet>
 
 These are statement nodes that represent if-else control flow statements.
 
-=item C<given_when_def_stmts> - C<GivenWhenDefStmtNodeSet>
+* C<given_when_def_stmts> - C<GivenWhenDefStmtNodeSet>
 
 These are statement nodes that represent given-when-default control flow
 statements.
 
-=item C<iterate_stmts> - C<IterateStmtNodeSet>
+* C<iterate_stmts> - C<IterateStmtNodeSet>
 
 These are statement nodes that represent abnormal block restart statements.
 
-=item C<loop_stmts> - C<LoopStmtNodeSet>
+* C<loop_stmts> - C<LoopStmtNodeSet>
 
 These are statement nodes that represent generic looping block statements.
-
-=back
 
 There is a distributed primary key over the C<name> attributes of all of a
 C<StmtNodeSet>'s attributes.  Its default value is empty.
@@ -2693,23 +2553,19 @@ have had are skipped, especially useful if it was an infinite loop.
 
 A C<LeaveStmtNodeSet> has these 3 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement leaf node.
 
-=item C<leave> - C<Name>
+* C<leave> - C<Name>
 
 This is the name of the parent statement node we wish to abnormally exit;
 note that this reference does not count as making the other node a child of
 the current one, so this reference does not contribute to a cycle.
-
-=back
 
 A C<LeaveStmtNodeSet> has a unary primary key on the C<name> attribute,
 plus a unary (unique) key on the C<leave> attribute.  Its default value is
@@ -2724,24 +2580,20 @@ order and at distinct points in time.
 
 A C<CompoundStmtNodeSet> has these 3 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<stmts> - C<array_of.Name>
+* C<stmts> - C<array_of.Name>
 
 This is a sequence of names of 0..N other local statement nodes; the
 current compound statement consists of having those other statements
 execute in this given sequence.
-
-=back
 
 A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2761,26 +2613,22 @@ multi-update statement (plus supporting value expressions).
 
 A C<MultiUpdStmtNodeSet> has these 3 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<stmts> - C<set_of.Name>
+* C<stmts> - C<set_of.Name>
 
 This is a set of names of 0..N other local statement nodes; the current
 multi-update statement consists of having those other statements execute
 all as one.  Each of the other statements composed into a multi-update
 statement may only be either a C<proc_invo_stmt> node that invokes a
 recipe or an assignment; it may not be any non-deterministic statement.
-
-=back
 
 A C<MultiUpdStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
@@ -2793,22 +2641,20 @@ with specific arguments.
 
 A C<ProcInvoStmtNodeSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<procedure> - C<MaterialNC>
+* C<procedure> - C<MaterialNC>
 
 This is the name of the procedure being invoked.
 
-=item C<upd_args> - C<NameExprMap>
+* C<upd_args> - C<NameExprMap>
 
 These are the 0..N subject-to-update arguments to the procedure invocation,
 as-per C<ro_args>; but iff the routine being invoked is an updater, then
@@ -2820,15 +2666,13 @@ pseudo-variable / virtual-variable over 1..N parameters/variables; in the
 most trivial (and common) case, the parameter/variable is referenced
 directly.
 
-=item C<ro_args> - C<NameExprMap>
+* C<ro_args> - C<NameExprMap>
 
 These are the 0..N read-only arguments for the procedure invocation.  Each
 element defines one argument value, with the element C<name> matching the
 invoked procedure's parameter name, and the element C<expr> naming another
 local expression node (or regular/global parameter or variable) which
 defines the value.
-
-=back
 
 A C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.  There is a distributed primary
@@ -2847,23 +2691,21 @@ of the invoked procedures can be either user-defined or system-defined.
 
 A C<TryCatchStmtNodeSet> has these 4 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<try> - C<Name>
+* C<try> - C<Name>
 
 This is the name of a local routine invocation statement node that will
 be invoked first unconditionally; any thrown exception will be caught.
 
-=item C<catch> - C<maybe_of.Name>
+* C<catch> - C<maybe_of.Name>
 
 Iff C<catch> is a C<Just>, it is the name of a local routine invocation
 statement node that will be invoked second iff the C<try> routine throws
@@ -2872,8 +2714,6 @@ single mandatory parameter C<topic> (which is C<Exception>-typed); iff
 C<catch> is C<Nothing>, then there is no second routine invocation,
 meaning any exception thrown by C<try> is ignored; any exception thrown by
 C<catch> will not be caught.
-
-=back
 
 A C<TryCatchStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2893,35 +2733,31 @@ is invoked.
 
 An C<IfElseStmtNodeSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<if> - C<Name>
+* C<if> - C<Name>
 
 This is the name of the local C<Bool>-resulting conditional expression node
 that is unconditionally evaluated first.
 
-=item C<then> - C<Name>
+* C<then> - C<Name>
 
 This is the name of the local statement node that is invoked iff C<if> is
 C<Bool:True>.
 
-=item C<else> - C<maybe_of.Name>
+* C<else> - C<maybe_of.Name>
 
 Iff C<if> is C<Bool:False>, then the statement
 represented by the local statement node named by C<else> will be invoked
 iff C<else> is a C<Just>; if under the first circumstance C<else> is
 C<Nothing>, then the whole if-else will have been a no-op.
-
-=back
 
 An C<IfElseStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2936,31 +2772,29 @@ the procedural version of the functional C<GivenWhenDefExprNodeSet>.
 
 A C<GivenWhenDefStmtNodeSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<given> - C<Name>
+* C<given> - C<Name>
 
 This is name of the local expression node that supplies the single
 operand value that is common to all the conditions; it is the control value
 for the statement.
 
-=item C<when_then> - C<WhenThenExprStmtMap>
+* C<when_then> - C<WhenThenExprStmtMap>
 
 This is a set of distinct condition operand values, each of which has an
 associated statement.  If a condition operand matches the value of
 C<given>, its associated statement will be invoked; no statements will be
 invoked except the one with the matching conditional operand.
 
-=item C<default> - C<maybe_of.Name>
+* C<default> - C<maybe_of.Name>
 
 Iff none of the condition operand values in C<when_then> matches the value
 of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
@@ -2968,8 +2802,6 @@ statement represented by the local statement node named by C<default> will
 be invoked iff C<default> is a C<Just>; if under the first circumstance
 C<default> is C<Nothing>, then the whole given-when-default will have
 been a no-op.
-
-=back
 
 A C<GivenWhenDefStmtNodeSet> has a unary primary key on the C<name>
 attribute.  Its default value is empty.
@@ -2999,24 +2831,20 @@ required; an iterate node can also be used to "redo" any parent statement.
 
 An C<IterateStmtNodeSet> has these 3 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the statement leaf node.
 
-=item C<iterate> - C<Name>
+* C<iterate> - C<Name>
 
 This is the name of the parent statement node we wish to abnormally exit
 and restart; note that this reference does not count as making the other
 node a child of the current one, so this reference does not contribute to a
 cycle.
-
-=back
 
 An C<IterateStmtNodeSet> has a unary primary key on the C<name>
 attribute, plus a unary (unique) key on the C<iterate> attribute.  Its
@@ -3030,23 +2858,19 @@ iterates until a child "leave" statement executes.
 
 A C<LoopStmtNodeSet> has these 3 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the statement node.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-=item C<loop> - C<Name>
+* C<loop> - C<Name>
 
 This is the name of the local statement node that will get executed for
 each iteration of the loop; typically it has a sub-tree of statement nodes.
-
-=back
 
 A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
 Its default value is empty.
@@ -3071,19 +2895,17 @@ with an incompletely defined attribute list at all.
 
 A C<ScalarType> has these 7 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the scalar
 [|sub]type as a whole.
 
-=item C<composed_mixins> - C<ComposedMixinSet>
+* C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new scalar
 type composes, and therefore the new type is a subtype of all of them.
 
-=item C<base_type> - C<maybe_of.RPTypeNC>
+* C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a scalar root type, then
 C<base_type> is not applicable and is C<Nothing>.  Iff the type being
@@ -3092,7 +2914,7 @@ is a C<Just> whose sole element is the name of that other type.  Note
 that any type named by C<base_type> must itself be a scalar root
 type or a subtype of one.
 
-=item C<subtype_constraint> - C<maybe_of.RPFunctionNC>
+* C<subtype_constraint> - C<maybe_of.RPFunctionNC>
 
 Iff the type being defined is a scalar root type, or it is a
 non-proper subtype of some other type, then C<subtype_constraint> is not
@@ -3116,7 +2938,7 @@ accepts, so it is possible to apply the new possreps' constraints.  Now if
 C<subtype_constraint> were otherwise so simple as to unconditinally result
 in C<Bool:True>, then simply making it C<Nothing> has the same effect.
 
-=item C<possreps> - C<PossrepSet>
+* C<possreps> - C<PossrepSet>
 
 These are the 1..N possrep definitions that comprise this type such that
 each one fully defines a set of attributes plus restrictions on their
@@ -3134,7 +2956,7 @@ subtypes have values in common; this can be enforced at
 type-definition-in-catalog time since all types that can interact are in
 the same package.
 
-=item C<possrep_maps> - C<PossrepMapSet>
+* C<possrep_maps> - C<PossrepMapSet>
 
 When this type has more than one possrep applicable to all of its values,
 these are the definitions of mapping functions for deriving the
@@ -3146,7 +2968,7 @@ total number of bidirectional maps C<M> is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
-=item C<default> - C<maybe_of.RPFunctionNC>
+* C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Just>, then C<default>
 matches the invocation name of a C<named-value> function that
@@ -3166,8 +2988,6 @@ C<Nothing> is invalid and C<default> must be a C<Just>.
 Overriding the above, C<default> must be C<Nothing> if the type being
 defined is an alias for C<Empty>.
 
-=back
-
 The default value of C<ScalarType> defines a scalar root type with
 a single possrep whose name is the empty string and that has no attributes;
 it is a singleton type, whose default value is its only value.
@@ -3179,22 +2999,20 @@ a scalar [|sub]type might consist primarily of.
 
 A C<PossrepSet> has these 5 attributes:
 
-=over
-
-=item C<name> - C<Name>
+* C<name> - C<Name>
 
 This is the declared name of the possrep.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the possrep as a whole.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this possrep's declaration relative to all of
 the other possreps of this scalar type declaration.
 
-=item C<tuple_type> - C<RPTypeNC>
+* C<tuple_type> - C<RPTypeNC>
 
 This is the name of the tuple type from which the possrep being defined
 composes its list of attributes (C<attrs>) and the basic constraints on
@@ -3220,7 +3038,7 @@ type constraint that unconditionally results in C<Bool:False>), then the
 scalar type being defined over it can have no member values, so is an alias
 of C<Empty>, since this scalar possrep of it can't represent any values.
 
-=item C<is_base> - C<Bool>
+* C<is_base> - C<Bool>
 
 This is an optimization hint for Muldis D implementations that are not
 intelligent enough to decide on a best physical representation for the
@@ -3231,8 +3049,6 @@ simple, only a possrep of a root type may be marked C<Bool:True>, so it can
 apply consistently to all subtypes as well.  More intelligent
 implementations are free to ignore C<is_base>, or just use it as a
 tie-breaker if applicable.
-
-=back
 
 A C<PossrepSet> has a unary primary key on the C<name> attribute.  Its
 default value is empty.  The default value of a tuple of C<PossrepSet>
@@ -3247,24 +3063,22 @@ a type between 2 of its possreps.
 
 A C<PossrepMapSet> has these 5 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this bidirectional mapping.
 
-=item C<p1> - C<Name>
+* C<p1> - C<Name>
 
 This is the declared name of one possrep.
 
-=item C<p2> - C<Name>
+* C<p2> - C<Name>
 
 This is the declared name of a second possrep.  The value of C<p2> must be
 distinct from that of C<p1>, and moreover, the 2 values must be mutually
 ordered so that the value of C<p1> is before the value of C<p2>; the latter
 constraint defines a C<PossrepMapSet>'s canonical form.
 
-=item C<p2_from_p1> - C<RPFunctionNC>
+* C<p2_from_p1> - C<RPFunctionNC>
 
 This matches the invocation name of a C<possrep-map> function that
 derives the representation of the possrep named by C<p2> from that of the
@@ -3276,7 +3090,7 @@ attribute of the possrep named by C<p2>.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
-=item C<p1_from_p2> - C<RPFunctionNC>
+* C<p1_from_p2> - C<RPFunctionNC>
 
 This matches the invocation name of an inverse C<possrep-map> function
 to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
@@ -3284,8 +3098,6 @@ Muldis D implementation to automatically infer a reverse function, but for
 now we still require it to be explicitly stated; the explicitly stated
 inverse function could be generated though.  This design is subject to
 change.>
-
-=back
 
 A C<PossrepMapSet> has a binary primary key on the C<p1> plus C<p2>
 attributes.  Its default value is empty.
@@ -3306,26 +3118,24 @@ of the former type.
 
 A C<TupleType> has these 7 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the tuple
 [|sub]type as a whole.
 
-=item C<composed_mixins> - C<ComposedMixinSet>
+* C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new tuple
 type composes, and therefore the new type is a subtype of all of them.
 
-=item C<base_type> - C<maybe_of.RPTypeNC>
+* C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a tuple root type, then C<base_type> is
 not applicable and is C<Nothing>.  Iff the type being defined is a
 subtype of some other tuple type, then C<base_type> is a C<Just>
 whose sole element is the name of that other type.
 
-=item C<attrs> - C<NameTypeMap>
+* C<attrs> - C<NameTypeMap>
 
 Iff the type being defined is a tuple root type, then C<attrs> defines
 the 0..N attributes of the type.  Iff the type being defined is a subtype
@@ -3341,14 +3151,14 @@ exactly two values.  The declared type of an attribute may be any type at
 all; if that declared type is C<Empty> or an alias thereof, then the tuple
 type being defined can have no member values, so is an alias of C<Empty>.
 
-=item C<virtual_attr_maps> - C<VirtualAttrMapSet>
+* C<virtual_attr_maps> - C<VirtualAttrMapSet>
 
 This defines the proper subset of this type's attributes that are virtual,
 and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-=item C<constraints> - C<set_of.RelPathMaterialNC>
+* C<constraints> - C<set_of.RelPathMaterialNC>
 
 This, I<tuple constraints>,
 matches the invocation names of 0..N tuple-constraint-defining materials
@@ -3414,7 +3224,7 @@ of the type being defined; it is as per C<subset-constraint> except that
 the parent relation is the result of unioning appropriately renamed
 projections of the member relations of the distributed key.
 
-=item C<default> - C<maybe_of.RPFunctionNC>
+* C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Just>, then C<default>
 matches the invocation name of a C<named-value> function that
@@ -3430,8 +3240,6 @@ subtype's value set excludes said value, then a C<default> of
 C<Nothing> is invalid and C<default> must be a C<Just>.
 Overriding the above, C<default> must be C<Nothing> if the type being
 defined is an alias for C<Empty>.
-
-=back
 
 The default value of C<TupleType> defines a singleton tuple type that has
 zero attributes and whose default value is its only value.
@@ -3451,26 +3259,24 @@ shared by multiple relation type definitions, or it may be system-defined.
 
 A C<RelationType> has these 6 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the relation
 [|sub]type as a whole.
 
-=item C<composed_mixins> - C<ComposedMixinSet>
+* C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new relation
 type composes, and therefore the new type is a subtype of all of them.
 
-=item C<base_type> - C<maybe_of.RPTypeNC>
+* C<base_type> - C<maybe_of.RPTypeNC>
 
 Iff the type being defined is a relation root type, then C<base_type> is
 not applicable and is C<Nothing>.  Iff the type being defined is a
 subtype of some other relation type, then C<base_type> is a C<Just>
 whose sole element is the name of that other type.
 
-=item C<tuple_type> - C<RPTypeNC>
+* C<tuple_type> - C<RPTypeNC>
 
 This is the name of the tuple type from which the relation type being
 defined composes its list of attributes and most of its other details.
@@ -3486,7 +3292,7 @@ referenced by the C<tuple_type> of the type being defined; that is, there
 must be a diamond relationship (but both C<tuple_type> may reference
 exactly the same tuple type).
 
-=item C<constraints> - C<set_of.RelPathMaterialNC>
+* C<constraints> - C<set_of.RelPathMaterialNC>
 
 This, I<relation constraints>, matches the invocation names of 0..N
 relation-constraint-defining materials that (when I<and>-ed together)
@@ -3524,7 +3330,7 @@ cardinality of a projection of a relation on its key attributes with the
 cardinality of the original relation; the attribute values comprise a key
 if the cardinalities are equal.
 
-=item C<default> - C<maybe_of.RPFunctionNC>
+* C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Just>, then C<default>
 matches the invocation name of a C<named-value> function that
@@ -3540,8 +3346,6 @@ set excludes said value, then a C<default> of C<Nothing> is
 invalid and C<default> must be a C<Just>.
 Overriding the above, C<default> must be C<Nothing> if the type being
 defined is an alias for C<Empty>.
-
-=back
 
 The default value of C<RelationType> defines a relation type that has
 zero attributes and whose default value is the one with zero tuples.
@@ -3633,18 +3437,16 @@ insert/substitute/delete.>
 
 A C<VirtualAttrMapSet> has these 6 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about this virtual attribute map.
 
-=item C<scm_vis_ord> - C<NNInt>
+* C<scm_vis_ord> - C<NNInt>
 
 This is the visible order of this declaration relative to all of
 the other declarations beneath this tuple type declaration.
 
-=item C<determinant_attrs> - C<NameNCMap>
+* C<determinant_attrs> - C<NameNCMap>
 
 These are the names of the determinant attributes.  Each name is given in 2
 forms, called C<name> and C<nc>; C<nc> is the actual name of the
@@ -3656,14 +3458,14 @@ mapping exists so to make the determinant attributes look like direct
 sibling attributes whereas in reality they can be further-away relatives,
 just common components somewhere under the host type.
 
-=item C<dependent_attrs> - C<NameNCMap>
+* C<dependent_attrs> - C<NameNCMap>
 
 These are the names of the dependent attributes; the structure of
 C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
 same as the names of the determinant attributes, since a virtual attribute
 can't be defined in terms of itself.
 
-=item C<virtual_attr_map> - C<RPFunctionNC>
+* C<virtual_attr_map> - C<RPFunctionNC>
 
 This matches the invocation name of a C<virtual-attr-map> function
 that derives a tuple of dependent attribute values from a tuple of
@@ -3674,7 +3476,7 @@ result type must be a tuple whose attributes match those of
 C<dependent_attrs>.  Note that the range of this function is typically
 smaller than its domain, though it might not be.
 
-=item C<is_updateable> - C<Bool>
+* C<is_updateable> - C<Bool>
 
 This is C<Bool:True> if all of the dependent attributes should be treated
 as updateable, because they have enough information to map any kinds of
@@ -3684,8 +3486,6 @@ This is C<Bool:False> if all of the dependent attributes should not be
 considered updateable, either because it is known they don't have enough
 information, or because we expect users will never try to update them, so
 don't go to the trouble of supporting updates.
-
-=back
 
 A C<VirtualAttrMapSet> has a binary primary key on the C<determinant_attrs>
 plus C<dependent_attrs> attributes; it also has a distributed primary key
@@ -3716,25 +3516,23 @@ and then use that as the base type of a C<ScalarType>.
 
 A C<DomainType> has these 8 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the domain type as a whole.
 
-=item C<composed_mixins> - C<ComposedMixinSet>
+* C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new domain
 type composes, and therefore the new type is a subtype of all of them.
 
-=item C<sources> - C<set_of.RPTypeNC>
+* C<sources> - C<set_of.RPTypeNC>
 
 These are the names of the 0..N other types that all the
 values of the new data type are drawn from; the complete set of source
 values is determined by either unioning (the default) or intersecting the
 values of these types.
 
-=item C<is_source_intersection> - C<Bool>
+* C<is_source_intersection> - C<Bool>
 
 Iff this is C<Bool:True> then the set of source data types will be
 intersected to determine the complete set of source values, and if
@@ -3743,14 +3541,14 @@ this is C<Bool:False> then the set of source data types will be unioned to
 determine the complete set of source values, and if C<sources> has no
 elements then the source set is just C<Empty>.
 
-=item C<filters> - C<set_of.RPTypeNC>
+* C<filters> - C<set_of.RPTypeNC>
 
 These are the names of the 0..N other types (which are generally subtypes
 of those of C<sources>) that determine values which the new data type will
 I<not> contain; the complete set of filter values is determined by either
 unioning (the default) or intersecting the values of these types.
 
-=item C<is_filter_intersection> - C<Bool>
+* C<is_filter_intersection> - C<Bool>
 
 Iff this is C<Bool:True> then the set of filter data types will be
 intersected to determine the complete set of filter values, and if
@@ -3759,7 +3557,7 @@ this is C<Bool:False> then the set of filter data types will be unioned to
 determine the complete set of filter values, and if C<filters> has no
 elements then the filter set is just C<Empty>.
 
-=item C<constraints> - C<set_of.RPFunctionNC>
+* C<constraints> - C<set_of.RPFunctionNC>
 
 This matches the invocation names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what filter-type-passing
@@ -3771,7 +3569,7 @@ argument is the value to test; the function's result type must be
 C<Bool>.  If the functions unconditionally result in C<Bool:True>, then all
 filter-type-passing values are allowed.
 
-=item C<default> - C<maybe_of.RPFunctionNC>
+* C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Just>, then C<default>
 matches the invocation name of a C<named-value> function that results
@@ -3779,8 +3577,6 @@ in the default value of the domain type; it has zero parameters and its
 result type is the same as the domain type being defined.
 In contrast, C<default> must be C<Nothing> if the type being
 defined is C<Empty> or an alias of that.
-
-=back
 
 The default value of C<DomainType> defines the C<Empty> type; it has
 zero source and filter types, both type lists are unioned, C<constraints>
@@ -3806,24 +3602,22 @@ defined attribute list using a C<SubsetType> (or a C<DomainType>).
 
 A C<SubsetType> has these 5 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the subset type as a whole.
 
-=item C<composed_mixins> - C<ComposedMixinSet>
+* C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N mixin types, if any, that the new subset
 type composes, and therefore the new type is a subtype of all of them.
 
-=item C<base_type> - C<RPTypeNC>
+* C<base_type> - C<RPTypeNC>
 
 This is the name of the other type that all the values of the
 new data type are drawn from; the new type is being declared as a subtype
 of that named by C<base_type>.
 
-=item C<constraints> - C<set_of.RPFunctionNC>
+* C<constraints> - C<set_of.RPFunctionNC>
 
 This matches the invocation names of 0..N C<type-constraint> functions
 that (when I<and>-ed together) determine what base type values are part of
@@ -3833,7 +3627,7 @@ by C<base_type>, and whose argument is the value to test; the function's
 result type must be C<Bool>.  If the functions unconditionally result in
 C<Bool:True>, then the new type is a non-proper subtype of the base type.
 
-=item C<default> - C<maybe_of.RPFunctionNC>
+* C<default> - C<maybe_of.RPFunctionNC>
 
 Iff it is a C<Just>, then C<default>
 matches the invocation name of a C<named-value> function that
@@ -3845,8 +3639,6 @@ the subset type's value set excludes said value, then a C<default> of
 C<Nothing> is invalid and C<default> must be a C<Just>.
 Overriding the above, C<default> must be C<Nothing> if the type being
 defined is an alias for C<Empty>.
-
-=back
 
 The default value of C<SubsetType> defines an alias for C<Universal>,
 with the same default value; it has the base type C<Universal> and
@@ -3875,21 +3667,17 @@ determine the MST (most specific type) of one of its values.
 
 A C<MixinType> has these 2 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the mixin type as a whole.
 
-=item C<composed_mixins> - C<ComposedMixinSet>
+* C<composed_mixins> - C<ComposedMixinSet>
 
 These are the names of the 0..N other mixin types, if any, that the new
 mixin type composes.  Any other type that explicitly composes the new mixin
 type will also implicitly compose all of the other mixin types that the new
 mixin type composes, recursively; note that a mixin type is forbidden from
 composing itself, directly or indirectly.
-
-=back
 
 The default value of C<MixinType> defines a mixin type has no comment and
 composes no other mixins and that in isolation has no default value.
@@ -3928,19 +3716,17 @@ unique key constraint for a relation type.
 
 A C<KeyConstr> has these 3 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the key as a whole.
 
-=item C<attrs> - C<set_of.Name>
+* C<attrs> - C<set_of.Name>
 
 This defines the 0..N host relation attributes comprising the key.  If
 this set is empty, then we have a nullary key which restricts the host
 relation to have a maximum of 1 tuple.
 
-=item C<is_primary> - C<Bool>
+* C<is_primary> - C<Bool>
 
 This is C<Bool:True> if this key has been designated the I<primary key> of
 the relation (a relation may have at most one, or none, of those); it
@@ -3968,8 +3754,6 @@ implementations may require that any relation having an RVA must also
 have an explicit primary key, so it is easier for them to choose the key to
 automatically relate a split relation on.
 
-=back
-
 The default value of C<KeyConstr> defines a nullary key.
 
 ## sys.std.Core.Type.Cat.DistribKeyConstr
@@ -3980,14 +3764,12 @@ tuple/database.
 
 A C<DistribKeyConstr> has these 4 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the distributed (unique) key
 as a whole.
 
-=item C<attrs> - C<set_of.Name>
+* C<attrs> - C<set_of.Name>
 
 This declares the 0..N attributes comprising the distributed (unique) key.
 If this set is empty, then we have a nullary key which restricts all of the
@@ -3995,7 +3777,7 @@ relations participating in the distributed key to have a maximum of 1
 tuple between them.  Note that the distributed key attribute names don't
 have to match the names of any participating relation attributes.
 
-=item C<relations> - C<DKMemRelAttrMap>
+* C<relations> - C<DKMemRelAttrMap>
 
 This names the 0..N relation-valued attributes of the host
 tuple/database type that are participating in the distributed key, and
@@ -4004,12 +3786,10 @@ distributed key itself.  If this set is empty, then the distributed key has
 no effect.  The unary projection of every tuple of the C<key_attr>
 attribute of C<relations> must be identical to C<attrs>.
 
-=item C<is_primary> - C<Bool>
+* C<is_primary> - C<Bool>
 
 This has the same meaning as C<is_primary> of C<KeyConstr> but for being
 distributed as if the relations distributed over were one relation.
-
-=back
 
 The default value of C<DistribKeyConstr> has all-empty attributes.
 
@@ -4028,14 +3808,12 @@ have exactly one tuple when the child relation has at least one tuple.
 
 A C<SubsetConstr> has these 5 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the subset constraint as a
 whole.
 
-=item C<parent> - C<NameChain>
+* C<parent> - C<NameChain>
 
 This is the name of the relation-valued attribute that is the parent in the
 (non-distributed) subset constraint relationship.  But the attribute named
@@ -4044,27 +3822,25 @@ chain element; if it has more, then the host type attribute is a
 tuple/database and any further elements serve to make C<parent> actually
 address a component of said.
 
-=item C<parent_key> - C<RelPathMaterialNC>
+* C<parent_key> - C<RelPathMaterialNC>
 
 This matches the invocation name of the candidate key or unique key
 constraint of C<parent>, explicitly declared as a C<key-constraint>
 material, which defines the attributes of C<parent> that are
 being matched on in the subset constraint.
 
-=item C<child> - C<NameChain>
+* C<child> - C<NameChain>
 
 This is the name of the relation-valued attribute that is the child in the
 (non-distributed) subset constraint relationship; its structure is as per
 C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
 same.
 
-=item C<attr_map> - C<SCChildAttrParentAttrMap>
+* C<attr_map> - C<SCChildAttrParentAttrMap>
 
 This maps 0..N attributes of the child relation with the same number of
 attributes of the parent relation; the mapped attribute names may or may
 not be the same.
-
-=back
 
 The default value of C<SubsetConstr> has all-empty attributes.
 
@@ -4085,14 +3861,12 @@ child relation has at least one tuple.
 
 A C<DistribSubsetConstr> has these 4 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the subset constraint as a
 whole.
 
-=item C<parent_distrib_key> - C<RelPathMaterialNC>
+* C<parent_distrib_key> - C<RelPathMaterialNC>
 
 This matches the invocation name of the distributed (unique) key,
 explicitly declared as a C<distrib-key-constraint> material, that
@@ -4104,7 +3878,7 @@ by the type of an attribute of the host type, if said attribute is a
 tuple/database; so the only or last C<parent_distrib_key> chain element is
 a key name, and any preceeding names are attribute names.
 
-=item C<child> - C<NameChain>
+* C<child> - C<NameChain>
 
 This is the name of the relation-valued attribute that is the child in the
 distributed subset constraint relationship.  But the attribute named by
@@ -4113,13 +3887,11 @@ chain element; if it has more, then the host type attribute is a
 tuple/database and any further elements serve to make C<child> actually
 address a component of said.
 
-=item C<attr_map> - C<SCChildAttrParentAttrMap>
+* C<attr_map> - C<SCChildAttrParentAttrMap>
 
 This maps 0..N attributes of the child relation with the same number of
 attributes of the parent distributed key; the mapped attribute names may or
 may not be the same.
-
-=back
 
 The default value of C<DistribSubsetConstr> has all-empty attributes.
 
@@ -4132,9 +3904,7 @@ attributes of the distributed key itself.
 
 A C<DKMemRelAttrMap> has these 3 attributes:
 
-=over
-
-=item C<rel_name> - C<NameChain>
+* C<rel_name> - C<NameChain>
 
 This is the name of the relation-valued attribute that is participating
 in the distributed key.  But the attribute named by C<rel_name> is only a
@@ -4143,18 +3913,16 @@ has more, then the host type attribute is a tuple/database and any
 further elements serve to make C<rel_name> actually address a component of
 said.
 
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the participation.
 
-=item C<attr_map> - C<DKRelAttrKeyAttrMap>
+* C<attr_map> - C<DKRelAttrKeyAttrMap>
 
 This maps 0..N attributes of the relation with the same number of
 attributes of the distributed key.  Every tuple of C<attr_map> must have an
 identical value for the unary projection on its C<key_attr> attribute; in
 other words, they must all map with the same distributed key attributes.
-
-=back
 
 A C<DKMemRelAttrMap> has a unary primary key on the C<rel_name> attribute.
 Its default value is empty.
@@ -4189,21 +3957,17 @@ stimulus; for now just the act of a depot being mounted is supported.
 
 A C<StimRespRule> has these 3 attributes:
 
-=over
-
-=item C<scm_comment> - C<Comment>
+* C<scm_comment> - C<Comment>
 
 This is an optional programmer comment about the rule as a whole.
 
-=item C<stimulus> - C<Name>
+* C<stimulus> - C<Name>
 
 This is always the value C<after-mount> for now.
 
-=item C<response> - C<MaterialNC>
+* C<response> - C<MaterialNC>
 
 This is the name of the procedure being invoked.
-
-=back
 
 The default value of C<StimRespRule> defines a stimulus-response rule whose
 stimulus is C<after-mount> and whose response is an invocation of the

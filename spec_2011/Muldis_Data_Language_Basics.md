@@ -26,16 +26,14 @@ clarify what they mean in this document.  Similarly, there are some terms
 used in the industry that are expressly not used here so to help avoid
 confusion given what meaning is often attributed to them.
 
-=over
-
-=item type / data type
+* type / data type
 
 The term I<type> as a noun always refers to a I<data type>; the term is not
 used to indicate classifications of other things; eg, I<kind> or other
 terms will be used for such instead, to avoid confusion.  The terms
 I<class> and I<domain> are not used in this documentation to mean I<type>.
 
-=item value, variable, constant
+* value, variable, constant
 
 A I<value> is unique, eternal, immutable, and is not fixed in time or space
 (it has no address).  A I<variable> is fixed in time and space (it does
@@ -47,7 +45,7 @@ I<object> are not used in this documentation for any aspects of Muldis D
 since their meaning in practice is both ambiguous and wide-reaching, and
 could refer to both values and variables depending on usage context.
 
-=item universal
+* universal
 
 The term I<universal> refers to the common superset of all allowable sets,
 and is specifically non-recursive.  While philosophy in general might allow
@@ -59,7 +57,7 @@ type may be defined in terms of it.  Therefore, I<universal> in this
 documentation only refers to values or types whose definitions follow those
 non-recursion rules.
 
-=item text, character
+* text, character
 
 A I<text> is a string composed of Unicode abstract I<characters> which is
 formatted as a sequence of Unicode abstract I<code points> in canonical
@@ -68,7 +66,7 @@ at the grapheme abstraction level.  Of course, a Muldis D implementation
 doesn't actually have to store character data in NFD; but default matching
 semantics need to be as if it did.
 
-=item tuple
+* tuple
 
 A I<tuple> is an unordered heterogeneous collection of 0..N elements that
 are keyed by the element's name; each element is a name-value pair, and all
@@ -77,7 +75,7 @@ same thing as the Muldis D term I<sequence> in other contexts, it does
 not in this documentation.  Terms like I<record> or I<row> are not used in
 this documentation, the latter in particular because it implies ordered.
 
-=item relation, relvar, relcon
+* relation, relvar, relcon
 
 A I<relation> is like an unordered homogeneous set of I<tuple> where all
 member tuples have identical degree and name-sets, but that a relation data
@@ -95,7 +93,7 @@ I<relational database> is called that I<because> it is composed of
 relations, and I<not> just because its relations can be joined or be
 associated through subset (foreign key) constraints.
 
-=item function
+* function
 
 A I<function> is a routine whose invocation is used as a value expression,
 and it conceptually serves as a map between the domains of its parameters
@@ -105,7 +103,7 @@ difference in Muldis D as a routine vs a value, a selected I<relation>
 value in Muldis D is always finite, and hence so is the cardinality of
 the map it can provide; whereas, a function can have an infinite map size.
 
-=item database / relational database, dbvar, dbcon
+* database / relational database, dbvar, dbcon
 
 Within this documentation, the actually more generic term I<database> will
 be used to refer exclusively to a I<relational database>, so you should
@@ -120,7 +118,7 @@ updating a dbvar.  Examples of databases are genealogy records, financial
 records, and a CMS' data.  A I<database> is I<not> a program.  A
 database-typed constant is a I<dbcon>.
 
-=item catalog
+* catalog
 
 A I<catalog> is a special kind of dbvar or dbcon whose relations hold
 metadata about the normal databases that hold user data (and about
@@ -129,7 +127,7 @@ the structure of the associated normal database.  This metadata describes
 all user-defined data types and operators, plus base and viewed relations,
 stored with and used with the database.
 
-=item depot / repository
+* depot / repository
 
 A I<depot> or I<repository> is a local abstraction of a typically external
 storage system which holds 1 database variable and 1 associated catalog,
@@ -138,7 +136,7 @@ the actuality.  All user-defined non-lexical code and data lives in one or
 more depots, and those are generally persisted.  A depot can also have just
 code, in which case it is essentially a dynamically loaded library.
 
-=item DBMS / RDBMS
+* DBMS / RDBMS
 
 Within this documentation, the actually more generic term I<DBMS> will be
 used to refer exclusively to a I<RDBMS> (Relational Database Management
@@ -151,7 +149,7 @@ including all SQL DBMSs such as Oracle, PostgreSQL and SQLite, though they
 usually give lip-service to the relational data model and approximate a
 RDBMS to varying degrees.
 
-=item module
+* module
 
 A I<module> is an analogy of a I<depot> that is for system-defined DBMS
 entities rather than user-defined ones.  The two are similar in that they
@@ -164,13 +162,13 @@ DBMS under the public namespace for user-defined entities while all
 I<module> are treated specially by the DBMS and are visible under the
 public namespace for system-defined entities.
 
-=item package
+* package
 
 A I<package> is the common generalization of a I<module> and a I<depot>;
 within this documentation, the term I<package> is typically used as a
 shorthand where it would otherwise say I<module or depot>.
 
-=item sequence / array, sequence generator
+* sequence / array, sequence generator
 
 Within this documentation, a I<sequence> or I<array> generically refers to
 an ordered collection of 0..N elements.  While I<array> legitimately has
@@ -184,7 +182,7 @@ relation.  The term I<sequence> by itself never refers to the concept of a
 I<sequence generator>; in this documentation, the latter concept is only
 referred to by the longer term I<sequence generator>.
 
-=item selector
+* selector
 
 A I<selector> is a routine that captures an appearance of a value for use
 in a variable or expression.  A I<value literal> is also a common special
@@ -193,7 +191,7 @@ documentation because all values in Muldis D are conceptually eternal and
 immutable, so it does not make sense to say that we are "building" one; we
 are "selecting" one.
 
-=item fail
+* fail
 
 Within this documentation, if a routine is said to I<fail> under some
 circumstance, such as with certain arguments, that can mean either or both
@@ -205,7 +203,7 @@ problem can likely not be caught at compile time.  Other terms like
 I<requires> or I<must> may be used as well to indicate that a failure would
 occur if they aren't satisfied.  A I<fail> is a fatal error.
 
-=item warn
+* warn
 
 Within this documentation, if a routine is said to I<warn> under some
 circumstance, such as with certain arguments, that means that the system
@@ -214,7 +212,7 @@ have done something they didn't intend, such as an equality test between
 two variables whose declared types are numeric and character data, which
 would always have a false result.
 
-=item atomic
+* atomic
 
 Within this documentation, an I<atomic> DBMS operation is an operation that
 is completely indivisible from the perspective of I<every> DBMS user,
@@ -226,7 +224,7 @@ intermediate state.  If an atomic operation fails, such as because it would
 have resulted in an inconsistent state, then the after-state is identical
 to the before-state, the operation then being a no-op.
 
-=item transaction, nested/child transaction
+* transaction, nested/child transaction
 
 Within this documentation, a I<transaction> generally I<is> divisible from
 the perspective of I<just> the user performing that transaction, where they
@@ -239,8 +237,6 @@ performing the transaction.  A I<nested/child transaction> is a
 sub-sequence of the atomic operations comprising its parent transaction
 that has been identified for greater ease of managing the parent or
 outermost transaction.
-
-=back
 
 # NOTES ON TEXT CHARACTER LITERALS
 
