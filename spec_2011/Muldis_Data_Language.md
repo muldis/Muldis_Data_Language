@@ -31,11 +31,11 @@ specification it contains (as a single composition) is
 `Muldis_Data_Language:"https://muldis.com":0.148.1`.  It is the official/original (not
 embraced and extended) Muldis Data Language language specification by the authority
 Muldis Data Systems (`https://muldis.com`), version `0.148.1` (this number
-matches the VERSION pod in this file).  This multi-part document is named
+matches the VERSION section in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
 versions of it will exist over time, some of those under the original
 author's control, and some under the control of other parties.  The
-**VERSIONING** pod section in this file presents a formal method for
+**VERSIONING** section in this file presents a formal method for
 specifying the fully-qualified name of a complete language derived from
 Muldis Data Language, including any common base plus any dialects and extensions.  All
 code written in any dialect or derivation of Muldis Data Language should begin by
@@ -96,7 +96,7 @@ All code written in any variant of Muldis Data Language should begin with metada
 that explicitly states that it is written in Muldis Data Language, and that fully
 identifies what variant of Muldis Data Language it is, so that the code is completely
 unambiguous to both human and machine (eg, implementing) readers of the
-code.  This pod section explains how this metadata should be formatted,
+code.  This section explains how this metadata should be formatted,
 and it is intended to be as future-proofed as possible in the face of a
 wide variety of both anticipated and unforeseen language variants, both by
 the original author and by other parties.
@@ -213,7 +213,7 @@ non-negative integers that consists of at least 1 element, and either 3 or
 4 elements is recommended (the official base version number has 3
 elements); elements are ordered from most significant to least (eg, [major,
 minor, bug-fix]).  At the present time, the official spec version number to
-use is shown in the VERSION and DESCRIPTION pod of the current file, when
+use is shown in the VERSION and DESCRIPTION sections of the current file, when
 corresponding to the spec containing that file.
 
 ## Dialect

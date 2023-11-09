@@ -144,7 +144,7 @@ A `Muldis_Data_Language` node has 2 ordered elements where the first element is 
 `language_name` node and the second element is either a `value` node or a
 `depot` node.
 
-See the pod sections in this file named **LANGUAGE NAME**, **VALUE
+See the sections in this file named **LANGUAGE NAME**, **VALUE
 LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
 about the aforementioned tokens/nodes.
 
@@ -221,7 +221,7 @@ Grammar:
 *Please interpret the `''` under `<std_syn_ext_list_item>` as a
 placeholder and that there are currently zero valid list items.*
 
-As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
+As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
 must start by declaring the fully-qualified Muldis Data Language language name it is
 written in.  The `PTMD_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
@@ -253,10 +253,10 @@ This is the dialect name; it is simply the bareword character string
 
 This is a set of chosen pragma/parser-config options, which is formatted
 similarly to a `Tuple` SCVL.  The only 2 mandatory pragmas are
-`catalog_abstraction_level` (see the **CATALOG ABSTRACTION LEVELS** pod
+`catalog_abstraction_level` (see the **CATALOG ABSTRACTION LEVELS**
 section) and `op_char_repertoire` (see **OPERATOR CHARACTER REPERTOIRE**).
 The only optional pragma is `standard_syntax_extensions` (see the
-**STANDARD SYNTAX EXTENSIONS** pod section).  Other pragmas may be added
+**STANDARD SYNTAX EXTENSIONS** section).  Other pragmas may be added
 later, which would likely be optional.
 
 Examples:
@@ -426,7 +426,7 @@ you get in the system catalog, but your code would be too verbose for the
 tastes of someone preferring normal high-level language code.
 
 Code written to the `code_as_data` level can employ all of the language
-grammar constructs described in these main pod sections: **VALUE LITERALS
+grammar constructs described in these main sections: **VALUE LITERALS
 AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 
 Examples:
@@ -531,7 +531,7 @@ position of code elements.
 
 Code written to the `plain_rtn_inv` level can employ all of the language
 grammar constructs that `code_as_data` can, plus all of those
-described in these main pod sections: **MATERIAL SPECIFICATION**,
+described in these main sections: **MATERIAL SPECIFICATION**,
 **GENERIC VALUE EXPRESSIONS**, **GENERIC PROCEDURE STATEMENTS**.
 
 Examples:
@@ -603,7 +603,7 @@ parse grammar than SQL in its general case.
 
 Code written to the `rtn_inv_alt_syn` level can employ all of the language
 grammar constructs that `plain_rtn_inv` can, plus all of those described
-in these main pod sections: **DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
+in these main sections: **DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
 EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**.
 
 Examples:
@@ -828,9 +828,9 @@ sub-language.
 
 Every grammar token, and corresponding capture node, representing a Muldis Data Language
 value literal is similarly formatted and has 1-3 elements; the following
-pod section **Value Literal Common Elements** describes the similarities
+section **Value Literal Common Elements** describes the similarities
 once for all of them, in terms of an alternate `value` token definition
-which is called `x_value`.  And then the other pod sections specific to
+which is called `x_value`.  And then the other sections specific to
 each kind of value literal then just focus on describing their unique
 aspects, namely their *payloads*.
 
@@ -1745,7 +1745,7 @@ Examples:
 # COLLECTION VALUE SELECTORS
 
 Note that, with each of the main value selector nodes documented in this
-main POD section (members of `coll_value_selector` etc), any occurrences
+main section (members of `coll_value_selector` etc), any occurrences
 of child `expr` nodes should be read as being `value` nodes instead in
 contexts where instances of the main nodes are being composed beneath
 `value` nodes.  That is, any `expr` node options beyond what `value`

@@ -713,7 +713,8 @@ routine which is in response to an explicit invocation in code.
 
 # EXTERNAL TYPES AND ROUTINES
 
-*TODO.  Meanwhile see 'same' and 'EXTERNAL DATA TYPES' in System.pod.*
+*TODO.  Meanwhile see 'same' and 'EXTERNAL DATA TYPES' in
+[Package_System](Muldis_Data_Language_Package_System.md).*
 
 ## FOUNDATION
 

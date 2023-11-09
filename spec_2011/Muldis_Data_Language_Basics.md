@@ -2337,7 +2337,7 @@ define such a binary operation.
 
 An `order-determination` is structured to fill the role of a
 *system-compatible fundamental order-determination function*; see the
-**Ordered Types** pod section in this file for more details.
+**Ordered Types** section in this file for more details.
 
 ## Kinds of Procedures
 
