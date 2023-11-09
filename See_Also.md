@@ -93,7 +93,7 @@ programs have, and making Muldis D more universal.
 =head1 FURTHER DOCUMENTATION
 
 Please see the separately distributed L<Muldis::D::Manual> distribution for
-Pod files with a potentially large collection of examples, tutorials, FAQs,
+doc files with a potentially large collection of examples, tutorials, FAQs,
 and so on that help people learn how to employ Muldis D and its
 implementations for the things they need to do.  In particular, there
 should be a lot of help given for people migrating from other systems that
