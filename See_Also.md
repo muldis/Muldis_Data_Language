@@ -1,30 +1,24 @@
-=pod
-
-=encoding utf8
-
-=head1 NAME
+# NAME
 
 See_Also - External resources to look at
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
-B<WARNING: This file is severely out of date and will be rewritten.>
+**WARNING: This file is severely out of date and will be rewritten.**
 
-See L<Muldis::D> first to read the B<Muldis D> language meta-specification.
+See <Muldis::D> first to read the **Muldis D** language meta-specification.
 
-This document is a central location within the L<Muldis::D>
+This document is a central location within the <Muldis::D>
 distribution where any important recommendations of or links to external
 resources go.  This includes both resources that were helpful in making
 Muldis D, as well as resources that are or could be related to Muldis D.
 
-=head1 CURRENT IMPLEMENTATIONS OF MULDIS D
+# CURRENT IMPLEMENTATIONS OF MULDIS D
 
 These externally distributed projects are full or partial implementations
 of the Muldis D language.
 
-=over
-
-=item B<Muldis D Reference Engine for Perl> - L<Muldis::D::Ref_Eng>
+* **Muldis D Reference Engine for Perl** - <Muldis::D::Ref_Eng>
 
 This is the first full implementation of Muldis D that is intended for
 production use, written in Perl by Muldis Data Systems, Inc., and
@@ -37,7 +31,7 @@ as a sub-language in the same manner as the Perl DBI module; moreover,
 users would typically specify Muldis D code in a Hosted Data format
 consisting of native Perl data structures.
 
-=item B<Set::Relation for Perl> - L<Set::Relation>
+* **Set::Relation for Perl** - <Set::Relation>
 
 Set::Relation provides a simple Perl-native facility for an application to
 organize and process information using the relational model of data,
@@ -51,7 +45,7 @@ the Muldis D relational operators.  It is intended for production use, is
 written by Muldis Data Systems, Inc., and is licensed under the
 Apache License version 2.
 
-=item B<Set::Relation for Raku>
+* **Set::Relation for Raku**
 
 This is the Raku version of the same-named Perl module.  This version
 as it currently exists is actually a lot older than the Perl one, and the
@@ -59,16 +53,12 @@ Perl one is a rewrite of it.  In the near future, the current Perl
 module may be ported to Raku again to replace it, unless there's no point
 in the face of a more useful Muldis::D::Ref_Eng port.
 
-=back
-
-=head1 PROSPECTIVE IMPLEMENTATIONS OF MULDIS D
+# PROSPECTIVE IMPLEMENTATIONS OF MULDIS D
 
 These externally distributed projects are full or partial implementations
 of the Muldis D language.
 
-=over
-
-=item B<Muldis D Reference Engine for Not Quite Perl>
+* **Muldis D Reference Engine for Not Quite Perl**
 
 The Muldis D Reference Engine would also be ported to Not Quite Perl (NQP),
 the same language that Rakudo is written in, and this would be the
@@ -82,41 +72,37 @@ as the Muldis D Reference Engine is largely bootstrapped, most of it being
 written in Muldis D itself, each port involves relatively little manual
 translation to just get it working.
 
-=item B<Muldis D Reference Engine for Other Languages>
+* **Muldis D Reference Engine for Other Languages**
 
 The Muldis D Reference Engine would also be ported to a variety of other
 general purpose languages, giving them the same benefits that Perl
 programs have, and making Muldis D more universal.
 
-=back
+# FURTHER DOCUMENTATION
 
-=head1 FURTHER DOCUMENTATION
-
-Please see the separately distributed L<Muldis::D::Manual> distribution for
+Please see the separately distributed <Muldis::D::Manual> distribution for
 doc files with a potentially large collection of examples, tutorials, FAQs,
 and so on that help people learn how to employ Muldis D and its
 implementations for the things they need to do.  In particular, there
 should be a lot of help given for people migrating from other systems that
 use different paradigms than Muldis D does, for example SQL-using systems.
 
-=head1 INFORMATION SOURCES
+# INFORMATION SOURCES
 
 While making the Muldis D language, the following resources were found to
 be particularly useful:
 
-=over
-
-=item L<http://www.thethirdmanifesto.com/>
+* <http://www.thethirdmanifesto.com/>
 
 This is the Hugh Darwen's and Chris Date (C.J. Date)'s home on the web for
-"I<The Third Manifesto>" (I<TTM>), their formal proposal for a solid
+"*The Third Manifesto*" (*TTM*), their formal proposal for a solid
 foundation for data and database management systems (DBMSs); like Edgar
-Codd (E.F. Codd)'s original papers, I<TTM> can be seen as an abstract
+Codd (E.F. Codd)'s original papers, *TTM* can be seen as an abstract
 blueprint for the design of a DBMS and the language interface to such a
 DBMS.  It consists in essence of a rigorous set of principles, stated in
 the form of a series of prescriptions and proscriptions, that the authors
 require adherence to on the part of a hypothetical database programming
-language that they call B<D>.
+language that they call **D**.
 
 The proposal would avoid 'Object-Relational Impedance Mismatch' between
 object-oriented programming languages and RDBMSs by fully supporting all
@@ -129,41 +115,40 @@ modeling that are orthogonal to relational modeling.
 
 Muldis D has officially incorporated this blueprint into its own design,
 and implements its principles without compromise, and so it is a concrete
-language that qualifies as a B<D>.  The I<TTM> web site contains various
+language that qualifies as a **D**.  The *TTM* web site contains various
 useful documents and links on the subject, some being specified further
 below.
 
-=item B<Databases, Types, and The Relational Model: The Third Manifesto>
+* **Databases, Types, and The Relational Model: The Third Manifesto**
 
-Chris Date (C.J. Date), Hugh Darwen - "I<Databases, Types, and The
-Relational Model: The Third Manifesto>, 3rd edition, Addison-Wesley, 2006
+Chris Date (C.J. Date), Hugh Darwen - "*Databases, Types, and The
+Relational Model: The Third Manifesto*, 3rd edition, Addison-Wesley, 2006
 (ISBN: 0-321-39942-0)"; see
-L<http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>.
+<http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>.
 
-This is the thicker, college level textbook about I<The Third Manifesto>,
+This is the thicker, college level textbook about *The Third Manifesto*,
 and it is the most central of the authors' publications, able to stand
 alone and present nearly everything important.  It includes an informal
 overview of both the relational model and a theory of types, a reference
 section with the 15-page Manifesto proper and a grammar for a teaching
 language
-based on its principles called B<Tutorial D>, a larger section which
+based on its principles called **Tutorial D**, a larger section which
 explains and rationalizes the parts of the Manifesto, and sections that do
 likewise for type inheritance what the earlier sections do with the
 Manifesto proper.
 
-=item B<Database Explorations: Essays on The Third Manifesto and Related
-Topics>
+* **Database Explorations: Essays on The Third Manifesto and Related Topics**
 
-Chris Date (C.J. Date), Hugh Darwen - "I<Database Explorations: Essays on
-The Third Manifesto and Related Topics>, 1st edition, Trafford, 2010 July
+Chris Date (C.J. Date), Hugh Darwen - "*Database Explorations: Essays on
+The Third Manifesto and Related Topics*, 1st edition, Trafford, 2010 July
 (ISBN: 9781426937231)"; see
-L<http://bookstore.trafford.com/Products/SKU-000177853/Database-Explorations.aspx>.
+<http://bookstore.trafford.com/Products/SKU-000177853/Database-Explorations.aspx>.
 
 This book is a followup to the prior-mentioned 2006 one and contains both
-an updated version of the I<Manifesto> itself and also a collection of both
+an updated version of the *Manifesto* itself and also a collection of both
 new and updated writings by the authors that are related.
 
-Of particular interest for Muldis D, I<Database Explorations> cites by name
+Of particular interest for Muldis D, *Database Explorations* cites by name
 the DBMS prototype Muldis Rosetta, and its user language Muldis D, and
 their author Darren Duncan; chapter 26, "An Approach Using Relation Valued
 Attributes", is all about discussing Muldis D's canonical means to
@@ -171,190 +156,170 @@ represent missing information, which is with empty RVAs.  This is the very
 first time that Muldis D or its author or related projects have ever been
 recognized in an actual printed-on-paper book.
 
-Note that the web site for I<The Third Manifesto>, mentioned above, has
+Note that the web site for *The Third Manifesto*, mentioned above, has
 reproduced several chapters and appendices from this book.  Chapter 1
-(L<http://www.dcs.warwick.ac.uk/~hugh/TTM/DBE-Chapter01.pdf>) is the
+(<http://www.dcs.warwick.ac.uk/~hugh/TTM/DBE-Chapter01.pdf>) is the
 15-page Manifesto proper; chapter 19
-(L<http://www.dcs.warwick.ac.uk/~hugh/TTM/DBE-Chapter19.pdf>) is the 9-page
+(<http://www.dcs.warwick.ac.uk/~hugh/TTM/DBE-Chapter19.pdf>) is the 9-page
 "Inheritance Model" which extends the former.  Chapter 11
-(L<http://www.dcs.warwick.ac.uk/~hugh/TTM/DBE-Chapter11.pdf>) gives the
-complete grammar of "B<Tutorial D>".
+(<http://www.dcs.warwick.ac.uk/~hugh/TTM/DBE-Chapter11.pdf>) gives the
+complete grammar of "**Tutorial D**".
 
-=item B<Database in Depth: Relational Theory for Practitioners>
+* **Database in Depth: Relational Theory for Practitioners**
 
 Chris Date (C.J. Date) - "Database in Depth: Relational Theory for
 Practitioners, 1st edition, Oreilly, 2005 (ISBN: 0-596-10012-4)"; see
-L<http://www.oreilly.com/catalog/databaseid/>.
+<http://www.oreilly.com/catalog/databaseid/>.
 
 This is the first printed book that Muldis D's author had read fully, which
-is related to I<The Third Manifesto>, and it was their main introduction.
+is related to *The Third Manifesto*, and it was their main introduction.
 It explains in an easy to follow matter just what the relational data model
 really is, a solid and provable logical system, and partially contrasts
 with SQL's distorted view of it.  While being easy to follow, the book is
 written towards people that are already database professionals, and doesn't
 go into the basics that we should already know.
 
-=item L<http://www.acm.org/classics/nov95/toc.html>
+* <http://www.acm.org/classics/nov95/toc.html>
 
 Edgar Codd (E.F. Codd) - "A Relational Model of Data for Large Shared Data
 Banks"
 
-Reprinted from I<Communications of the ACM>, Vol. 13, No. 6, June 1970, pp.
+Reprinted from *Communications of the ACM*, Vol. 13, No. 6, June 1970, pp.
 377-387.  Copyright © 1970, Association for Computing Machinery, Inc.
 
 This is the second famous 1969/1970 publication that first presented a
 relational model of data to the world, which is the basis for the modern
 database industry.
 
-=item L<http://www.wiscorp.com/SQLStandards.html>
+* <http://www.wiscorp.com/SQLStandards.html>
 
 This web page of Whitemarsh Information Systems Corporation, run by one of
 the people on the SQL standard drafting community, has copies of the
 official SQL:2008, SQL:2003 and SQL:1999 specification documents, and other
 related helpful documents about SQL, in PDF format.  For example,
-L<http://www.wiscorp.com/sql200n.zip> (warning, large file) has "documents
+<http://www.wiscorp.com/sql200n.zip> (warning, large file) has "documents
 which will likely be the documents that represent the SQL 2008 Standard".
 
-B<TODO: Newest is L<http://www.wiscorp.com/sql20nn.zip> for 2011 Dec 21.>
+**TODO: Newest is <http://www.wiscorp.com/sql20nn.zip** for 2011 Dec 21.>
 
-=item L<http://www.unicode.org/standard/standard.html>
+* <http://www.unicode.org/standard/standard.html>
 
 Unicode Standard official documentation.
 
-=item L<http://en.wikipedia.org/wiki/Relational_model>
+* <http://en.wikipedia.org/wiki/Relational_model>
 
 The Wikipedia article on the relational data model, and related topics.
 
-=item L<http://en.wikipedia.org/wiki/Tuple_calculus>
+* <http://en.wikipedia.org/wiki/Tuple_calculus>
 
 The Wikipedia article on Tuple calculus, a basis of the relational model.
 
-=item L<http://en.wikipedia.org/wiki/Logical_connective>
+* <http://en.wikipedia.org/wiki/Logical_connective>
 
 The Wikipedia article on logical connectives, which explains the 16 dyadic
 boolean logic operations and symbols.
 
-=item L<http://www.rbjones.com/rbjpub/logic/log048.htm>
+* <http://www.rbjones.com/rbjpub/logic/log048.htm>
 
 Another explanation of the 16 dyadic boolean logic operations and symbols.
-
-=back
 
 Also, the vendor documentation for various relational and/or SQL databases
 such as MySQL and SQLite were regularly consulted, and various other sites.
 
-=head1 SOME FULLY TTM/D RELATED DBMS PROJECTS
+# SOME FULLY TTM/D RELATED DBMS PROJECTS
 
 Besides the Muldis::D::Ref_Eng framework, other projects exist which attempt
-to implement I<The Third Manifesto> fully and without compromise (that lack
-anti-I<TTM> features), though their current implementations may be
+to implement *The Third Manifesto* fully and without compromise (that lack
+anti-*TTM* features), though their current implementations may be
 incomplete and/or in development.  None of these use 'SQL' as their native
 language.
 
-I<This project list is out of date and some related projects are missing.>
+*This project list is out of date and some related projects are missing.*
 
-=head2 Free and Open Source Software
+## Free and Open Source Software
 
 These software projects are released under a free and open source license,
 as Muldis::D::Ref_Eng is, so you have the freedom to use the software for any
 purpose, to examine the project source code, change it, and redistribute
 it:
 
-=over
-
-=item B<Rel> - L<http://reldb.org>
+* **Rel** - <http://reldb.org>
 
 Rel is a relational database server, written by Dave Voorhis
-(C<d.voorhis@derby.ac.uk>), that implements Date and Darwen's "B<Tutorial
-D>" language mainly "by the book".  It is written in Java (version 1.5) and
+(`d.voorhis@derby.ac.uk`), that implements Date and Darwen's "**Tutorial D**"
+language mainly "by the book".  It is written in Java (version 1.5) and
 is operating-system independent.  It is licensed under the GNU GPL.
 
-=item B<DuroDBMS> - L<http://duro.sourceforge.net/>
+* **DuroDBMS** - <http://duro.sourceforge.net/>
 
 DuroDBMS is a relational database library, written by René Hartmann
-(C<rhartmann@users.sourceforge.net>).  It is written in C (with a Tcl
+(`rhartmann@users.sourceforge.net`).  It is written in C (with a Tcl
 interface), is implemented on top of the Berkeley DB database library, and
 runs on all POSIX/UNIX-like and 32-bit Windows operating systems.  It is
 licensed under the GNU GPL.
 
-=item B<Dee> - L<http://www.quicksort.co.uk/>
+* **Dee** - <http://www.quicksort.co.uk/>
 
-Dee is an implementation of B<D> (built on the relational algebra
+Dee is an implementation of **D** (built on the relational algebra
 operators) as an extension to Python, written by Greg Gaughan
-(C<gjgaughan@users.sourceforge.net>).  It is written in Python and is
+(`gjgaughan@users.sourceforge.net`).  It is written in Python and is
 operating-system independent.  It is licensed under the GNU GPL.
 
-=back
-
-=head2 Shared Source Software
+## Shared Source Software
 
 These software projects are released with access to the project source code
 but lack permissions on use, modification, or redistribution that are
 essential to qualify as free and open source software; some are available
 at zero cost:
 
-=over
-
-=item B<FlipDB> - L<http://www.flipdb.com/>
+* **FlipDB** - <http://www.flipdb.com/>
 
 FlipDB is a relational database management system written by Paul Mansour
-(C<paul@carlislegroup.com>).  Pending a full implementation of the
+(`paul@carlislegroup.com`).  Pending a full implementation of the
 relational algebra, FlipDB uses a simple but powerful query technique that
 simulates relation-valued attributes and obviates the need for outer join
 (or any explicit join).  The author is using Date's and Darwen's work as a
 guide, and his intention is to not violate any of the principles set forth
-in I<TTM>, if not to implement all of B<Tutorial D>.  It is written in
+in *TTM*, if not to implement all of **Tutorial D**.  It is written in
 Dyalog APL, in a functional style with no loops or control structures, and
 runs only on 32-bit Windows operating systems.  It is available under a
 shared source agreement for personal use and study.
 
-=back
-
-=head2 Closed Source Software
+## Closed Source Software
 
 These software projects are released without access to the project source
 code or permission to change them, though some are available at zero cost:
 
-=over
-
-=item B<Opus>
+* **Opus**
 
 Opus is a command-line relational database development system, written by
-David Cauz (C<dcauz@rogers.com>) and Paul Church, that implements its own
+David Cauz (`dcauz@rogers.com`) and Paul Church, that implements its own
 "Opus" language (that has the syntactic style of C).  It is written in C
 and only runs on Windows.  (Link no longer available.)
 
-=back
-
-=head2 Academic Design Projects
+## Academic Design Projects
 
 These project designs were made for academic purposes and don't include
 implementations:
 
-=over
-
-=item B<Db ("D flat")> -
-L<http://web.onetel.com/~hughdarwen/TheThirdManifesto/REAL.pdf>
+* **Db ("D flat")** -
+<http://web.onetel.com/~hughdarwen/TheThirdManifesto/REAL.pdf>
 
 This is a final year project by UMIST student Peter Nicol.
 
-=back
+# SOME PARTIALLY TTM/D RELATED DBMS PROJECTS
 
-=head1 SOME PARTIALLY TTM/D RELATED DBMS PROJECTS
-
-Some DBMS exist which desire to support I<TTM> principles but still justify
-themselves to provide features that are anti-I<TTM>.  They may or may not
+Some DBMS exist which desire to support *TTM* principles but still justify
+themselves to provide features that are anti-*TTM*.  They may or may not
 use a SQL dialect as their command language.
 
-=head2 Free and Open Source Software
+## Free and Open Source Software
 
-=over
+* **Dataphor** - <http://www.alphora.com/>
 
-=item B<Dataphor> - L<http://www.alphora.com/>
-
-Dataphor is a I<TTM>-inspired commercial database application development
+Dataphor is a *TTM*-inspired commercial database application development
 tool set, owned by Alphora (a trade name of Database Consulting Group LLC),
-that implements its own B<D4> language.  While I<TTM> conformant in many
+that implements its own **D4** language.  While *TTM* conformant in many
 other respects, Alphora embraced the use of 3-valued-logic.  Dataphor is
 written to the Microsoft .NET platform principally in C#.  It runs fully on
 MS Windows, and some parts also on other platforms.  It is implemented
@@ -362,20 +327,16 @@ using a federated server; while it has a native database engine, it
 emphasizes the use of various other database engines for storage.  Dataphor
 is licensed under a modified BSD license.
 
-=item B<Genezzo> - L<http://www.genezzo.com/>
+* **Genezzo** - <http://www.genezzo.com/>
 
 Genezzo is a micro kernel style enterprise-strength SQL database server,
-written mainly by Jeffrey Cohen (C<jcohen@cpan.org>), currently under
+written mainly by Jeffrey Cohen (`jcohen@cpan.org`), currently under
 construction.  It is written in a hybrid of C and Perl, and runs on any
 operating system.  It is licensed under the GNU GPL.
 
-=back
+## Closed Source Software
 
-=head2 Closed Source Software
-
-=over
-
-=item B<Teradata> - L<http://www.teradata.com/>
+* **Teradata** - <http://www.teradata.com/>
 
 Teradata is a commercial DBMS that, as far as the developers know, is the
 only SQL-DBMS that supports and/or defaults to set semantics.  They also
@@ -383,19 +344,15 @@ support, but don't encourage the use of, a mode that supports bag
 semantics.  Bindings for many programming languages exist, including for
 Perl.
 
-=back
+# SOME SQL-BASED DBMS PROJECTS
 
-=head1 SOME SQL-BASED DBMS PROJECTS
-
-Many DBMS exist which do not expressly support I<TTM> principles and/or
-actively embrace anti-I<TTM> features.  Many of those use a SQL dialect as
+Many DBMS exist which do not expressly support *TTM* principles and/or
+actively embrace anti-*TTM* features.  Many of those use a SQL dialect as
 their primary or only interface; a relative few are listed here.
 
-=head2 Free and Open Source Software
+## Free and Open Source Software
 
-=over
-
-=item B<SQLite> - L<http://www.sqlite.org/>
+* **SQLite** - <http://www.sqlite.org/>
 
 SQLite is a small library that implements a fully transactional file-based
 SQL database engine, written mainly by D. Richard Hipp (Hwaci - Applied
@@ -405,7 +362,7 @@ devices.  It is committed to the public domain and can be used in any other
 license of program.  Bindings for many programming languages exist,
 including for Perl.
 
-=item B<PostgreSQL> - L<http://www.postgresql.org/>
+* **PostgreSQL** - <http://www.postgresql.org/>
 
 PostgreSQL is a powerful SQL database server, owned by the PostgreSQL
 Global Development Group.  It is written in C and runs on any operating
@@ -413,14 +370,14 @@ system.  It is licensed under a BSD-like license, specifically the license
 of the University of California.  Bindings for many programming languages
 exist, including for Perl.
 
-=item B<MySQL> - L<http://www.mysql.com/>
+* **MySQL** - <http://www.mysql.com/>
 
 MySQL is a multi-engine SQL database server, owned by MySQL AB.  It is
 written in C and runs on any operating system.  It is dual-licensed under
 the GNU GPL (at no cost) and under a proprietary license (for a fee).
 Bindings for many programming languages exist, including for Perl.
 
-=item B<Firebird> - L<http://www.firebirdsql.org/>
+* **Firebird** - <http://www.firebirdsql.org/>
 
 Firebird is a mature SQL database server, forked from the open sources of
 InterBase by Inprise/Borland; portions are owned by Inprise/Borland and
@@ -430,55 +387,39 @@ Mozilla-Public-like licenses, specifically the Interbase Public License and
 the Initial Developer's Public License.  Bindings for many programming
 languages exist, including for Perl.
 
-=back
+## Closed Source Software
 
-=head2 Closed Source Software
+* **Oracle** - <http://www.oracle.com/database/>
 
-=over
+* **Sybase** - <http://www.sybase.com/>
 
-=item B<Oracle> - L<http://www.oracle.com/database/>
+* **SQL Server** - <http://www.microsoft.com/sql/>
 
-=item B<Sybase> - L<http://www.sybase.com/>
+* **Informix** - <http://www.ibm.com/software/data/informix/>
 
-=item B<SQL Server> - L<http://www.microsoft.com/sql/>
+* **DB2** - <http://www.ibm.com/software/data/db2/>
 
-=item B<Informix> - L<http://www.ibm.com/software/data/informix/>
+* **OpenBase** - <http://www.openbase.com/>
 
-=item B<DB2> - L<http://www.ibm.com/software/data/db2/>
+* **FrontBase** - <http://www.frontbase.com/>
 
-=item B<OpenBase> - L<http://www.openbase.com/>
+# SOME OTHER DBMS PROJECTS
 
-=item B<FrontBase> - L<http://www.frontbase.com/>
-
-=back
-
-=head1 SOME OTHER DBMS PROJECTS
-
-Many DBMS exist that are neither I<TTM>/B<D>-based nor primarily SQL based;
+Many DBMS exist that are neither *TTM*/**D**-based nor primarily SQL based;
 a relative few are listed here.
 
-=head2 Free and Open Source Software
+## Free and Open Source Software
 
-=over
+* **Berkeley DB** - <http://www.sleepycat.com/>
 
-=item B<Berkeley DB> - L<http://www.sleepycat.com/>
+## Closed Source Software
 
-=back
+* **FileMaker Pro** - <http://www.filemaker.com/>
 
-=head2 Closed Source Software
+* **Valentina** - <http://www.paradigmasoft.com/>
 
-=over
+# MORE INFORMATION
 
-=item B<FileMaker Pro> - L<http://www.filemaker.com/>
-
-=item B<Valentina> - L<http://www.paradigmasoft.com/>
-
-=back
-
-=head1 MORE INFORMATION
-
-Muldis D is an L<Acmeist|http://www.acmeism.org/> programming language for
+Muldis D is an [Acmeist](http://www.acmeism.org/) programming language for
 writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
-
-=cut
