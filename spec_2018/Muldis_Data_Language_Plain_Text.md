@@ -91,25 +91,30 @@ parser would use context to supply default values for those elements.
 
 # GRAMMAR INTERPRETATION
 
-*TODO: Describe the grammar itself and how to interpret it.  Meanwhile,
-keep in mind that the grammar is inspired by both EBNF and Raku rules.*
+The syntax and intended interpretation of the grammar itself seen in this
+document part should match that of the user-defined grammars feature of the
+Raku language, which is described by
+<https://docs.raku.org/language/grammars>.
 
-    About separator-defined repetitions:
-    - ** takes number or range on right
-    - % takes list item separator on right, eg allows "x,y" but not "x,y,"
-    - %% is like % but allows separator to end the list, eg allows "x,y,"
+Any references like `<foo>` in either the grammar itself or in the written
+documentation specifically refer to the corresponding grammar token `foo`.
 
 # PARSING UNITS
 
-The root grammar token for Muldis Data Language Plain Text is `<MDPT>`.
+The root grammar token for Muldis Data Language Plain Text is
+`<Muldis_Data_Language_Plain_Text>`.
 
 Grammar:
 
-    <MDPT> ::=
+    token Muldis_Data_Language_Plain_Text
+    {
         ^ <parsing_unit> $
+    }
 
-    <parsing_unit> ::=
+    token parsing_unit
+    {
         <shebang_line>? <sp> <parsing_unit_subject>
+    }
 
 See the sections in this file named **SHEBANG LINE**
 and **PARSING UNIT SUBJECTS** for more details.
@@ -118,14 +123,20 @@ and **PARSING UNIT SUBJECTS** for more details.
 
 Grammar:
 
-    <shebang_line> ::=
+    token shebang_line
+    {
         '#!' <shebang_directive> <shebang_whitespace_break>
+    }
 
-    <shebang_directive> ::=
+    token shebang_directive
+    {
         ...
+    }
 
-    <shebang_whitespace_break> ::=
+    token shebang_whitespace_break
+    {
         ...
+    }
 
 A `<shebang_line>`, if it exists, must be the first characters of the
 text file, and consists of a magic number which expressed as ASCII or UTF-8
@@ -146,8 +157,10 @@ Examples:
 
 Grammar:
 
-    <parsing_unit_subject> ::=
+    token parsing_unit_subject
+    {
         <expr>
+    }
 
 See the section in this file named **GENERIC EXPRESSIONS** for more details.
 
@@ -155,43 +168,64 @@ See the section in this file named **GENERIC EXPRESSIONS** for more details.
 
 Grammar:
 
-    <enumerated_char> ::=
+    token enumerated_char
+    {
           <alphanumeric_char>
         | <quoting_char>
         | <bracketing_char>
         | <symbolic_char>
         | <whitespace_char>
         | <illegal_char>
+    }
 
-    <alphanumeric_char> ::=
+    token alphanumeric_char
+    {
         <alpha_char> | <digit_char>
+    }
 
-    <alpha_char> ::=
+    token alpha_char
+    {
         <[ A..Z _ a..z ]>
+    }
 
-    <digit_char> ::=
+    token digit_char
+    {
         <[ 0..9 ]>
+    }
 
-    <quoting_char> ::=
+    token quoting_char
+    {
         <["'`]>
+    }
 
-    <bracketing_char> ::=
+    token bracketing_char
+    {
         '(' | ')' | '[' | ']' | '{' | '}'
+    }
 
-    <symbolic_char> ::=
+    token symbolic_char
+    {
         <special_symbolic_char> | <regular_symbolic_char>
+    }
 
-    <special_symbolic_char> ::=
+    token special_symbolic_char
+    {
         ',' | ':' | ';' | '\\'
+    }
 
-    <regular_symbolic_char> ::=
+    token regular_symbolic_char
+    {
         <regular_symbolic_char_ASCII> | <regular_symbolic_char_nonASCII>
+    }
 
-    <regular_symbolic_char_ASCII> ::=
+    token regular_symbolic_char_ASCII
+    {
           '!' | '#' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/'
         | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~'
+    }
 
-    <regular_symbolic_char_nonASCII> ::=
+    token regular_symbolic_char_nonASCII
+    {
           '¬' | '±' | '×' | '÷'
         | 'π' | 'ρ' | 'σ'
         | '←' | '↑' | '→' | '↓' | '↔' | '↚' | '↛' | '↮'
@@ -200,30 +234,45 @@ Grammar:
         | '⊄' | '⊅' | '⊆' | '⊇' | '⊈' | '⊉' | '⊎' | '⊤' | '⊥' | '⊻' | '⊼'
         | '⊽' | '⊿' | '⋊' | '⋈' | '⋉'
         | '▷' | '⟕' | '⟖' | '⟗' | '⨝' | '⨯'
+    }
 
-    <whitespace_char> ::=
+    token whitespace_char
+    {
         <ws_unrestricted_char> | <ws_restricted_outside_char>
+    }
 
-    <ws_unrestricted_char> ::=
+    token ws_unrestricted_char
+    {
         ' '
+    }
 
-    <ws_restricted_outside_char> ::=
+    token ws_restricted_outside_char
+    {
         '\t' | '\n' | '\r'
+    }
 
-    <illegal_char> ::=
-        <[ \x<0>..\x<8> \x<B>..\x<C> \x<E>..\x<1F> \x<80>..\x<9F> ]>
+    token illegal_char
+    {
+        <[ \x[0]..\x[8] \x[B]..\x[C] \x[E]..\x[1F] \x[80]..\x[9F] ]>
+    }
 
-    <unrestricted_char> ::=
+    token unrestricted_char
+    {
           <alphanumeric_char>
         | <bracketing_char>
         | <symbolic_char>
         | <ws_unrestricted_char>
+    }
 
-    <restricted_outside_char> ::=
+    token restricted_outside_char
+    {
         <unrestricted_char> | <ws_restricted_outside_char>
+    }
 
-    <restricted_inside_char> ::=
+    token restricted_inside_char
+    {
         <-quoting_char -illegal_char -ws_restricted_outside_char>
+    }
 
 The Muldis Data Language Plain Text grammar recognizes 7 distinct character code point
 (hereafter referred to as *character*) classes,
@@ -285,11 +334,13 @@ UPDATE: A select few Greek letters are supported bareword, enumerated above.
 
 Grammar:
 
-    <escaped_char> ::=
+    token escaped_char
+    {
           '\\q' | '\\a' | '\\g'
         | '\\b'
         | '\\t' | '\\n' | '\\r'
         | ['\\c<' <nonsigned_int> '>']
+    }
 
 The meanings of the simple character escape sequences are:
 
@@ -331,14 +382,20 @@ that is the Unicode character database.
 
 Grammar:
 
-    <sp> ::=
+    token sp
+    {
         [<whitespace> | <quoted_sp_comment_str>]*
+    }
 
-    <whitespace> ::=
+    token whitespace
+    {
         <whitespace_char>+
+    }
 
-    <quoted_sp_comment_str> ::=
+    token quoted_sp_comment_str
+    {
         '`' <-[`]>* '`'
+    }
 
 The primary function of *dividing space*, represented by `<sp>`, is
 to disambiguate the boundaries of otherwise-consecutive grammar tokens.
@@ -478,73 +535,117 @@ expect to be system-defined, i's likely they're defined in libraries.
 
 Grammar:
 
-    <alphanumeric_name> ::=
+    token alphanumeric_name
+    {
         <alpha_char> <alphanumeric_char>*
+    }
 
-    <symbolic_name> ::=
+    token symbolic_name
+    {
         <symbolic_char>+
+    }
 
-    <quoted_name> ::=
-        <quoted_name_seg> % <sp>
+    token quoted_name
+    {
+        <quoted_name_seg>+ % <sp>
+    }
 
-    <quoted_name_seg> ::=
+    token quoted_name_seg
+    {
         '\'' <qnots_content> '\''
+    }
 
-    <generic_name> ::=
+    token generic_name
+    {
         <alphanumeric_name> | <quoted_name>
+    }
 
-    <fixed_name> ::=
+    token fixed_name
+    {
         <alphanumeric_name> | <symbolic_name>
+    }
 
-    <attr_name> ::=
+    token attr_name
+    {
         <nonord_attr_name> | <ord_attr_name>
+    }
 
-    <nonord_attr_name> ::=
+    token nonord_attr_name
+    {
         <generic_name>
+    }
 
-    <ord_attr_name> ::=
+    token ord_attr_name
+    {
         <nonsigned_int>
+    }
 
-    <nesting_attr_names> ::=
-        <attr_name> % [<sp> '::' <sp>]
+    token nesting_attr_names
+    {
+        <attr_name>+ % [<sp> '::' <sp>]
+    }
 
-    <expr_name> ::=
+    token expr_name
+    {
         <generic_name>
+    }
 
-    <var_name> ::=
+    token var_name
+    {
         <generic_name>
+    }
 
-    <stmt_name> ::=
+    token stmt_name
+    {
         <generic_name>
+    }
 
-    <pkg_entity_name> ::=
+    token pkg_entity_name
+    {
           <absolute_name>
         | <relative_name>
         | <floating_name>
+    }
 
-    <absolute_name> ::=
+    token absolute_name
+    {
         '::' <sp> <floating_name>
+    }
 
-    <relative_name> ::=
+    token relative_name
+    {
         <digit_char>+ [<sp> '::' <sp> <floating_name>]?
+    }
 
-    <floating_name> ::=
-        <generic_name> % [<sp> '::' <sp>]
+    token floating_name
+    {
+        <generic_name>+ % [<sp> '::' <sp>]
+    }
 
-    <folder_name> ::=
+    token folder_name
+    {
         <absolute_name>
+    }
 
-    <material_name> ::=
+    token material_name
+    {
         <absolute_name>
+    }
 
-    <generic_func_name> ::=
+    token generic_func_name
+    {
         <pkg_entity_name>
+    }
 
-    <generic_proc_name> ::=
+    token generic_proc_name
+    {
         <pkg_entity_name>
+    }
 
-    <entry_point_rtn_name> ::=
+    token entry_point_rtn_name
+    {
         <absolute_name>
+    }
 
 A `<generic_name>` is a *generic context entity name*, which can be
 used in any context that is expecting *a* Muldis Data Language entity name in the
@@ -566,25 +667,38 @@ which live within a multi-level namespace.
 
 Grammar:
 
-    <expr> ::=
+    token expr
+    {
         <expr_name> | <naming_expr> | <annotating_expr> | <anon_expr>
+    }
 
-    <naming_expr> ::=
+    token naming_expr
+    {
         <expr_name> <sp> '::=' <sp> <named_expr>
+    }
 
-    <named_expr> ::=
+    token named_expr
+    {
         <expr>
+    }
 
-    <annotating_expr> ::=
+    token annotating_expr
+    {
         <annotated_expr> note <annotation_expr>
+    }
 
-    <annotated_expr> ::=
+    token annotated_expr
+    {
         <expr>
+    }
 
-    <annotation_expr> ::=
+    token annotation_expr
+    {
         <expr>
+    }
 
-    <anon_expr> ::=
+    token anon_expr
+    {
           <delimiting_expr>
         | <source_expr>
         | <literal_expr>
@@ -595,26 +709,37 @@ Grammar:
         | <conditional_expr>
         | <fail_expr>
         | ...
+    }
 
-    <delimiting_expr> ::=
+    token delimiting_expr
+    {
         '(' <sp> [
             <naming_expr> | <result_expr> | ''
-        ] % [<sp> ';' <sp>] <sp> ')'
+        ]+ % [<sp> ';' <sp>] <sp> ')'
+    }
 
-    <result_expr> ::=
+    token result_expr
+    {
           [returns <sp> <expr>]
         | <expr_name>
         | <annotating_expr>
         | <anon_expr>
+    }
 
-    <source_expr> ::=
+    token source_expr
+    {
         args
+    }
 
-    <literal_expr> ::=
+    token literal_expr
+    {
         literal <expr>
+    }
 
-    <fail_expr> ::=
+    token fail_expr
+    {
         fail
+    }
 
 An `<expr>` is a Muldis Data Language *generic context value expression*, which
 can be used in any context that is expecting *a* value but has no
@@ -711,7 +836,8 @@ Examples:
 
 Grammar:
 
-    <opaque_literal_expr> ::=
+    token opaque_literal_expr
+    {
           <Boolean>
         | <Integer>
         | <Fraction>
@@ -725,8 +851,10 @@ Grammar:
         | <Renaming>
         | <Identifier>
         | <Identity_Identifier>
+    }
 
-    <collection_selector_expr> ::=
+    token collection_selector_expr
+    {
           <Array>
         | <Set>
         | <Bag>
@@ -737,6 +865,7 @@ Grammar:
         | <Article>
         | <Excuse>
         | <Function_Call>
+    }
 
 An `<opaque_literal_expr>` is an `<expr>` that denotes a value
 literal specific to some system-defined data type that has its own special
@@ -755,8 +884,10 @@ other values.
 
 Grammar:
 
-    <Boolean> ::=
+    token Boolean
+    {
         ['\\?' <sp>]? [False | True]
+    }
 
 A `<Boolean>` node represents a value of the Muldis Data Language `Boolean` type,
 which is a general purpose 2-valued logic boolean or *truth value*.  The
@@ -777,59 +908,95 @@ Examples:
 
 Grammar:
 
-    <Integer> ::=
+    token Integer
+    {
         <nonquoted_int> | <quoted_int>
+    }
 
-    <nonquoted_int> ::=
+    token nonquoted_int
+    {
         ['\\+' <sp>]? <asigned_int>
+    }
 
-    <asigned_int> ::=
+    token asigned_int
+    {
         <num_sign>? <nonsigned_int>
+    }
 
-    <num_sign> ::=
+    token num_sign
+    {
         '+' | '-'
+    }
 
-    <nonsigned_int> ::=
+    token nonsigned_int
+    {
         <num_radix_mark>? <num_seg>
+    }
 
-    <num_radix_mark> ::=
+    token num_radix_mark
+    {
         0 <[bodx]>
+    }
 
-    <num_seg> ::=
+    token num_seg
+    {
         <num_char>+
+    }
 
-    <num_char> ::=
+    token num_char
+    {
         <nc2> | <nc8> | <nc10> | <nc16>
+    }
 
-    <nc2> ::=
+    token nc2
+    {
         <[ 0..1 _ ]>
+    }
 
-    <nc8> ::=
+    token nc8
+    {
         <[ 0..7 _ ]>
+    }
 
-    <nc10> ::=
+    token nc10
+    {
         <[ 0..9 _ ]>
+    }
 
-    <nc16> ::=
+    token nc16
+    {
         <[ 0..9 A..F _ a..f ]>
+    }
 
-    <quoted_int> ::=
+    token quoted_int
+    {
         <qu_num_head> <qu_asigned_int> <qu_num_tail>
+    }
 
-    <qu_num_head> ::=
+    token qu_num_head
+    {
         '\\+' <sp> '"'
+    }
 
-    <qu_asigned_int> ::=
+    token qu_asigned_int
+    {
         <asigned_int> <qu_num_mid>?
+    }
 
-    <qu_num_mid> ::=
-        <num_seg> % <qu_num_sp>
+    token qu_num_mid
+    {
+        <num_seg>+ % <qu_num_sp>
+    }
 
-    <qu_num_sp> ::=
+    token qu_num_sp
+    {
         '"' <sp> '"'
+    }
 
-    <qu_num_tail> ::=
+    token qu_num_tail
+    {
         '"'
+    }
 
 An `<Integer>` node represents a value of the Muldis Data Language `Integer`
 type, which is a general purpose exact integral number of any magnitude,
@@ -900,17 +1067,25 @@ Examples:
 
 Grammar:
 
-    <Fraction> ::=
+    token Fraction
+    {
         <nonquoted_frac> | <quoted_frac>
+    }
 
-    <nonquoted_frac> ::=
+    token nonquoted_frac
+    {
         <nonquoted_int> <frac_div> <num_seg>
+    }
 
-    <frac_div> ::=
+    token frac_div
+    {
         '.' | '/'
+    }
 
-    <quoted_frac> ::=
+    token quoted_frac
+    {
         <qu_num_head> <qu_asigned_int> <frac_div> <qu_num_mid> <qu_num_tail>
+    }
 
 A `<Fraction>` node represents a value of the Muldis Data Language `Fraction`
 type, which is a general purpose exact rational number of any magnitude and
@@ -960,12 +1135,14 @@ Examples:
 
 Grammar:
 
-    <Bits> ::=
+    token Bits
+    {
         '\\~?' <sp> [
-              [['"' ['0b'? <nc2>* ]? '"'] % <sp>]
-            | [['"' ['0o'  <nc8>* ]? '"'] % <sp>]
-            | [['"' ['0x'  <nc16>*]? '"'] % <sp>]
+              [['"' ['0b'? <nc2>* ]? '"']+ % <sp>]
+            | [['"' ['0o'  <nc8>* ]? '"']+ % <sp>]
+            | [['"' ['0x'  <nc16>*]? '"']+ % <sp>]
         ]
+    }
 
 A `<Bits>` node represents a value of the Muldis Data Language `Bits` type, which
 is an arbitrarily-long sequence of *bits* where each bit is represented by
@@ -998,11 +1175,13 @@ Examples:
 
 Grammar:
 
-    <Blob> ::=
+    token Blob
+    {
         '\\~+' <sp> [
-              [['"' ['0b'  <nc2>* ]? '"'] % <sp>]
-            | [['"' ['0x'? <nc16>*]? '"'] % <sp>]
+              [['"' ['0b'  <nc2>* ]? '"']+ % <sp>]
+            | [['"' ['0x'? <nc16>*]? '"']+ % <sp>]
         ]
+    }
 
 A `<Blob>` node represents a value of the Muldis Data Language `Blob` type, which
 is an arbitrarily-long sequence of *octets* where each octet is
@@ -1043,20 +1222,30 @@ Examples:
 
 Grammar:
 
-    <Text> ::=
-        ['\\~' <sp>]? [<Text_seg> % <sp>]
+    token Text
+    {
+        ['\\~' <sp>]? [<Text_seg>+ % <sp>]
+    }
 
-    <Text_seg> ::=
+    token Text_seg
+    {
         '"' <qnots_content> '"'
+    }
 
-    <qnots_content> ::=
+    token qnots_content
+    {
         <qns_nonescaped_content> | <qns_escaped_content>
+    }
 
-    <qnots_nonescaped_content> ::=
-        [<restricted_inside_char-[\\]> <restricted_inside_char>*]?
+    token qnots_nonescaped_content
+    {
+        [<+restricted_inside_char-[\\]> <restricted_inside_char>*]?
+    }
 
-    <qnots_escaped_content> ::=
-        '\\' [<restricted_inside_char-[\\]> | <escaped_char>]*
+    token qnots_escaped_content
+    {
+        '\\' [<+restricted_inside_char-[\\]> | <escaped_char>]*
+    }
 
 A `<Text>` node represents a value of the Muldis Data Language `Text` type, which
 is characterized by an arbitrarily-long sequence of Unicode 12.1 standard
@@ -1093,11 +1282,15 @@ Examples:
 
 Grammar:
 
-    <Array> ::=
+    token Array
+    {
         ['\\~' <sp>]? <ord_member_commalist>
+    }
 
-    <ord_member_commalist> ::=
+    token ord_member_commalist
+    {
         '[' <sp> <member_commalist> <sp> ']'
+    }
 
 An `<Array>` node represents a value of the Muldis Data Language
 `Array` type, which is ...
@@ -1106,8 +1299,10 @@ An `<Array>` node represents a value of the Muldis Data Language
 
 Grammar:
 
-    <Set> ::=
+    token Set
+    {
         ['\\?' <sp>]? <nonord_member_commalist>
+    }
 
 A `<Set>` node represents a value of the Muldis Data Language
 `Set` type, which is ...
@@ -1121,26 +1316,40 @@ elements, or the `<Set>` must have the `\?` prefix, so that the
 
 Grammar:
 
-    <Bag> ::=
+    token Bag
+    {
         ['\\+' <sp>]? <nonord_member_commalist>
+    }
 
-    <nonord_member_commalist> ::=
+    token nonord_member_commalist
+    {
         '{' <sp> <member_commalist> <sp> '}'
+    }
 
-    <member_commalist> ::=
-        [<single_member> | <multiplied_member> | ''] % [<sp> ',' <sp>]
+    token member_commalist
+    {
+        [<single_member> | <multiplied_member> | '']+ % [<sp> ',' <sp>]
+    }
 
-    <single_member> ::=
+    token single_member
+    {
         <member_expr>
+    }
 
-    <multiplied_member> ::=
+    token multiplied_member
+    {
         <member_expr> <sp> ':' <sp> <multiplicity_expr>
+    }
 
-    <member_expr> ::=
+    token member_expr
+    {
         <expr>
+    }
 
-    <multiplicity_expr> ::=
+    token multiplicity_expr
+    {
         <expr>
+    }
 
 A `<Bag>` node represents a value of the Muldis Data Language
 `Bag` type, which is ...
@@ -1156,32 +1365,50 @@ idiomatic way to represent an empty `Bag` is to have exactly 1
 
 Grammar:
 
-    <Tuple> ::=
+    token Tuple
+    {
         ['\\%' <sp>]? <delim_attr_commalist>
+    }
 
-    <delim_attr_commalist> ::=
+    token delim_attr_commalist
+    {
         '(' <sp> <attr_commalist> <sp> ')'
+    }
 
-    <attr_commalist> ::=
-        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | ''] % [<sp> ',' <sp>]
+    token attr_commalist
+    {
+        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | '']+ % [<sp> ',' <sp>]
+    }
 
-    <anon_attr> ::=
+    token anon_attr
+    {
         <attr_asset_expr>
+    }
 
-    <named_attr> ::=
+    token named_attr
+    {
         <attr_name> <sp> ':' <sp> <attr_asset_expr>
+    }
 
-    <nested_named_attr> ::=
+    token nested_named_attr
+    {
         <nesting_attr_names> <sp> ':' <sp> <attr_asset_expr>
+    }
 
-    <same_named_attr> ::=
+    token same_named_attr
+    {
         ':' <sp> <attr_name>
+    }
 
-    <same_named_var> ::=
+    token same_named_var
+    {
         ':&' <sp> <attr_name>
+    }
 
-    <attr_asset_expr> ::=
+    token attr_asset_expr
+    {
         <expr>
+    }
 
 A `<Tuple>` node represents a value of the Muldis Data Language
 `Tuple` type, which is ...
@@ -1196,8 +1423,10 @@ every possible `<Article>` and `<delimiting_expr>`.
 
 Grammar:
 
-    <Tuple_Array> ::=
+    token Tuple_Array
+    {
         '\\~%' <sp> [<delim_attr_name_commalist> | <ord_member_commalist>]
+    }
 
 A `<Tuple_Array>` node represents a value of the Muldis Data Language
 `Tuple_Array` type, which is ...
@@ -1211,8 +1440,10 @@ the additional rule that its `<member_commalist>` has at least 1
 
 Grammar:
 
-    <Relation> ::=
+    token Relation
+    {
         '\\?%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
+    }
 
 A `<Relation>` node represents a value of the Muldis Data Language
 `Relation` type, which is ...
@@ -1226,8 +1457,10 @@ the additional rule that its `<member_commalist>` has at least 1
 
 Grammar:
 
-    <Tuple_Bag> ::=
+    token Tuple_Bag
+    {
         '\\+%' <sp> [<delim_attr_name_commalist> | <nonord_member_commalist>]
+    }
 
 A `<Tuple_Bag>` node represents a value of the Muldis Data Language
 `Tuple_Bag` type, which is ...
@@ -1241,14 +1474,20 @@ the additional rule that its `<member_commalist>` has at least 1
 
 Grammar:
 
-    <Article> ::=
+    token Article
+    {
         ['\\:' <sp>]? '(' <sp> <c_label_expr> <sp> ':' <sp> <c_attrs_expr> <sp> ')'
+    }
 
-    <c_label_expr> ::=
+    token c_label_expr
+    {
         <expr>
+    }
 
-    <c_attrs_expr> ::=
+    token c_attrs_expr
+    {
         <expr>
+    }
 
 A `<Article>` node represents a value of the Muldis Data Language
 `Article` type, which is ...
@@ -1261,8 +1500,10 @@ Examples:
 
 Grammar:
 
-    <Excuse> ::=
+    token Excuse
+    {
         '\\!' <sp> <delim_attr_commalist>
+    }
 
 An `<Excuse>` node represents a value of the Muldis Data Language
 `Excuse` type, which is ...
@@ -1271,8 +1512,10 @@ An `<Excuse>` node represents a value of the Muldis Data Language
 
 Grammar:
 
-    <Simple_Excuse> ::=
+    token Simple_Excuse
+    {
         '\\!' <sp> <attr_name>
+    }
 
 A `<Simple_Excuse>` node represents a value of the Muldis Data Language `Excuse`
 type, and provides a terser alternative syntax to an `<Excuse>` node
@@ -1282,20 +1525,22 @@ for all typical Muldis Data Language Foundation defined `Excuse` subtypes.
 
 Examples:
 
-  \!No_Reason
+    \!No_Reason
 
-  \!Before_All_Others
+    \!Before_All_Others
 
-  \!Div_By_Zero
+    \!Div_By_Zero
 
-  \!No_Such_Attr_Name
+    \!No_Such_Attr_Name
 
 ## Nesting / Attribute Name List Literals
 
 Grammar:
 
-    <Nesting> ::=
+    token Nesting
+    {
         '\\\$' <sp> <nesting_attr_names>
+    }
 
 An `<Nesting>` node represents a value of the Muldis Data Language `Nesting`
 type, which is an arbitrarily-long sequence of `Attr_Name` values.  It
@@ -1347,26 +1592,40 @@ Examples (comments refer to their Muldis Data Language runtime specific interpre
 
 Grammar:
 
-    <Attr_Name> ::=
+    token Attr_Name
+    {
         '\\' <sp> <attr_name>
+    }
 
-    <Heading> ::=
+    token Heading
+    {
         '\\\$' <sp> <delim_attr_name_commalist>
+    }
 
-    <delim_attr_name_commalist> ::=
+    token delim_attr_name_commalist
+    {
         '(' <sp> <attr_name_commalist> <sp> ')'
+    }
 
-    <attr_name_commalist> ::=
-        [<attr_name> | <ord_attr_name_range> | ''] % [<sp> ',' <sp>]
+    token attr_name_commalist
+    {
+        [<attr_name> | <ord_attr_name_range> | '']+ % [<sp> ',' <sp>]
+    }
 
-    <ord_attr_name_range> ::=
+    token ord_attr_name_range
+    {
         <min_ord_attr> <sp> '..' <sp> <max_ord_attr>
+    }
 
-    <min_ord_attr> ::=
+    token min_ord_attr
+    {
         <ord_attr_name>
+    }
 
-    <max_ord_attr> ::=
+    token max_ord_attr
+    {
         <ord_attr_name>
+    }
 
 A `<Heading>` node represents a value of the Muldis Data Language
 `Heading` type, which is an arbitrarily-large unordered collection of
@@ -1425,27 +1684,39 @@ Examples:
 
 Grammar:
 
-    <Renaming> ::=
+    token Renaming
+    {
         '\\\$:' <sp> '(' <sp> <renaming_commalist> <sp> ')'
+    }
 
-    <renaming_commalist> ::=
-        [<anon_attr_rename> | <named_attr_rename> | ''] % [<sp> ',' <sp>]
+    token renaming_commalist
+    {
+        [<anon_attr_rename> | <named_attr_rename> | '']+ % [<sp> ',' <sp>]
+    }
 
-    <anon_attr_rename> ::=
+    token anon_attr_rename
+    {
           ['->' <sp> <attr_name_after>]
         | [<attr_name_after> <sp> '<-']
         | [<attr_name_before> <sp> '->']
         | ['<-' <sp> <attr_name_before>]
+    }
 
-    <named_attr_rename> ::=
+    token named_attr_rename
+    {
           [<attr_name_before> <sp> '->' <sp> <attr_name_after>]
         | [<attr_name_after> <sp> '<-' <sp> <attr_name_before>]
+    }
 
-    <attr_name_before> ::=
+    token attr_name_before
+    {
         <nonord_attr_name>
+    }
 
-    <attr_name_after> ::=
+    token attr_name_after
+    {
         <nonord_attr_name>
+    }
 
 A `<Renaming>` node represents a value of the Muldis Data Language `Renaming`
 type, which is an arbitrarily-large unordered collection of attribute
@@ -1511,11 +1782,15 @@ Examples:
 
 Grammar:
 
-    <Identifier> ::=
+    token Identifier
+    {
         ...
+    }
 
-    <Identity_Identifier> ::=
+    token Identity_Identifier
+    {
         ...
+    }
 
 *TODO.  Note that Function_Name and ..._Name are aliases for Identity_Identifier.*
 
@@ -1523,15 +1798,21 @@ Grammar:
 
 Grammar:
 
-    <Function_Call> ::=
+    token Function_Call
+    {
         <long_arrowed_func_invo_sel> | <postcircumfixed_func_invo_sel>
+    }
 
-    <long_arrowed_func_invo_sel> ::=
+    token long_arrowed_func_invo_sel
+    {
           [<generic_func_args> <sp> '\\-->' <sp> <generic_func_call>]
         | [<generic_func_call> <sp> '\\<--' <sp> <generic_func_args>]
+    }
 
-    <postcircumfixed_func_invo_sel> ::=
+    token postcircumfixed_func_invo_sel
+    {
         '\\' <postcircumfixed_func_invo_expr>
+    }
 
 *TODO.*
 *Note that, yes, the generic_func_call input is also a Function_Call value,
@@ -1543,31 +1824,45 @@ to select the most-nested Function_Call value, often postcircumfixed_func_invo_e
 
 Grammar:
 
-    <collection_accessor_expr> ::=
+    token collection_accessor_expr
+    {
           <Tuple_at>
         | <Article_label>
         | <Article_attrs>
         | <Article_at>
         | <Variable_current>
         | <Variable_at>
+    }
 
-    <Tuple_at> ::=
+    token Tuple_at
+    {
         <expr> <sp> ':.' <sp> <expr>
+    }
 
-    <Article_label> ::=
+    token Article_label
+    {
         <expr> <sp> ':<'
+    }
 
-    <Article_attrs> ::=
+    token Article_attrs
+    {
         <expr> <sp> ':>'
+    }
 
-    <Article_at> ::=
+    token Article_at
+    {
         <expr> <sp> ':>.' <sp> <expr>
+    }
 
-    <Variable_current> ::=
+    token Variable_current
+    {
         <expr> <sp> ':&'
+    }
 
-    <Variable_at> ::=
+    token Variable_at
+    {
         <expr> <sp> ':&.' <sp> <expr>
+    }
 
 *TODO.*
 
@@ -1575,9 +1870,11 @@ Grammar:
 
 Grammar:
 
-    <invocation_expr> ::=
+    token invocation_expr
+    {
           <generic_func_invo_expr>
         | <fixed_func_invo_expr>
+    }
 
 *TODO.*
 
@@ -1588,17 +1885,25 @@ is invokable or indicate a result if one isn't invokable.>
 
 Grammar:
 
-    <generic_func_invo_expr> ::=
+    token generic_func_invo_expr
+    {
         <primed_func_invo_expr> | <postcircumfixed_func_invo_expr>
+    }
 
-    <primed_func_invo_expr> ::=
+    token primed_func_invo_expr
+    {
         evaluates <sp> <primed_func_call>
+    }
 
-    <primed_func_call> ::=
+    token primed_func_call
+    {
         <expr>
+    }
 
-    <postcircumfixed_func_invo_expr> ::=
+    token postcircumfixed_func_invo_expr
+    {
         <generic_func_name> <sp> '::'? <sp> <Tuple>
+    }
 
 *TODO.*
 
@@ -1628,17 +1933,25 @@ for other arguments, only a function of corrisponding arity may be invoked.
 
 Grammar:
 
-    <fixed_func_invo_expr> ::=
+    token fixed_func_invo_expr
+    {
         ...
+    }
 
-    <infix_func_invo_expr> ::=
+    token infix_func_invo_expr
+    {
         ...
+    }
 
-    <infix_func_name_or_op_same> ::=
+    token infix_func_name_or_op_same
+    {
         <special_infix_op_same> | <regular_infix_func_name>
+    }
 
-    <special_infix_op_same> ::=
+    token special_infix_op_same
+    {
         '='
+    }
 
 *TODO: Note, special_infix_op_same etc are subject to be renamed maybe.
 Say that it is just syntactic sugar for a specific foundation func invo
@@ -1659,12 +1972,14 @@ fixed allows only single-level unquoted identifiers.*
 
 Grammar:
 
-    <conditional_expr> ::=
+    token conditional_expr
+    {
           <if_else_expr>
         | <and_then_expr>
         | <or_else_expr>
         | <given_when_def_expr>
         | <guard_expr>
+    }
 
 ## If-Else Expressions
 
@@ -1954,8 +2269,10 @@ metadata.  Further stages below only consider this primary as their input.
 
 Grammar:
 
-    <ps1> ::=
+    token ps1
+    {
         ^ <shebang_line>? <ps2> $
+    }
 
 ## Pipeline Stage 2
 
@@ -1992,26 +2309,40 @@ proper superset of the Muldis Object Notation syntax.*
 
 Grammar:
 
-    <ps2> ::=
-        <ps2_non_backtick_quoted> % <ps2_backtick_quoted>
+    token ps2
+    {
+        <ps2_non_backtick_quoted>+ % <ps2_backtick_quoted>
+    }
 
-    <ps2_non_backtick_quoted> ::=
-        <ps2_nonquoted> % <ps2_double_or_single_quoted>
+    token ps2_non_backtick_quoted
+    {
+        <ps2_nonquoted>+ % <ps2_double_or_single_quoted>
+    }
 
-    <ps2_nonquoted> ::=
+    token ps2_nonquoted
+    {
         <-quoting_char>*
+    }
 
-    <ps2_double_or_single_quoted> ::=
+    token ps2_double_or_single_quoted
+    {
         <ps2_double_quoted> | <ps2_single_quoted>
+    }
 
-    <ps2_double_quoted> ::=
+    token ps2_double_quoted
+    {
         '"' <-quoting_char>* '"'
+    }
 
-    <ps2_single_quoted> ::=
+    token ps2_single_quoted
+    {
         '\'' <-quoting_char>* '\''
+    }
 
-    <ps2_backtick_quoted> ::=
+    token ps2_backtick_quoted
+    {
         '`' <-[`]>* '`'
+    }
 
 ### Pipeline Stage 3
 
@@ -2026,11 +2357,13 @@ has been replaced by an array of 1..N parse nodes, one per new substring.
 
 Grammar:
 
-    <ps3_nonquoted> ::=
+    token ps3_nonquoted
+    {
           <alphanumeric_char>
         | <bracketing_char>
         | <symbolic_char>
         | <whitespace_char>
+    }
 
 ### Pipeline Stage 4
 
@@ -2049,13 +2382,15 @@ character string tokens, or parse nodes, as per stage 3.
 
 Grammar:
 
-    <ps5_nonquoted_symbolic_grouping> ::=
+    token ps5_nonquoted_symbolic_grouping
+    {
           ','
         | '::='
         | '::'
         | ':'
         | ';'
         | '\\'
+    }
 
 Where any of the shown symbolic character sequences exist, each sequence
 becomes its own token, and any runs of symbolics besides those each become
@@ -2106,14 +2441,20 @@ their own interpretation formats different from those of character strings.
 
 Grammar:
 
-    <ps8_quoted_sans_delimiters> ::=
+    token ps8_quoted_sans_delimiters
+    {
         <ps8_chars_nonescaped> | <ps8_chars_escaped>
+    }
 
-    <ps8_chars_nonescaped> ::=
+    token ps8_chars_nonescaped
+    {
         [<-[\\]> .*]?
+    }
 
-    <ps8_chars_escaped> ::=
+    token ps8_chars_escaped
+    {
         '\\' [<-[\\]> | <escaped_char>]*
+    }
 
 Note that the definition of `<escaped_char>` includes an escape sequence
 each for a single-quote and a double-quote.
@@ -2127,15 +2468,21 @@ and further optionally split (when long) using dividing space.
 
 Grammar:
 
-    <ps9_numeric> ::=
+    token ps9_numeric
+    {
         <ps9_nonquoted_numeric> | <ps9_quoted_numeric>
+    }
 
-    <ps9_nonquoted_numeric> ::=
+    token ps9_nonquoted_numeric
+    {
         <num_sign>? <digit_char> <alphanumeric_char>*
             [<frac_div> <alphanumeric_char>]?
+    }
 
-    <ps9_quoted_numeric> ::=
-        '\\+' <sp> <ps2_single_quoted> % <sp>
+    token ps9_quoted_numeric
+    {
+        '\\+' <sp> <ps2_single_quoted>+ % <sp>
+    }
 
 Note that the above actually allows invalid numeric literals, however
 anything matching the above pattern will be a syntax error if it doesn't
