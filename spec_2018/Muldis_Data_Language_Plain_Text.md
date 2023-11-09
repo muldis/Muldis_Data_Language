@@ -99,6 +99,11 @@ Raku language, which is described by
 Any references like `<foo>` in either the grammar itself or in the written
 documentation specifically refer to the corresponding grammar token `foo`.
 
+See also the bundled actual Raku module
+[grammars_2018/Raku/lib/Muldis/Data_Language_Grammar_Reference/Plain_Text.rakumod](
+../grammars_2018/Raku/lib/Muldis/Data_Language_Grammar_Reference/Plain_Text.rakumod)
+which has an executable copy of the grammar.
+
 # PARSING UNITS
 
 The root grammar token for Muldis Data Language Plain Text is
