@@ -47,7 +47,7 @@ This document defines the Muldis Data Language package
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 
-See also [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) to read about the **Muldis Data Language
+See also [Standard_Library](Muldis_Data_Language_Standard_Library.md) to read about the **Muldis Data Language
 Standard Library** specification, of which this document is a part.
 
 # PACKAGE
@@ -10396,4 +10396,4 @@ specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) for details.
+See the LICENSE AND COPYRIGHT of [Standard_Library](Muldis_Data_Language_Standard_Library.md) for details.

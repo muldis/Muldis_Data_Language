@@ -65,7 +65,7 @@ third-party languages which are *hosting* Muldis Data Language; formally their
 implementation or internals are expected to be hidden from the Muldis Data Language
 user, and differ in arbitrarily large ways between hosts, so to take
 advantage of the strengths of each host.
-See [Muldis_Data_Language_Foundation](Muldis_Data_Language_Foundation.md) for the **Muldis Data Language Foundation** specification.
+See [Foundation](Muldis_Data_Language_Foundation.md) for the **Muldis Data Language Foundation** specification.
 
 The **Muldis Data Language Plain Text** specification defines the grammar of the official
 concrete Muldis Data Language language syntax that every Muldis Data Language implementation
@@ -82,7 +82,7 @@ language syntaxes to be used in different areas of a program, either in
 support of user tastes, or for better host/peer language integration
 (including their ORMs), or as a method of emulating other programming
 language environments or SQL DBMSs.
-See [Muldis_Data_Language_Plain_Text](Muldis_Data_Language_Plain_Text.md) for the **Muldis Data Language Plain Text** specification.
+See [Plain_Text](Muldis_Data_Language_Plain_Text.md) for the **Muldis Data Language Plain Text** specification.
 
 The **Muldis Data Language Standard Library** specification comprises a documented
 library written entirely in Muldis Data Language which provides its common core
@@ -97,7 +97,7 @@ performance.  It comprises a set of Muldis Data Language *packages* (compilation
 units) that users can choose from as dependencies of their applications and
 schemas.  None are mandatory, and users can choose alternatives, but they
 are recommended as the default options for their functionality.
-See [Muldis_Data_Language_Standard_Library](Muldis_Data_Language_Standard_Library.md) for the
+See [Standard_Library](Muldis_Data_Language_Standard_Library.md) for the
 **Muldis Data Language Standard Library** specification.
 
 The **VERSIONING** section in this file presents a formal and future-proofed

@@ -737,7 +737,7 @@ types/operators/etc, including choices of syntax and features.  It is
 canonically written as regular Muldis Data Language packages / code libraries just like
 user code is; users can introspect it or write their own alternatives for
 parts or the whole of it that look and function as it does.  See
-[Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) for the details of high-level Muldis Data Language.
+[Package_System](Muldis_Data_Language_Package_System.md) for the details of high-level Muldis Data Language.
 
 The *Muldis Data Language Foundation* defines low-level Muldis Data Language, which is the
 system-defined types and operators and other features which are canonically

@@ -34,7 +34,7 @@ are recommended as the default options for their functionality.
 The **Muldis Data Language Standard Library** comprises these Muldis Data Language packages:
 
 * `System https://muldis.com 0.300.0` -
-[Muldis_Data_Language_Package_System](Muldis_Data_Language_Package_System.md) - Provides the common primary
+[Package_System](Muldis_Data_Language_Package_System.md) - Provides the common primary
 system-defined data types and operators that regular users of the language
 would employ directly in their applications and schemas.
 

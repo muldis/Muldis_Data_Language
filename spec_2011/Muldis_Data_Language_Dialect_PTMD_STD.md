@@ -70,8 +70,8 @@ should be considered the safest official Muldis Data Language dialect to write i
 default, when you don't have a specific reason to use some other dialect.
 
 See also the dialects
-[HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD) and
-[HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD), which are derived
+[HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md) and
+[HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md), which are derived
 directly from `PTMD_STD`, and represent possible Raku and Perl concrete
 syntax trees for it; in fact, most of the details in common with those
 other dialects are described just in the current file, for all 3 dialects.
@@ -525,7 +525,7 @@ It is expected that every Muldis Data Language implementation which supports at 
 the `plain_rtn_inv` level will, as much as is reasonably possible,
 preserve all non-behaviour-affecting metadata that is directly supported
 for storage by the system catalog itself, as described in
-[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **SOURCE CODE METADATA**.  Primarily this means preserving
+[Basics](Muldis_Data_Language_Basics.md) section **SOURCE CODE METADATA**.  Primarily this means preserving
 non-value code comments, and preserving the declared relative ordinal
 position of code elements.
 
@@ -1675,7 +1675,7 @@ In fact, the Muldis Data Language spec itself uses such abbreviations frequently
 
 The second special case involves any context where a type is being
 referenced using the `type` namespace prefix feature described in
-[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **Referencing Data Types**.  In such a context, when the
+[Basics](Muldis_Data_Language_Basics.md) section **Referencing Data Types**.  In such a context, when the
 namespace prefix contains either of the optional chain elements
 `[|dh_]tuple_from` or
 `[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of`, programmers may

@@ -11,12 +11,12 @@ This document is Muldis Data Language version 0.148.1.
 This is the root document of the Muldis Data Language language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
-[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md), [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
-to follow), [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
-[Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
-[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md), [Muldis_Data_Language_Conventions](Muldis_Data_Language_Conventions.md),
-[Muldis_Data_Language_Ext_Counted](Muldis_Data_Language_Ext_Counted.md), [Muldis_Data_Language_Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md),
-[Muldis_Data_Language_Ext_Spatial](Muldis_Data_Language_Ext_Spatial.md).
+[Basics](Muldis_Data_Language_Basics.md), [Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
+to follow), [Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
+[Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
+[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md), [Conventions](Muldis_Data_Language_Conventions.md),
+[Ext_Counted](Muldis_Data_Language_Ext_Counted.md), [Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md),
+[Ext_Spatial](Muldis_Data_Language_Ext_Spatial.md).
 
 # DESCRIPTION
 
@@ -74,7 +74,7 @@ to them.
 Muldis Data Language also incorporates design aspects and constructs that are taken
 from or influenced by Raku, other general-purpose languages (particularly
 functional ones like Haskell), **Tutorial D**, various **D** implementations,
-and various SQL implementations (see the [Muldis_Data_Language_SeeAlso](Muldis_Data_Language_SeeAlso.md)
+and various SQL implementations (see the "See Also"
 file).  It also appears in retrospect that Muldis Data Language has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The
 newer [C'Dent](http://cdent.org) language has some similarities as well.
@@ -84,7 +84,7 @@ In any event, the Muldis Data Language documentation will be focusing mainly on 
 Muldis Data Language itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
-Continue reading the language spec in [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md).
+Continue reading the language spec in [Basics](Muldis_Data_Language_Basics.md).
 
 Muldis Data Language is an [Acmeist](http://acmeism.org) programming language for
 writing portable database modules, that work with any DBMS and with any
@@ -238,8 +238,8 @@ code's behavior.
 
 See the following parts of the current multi-document for descriptions of
 bundled dialects (names subject to change):
-[Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md), [Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
-[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).
+[Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md), [Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
+[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).
 
 ## Extensions
 

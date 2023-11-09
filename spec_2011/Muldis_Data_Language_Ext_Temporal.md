@@ -42,7 +42,7 @@ virtual routines.
 
 This current document does not describe the polymorphic operators that all
 types, or some types including core types, have defined over them; said
-operators are defined once for all types in [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md).
+operators are defined once for all types in [Core](Muldis_Data_Language_Core.md).
 
 # TYPE SUMMARY
 

@@ -28,7 +28,7 @@ between Perl and Raku, same as with your ordinary Perl code.
 This dialect is designed to exactly match the structure of a possible
 concrete syntax tree, comprised of native Perl scalar and collection
 typed values, resulting from parsing code written in the Muldis Data Language dialect
-[PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD) using Perl.  This dialect
+[PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) using Perl.  This dialect
 exists as a convenience to Perl programmers that want to generate or
 introspect Muldis Data Language code by saving them the difficulty and overhead of
 escaping and stitching plain text code; it is expected that a Muldis Data Language
@@ -41,7 +41,7 @@ such as the direct use of some Perl-only features.
 **Note that most of the details that the 2 dialects have in common are
 described just in the `PTMD_STD` file, for both dialects; this current
 file will mainly focus on the differences; you should read the
-[Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
+[Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
 a context for better understanding it.**
 
 # GENERAL STRUCTURE

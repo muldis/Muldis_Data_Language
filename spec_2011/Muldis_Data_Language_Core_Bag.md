@@ -11,7 +11,7 @@ This document is Muldis Data Language Core Bag version 0.148.1.
 This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
-should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
+should read the [Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION

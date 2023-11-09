@@ -11,7 +11,7 @@ This document is Muldis Data Language Core Types version 0.148.1.
 This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
-should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
+should read the [Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
@@ -384,13 +384,13 @@ Plain Text Muldis Data Language provides a specific syntax per type to select a 
 of every one of these types (or of their super/subtypes), which does not
 look like a routine invocation, but rather like a scalar literal in a
 typical programming language; details of that syntax are not given here,
-but in [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md).  Hosted Data Muldis Data Language as hosted in
+but in [Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md).  Hosted Data Muldis Data Language as hosted in
 another language will essentially use literals of corresponding host
 language types, whatever they use for eg booleans and integers and
 character strings, but tagged with extra metadata if the host language is
 more weakly typed or lacks one-to-one type correspondence; see
-[Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md) or
-[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md) for a Raku|Perl-based example.  These
+[Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md) or
+[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md) for a Raku|Perl-based example.  These
 types, except for `Scalar` and `DHScalar`, are all ordered.
 
 ## sys.std.Core.Type.Scalar

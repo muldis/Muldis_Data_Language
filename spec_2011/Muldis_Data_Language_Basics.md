@@ -576,7 +576,7 @@ entirety of each relation's boolean expression with an `or`, and then
 eliminating redundancies from the result.
 
 A full list of all the relational operators having more formal (but Muldis Data Language
-specific) descriptions occurs in the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md)
+specific) descriptions occurs in the [Core](Muldis_Data_Language_Core.md)
 document; that list does *not* use the aforementioned boolean analogies.
 
 # MULDIS DATA LANGUAGE
@@ -683,16 +683,16 @@ which is the host of Muldis Data Language.  The Muldis Data Language code is wri
 writing code in the host language.
 
 Some official Muldis Data Language dialects have their specifications bundled with the
-current multi-document: [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
-[Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
-[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).  Other, unofficial Muldis Data Language dialects
+current multi-document: [Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
+[Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
+[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).  Other, unofficial Muldis Data Language dialects
 may be made by third parties in the future, but none are currently known.
 
 The other parts of the current multi-document generally focus on the
 behaviours and semantic features of Muldis Data Language, rather than its syntax, and
 what they describe is generally common to all Muldis Data Language dialects.  The most
 important of those parts are the current **Basics** file and the
-[Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) file.
+[Core](Muldis_Data_Language_Core.md) file.
 
 See also **SOURCE CODE METADATA** for more details on Muldis Data Language's standard
 support for non-critical Muldis Data Language code metadata.
@@ -2502,7 +2502,7 @@ constraints are non-deterministic, such as that they compare a date value
 to the current system time.
 
 See also
-[Muldis_Data_Language_Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md)
+[Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md)
 section **sys.std.Core.Type.Cat.MountControlSet**,
 specifically the `allow_auto_run` attribute.  This control empowers users
 to decide on a per-depot-mount basis whether the depot mount will permit
