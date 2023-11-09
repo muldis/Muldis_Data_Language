@@ -1,8 +1,4 @@
-# NAME
-
-See Also - External resources to look at
-
-# DESCRIPTION
+# Muldis Data Language - See Also
 
 This document is a central location within the Muldis Data Language
 distribution where any important recommendations of or links to external
@@ -12,7 +8,7 @@ Muldis Data Language.
 
 *This document is substantially out of date and will be improved later.*
 
-# IMPLEMENTATIONS OF MULDIS DATA LANGUAGE
+## IMPLEMENTATIONS OF MULDIS DATA LANGUAGE
 
 These externally distributed projects are in progress or partial implementations
 of Muldis Data Language.
@@ -46,7 +42,7 @@ the Muldis Data Language relational operators.  It is intended for production us
 written by Muldis Data Systems, Inc., and is licensed under the
 Apache License version 2.
 
-# INFORMATION SOURCES
+## INFORMATION SOURCES
 
 While making Muldis Data Language, the following resources were found to
 be particularly useful:
@@ -185,7 +181,7 @@ Another explanation of the 16 dyadic boolean logic operations and symbols.
 Also, the vendor documentation for various relational and/or SQL databases
 such as MySQL and SQLite were regularly consulted, and various other sites.
 
-# SOME FULLY TTM/D RELATED DBMS PROJECTS
+## SOME FULLY TTM/D RELATED DBMS PROJECTS
 
 Besides **Muldis Data Engine Reference**, other projects exist which attempt
 to implement *The Third Manifesto* fully and without compromise (that lack
@@ -195,7 +191,7 @@ language.
 
 *This project list is out of date and some related projects are missing.*
 
-## Free and Open Source Software
+### Free and Open Source Software
 
 These software projects are released under a free and open source license,
 as **Muldis Data Engine Reference** is, so you have the freedom to use the software for any
@@ -224,7 +220,7 @@ operators) as an extension to Python, written by Greg Gaughan
 (`gjgaughan@users.sourceforge.net`).  It is written in Python and is
 operating-system independent.  It is licensed under the GNU GPL.
 
-## Shared Source Software
+### Shared Source Software
 
 These software projects are released with access to the project source code
 but lack permissions on use, modification, or redistribution that are
@@ -244,7 +240,7 @@ Dyalog APL, in a functional style with no loops or control structures, and
 runs only on 32-bit Windows operating systems.  It is available under a
 shared source agreement for personal use and study.
 
-## Closed Source Software
+### Closed Source Software
 
 These software projects are released without access to the project source
 code or permission to change them, though some are available at zero cost:
@@ -256,7 +252,7 @@ David Cauz (`dcauz@rogers.com`) and Paul Church, that implements its own
 "Opus" language (that has the syntactic style of C).  It is written in C
 and only runs on Windows.  (Link no longer available.)
 
-## Academic Design Projects
+### Academic Design Projects
 
 These project designs were made for academic purposes and don't include
 implementations:
@@ -266,13 +262,13 @@ implementations:
 
 This is a final year project by UMIST student Peter Nicol.
 
-# SOME PARTIALLY TTM/D RELATED DBMS PROJECTS
+## SOME PARTIALLY TTM/D RELATED DBMS PROJECTS
 
 Some DBMS exist which desire to support *TTM* principles but still justify
 themselves to provide features that are anti-*TTM*.  They may or may not
 use a SQL dialect as their command language.
 
-## Free and Open Source Software
+### Free and Open Source Software
 
 * **Dataphor** - <http://www.alphora.com>
 
@@ -293,7 +289,7 @@ written mainly by Jeffrey Cohen (`jcohen@cpan.org`), currently under
 construction.  It is written in a hybrid of C and Perl, and runs on any
 operating system.  It is licensed under the GNU GPL.
 
-## Closed Source Software
+### Closed Source Software
 
 * **Teradata** - <http://www.teradata.com>
 
@@ -303,13 +299,13 @@ support, but don't encourage the use of, a mode that supports bag
 semantics.  Bindings for many programming languages exist, including for
 Perl.
 
-# SOME SQL-BASED DBMS PROJECTS
+## SOME SQL-BASED DBMS PROJECTS
 
 Many DBMS exist which do not expressly support *TTM* principles and/or
 actively embrace anti-*TTM* features.  Many of those use a SQL dialect as
 their primary or only interface; a relative few are listed here.
 
-## Free and Open Source Software
+### Free and Open Source Software
 
 * **SQLite** - <http://www.sqlite.org>
 
@@ -346,7 +342,7 @@ Mozilla-Public-like licenses, specifically the Interbase Public License and
 the Initial Developer's Public License.  Bindings for many programming
 languages exist, including for Perl.
 
-## Closed Source Software
+### Closed Source Software
 
 * **Oracle** - <http://www.oracle.com/database>
 
@@ -362,22 +358,22 @@ languages exist, including for Perl.
 
 * **FrontBase** - <http://www.frontbase.com>
 
-# SOME OTHER DBMS PROJECTS
+## SOME OTHER DBMS PROJECTS
 
 Many DBMS exist that are neither *TTM*/**D**-based nor primarily SQL based;
 a relative few are listed here.
 
-## Free and Open Source Software
+### Free and Open Source Software
 
 * **Berkeley DB** - <http://www.sleepycat.com>
 
-## Closed Source Software
+### Closed Source Software
 
 * **FileMaker Pro** - <http://www.filemaker.com>
 
 * **Valentina** - <http://www.paradigmasoft.com>
 
-# MORE INFORMATION
+## MORE INFORMATION
 
 Muldis Data Language is an [Acmeist](http://www.acmeism.org/) programming language for
 writing portable database modules, that work with any DBMS and with any
