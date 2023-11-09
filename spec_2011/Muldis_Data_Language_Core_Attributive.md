@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Attributive - Muldis D generic attributive operators
+Muldis Data Language Core Attributive - Muldis Data Language generic attributive operators
 
 # VERSION
 
-This document is Muldis::D::Core::Attributive version 0.148.1.
+This document is Muldis Data Language Core Attributive version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,7 +16,7 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document describes essentially all of the core Muldis D generic
+This document describes essentially all of the core Muldis Data Language generic
 operators that types composed of named attributes would have.  In
 particular, all the virtual operators that tuples and relations implement.
 
@@ -167,8 +167,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

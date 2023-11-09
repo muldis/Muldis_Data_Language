@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Types_Catalog - Muldis D catalog-defining data types
+Muldis Data Language Core Types_Catalog - Muldis Data Language catalog-defining data types
 
 # VERSION
 
-This document is Muldis::D::Core::Types_Catalog version 0.148.1.
+This document is Muldis Data Language Core Types_Catalog version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -278,9 +278,9 @@ structures, how their common 5 main subtypes are defined in terms of them.
 
 ## sys.std.Core.Type.Cat.List
 
-The `List` type is the sub-maximal type of the entire Muldis D type
+The `List` type is the sub-maximal type of the entire Muldis Data Language type
 system, and contains every non-`Int` value that can possibly exist.  Every
-value in the Muldis D type system is declared by just one of two types,
+value in the Muldis Data Language type system is declared by just one of two types,
 where `Int` is one and `List` is the other; therefore, `Int` and `List`
 are each other's *negation type*, and the union of just those 2 types is
 `Universal`.  A `List` is a transparent dense sequence of 0..N elements
@@ -311,7 +311,7 @@ this type is infinity.
 
 `Nonstructure` is the difference type when `Structure` is subtracted from
 `List`.  The only main reason why `Nonstructure` exists as a named type
-is to round out the 5 main broad value categories of the Muldis D type
+is to round out the 5 main broad value categories of the Muldis Data Language type
 system, where each category has its own maximal type; a nonstructure value
 is any value which is neither a scalar nor a tuple nor a relation nor an
 external.  The default value of `Nonstructure` is the sole `List` value
@@ -333,7 +333,7 @@ just a proper subtype of `Structure` consisting of every
 
 `DHScalarWP` is the intersection type of `ScalarWP` and `DHScalar`.  Its
 default value is `Bool:False`, same as both of its parent types.  The
-cardinality of this type is infinity.  All Muldis D scalar values that are
+cardinality of this type is infinity.  All Muldis Data Language scalar values that are
 allowed to be stored in a global/persisting relational database, besides
 `Int` and `String` values, are `DHScalarWP` values.
 
@@ -341,7 +341,7 @@ allowed to be stored in a global/persisting relational database, besides
 
 The `SysScalar` type is explicitly defined as a domain-union type over all
 system-defined `DHScalar` root types, which typically corresponds to
-those types for whose values all of the Muldis D standard dialects provide
+those types for whose values all of the Muldis Data Language standard dialects provide
 "opaque value literal" syntax for:  `Bool`, `Int`, `Rat`, `Blob`,
 `Text`, `Name`, `NameChain`, `Comment`, `Order`,
 `RoundMeth`, `RatRoundRule`, `Singleton`.  The `SysScalar` type is
@@ -405,7 +405,7 @@ system-defined possrep named `coretext_chars` which consists of 1
 values are all in the range 32..126 inclusive, each element being a
 code point representing the same abstract character as the same code point of
 7-bit ASCII.  The purpose of `CoreText` is to provide a reasonable minimum
-of support for character strings in the Muldis D language core.  All
+of support for character strings in the Muldis Data Language language core.  All
 system-defined entity names in the core and in most official modules use
 only the `CoreText` repertoire, and this type's primary purpose is to be
 used for entity names.  It can also be employed for user data though.
@@ -567,7 +567,7 @@ later if we have some situation where such a restriction might be useful.*
 ## sys.std.Core.Type.Cat.Comment
 
 A `Comment` (scalar) is the text of a
-Muldis D code comment, which programmers can populate as an attribute of
+Muldis Data Language code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
 expression nodes.  The `Comment` type explicitly composes the `Textual`
 mixin type, and by extension also implicitly composes the `Stringy`
@@ -575,7 +575,7 @@ mixin type.  The `Comment` type explicitly composes the
 `Ordered` mixin type.  Every detail of `Comment`'s representation (its 1
 possrep, default value and ordering algorithm, etc) is the same as `Name`
 but it is explicitly disjoint due to having a different intended
-interpretation; it is intended just for commenting Muldis D code.  One main
+interpretation; it is intended just for commenting Muldis Data Language code.  One main
 intended use of this type is to help preserve comments in code translated
 to or from other languages; though only a subset of those (FoxPro?) keep
 comments in the AST rather than discarding them.
@@ -621,7 +621,7 @@ contain that value, such as when mapping an arbitrary number to one with
 less precision, some rounding method is applied to determine which value of
 the subtype is to be mapped to while most accurately reflecting the
 original value.  The `RoundMeth` type enumerates the rounding methods
-that Muldis D operators can typically apply.  With `Down` (aka *floor*),
+that Muldis Data Language operators can typically apply.  With `Down` (aka *floor*),
 `Up` (aka *ceiling*), `ToZero` (aka *truncate*), and `ToInf`, the
 original value will always be mapped to the single adjacent value that is
 lower than it, or higher than it, or towards "zero" from it, or towards the
@@ -676,7 +676,7 @@ of `RatRoundRule` specifies a coersion to a whole number using the
 The `Singleton` type is explicitly defined as a union type over just the
 system-defined core singleton types which aren't otherwise included in
 another union type specific to a group of singleton types.  `Singleton`
-only exists as a convenience for concrete Muldis D grammars that want to
+only exists as a convenience for concrete Muldis Data Language grammars that want to
 have a group type name for every system-defined opaque value.  `Singleton`
 currently unions just these 2 types: `-Inf`, `Inf`.
 
@@ -765,7 +765,7 @@ the special system namespace's parent special system namespace.
 * `name` - `Name`
 
 This is the declared name of the special system namespace within the
-special namespace defined by `parent`; other Muldis D code would reference
+special namespace defined by `parent`; other Muldis Data Language code would reference
 it with the combination of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -797,7 +797,7 @@ the module's parent special system namespace.  This is always either
 * `name` - `Name`
 
 This is the declared name of the module within the
-special namespace defined by `parent`; other Muldis D code would reference
+special namespace defined by `parent`; other Muldis Data Language code would reference
 it with the combination of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -891,7 +891,7 @@ A `MountControlSet` has these 8 attributes:
 
 * `name` - `Name`
 
-This is the declared name of the depot mount; other Muldis D code would
+This is the declared name of the depot mount; other Muldis Data Language code would
 reference it with this name.
 
 * `scm_comment` - `Comment`
@@ -967,7 +967,7 @@ mounting (or unmounting) that depot.  This is `Bool:False` (the default)
 if the depot mount will prohibit all stimulus-response rules defined in the
 depot from automatically executing.  The primary purpose of the
 `allow_auto_run` attribute is to provide a measure of security against
-viruses and other malware that are using Muldis D databases as a vector,
+viruses and other malware that are using Muldis Data Language databases as a vector,
 especially where the malicious code is setup to run automatically as soon
 as its host depot is mounted, which is insidious because in general users
 have to mount a depot in order to even examine it to see if its contents
@@ -979,8 +979,8 @@ infection from a depot that you otherwise wish to preserve (it is just
 data, after all); and then you can remount the depot with a true
 `allow_auto_run` once you know it is clean, in order for benign
 auto-running code to work.  If a depot is "the main program" in a pure
-Muldis D application, then `allow_auto_run` must be `Bool:True` in order
-for it to work properly since auto-running is how the initial Muldis D
+Muldis Data Language application, then `allow_auto_run` must be `Bool:True` in order
+for it to work properly since auto-running is how the initial Muldis Data Language
 routine of a call chain is invoked, and otherwise the program will
 immediately exit on launch without doing anything.  When `allow_auto_run`
 is `Bool:False` (and `we_may_update` is `Bool:True`), then the depot's
@@ -1006,12 +1006,12 @@ control.  Each tuple in `details` specifies an implementation-specific
 attribute name and (scalar) value.  Example such implementation-specific
 details include the name of a local file that the depot is stored as, or
 the name of a DBMS server on the network plus authentication credentials to
-connect to it with.  See each Muldis D implementation for details.  Note
+connect to it with.  See each Muldis Data Language implementation for details.  Note
 that `details` generally corresponds to the Perl DBI's concept of a data
 source name or connection string.  But `details` can also have other
 details like customizations on how to map a foreign DBMS' concepts to
-native Muldis D equivalents, or maybe information on where to find extra
-metadata that has such info, or info to instruct a Muldis D interface to
+native Muldis Data Language equivalents, or maybe information on where to find extra
+metadata that has such info, or info to instruct a Muldis Data Language interface to
 fill in functionality missing in the actual depot of a less capable DBMS,
 like constraints or stored invokable routines.
 
@@ -1070,7 +1070,7 @@ A `DepotMountSet` has these 3 attributes:
 
 * `name` - `Name`
 
-This is the declared name of the depot mount; other Muldis D code would
+This is the declared name of the depot mount; other Muldis Data Language code would
 reference it with this name.
 
 * `scm_comment` - `Comment`
@@ -1142,8 +1142,8 @@ functions, procedures.
 
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
-declarations of all of the native Muldis D types that can't be defined like
-user-defined types.  Specifically, it declares all 2 Muldis D declaration
+declarations of all of the native Muldis Data Language types that can't be defined like
+user-defined types.  Specifically, it declares all 2 Muldis Data Language declaration
 types in the `Core` module, and only declaration types: in the `Type`
 namespace: `Int`; in the `Type.Cat` namespace: `List`.
 **Only the `Core` module has a nonempty `special_types`; all other
@@ -1154,7 +1154,7 @@ packages must have an empty one.**
 
 These are all the definitions that this [|sub]package contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
-subset types, and mixin types.  This includes the 2 Muldis D type system
+subset types, and mixin types.  This includes the 2 Muldis Data Language type system
 maximal and minimal (enumeration) types, `Universal` and `Empty`, which
 are declared as domain types.  This includes all enumeration types, period.
 
@@ -1225,7 +1225,7 @@ subpackage's parent subpackage, which is often just the package itself.
 * `name` - `Name`
 
 This is the declared name of the subpackage within the namespace defined by
-`parent`; other Muldis D code would reference it with the combination of
+`parent`; other Muldis Data Language code would reference it with the combination of
 `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -1259,7 +1259,7 @@ function|procedure's parent [|sub]package.
 * `name` - `Name`
 
 This is the declared name of the function|procedure within
-the namespace defined by `parent`; other Muldis D code would reference it
+the namespace defined by `parent`; other Muldis Data Language code would reference it
 with the combination of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -1301,7 +1301,7 @@ special type's parent [|sub]package.
 * `name` - `Name`
 
 This is the declared name of the special type within the namespace defined
-by `parent`; other Muldis D code would reference it with the combination
+by `parent`; other Muldis Data Language code would reference it with the combination
 of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -1335,7 +1335,7 @@ scalar|tuple|relation|domain|subset|mixin type's parent [|sub]package.
 * `name` - `Name`
 
 This is the declared name of the scalar|tuple|relation|domain|subset|mixin
-type within the namespace defined by `parent`; other Muldis D code would
+type within the namespace defined by `parent`; other Muldis Data Language code would
 reference it with the combination of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -1374,7 +1374,7 @@ of any hypothetical immediate child namespace of the package, of the
 * `name` - `Name`
 
 This is the declared name of the |distributed key|subset constraint within
-the namespace defined by `parent`; other Muldis D code would reference it
+the namespace defined by `parent`; other Muldis Data Language code would reference it
 with the combination of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -1410,7 +1410,7 @@ stimulus-response rule's parent [|sub]package.
 * `name` - `Name`
 
 This is the declared name of the stimulus-response rule within the
-namespace defined by `parent`; other Muldis D code would reference it with
+namespace defined by `parent`; other Muldis Data Language code would reference it with
 the combination of `parent` and `name`.
 
 * `scm_comment` - `Comment`
@@ -1446,7 +1446,7 @@ provided by the larger context that embeds the
 must have a specified *heading*, but having a specified *body* is
 optional iff the `Function` is embedded in a `System`, because often the
 implementations of system-defined routines are not defined in terms of
-other Muldis D routines, but that the *body* must not be specified if the
+other Muldis Data Language routines, but that the *body* must not be specified if the
 `Function` is virtual.
 
 A `Function` has these 7 attributes, of which the 5 `result_type`,
@@ -1593,8 +1593,8 @@ result is `Order`.  Its default value is a function, whose `topic` and
 An `ExprNodeSet` is a `Database` that specifies a set of named value
 expression nodes.  It is typically composed into a
 function or procedure.  Each tuple of an `ExprNodeSet` attribute is a
-named expression node, which is the majority component of functional Muldis
-D code.  All arbitrarily complex Muldis D expression trees, including
+named expression node, which is the majority component of functional Muldis Data Language
+code.  All arbitrarily complex Muldis Data Language expression trees, including
 relational queries, are composed of just expression nodes, either directly,
 or indirectly by way of function invocations, as each function body is
 itself composed entirely of a single expression tree (of at least 1 node).
@@ -1612,7 +1612,7 @@ An `ExprNodeSet` has these 15 attributes:
 * `sys_sca_val_exprs` - `SysScaValExprNodeSet`
 
 These are expression nodes that represent scalar values of types such that
-all of the standard Muldis D dialects provide special "opaque value
+all of the standard Muldis Data Language dialects provide special "opaque value
 literal" syntax specific to the type.  These are expression nodes that
 represent scalar value literals that are *not* specified simply in terms
 of possrep attributes.
@@ -1690,7 +1690,7 @@ update statements if applicable, of the host routine, and all update
 statements of said host routine; otherwise, iff the expression node is
 nested beneath another expression node or a statement node, then the
 `scm_vis_ord` attribute isn't applicable, and is zero.  In other words,
-when generating concrete Muldis D code from a `Function` or `Procedure`,
+when generating concrete Muldis Data Language code from a `Function` or `Procedure`,
 the sole determinant of whether to nest any given expression node under
 another expression or statement node, or not, is based on whether its
 `scm_vis_ord` is zero or not; zero means nested, non-zero means otherwise.
@@ -1701,7 +1701,7 @@ An `SysScaValExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal that is
 *not* being specified explicitly in terms of possrep attributes, but
 rather is specified using special "opaque value literal" syntax that all
-of the Muldis D standard dialects provide.
+of the Muldis Data Language standard dialects provide.
 
 An `SysScaValExprNodeSet` has these 4 attributes:
 
@@ -1733,7 +1733,7 @@ selection that is specified explicitly in terms of possrep attributes.
 This node kind may be used for values of absolutely any scalar type at all,
 including all system-defined types, except for values of `Int`
 and `String`, although
-optimized Muldis D code will likely use `SysScaValExprNodeSet` where it
+optimized Muldis Data Language code will likely use `SysScaValExprNodeSet` where it
 can do so instead of `ScaSelExprNodeSet`.
 
 A `ScaSelExprNodeSet` has these 6 attributes:
@@ -2296,7 +2296,7 @@ which is either a `Package` or `System`.  Every `Procedure`
 must have a specified *heading*, but having a specified *body* is
 optional iff the `Procedure` is embedded in a `System`, because often the
 implementations of system-defined routines are not defined in terms of
-other Muldis D routines, but that the *body* must not be specified if the
+other Muldis Data Language routines, but that the *body* must not be specified if the
 `Procedure` is virtual.
 
 A `Procedure` has these 13 attributes, of which the 9 `upd_params`,
@@ -2424,7 +2424,7 @@ is.  The root node must also be a compound statement node, meaning a tuple
 of either the procedure's `stmt.compound_stmts` attribute or its
 `stmt.multi_upd_stmts` attribute; while making this requirement isn't
 strictly necessary in general, that requirement allows the corresponding
-concrete Muldis D grammars to be simpler, and a compound statement node
+concrete Muldis Data Language grammars to be simpler, and a compound statement node
 would end up being the root anyway in 99% of likely real procedures.  The
 statement tree should reference all of the parameters and lexical variables
 that the procedure has, but this isn't a strict requirement.
@@ -2482,9 +2482,9 @@ invocation name of the global variable.  Its default value has zero tuples.
 A `StmtNodeSet` is a `Database` that specifies a set of named
 statement nodes.  It is typically composed into a procedure.  Each
 tuple of a `StmtNodeSet` attribute is a named statement node, from
-which procedural Muldis D code is composed.
+which procedural Muldis Data Language code is composed.
 
-Note that, regarding Muldis D's feature of a statement node having an
+Note that, regarding Muldis Data Language's feature of a statement node having an
 explicit `name` that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
@@ -2605,7 +2605,7 @@ statement nodes where each node is a multi-update statement, which is a
 compound statement composed of a set of 0..N procedure statements that
 conceptually are executed all as one and collectively at a single point in
 time, as if the collection were a single statement that did all the work of
-the component statements itself.  All arbitrarily complex Muldis D value
+the component statements itself.  All arbitrarily complex Muldis Data Language value
 assignments, including relational assignments, are composed of just
 multi-update statements, either directly, or indirectly by way of recipe
 invocations, as each recipe body is itself composed entirely of 1
@@ -2884,7 +2884,7 @@ scalar root type with at least 1 possrep, or it defines a subtype
 of some other scalar type which also adds at least one possrep to
 the other type.  Either way, every possrep defines a candidate
 representation that can handle every value of the [|sub]type it is defined
-with, and the Muldis D implementation may choose for itself which of these,
+with, and the Muldis Data Language implementation may choose for itself which of these,
 or some other alternative, is the actual/physical representation.  Whether
 a declared type is scalar or dh-scalar depends only on the declared
 types of the attributes its possreps compose, whether any are
@@ -2949,7 +2949,7 @@ value, then the `name` attribute of the `possreps` attributes of all of
 those types' definitions have a distributed primary key over them.  Note
 that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
-system-defined scalar possrep attribute accessors can work), Muldis D
+system-defined scalar possrep attribute accessors can work), Muldis Data Language
 requires all of the possreps of all scalar types having a common scalar
 root type to have mutually distinct names, regardless of whether any
 subtypes have values in common; this can be enforced at
@@ -3040,7 +3040,7 @@ of `Empty`, since this scalar possrep of it can't represent any values.
 
 * `is_base` - `Bool`
 
-This is an optimization hint for Muldis D implementations that are not
+This is an optimization hint for Muldis Data Language implementations that are not
 intelligent enough to decide on a best physical representation for the
 [|sub]type.  At most one of the type's possreps is singled out by having a
 `Bool:True` value here, so an implementation doesn't have to think and can
@@ -3094,7 +3094,7 @@ argument (domain) value of this function must have a distinct result
 
 This matches the invocation name of an inverse `possrep-map` function
 to that of `p2_from_p1`.  *Note that it would often be feasible for a
-Muldis D implementation to automatically infer a reverse function, but for
+Muldis Data Language implementation to automatically infer a reverse function, but for
 now we still require it to be explicitly stated; the explicitly stated
 inverse function could be generated though.  This design is subject to
 change.*
@@ -3414,7 +3414,7 @@ attempting to update the dependent attributes must fail.  Sometimes the
 code rewrite can be done automatically by the DBMS, and sometimes it can
 succeed if the map definer gives explicit details on how to accomplish it.
 
-Because Muldis D requires a strong degree of determinism in the whole
+Because Muldis Data Language requires a strong degree of determinism in the whole
 system, sometimes users have to provide explicit details on how to
 accomplish a reverse mapping, even if it is possible to automatically
 generate such, because there may be multiple ways to do a reverse map that
@@ -3740,7 +3740,7 @@ such a situation may indicate a flaw in your database design).  The common
 concept of a tuple having an identity that is distinct from the sum total
 of all its attribute values, such that one can say that a tuple is being
 "updated" (rather than its host relation being the only thing that is
-updated to hold a different set of tuples) is dependent in Muldis D on
+updated to hold a different set of tuples) is dependent in Muldis Data Language on
 the host relation having a primary key; if a tuple in a relation is
 replaced by a distinct tuple whose values in the primary key attributes
 are identical, it is only in this situation that we can consider that we
@@ -4092,10 +4092,10 @@ system-defined scalar ordering function when no argument is given to it.
 generic thrown exception.  This type doesn't provide any means for a
 *catch* routine to introspect details about the exception, such as what
 kind of exception it was, but rather simply says that something happened
-which resulted in a Muldis D routine abnormally exiting.  Therefore, the
+which resulted in a Muldis Data Language routine abnormally exiting.  Therefore, the
 `Exception` type is subject to be rewritten so it can carry the various
 metadata that exceptions of typical programming languages can.  But in the
-meantime, this singleton type affords Muldis D with completely functional
+meantime, this singleton type affords Muldis Data Language with completely functional
 basic exception handling in that exceptions can be thrown and can be
 caught, so that good program design involving the use of exceptions to draw
 immediate attention to problems can be supported now.
@@ -4106,8 +4106,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

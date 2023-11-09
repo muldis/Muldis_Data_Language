@@ -1,25 +1,25 @@
 # NAME
 
-Muldis::D::Conventions - Style and design guidelines for Muldis D
+Muldis Data Language Conventions - Style and design guidelines for Muldis Data Language
 
 # VERSION
 
-This document is Muldis::D::Conventions version 0.148.1.
+This document is Muldis Data Language Conventions version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document briefly outlines various conventions used in the Muldis D
+This document briefly outlines various conventions used in the Muldis Data Language
 language, and provides some style and design recommendations for code
-and/or projects written in Muldis D, or for alternate language dialects, or
+and/or projects written in Muldis Data Language, or for alternate language dialects, or
 extensions, or implementations.
 
-Unlike the rest of the Muldis D language specification, following anything
+Unlike the rest of the Muldis Data Language language specification, following anything
 stated herein is not necessary for conformation to the spec, and you should
 feel free to break these suggestions whenever it makes sense, just like
 when using any style rules.
@@ -36,14 +36,14 @@ in other words the declared unqualified name of an entity, which sometimes
 is always used in that form, and which other times forms an element of a
 `NameChain`.
 
-Although Muldis D allows names to be comprised of any characters at all,
+Although Muldis Data Language allows names to be comprised of any characters at all,
 and hence they are used delimited in the general case, it is highly
 recommended to use only characters in names that are valid for identifier
 names in most programming languages, and that are part of the 7-bit ASCII
 repertoire, such as `[a-zA-Z0-9_]`, and that the first character of a name
-isn't a digit; that way, it would be easy to support Muldis D dialects
+isn't a digit; that way, it would be easy to support Muldis Data Language dialects
 where names are allowed to be non-delimited, as well as more easily permit
-translation of Muldis D code into other programming languages while making
+translation of Muldis Data Language code into other programming languages while making
 fewer changes.  Or if your system is Unicode-saavy (Raku for example),
 then the recommendation can be broadened to allow the word characters of
 any script, but names should still avoid including whitespace and
@@ -67,7 +67,7 @@ of what they result in; also, function parameters should all be nouns, and
 be named after the meaning of what they convey to the functions.  For
 example, the integer `difference` function results in the difference when
 its `subtrahend` argument is subtracted from its `minuend` argument.
-Every invocation of a function in Muldis D denotes a value, just like any
+Every invocation of a function in Muldis Data Language denotes a value, just like any
 program literal, and it is helpful for it to be named accordingly.  A
 function name should never be a verb, as a function does not take an action
 or *do* something or have a side-effect; its invocation *is* something.
@@ -173,10 +173,10 @@ in better self-documentation of the type and its value selections.
 
 ## Syntax Ordering
 
-Muldis D internally (that is, in the system catalog) organizes parts of
+Muldis Data Language internally (that is, in the system catalog) organizes parts of
 syntax by name rather than by order, so in that respect the language is not
 specifically prefix/polish or postfix/reverse-polish or infix or circumfix,
-and a Muldis D dialect can take any of those forms or mix them.  You can
+and a Muldis Data Language dialect can take any of those forms or mix them.  You can
 even write your code right-to-left if you want, assuming a compatible
 parser.
 
@@ -193,8 +193,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

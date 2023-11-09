@@ -1,40 +1,40 @@
 # NAME
 
-Muldis::D::Dialect::HDMD_Perl_STD - How to format Perl Hosted Data Muldis D
+Muldis Data Language Dialect HDMD_Perl_STD - How to format Perl Hosted Data Muldis Data Language
 
 # VERSION
 
-This document is Muldis::D::Dialect::HDMD_Perl_STD version 0.148.1.
+This document is Muldis Data Language Dialect HDMD_Perl_STD version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document outlines the grammar of the *Hosted Data Muldis D* standard
-dialect named `HDMD_Perl_STD`.  The fully-qualified name of this Muldis D
-standard dialect is `[ 'Muldis_D', 'https://muldis.com', '0.148.1',
+This document outlines the grammar of the *Hosted Data Muldis Data Language* standard
+dialect named `HDMD_Perl_STD`.  The fully-qualified name of this Muldis Data Language
+standard dialect is `[ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1',
 'HDMD_Perl_STD' ]`.
 
 The `HDMD_Perl_STD` dialect is defined to be hosted in Perl, and is
 composed of just|mainly core Perl types.  This dialect is optimized for
 Perl specifically, and doesn't try to match the version for Raku; you
-*will* have to reformat any Perl Hosted Data Muldis D when migrating
+*will* have to reformat any Perl Hosted Data Muldis Data Language when migrating
 between Perl and Raku, same as with your ordinary Perl code.
 
 This dialect is designed to exactly match the structure of a possible
 concrete syntax tree, comprised of native Perl scalar and collection
-typed values, resulting from parsing code written in the Muldis D dialect
+typed values, resulting from parsing code written in the Muldis Data Language dialect
 [PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD) using Perl.  This dialect
 exists as a convenience to Perl programmers that want to generate or
-introspect Muldis D code by saving them the difficulty and overhead of
-escaping and stitching plain text code; it is expected that a Muldis D
+introspect Muldis Data Language code by saving them the difficulty and overhead of
+escaping and stitching plain text code; it is expected that a Muldis Data Language
 implementation written in Perl will natively accept input in both the
 `PTMD_STD` and `HDMD_Perl_STD` dialects.  Furthermore, the
-`HDMD_Perl_STD` dialect provides additional Muldis D syntax options to
+`HDMD_Perl_STD` dialect provides additional Muldis Data Language syntax options to
 Perl programmers besides what `PTMD_STD` would canonically parse into,
 such as the direct use of some Perl-only features.
 
@@ -46,19 +46,19 @@ a context for better understanding it.**
 
 # GENERAL STRUCTURE
 
-A `HDMD_Perl_STD` Muldis D code file is actually a Perl code file that
+A `HDMD_Perl_STD` Muldis Data Language code file is actually a Perl code file that
 defines particular multi-dimensional Perl data structures which resemble
-possible concrete syntax trees (CSTs) from parsing `PTMD_STD` Muldis D
+possible concrete syntax trees (CSTs) from parsing `PTMD_STD` Muldis Data Language
 code.  Each component of a CST is called a *node* or node element, and
 roughly corresponds to a capture by the `PTMD_STD` parser.  A node is
 typically represened as a Perl array ref, but could alternately be a Perl
-scalar or something else, and so `HDMD_Perl_STD` Muldis D code is
+scalar or something else, and so `HDMD_Perl_STD` Muldis Data Language code is
 typically a tree of Perl structures, called *node trees*, with Perl array
 refs as the central nodes and Perl scalars as the leaf nodes.  Often
 `HDMD_Perl_STD` code is embedded or constructed in one or more files of
 a larger Perl program that does more than define this code, such as
 various non-database-related tasks.  A node tree is just composed using
-basic Perl data types, and there are no Muldis D node-specific Perl classes
+basic Perl data types, and there are no Muldis Data Language node-specific Perl classes
 or objects required for doing this.
 
 Note that Perl undefined values are not allowed anywhere in a node in the
@@ -69,16 +69,16 @@ explicitly stated.
 
 The grammar in this file is informal and consists just of written
 descriptions of how each kind of *node* must be composed and how to
-interpret such Perl data structures as Muldis D code.  Every named grammar
+interpret such Perl data structures as Muldis Data Language code.  Every named grammar
 node is a Perl array ref unless otherwise stated, and every grammar element
 is an array element; the first node element is the array element at index
 zero, and so on.
 
-The root grammar node for the entire dialect is `Muldis_D`.
+The root grammar node for the entire dialect is `Muldis_Data_Language`.
 
 # START
 
-A `Muldis_D` node has 2 ordered elements where the first element is a
+A `Muldis_Data_Language` node has 2 ordered elements where the first element is a
 `language_name` node and the second element is either a `value` node or a
 `depot` node.
 
@@ -86,27 +86,27 @@ See the pod sections in this file named **LANGUAGE NAME**, **VALUE
 LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
 about the aforementioned tokens/nodes.
 
-When Muldis D is being compiled and invoked piecemeal, such as because the
-Muldis D implementing virtual machine (VM) is attached to an interactive
+When Muldis Data Language is being compiled and invoked piecemeal, such as because the
+Muldis Data Language implementing virtual machine (VM) is attached to an interactive
 user terminal, or the VM is embedded in a host language where code in the
-host language invokes Muldis D code at various times, many `value` may be
+host language invokes Muldis Data Language code at various times, many `value` may be
 fed to the VM directly for inter-language exchange, and not every one
 would then have its own `language_name`.  Usually a `language_name` would
-be supplied to the Muldis D VM just once as a VM configuration step, which
+be supplied to the Muldis Data Language VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
-Muldis D code that isn't itself qualified with a `language_name`.
+Muldis Data Language code that isn't itself qualified with a `language_name`.
 
 # LANGUAGE NAME
 
-As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
-must start by declaring the fully-qualified Muldis D language name it is
+As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
+must start by declaring the fully-qualified Muldis Data Language language name it is
 written in.  The `HDMD_Perl_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
 
 * `ln_base_name`
 
-This is the Muldis D language base name; it is simply the Perl character
-string `Muldis_D`.
+This is the Muldis Data Language language base name; it is simply the Perl character
+string `Muldis_Data_Language`.
 
 * `ln_base_authority`
 
@@ -149,12 +149,12 @@ each of the value's elements must be one of these 0 Perl character strings.
 
 Examples:
 
-    [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+    [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
         catalog_abstraction_level => 'rtn_inv_alt_syn',
         op_char_repertoire => 'extended'
     } ]
 
-    [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+    [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
         catalog_abstraction_level => 'rtn_inv_alt_syn',
         op_char_repertoire => 'extended',
         standard_syntax_extensions => []
@@ -163,15 +163,15 @@ Examples:
 # CATALOG ABSTRACTION LEVELS
 
 The `catalog_abstraction_level` pragma determines with a broad granularity
-how large the effective Muldis D grammar is that a programmer may employ
-with their Muldis D code.
+how large the effective Muldis Data Language grammar is that a programmer may employ
+with their Muldis Data Language code.
 
-The catalog abstraction level of some Muldis D code is a measure of how
+The catalog abstraction level of some Muldis Data Language code is a measure of how
 much or how little that code would resemble the system catalog data that
 the code would parse into.  The lower the abstraction level, the smaller
-and simpler the used Muldis D grammar is and the more like data structure
+and simpler the used Muldis Data Language grammar is and the more like data structure
 literals it is; the higher the abstraction level, the larger and more
-complicated the Muldis D grammar is and the more like
+complicated the Muldis Data Language grammar is and the more like
 general-purpose-language typical code it is.
 
 There are currently 4 specified catalog abstraction levels, which when
@@ -189,7 +189,7 @@ intended to actually be used.
 Examples:
 
     [
-        [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+        [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
             catalog_abstraction_level => 'the_floor',
             op_char_repertoire => 'basic'
         } ],
@@ -253,7 +253,7 @@ AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 Examples:
 
     [
-        [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+        [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
             catalog_abstraction_level => 'code_as_data',
             op_char_repertoire => 'basic'
         } ],
@@ -264,7 +264,7 @@ Examples:
     ]
 
     [
-       [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+       [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
           catalog_abstraction_level => 'code_as_data',
           op_char_repertoire => 'basic'
        } ],
@@ -314,7 +314,7 @@ described in these main pod sections: **MATERIAL SPECIFICATION**,
 Examples:
 
     [
-        [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+        [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
             catalog_abstraction_level => 'plain_rtn_inv',
             op_char_repertoire => 'basic'
         } ],
@@ -346,7 +346,7 @@ EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**
 Examples:
 
     [
-        [ 'Muldis_D', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
+        [ 'Muldis_Data_Language', 'https://muldis.com', '0.148.1', 'HDMD_Perl_STD', {
             catalog_abstraction_level => 'rtn_inv_alt_syn',
             op_char_repertoire => 'basic'
         } ],
@@ -381,7 +381,7 @@ special value literals that are composed of just 7-bit ASCII characters.
 This repertoire can be recommended for general use, especially since code
 written to it should be the most universally portable as-is (with respect
 to operator character repertoires), including full support even by minimal
-Muldis D implementations and older text editors.
+Muldis Data Language implementations and older text editors.
 
 ## extended
 
@@ -389,21 +389,21 @@ The `extended` operator character repertoire is the largest one, and it
 supports the entire set of defined operator invocations and special value
 literals, many of which are composed of Unicode characters outside the
 7-bit ASCII repertoire.  This is the most recommended repertoire for
-general use, assuming that all the Muldis D implementations and source code
+general use, assuming that all the Muldis Data Language implementations and source code
 text editors you want to use support it.
 
 # STANDARD SYNTAX EXTENSIONS
 
 The `standard_syntax_extensions` pragma declares which optional portions
-of the Muldis D grammar a programmer may employ with their Muldis D code.
+of the Muldis Data Language grammar a programmer may employ with their Muldis Data Language code.
 
 There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
-While each *standard syntax extension* is closely related to a *Muldis D
+While each *standard syntax extension* is closely related to a *Muldis Data Language
 language extension*, you can use the latter's types and routines without
 declaring the former; you only declare you are using a *standard syntax
-extension* if you want the Muldis D parser to recognize special syntax
+extension* if you want the Muldis Data Language parser to recognize special syntax
 specific to those types and routines, and otherwise you just use them using
 the generic syntax provided for all types and routines.
 
@@ -420,8 +420,8 @@ extensions may be used.
 
 # VALUE LITERALS AND SELECTORS
 
-A `value` node is a Muldis D value literal, which is a common special case
-of a Muldis D value selector.
+A `value` node is a Muldis Data Language value literal, which is a common special case
+of a Muldis Data Language value selector.
 
 There are 23 main varieties of `value` node, each of which is a named node
 kind of its own:  `Singleton`, `Bool`, `Order`, `RoundMeth`, `Int`,
@@ -429,12 +429,12 @@ kind of its own:  `Singleton`, `Bool`, `Order`, `RoundMeth`, `Int`,
 `RatRoundRule`, `Scalar`, `Tuple`, `Database`, `Relation`,
 `Set`, `Maybe`, `Array`, `Bag`, `[S|M]PInterval`, `List`.
 
-Fundamentally, the various Muldis D scalar and collection types are
+Fundamentally, the various Muldis Data Language scalar and collection types are
 represented by their equivalent Perl native scalar and collection types.
-But since Muldis D is more strongly typed, or at least differently typed,
+But since Muldis Data Language is more strongly typed, or at least differently typed,
 than Perl, each `value` node is represented by a Perl array ref, whose
 elements include both the payload Perl literal plus explicit metadata for
-how to interpret that Perl literal for mapping to Muldis D.
+how to interpret that Perl literal for mapping to Muldis Data Language.
 
 ## Value Literal Common Elements
 
@@ -464,10 +464,10 @@ For just some data types, the `value_kind` may be omitted; see below.
 
 * `type_name`
 
-Only when the `value` node has 3 elements:  This is a Muldis D data type
+Only when the `value` node has 3 elements:  This is a Muldis Data Language data type
 name, for example `sys.std.Core.Type.Int`; it identifies a specific
 subtype of the generic type denoted by `value_kind`, and serves as an
-assertion that the Muldis D value denoted by `value_payload` is a member
+assertion that the Muldis Data Language value denoted by `value_payload` is a member
 of the named subtype.  Its format is a `PNSQNameChain_payload` node.  Iff
 `value_kind` is `[|DH]Scalar` then `type_name` is mandatory; otherwise,
 `type_name` is optional for all `value`, except that `type_name` must be
@@ -484,7 +484,7 @@ sake of brevity.  If any Perl value of one of the following types is
 encountered where a GCVL node is expected, then it is interpreted as a full
 `value` node as follows:
 
-    Muldis D <- Perl
+    Muldis Data Language <- Perl
     --------------------
     Int  <- BigInt object or Perl scalar that looks like an integer
     Rat  <- BigRat|BigNum obj or Perl scal that looks like num but not int
@@ -516,7 +516,7 @@ Examples:
 ## Boolean Literals
 
 A `Bool` node represents a logical boolean value.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Bool` value as follows:
+Muldis Data Language `sys.std.Core.Type.Bool` value as follows:
 
 * The canonical payload is the specific result of a Perl logical expression,
 such as `(1 == 0)` for `Bool:False` or `(1 == 1)` for `Bool:True`; said
@@ -538,7 +538,7 @@ Examples:
 ## Order-Determination Literals
 
 An `Order` node represents an order-determination.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Cat.Order` value as follows:
+Muldis Data Language `sys.std.Core.Type.Cat.Order` value as follows:
 
 * The canonical payload is the specific result of a Perl order-determining
 expression, such as `(1 <=> 2)` for `Order:Less` or `(1 <=> 1)`
@@ -560,7 +560,7 @@ Examples:
 ## Rounding Method Literals
 
 A `RoundMeth` node represents a rounding method.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Cat.RoundMeth` value by
+interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.RoundMeth` value by
 directly mapping the payload.  The payload must be a Perl character string
 having one of the 9 values `Down`, `Up`, `ToZero`, `ToInf`,
 `HalfDown`, `HalfUp`, `HalfToZero`, `HalfToInf`, `HalfEven`.
@@ -574,7 +574,7 @@ Examples:
 ## General Purpose Integer Numeric Literals
 
 An `Int` node represents an integer numeric value.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Int` value as follows:
+Muldis Data Language `sys.std.Core.Type.Int` value as follows:
 
 * If the payload is a Perl scalar, then it must be just a canonical integer
 value according to Perl, and it is mapped directly; since native Perl
@@ -628,7 +628,7 @@ Examples:
 ## General Purpose Rational Numeric Literals
 
 A `Rat` node represents a rational numeric value.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Rat` value as follows:
+Muldis Data Language `sys.std.Core.Type.Rat` value as follows:
 
 * If the payload is a Perl scalar, then it must be just a canonical numeric
 value according to Perl, and it is mapped directly; since native Perl
@@ -708,7 +708,7 @@ Examples:
 ## General Purpose Binary String Literals
 
 A `Blob` node represents a general purpose bit string.  It is interpreted
-as a Muldis D `sys.std.Core.Type.Blob` value as follows:
+as a Muldis Data Language `sys.std.Core.Type.Blob` value as follows:
 
 * If the payload is a Perl scalar, then it must be a canonical Perl bit
 string, which is a scalar whose utf-8 flag is false, and it is mapped
@@ -740,9 +740,9 @@ Examples:
 ## General Purpose Character String Literals
 
 A `Text` node represents a general purpose character string.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Text` value by directly
+interpreted as a Muldis Data Language `sys.std.Core.Type.Text` value by directly
 mapping the payload.  The payload must be just a canonical Perl character
-string, which is any Perl scalar value (a Muldis D implementation in Perl
+string, which is any Perl scalar value (a Muldis Data Language implementation in Perl
 can ignore the utf-8 flag as Perl itself knows how to treat its strings
 consistently).
 
@@ -763,14 +763,14 @@ Examples:
 
 A `Name` node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
-from `Text`.  It is interpreted as a Muldis D
+from `Text`.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Cat.Name` value by directly mapping the payload.  The
 payload must be as per the payload of a `Text` node.
 
 A `NameChain` node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
 names.  Its payload is a Perl array ref or character string.  This node is
-interpreted as a Muldis D `sys.std.Core.Type.Cat.NameChain` value as
+interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.NameChain` value as
 follows:
 
 * If the payload is an array ref, then
@@ -819,7 +819,7 @@ Examples:
 ## Rational Rounding Rule Literals
 
 A `RatRoundRule` node represents a rational rounding rule.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Cat.RatRoundRule` value whose
+interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.RatRoundRule` value whose
 attributes are defined by the `RatRoundRule_payload`.  A
 `RatRoundRule_payload` must be a Perl array ref with 3 elements, which
 correspond in order to the 3 attributes: `radix` (a `PInt2_N`),
@@ -845,7 +845,7 @@ options exist are only valid within a `depot` node.
 ## Scalar Selectors
 
 A `Scalar` node represents a literal or selector invocation for a
-not-`Int|String` scalar subtype value.  It is interpreted as a Muldis D
+not-`Int|String` scalar subtype value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Scalar` subtype value whose declared type is specified
 by the  node's (mandatory for `Scalar`) `type_name` element and whose
 attributes are defined by the payload.  If the payload is a Perl array ref,
@@ -891,7 +891,7 @@ Examples:
 ## Tuple Selectors
 
 A `Tuple` node represents a literal or selector invocation for a
-tuple value.  It is interpreted as a Muldis D
+tuple value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Tuple` value whose attributes are defined by the
 payload.  The payload must be just a Perl hash ref.  Each key+value pair of
 the payload defines a named attribute of the new tuple; the pair's key and
@@ -916,7 +916,7 @@ Examples:
 ## Database Selectors
 
 A `Database` node represents a literal or selector invocation for a
-'database' value.  It is interpreted as a Muldis D
+'database' value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Database` value whose attributes are defined by the
 payload.  The payload must be a just a Perl hash ref.  Each key+value pair
 of the payload defines a named attribute of the new 'database'; the pair's
@@ -927,7 +927,7 @@ which must be represent a relation value.
 ## Relation Selectors
 
 A `Relation` node represents a literal or selector invocation for a
-relation value.  It is interpreted as a Muldis D
+relation value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Relation` value whose attributes and tuples are
 defined by the payload, which is interpreted as follows:
 
@@ -984,7 +984,7 @@ Examples:
 ## Set Selectors
 
 A `Set` node represents a literal or selector invocation for a set
-value.  It is interpreted as a Muldis D `sys.std.Core.Type.Set` value
+value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Set` value
 whose elements are defined by the payload.  The payload must be just a Perl
 array ref.  Each element of the payload defines a unary tuple of the
 new set; each element is an `expr` node that defines the `value`
@@ -1008,7 +1008,7 @@ Examples:
 ## Maybe Selectors
 
 A `Maybe` node represents a literal or selector invocation for a
-maybe value.  It is interpreted as a Muldis D
+maybe value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Maybe` value.  If the node payload is missing or
 undefined, then the node is interpreted as the special value
 `Maybe:Nothing`, aka `Nothing`, which is the only `Maybe` value with
@@ -1026,7 +1026,7 @@ Examples:
 ## Array Selectors
 
 An `Array` node represents a literal or selector invocation for an
-array value.  It is interpreted as a Muldis D
+array value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Array` value whose elements are defined by the
 payload.  The payload must be just a Perl array ref.  Each element of the
 payload defines a binary tuple of the new sequence; the element value
@@ -1051,7 +1051,7 @@ Examples:
 ## Bag Selectors
 
 A `Bag` node represents a literal or selector invocation for a bag
-value.  It is interpreted as a Muldis D `sys.std.Core.Type.Bag` value
+value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Bag` value
 whose elements are defined by the payload.  The payload is interpreted as
 follows:
 
@@ -1099,7 +1099,7 @@ Examples:
 ## Interval Selectors
 
 An `SPInterval` node represents a literal or selector invocation for a
-single-piece interval value.  It is interpreted as a Muldis D
+single-piece interval value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.SPInterval` value whose attributes are defined by the
 payload.  The node payload must be a Perl array ref with 3 elements, which
 are designated in order: *min*, *interval boundary kind*, *max*.  Each
@@ -1121,7 +1121,7 @@ to the actual payload and whose *interval boundary kind* is `..`.  For
 example, the payload `6` is shorthand for `[6,'..',6]`.
 
 An `MPInterval` node represents a literal or selector invocation for a
-multi-piece interval value.  It is interpreted as a Muldis D
+multi-piece interval value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.MPInterval` value whose elements are defined by the
 payload.  The payload must be just a Perl array ref.  Each element of the
 payload must be a valid payload for an `SPInterval` node (that is, a Perl
@@ -1157,7 +1157,7 @@ Examples:
 ## Low Level List Selectors
 
 A `List` node represents a literal or selector invocation for a low-level
-list value.  It is interpreted as a Muldis D `sys.std.Core.Type.Cat.List`
+list value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.List`
 value whose elements are defined by the payload.  The payload must be just
 a Perl array ref.  Each element of the payload defines an element of the
 new list, where the elements keep the same order.
@@ -2370,8 +2370,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

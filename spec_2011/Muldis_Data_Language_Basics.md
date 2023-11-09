@@ -1,26 +1,26 @@
 # NAME
 
-Muldis::D::Basics - 10,000 Mile View of Muldis D
+Muldis Data Language Basics - 10,000 Mile View of Muldis Data Language
 
 # VERSION
 
-This document is Muldis::D::Basics version 0.148.1.
+This document is Muldis Data Language Basics version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document provides a 10,000 mile view of the Muldis D language.  It
+This document provides a 10,000 mile view of the Muldis Data Language language.  It
 provides the basics of how the language is designed and works, as a
 foundation upon which to understand the other parts of the language spec.
 
 # NOTES ON TERMINOLOGY
 
-There are a few terms that the Muldis D documentation uses which may have
+There are a few terms that the Muldis Data Language documentation uses which may have
 different meanings than what you may be used to, so here are a few notes to
 clarify what they mean in this document.  Similarly, there are some terms
 used in the industry that are expressly not used here so to help avoid
@@ -41,7 +41,7 @@ have an address); it holds an appearance of a value; it is neither unique
 nor eternal nor immutable in the general case.  A *constant* is a variable
 which is defined to not mutate after initially being set, or alternately is
 a niladic function (that always results in the same value).  Terms like
-*object* are not used in this documentation for any aspects of Muldis D
+*object* are not used in this documentation for any aspects of Muldis Data Language
 since their meaning in practice is both ambiguous and wide-reaching, and
 could refer to both values and variables depending on usage context.
 
@@ -49,8 +49,8 @@ could refer to both values and variables depending on usage context.
 
 The term *universal* refers to the common superset of all allowable sets,
 and is specifically non-recursive.  While philosophy in general might allow
-it (or might not due to certain paradoxes that might result), Muldis D
-specifically does not allow any set to be a member of itself.  No Muldis D
+it (or might not due to certain paradoxes that might result), Muldis Data Language
+specifically does not allow any set to be a member of itself.  No Muldis Data Language
 data type may be defined in terms of itself, either directly or indirectly;
 any data type must be completely defined in isolation before some other
 type may be defined in terms of it.  Therefore, *universal* in this
@@ -62,7 +62,7 @@ non-recursion rules.
 A *text* is a string composed of Unicode abstract *characters* which is
 formatted as a sequence of Unicode abstract *code points* in canonical
 decomposed normal form (NFD).  Two character strings will generally match
-at the grapheme abstraction level.  Of course, a Muldis D implementation
+at the grapheme abstraction level.  Of course, a Muldis Data Language implementation
 doesn't actually have to store character data in NFD; but default matching
 semantics need to be as if it did.
 
@@ -71,7 +71,7 @@ semantics need to be as if it did.
 A *tuple* is an unordered heterogeneous collection of 0..N elements that
 are keyed by the element's name; each element is a name-value pair, and all
 names in the tuple are distinct.  While *tuple* legitimately refers to the
-same thing as the Muldis D term *sequence* in other contexts, it does
+same thing as the Muldis Data Language term *sequence* in other contexts, it does
 not in this documentation.  Terms like *record* or *row* are not used in
 this documentation, the latter in particular because it implies ordered.
 
@@ -99,8 +99,8 @@ A *function* is a routine whose invocation is used as a value expression,
 and it conceptually serves as a map between the domains of its parameters
 and its result value.  A *function* is not the same as a *relation*,
 though both can be used as maps between values.  Besides their conceptual
-difference in Muldis D as a routine vs a value, a selected *relation*
-value in Muldis D is always finite, and hence so is the cardinality of
+difference in Muldis Data Language as a routine vs a value, a selected *relation*
+value in Muldis Data Language is always finite, and hence so is the cardinality of
 the map it can provide; whereas, a function can have an infinite map size.
 
 * database / relational database, dbvar, dbcon
@@ -142,7 +142,7 @@ Within this documentation, the actually more generic term *DBMS* will be
 used to refer exclusively to a *RDBMS* (Relational Database Management
 System), so you should read the former as if it were the latter.  A
 *RDBMS* is a computer program that manages relational database variables,
-associated catalogs, and depots in general.  Muldis D aspires to or does
+associated catalogs, and depots in general.  Muldis Data Language aspires to or does
 define one, and likewise are various other *TTM*-inspired programs like
 Rel and Duro; most other DBMS-like programs are technically non-relational,
 including all SQL DBMSs such as Oracle, PostgreSQL and SQLite, though they
@@ -155,7 +155,7 @@ A *module* is an analogy of a *depot* that is for system-defined DBMS
 entities rather than user-defined ones.  The two are similar in that they
 both define a library of materials organized in a public namespace
 hierarchy.  The two differ in that a *depot* is defined entirely in pure
-Muldis D, such as a DBMS user can do, while a *module* is defined at least
+Muldis Data Language, such as a DBMS user can do, while a *module* is defined at least
 partially in some other language, such as that of the DBMS' own source
 code.  Alternately, they differ in that all *depot* are visible in the
 DBMS under the public namespace for user-defined entities while all
@@ -187,7 +187,7 @@ referred to by the longer term *sequence generator*.
 A *selector* is a routine that captures an appearance of a value for use
 in a variable or expression.  A *value literal* is also a common special
 case of a selector.  The term *constructor* is not used in this
-documentation because all values in Muldis D are conceptually eternal and
+documentation because all values in Muldis Data Language are conceptually eternal and
 immutable, so it does not make sense to say that we are "building" one; we
 are "selecting" one.
 
@@ -240,24 +240,24 @@ outermost transaction.
 
 # NOTES ON TEXT CHARACTER LITERALS
 
-The text of the Muldis D documentation includes a variety of characters
+The text of the Muldis Data Language documentation includes a variety of characters
 from the Unicode character repertoire that are not in the character ASCII
 repertoire, almost all of them in the sections describing the concrete
-syntaxes of the Muldis D language.  The documentation files are also
+syntaxes of the Muldis Data Language language.  The documentation files are also
 canonically stored in the Unicode UTF-8 character encoding.  This
 documentation section enumerates the characters used literally anywhere in
-the Muldis D spec along with their Unicode character names and a brief
+the Muldis Data Language spec along with their Unicode character names and a brief
 description of their use.  This is so that it is easier to recognize said
 characters when they are seen, especially since the Unicode standard
 includes many cases of distinct characters that visually are nearly
-identical, so you know unambiguously what characters the Muldis D spec is
+identical, so you know unambiguously what characters the Muldis Data Language spec is
 actually referring to.
 
 This first set of characters are all in the 7-bit ASCII repertoire, and are
 the minimum set of characters you actually need to be able to write, in
-order to use all Muldis D features:
+order to use all Muldis Data Language features:
 
-    Chr | Unic | Unicode                | Concrete Muldis D
+    Chr | Unic | Unicode                | Concrete Muldis Data Language
     Lit | Cdpt | Character Name         | Mainly Uses for
     ----+------+------------------------+----------------------------------
         | 0x20 | SPACE                  | Uni char name lit, delim Comm lit
@@ -304,12 +304,12 @@ order to use all Muldis D features:
     ~   | 0x7E | TILDE                  | string catenation op
 
 This second set of characters are all outside the 7-bit ASCII repertoire,
-and are provided so that Muldis D code can be easier to write in a visually
+and are provided so that Muldis Data Language code can be easier to write in a visually
 concise and attractive way, but any context which allows for their use in a
 significant way also provides a means to accomplish the same task using
 just the 7-bit ASCII repertoire:
 
-    Chr | Unicod | Unicode                    | Concrete Muldis D
+    Chr | Unicod | Unicode                    | Concrete Muldis Data Language
     Lit | Codept | Character Name             | Mainly Uses for
     ----+--------+----------------------------+----------------------------
     ¬   | 0xAC   | NOT SIGN                   | logical not
@@ -391,8 +391,8 @@ Some other user with Thunderbird didn't have the randering problem though.
 UPDATE:  Under Mac OS X 10.9.5, `JOIN` *was* displayed correctly by
 Firefox (46.0.1) and Thunderbird (31.7.0).
 
-Note that only various concrete Muldis D syntaxes use trans-ASCII
-characters, and the central abstract Muldis D syntax which those all
+Note that only various concrete Muldis Data Language syntaxes use trans-ASCII
+characters, and the central abstract Muldis Data Language syntax which those all
 distill to uses only ASCII characters for all system-defined entities.
 
 # INTERPRETATION OF THE RELATIONAL MODEL
@@ -575,49 +575,49 @@ terms of our boolean analogy, a union is simply chaining together the
 entirety of each relation's boolean expression with an `or`, and then
 eliminating redundancies from the result.
 
-A full list of all the relational operators having more formal (but Muldis
-D specific) descriptions occurs in the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md)
+A full list of all the relational operators having more formal (but Muldis Data Language
+specific) descriptions occurs in the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md)
 document; that list does *not* use the aforementioned boolean analogies.
 
-# MULDIS D
+# MULDIS DATA LANGUAGE
 
-Muldis D is a computationally and Turing complete (and industrial strength)
+Muldis Data Language is a computationally and Turing complete (and industrial strength)
 high-level programming language with fully integrated database
 functionality; you can use it to define, query, and update relational
 databases.  The language's paradigm is a mixture of declarative,
 homoiconic, functional, imperative, and object-oriented.  It is primarily
 focused on providing reliability, consistency, portability, and ease of use
 and extension.  (Logically, speed of execution can not be declared as a
-Muldis D quality because such a quality belongs to an implementation alone;
+Muldis Data Language quality because such a quality belongs to an implementation alone;
 however, the language should lend itself to making fast implementations.)
 
 The language is rigorously defined and requires users to be explicit, which
 leaves little room for ambiguity and related bugs.  When something is
-specified in Muldis D, its semantics should be well known and fully
+specified in Muldis Data Language, its semantics should be well known and fully
 portable (not implementation dependent).  If a conforming implementation
 (such as **Muldis Data Engine Reference**) can't provide a specified
 behaviour, code using it will refuse to run at all, rather than silently
 changing its semantics; this also helps users to avoid bugs.  Moreover,
-Muldis D generally disallows any details of an implementation's "physical
+Muldis Data Language generally disallows any details of an implementation's "physical
 representation" or other internals to leak through into the language; eg,
 there is no "varchar" vs "char", simply "text".  Users should not have to
 know about this level of detail, and implementers should be free to
 adaptively pick optimum ways to satisfy user requests, and change later.
 
-Muldis D, being first and foremost a data processing language, provides a
+Muldis Data Language, being first and foremost a data processing language, provides a
 thorough means to both introspect and define all DBMS entities using just
 data processing operators, which is called the DBMS "catalog".  The catalog
 is a set of system-defined relvars (relation-typed variables) which reflect
 the definitions of DBMS entities; users can generally update these to
 create, alter, or drop DBMS entities.  In fact, updating the catalog
-relvars is the fundamental way to do data-definition tasks in Muldis D, and
+relvars is the fundamental way to do data-definition tasks in Muldis Data Language, and
 any other provisions for data-definition are conceptually abstractions of
 this.  Generally speaking, users can do absolutely everything in the DBMS
 with just data querying and updating operations.  (Technically speaking,
 any global-scope relvars are actually pseudo-variables which reflect
 components of dbvars, the actual variables.)
 
-The design and various features of Muldis D go a long way to help both its
+The design and various features of Muldis Data Language go a long way to help both its
 users and implementers alike.  A lot of flexibility is afforded to
 implementers of the language to be adaptive to changing constraints of
 their environment and deliver efficient solutions.  This also makes things
@@ -627,14 +627,14 @@ users can focus on defining what needs to be accomplished rather than how
 to accomplish that, which relieves burdens on their creativity, and saves
 them time.  In short, this system improves everyone's lives.
 
-What users fundamentally write are Muldis D "routines", each consisting of
+What users fundamentally write are Muldis Data Language "routines", each consisting of
 one or more "statements", and in executing these, all work is done.
 
-A fundamental quality of Muldis D's design, unlike with most
+A fundamental quality of Muldis Data Language's design, unlike with most
 general-purpose languages but like with SQL, is that applications written
 in it are empowered to dynamically mutate their own source code at runtime
 in arbitrarily large and complex ways.  This means that a single
-application process / DBMS written in Muldis D can run completely
+application process / DBMS written in Muldis Data Language can run completely
 uninterrupted for months or years at a time (24x7x365), during which its
 users/programmers are free to change or supplement its running source code
 (permanently or temporarily) so that the application keeps up with their
@@ -644,17 +644,17 @@ have to be quit and restarted for each code change, since its compile time
 is wholly separate from its runtime.  But this is consistent with a typical
 DBMS or SQL environment, that keeps its code in the database as stored
 routines.  This always-on update-anything feature underlies some of the
-design decisions of Muldis D, such as that users are able to create, store,
+design decisions of Muldis Data Language, such as that users are able to create, store,
 read values of ostensibly user-defined types where the definitions of said
 types don't always exist, or use a database lacking a user-defined schema.
 
 ## Representation
 
-Muldis D has multiple official representation formats, each of which is
+Muldis Data Language has multiple official representation formats, each of which is
 referred to by this multi-part document as a *dialect*.  Each official
-Muldis D dialect has its own syntax rules, but all of them are capable of
+Muldis Data Language dialect has its own syntax rules, but all of them are capable of
 representing the same code; that is, they can all represent code that has
-the same behaviour, and Muldis D code can be translated between any 2 of
+the same behaviour, and Muldis Data Language code can be translated between any 2 of
 these dialects without changing its behaviour.
 
 Some dialects maintain more non-critical explicit metadata than others, so
@@ -671,35 +671,35 @@ maintain all of the same non-critical metadata, and simply have different
 syntaxes; round-tripping code between these is guaranteed to result in
 everything that was started with, non-criticals included.
 
-Generally speaking, every Muldis D dialect belongs to one of just 2 groups,
-which are *non-hosted plain-text* and *hosted data*; any Muldis D dialect
-will go by the abstract names *Plain Text Muldis D* (*PTMD*), and
-*Hosted Data Muldis D* (*HDMD*), respectively.  With all Plain Text
-dialects, the Muldis D code is represented by an (ordered) string/sequence
+Generally speaking, every Muldis Data Language dialect belongs to one of just 2 groups,
+which are *non-hosted plain-text* and *hosted data*; any Muldis Data Language dialect
+will go by the abstract names *Plain Text Muldis Data Language* (*PTMD*), and
+*Hosted Data Muldis Data Language* (*HDMD*), respectively.  With all Plain Text
+dialects, the Muldis Data Language code is represented by an (ordered) string/sequence
 of characters like with most normal programming languages.  With all Hosted
-Data dialects, the Muldis D code is represented by collection-typed values
+Data dialects, the Muldis Data Language code is represented by collection-typed values
 that are of some native type of some other programming language (eg, Perl)
-which is the host of Muldis D.  The Muldis D code is written here by way of
+which is the host of Muldis Data Language.  The Muldis Data Language code is written here by way of
 writing code in the host language.
 
-Some official Muldis D dialects have their specifications bundled with the
+Some official Muldis Data Language dialects have their specifications bundled with the
 current multi-document: [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
 [Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
-[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).  Other, unofficial Muldis D dialects
+[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).  Other, unofficial Muldis Data Language dialects
 may be made by third parties in the future, but none are currently known.
 
 The other parts of the current multi-document generally focus on the
-behaviours and semantic features of Muldis D, rather than its syntax, and
-what they describe is generally common to all Muldis D dialects.  The most
+behaviours and semantic features of Muldis Data Language, rather than its syntax, and
+what they describe is generally common to all Muldis Data Language dialects.  The most
 important of those parts are the current **Basics** file and the
 [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) file.
 
-See also **SOURCE CODE METADATA** for more details on Muldis D's standard
-support for non-critical Muldis D code metadata.
+See also **SOURCE CODE METADATA** for more details on Muldis Data Language's standard
+support for non-critical Muldis Data Language code metadata.
 
 # TYPE SYSTEM
 
-The Muldis D type system is a formal type system, at least in intent, and
+The Muldis Data Language type system is a formal type system, at least in intent, and
 works conceptually in the following manner.
 
 There is a single universal value set/domain, named `Universal`, whose
@@ -708,7 +708,7 @@ maximal data type of the entire type system.  Also there is a single
 nullary value set/domain, named `Empty`, which has zero members; `Empty`
 is the minimal data type.
 
-All Muldis D data values as individuals are eternal and immutable.  All
+All Muldis Data Language data values as individuals are eternal and immutable.  All
 values are logically distinct, and each value occurs exactly once, and is
 not fixed within time or space (so doesn't have an "address").  It does not
 make sense to say that you are creating or destroying or copying or
@@ -719,14 +719,14 @@ destroyed, mutated, and multiple variables can hold appearances of the same
 value.  So when one appears to be testing 2 values for equality, they are
 actually testing whether 2 value appearances are in fact the same value.
 
-Given that all data values in Muldis D are fundamentally immutable, the
+Given that all data values in Muldis Data Language are fundamentally immutable, the
 term "selector" is used to describe a routine that captures an appearance
 of a value into a variable (or for use in a value expression); this is
 analogous to the task that a "constructor" routine does in a typical
 object-oriented language, but that the former is conceptually "selecting"
 an eternally existing value rather than conceptually "creating" a new one.
 
-In the Muldis D type system, a *data type* is a set of values, and as with
+In the Muldis Data Language type system, a *data type* is a set of values, and as with
 individual values, a data type is eternal and immutable.  Each data type
 can also have type-specific metadata where what metadata is possible
 depends on how the type is defined; an example of metadata is a default
@@ -753,10 +753,10 @@ system-defined `Empty` type is a proper subtype of all other types.  Now,
 if no data type, *T3* exists which is both a proper subtype of *T1* and a
 proper supertype of *T2*, then *T1* is an *immediate supertype* of
 *T2*, and *T2* is an *immediate subtype* of *T1*.  Note that the
-Muldis D type system supports multiple inheritance, so types can form a
+Muldis Data Language type system supports multiple inheritance, so types can form a
 lattice rather than a tree.
 
-Subtyping in Muldis D, as in any **D** language, takes the form of
+Subtyping in Muldis Data Language, as in any **D** language, takes the form of
 *specialization by constraint*, not *specialization by extension*.  So
 conceptually speaking, a "circle" value is an "ellipse" value, but a
 "coloured circle" is neither a "circle" value nor a "colour" value; the
@@ -765,7 +765,7 @@ subtype of "circle" nor of "colour".  Rather, for example, a "coloured
 circle" is a multi-component type which has components of type "circle" and
 "colour", but composition like this does not a subtype make.
 
-However, Muldis D's *mixin types* feature allows one to fake
+However, Muldis Data Language's *mixin types* feature allows one to fake
 *specialization by extension*; it aids in code reuse between disjoint
 types having common components, such as is a main benefit of
 *specialization by extension*; any 2 types that independently compose the
@@ -789,7 +789,7 @@ that **D** requirement is to support polymorphism where multiple distinct
 operators that have the same name but different semantics can dispatch
 correctly based on the MST of their operands.  However, in practice, such a
 requirement would place a gratuitous large and error-prone burden on users,
-if mandated universally.  Instead, Muldis D only enforces single MSTs in
+if mandated universally.  Instead, Muldis Data Language only enforces single MSTs in
 the limited contexts where that is actually necessary, if any.
 
 A *union type* is a data type that has at least 2 immediate subtypes, and
@@ -839,10 +839,10 @@ types are: `Universal`, `Empty`, `Structure`, `String`, `Scalar`,
 `Set`, `Maybe`, `Array`, `Bag`.
 
 The fundamental reason for this design, where all values are introduced
-into the type system by just system-defined types, is so that Muldis D can
+into the type system by just system-defined types, is so that Muldis Data Language can
 support doing data definition plus data manipulation as a single atomic
 operation.  This is because there is an effective way to represent and
-interpret all Muldis D values in the complete absence of any user-defined
+interpret all Muldis Data Language values in the complete absence of any user-defined
 types, so there is no chicken-and-egg problem that prevents DD+DM from
 being done together in the general case, where one needs to have
 non-mutating definitions of user-defined types in order to do manipulation
@@ -850,7 +850,7 @@ of data having those types.
 
 Another consequence of this design is that users actually don't ever have
 to define any data types if they don't want to.  All empowering features of
-Muldis D are provided just by the ability to make user-defined routines.
+Muldis Data Language are provided just by the ability to make user-defined routines.
 Generally speaking, the only primary purpose of having user-defined data
 types is is to effectively provide constraints that restrict users from
 doing things, and they are in no way necessary for enabling users to do
@@ -861,7 +861,7 @@ used in production should exploit user-defined types and constraints.  Also
 user-defined types are very useful as metadata to explain the intended
 interpretation of particular data and code working with it.
 
-One might say that Muldis D is using *progressive nominal typing*, where
+One might say that Muldis Data Language is using *progressive nominal typing*, where
 values in databases move between structural and nominal typing as
 user-defined types whose names match their declared types come in and out
 of existence or mutate.
@@ -871,7 +871,7 @@ structure or external type is also called a *root type*; a data type that
 is an enumeration is also called a *nonroot type*.  A *leaf type* is a
 data type that has no proper subtypes save for `Empty`.
 
-Muldis D provides 2 generic polar-opposite methods to define an enumeration
+Muldis Data Language provides 2 generic polar-opposite methods to define an enumeration
 type in terms of a union, and types defined in the 2 methods can be
 referred to as *domain types* or *mixin types*, respectively.  With a
 *domain type*, it is the union type itself whose definition includes a
@@ -903,7 +903,7 @@ which would be considerably more difficult without them.
 
 ## Type Identification
 
-All values in the Muldis D type system are broadly categorized into 5
+All values in the Muldis Data Language type system are broadly categorized into 5
 complementary sets called *scalar values*, *tuple values*, *relation
 values*, *external values*, and *nonstructure values*; tuple and relation
 values are collectively known as *nonscalar values*.  The type system has
@@ -928,7 +928,7 @@ category is the complement category to all the others in that every
 possible proper subset of the values of `Universal` can now be represented
 by a type that fits in one of the 6 categories, save `Empty` itself.
 
-The most important values of the Muldis D type system (because those are
+The most important values of the Muldis Data Language type system (because those are
 the only ones that can be stored in a *database*) are broadly categorized
 into 3 complementary sets called *deeply homogeneous scalar values*,
 *deeply homogeneous tuple values*, and *deeply homogeneous relation
@@ -978,31 +978,31 @@ remnant type is defined only in terms of it being, directly or indirectly,
 a union or negation of other non-remnant types.  As per with nonscalars,
 several independently defined remnant types can be considered the same one.
 
-To keep things simpler, every data type in Muldis D has a name by which it
+To keep things simpler, every data type in Muldis Data Language has a name by which it
 is referenced, even nonscalar types; however, the names of types that are
 not scalar types are simply convenient aliases for their true identities,
-which are their structures (the convenience allows various Muldis D catalog
+which are their structures (the convenience allows various Muldis Data Language catalog
 features to be designed and implemented more easily).
 
 An external type is a special opaque type.
 A value of an external type can not be stored in a database and
 it only is ever stored in routine lexical variables or arguments.  The
-use purpose is provided by Muldis D's special `External`
+use purpose is provided by Muldis Data Language's special `External`
 type, the values of which will represent any arbitrary values of any
 arbitrary, often user-defined and mutable, types of a peer or host language
-to Muldis D in the context of a common program.  Each `External` value is
-a black box to Muldis D code, which other parts of a wider program can give
-to Muldis D routines to manage, such as store in a relation value for
+to Muldis Data Language in the context of a common program.  Each `External` value is
+a black box to Muldis Data Language code, which other parts of a wider program can give
+to Muldis Data Language routines to manage, such as store in a relation value for
 organization and processing with relational operators.  The mutual identity
 of `External` values is implementation-defined, and by default each one is
 conceptually a memory address meaningful to the external language.  But
-regardless, `External` values are disjoint from all native Muldis D
+regardless, `External` values are disjoint from all native Muldis Data Language
 values, so their proprietary identity schemes have no bearing on natives.
 
 ## Scalar Types
 
 Scalar types are the only conceptually (non-external) encapsulated types
-in Muldis D, and are like other languages' concepts of object classes where
+in Muldis Data Language, and are like other languages' concepts of object classes where
 all their attributes are private, and only accessible indirectly.  The
 definition of a scalar type comprises usually one or more named
 *possreps* or *possible representations*, and for each of those, at least
@@ -1071,7 +1071,7 @@ are arranged as nodes on a directed graph, with an explicit mapping
 function being a side, there just needs to be a path from every possrep to
 every other one; every path then has at least an implicit mapping function.
 
-The Muldis D implementation can choose for itself as to how the scalar
+The Muldis Data Language implementation can choose for itself as to how the scalar
 type is physically represented behind the scenes, either picking between
 any of the user-provided possreps or using yet another one or several of
 its own; the implementation can work how it knows best to achieve an
@@ -1095,7 +1095,7 @@ possreps at all, and hence has no selectors or accessors defined for it.
 
 Note that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
-system-defined scalar possrep attribute accessors can work), Muldis D
+system-defined scalar possrep attribute accessors can work), Muldis Data Language
 requires all of the possreps of all scalar types having a common scalar
 root type to have mutually distinct names, regardless of whether any
 subtypes have values in common; this can be enforced at
@@ -1111,7 +1111,7 @@ deeply homogeneous types.
 ## Tuple Types and Relation Types
 
 Tuple types are the fundamental heterogeneous conceptually
-non-encapsulated collection types in Muldis D, and are like the Pascal
+non-encapsulated collection types in Muldis Data Language, and are like the Pascal
 language's concept of a record, or the C language's concept of a struct.
 The definition of a tuple type comprises a set of zero or more named
 *attributes* of any scalar or nonscalar type.  This set definition is
@@ -1119,7 +1119,7 @@ called the tuple's *heading*, and the count of attributes is called the
 tuple's *degree*.
 
 Relation types are the fundamental homogeneous conceptually
-non-encapsulated collection types in Muldis D, and are like other
+non-encapsulated collection types in Muldis Data Language, and are like other
 languages' concepts of sets (or arrays where all elements are distinct),
 but restricted in that all elements are tuples (whose degrees and attribute
 names are identical); the count of tuples in a relation is called the
@@ -1182,7 +1182,7 @@ type has exactly zero values, and so the latter is in fact an alias for
 `Empty` itself, since no tuple value can lack a value for an attribute and
 no scalar value can lack a value for a possrep attribute.
 
-A consequence of these identity matters is that a Muldis D implementation
+A consequence of these identity matters is that a Muldis Data Language implementation
 can choose to keep all the actual type information of a nonscalar value's
 attributes in the body, leaving the heading to keep nothing but the names
 of the attributes.  An empty relation body does not mean that any
@@ -1248,7 +1248,7 @@ all, but they are all nonscalar types; no deeply homogeneous types could
 use those as declared types of any attributes.
 
 The distinction between deeply homogeneous types and other types is very
-important to make.  Muldis D only permits a *database* typed variable,
+important to make.  Muldis Data Language only permits a *database* typed variable,
 which are the only kinds of variables that can be global and persist, to
 consist of deeply homogeneous relations and deeply homogeneous tuples and
 deeply homogeneous scalars.
@@ -1257,26 +1257,26 @@ The other types are just intended for use with fringe kinds of transient
 data in lexical variables or to pass to routine parameters or return from
 functions, which is where they are expected to be useful; but even there,
 it is not expected that you would need to use non-deeply-homogeneous types
-very often; Muldis D is designed such that you generally need just the
+very often; Muldis Data Language is designed such that you generally need just the
 deeply homogeneous types to do anything important.
 
 The non-deeply-homogeneous types serve partly as a convenience for
-programmers integrating Muldis D with another host language, and want
-Muldis D to work with their transients more like the host language itself
+programmers integrating Muldis Data Language with another host language, and want
+Muldis Data Language to work with their transients more like the host language itself
 does, for example to hold a "relation of anything to anything" or a "list
 of anything" in memory.  Or likewise, to help programmers more easily
-emulate another arbitrary language in Muldis D.
+emulate another arbitrary language in Muldis Data Language.
 
 As an exception to the general rule of nothing important needing
-non-deeply-homogeneous nonscalar types, the definition of Muldis D's
+non-deeply-homogeneous nonscalar types, the definition of Muldis Data Language's
 relational join and cross-product operators require a relation main
-argument because they are N-adic operators and N-adic Muldis D operators
+argument because they are N-adic operators and N-adic Muldis Data Language operators
 take a conceptual multiplicity of arguments as a single collection
 argument, and the conceptual arguments to relational join usually have
 different headings, and so this single actual argument can't be just a
 deeply homogeneous relation in the general case (if it was, then the join
 will happen to be the special case that is a relational intersection).  But
-this exception is just an artifact of Muldis D having exclusively named
+this exception is just an artifact of Muldis Data Language having exclusively named
 parameters plus N-adic by default where possible, and the actual join
 operation is still relational model abiding.
 
@@ -1340,7 +1340,7 @@ individual system-defined data types specifies whether each of which is
 finite or infinite, and in the latter case, it states a most generic means
 to specify a finite subtype.*
 
-Note that, while it is not mandated by the language, some Muldis D
+Note that, while it is not mandated by the language, some Muldis Data Language
 implementations may legitimately choose to impose restrictions on their
 users such that the declared types of all persisting variables must be of
 finite types only.
@@ -1367,7 +1367,7 @@ defining user chose.
 
 ## Universal Implicit Operators
 
-Muldis D is universally polymorphic to at least a small degree, such that
+Muldis Data Language is universally polymorphic to at least a small degree, such that
 every data type without exception has both an `assign` update operator
 (for assigning a value of that type to a variable of that type) and an
 `is_same` function for testing that 2 values of that type are identical or
@@ -1375,17 +1375,17 @@ equal or substitutable (and `is_not_same`, for the opposite).  Moreover,
 these operators exist implicitly, so when one defines the initial possrep
 of a new type, they get those operators for the type at no extra cost.
 
-But really, the only kind of polymorphism that Muldis D has is related to
+But really, the only kind of polymorphism that Muldis Data Language has is related to
 subtypes inheriting the operators of their supertypes.  Besides this, all
-Muldis D operators have different fully-qualified names from each other, so
+Muldis Data Language operators have different fully-qualified names from each other, so
 there isn't a case of incompatible operators having the same names, which
 then must be differentiated by their argument types.  So in that respect,
-maybe Muldis D isn't so polymorphic after all, depending on whether the
+maybe Muldis Data Language isn't so polymorphic after all, depending on whether the
 latter behaviour would be needed to call a language *polymorphic*.
 
 ## Numeric Types
 
-Conceptually speaking, Muldis D has just a single most-important numeric
+Conceptually speaking, Muldis Data Language has just a single most-important numeric
 data type, which consists of every possible real rational number.  This
 data type is a "bignum", and will exactly represent a rational number with
 any arbitrary magnitude and precision, limited only by the amount of
@@ -1408,7 +1408,7 @@ using 2 integers; the value is the result of dividing a *numerator* by a
 is most common for the radix to be 2 or 10, any other radix can be used
 instead, such as to represent the value four-thirds exactly.
 
-If you want to represent any numeric or numeric-related value in Muldis D
+If you want to represent any numeric or numeric-related value in Muldis Data Language
 other than the aforementioned core-supported ones, you will need to do it
 with some less-important non-core language type, either some system-defined
 extension or some user-defined type.  For example, if you want division by
@@ -1422,23 +1422,23 @@ traditional 32-bit integer or 64-bit IEEE-754 float sans special values,
 you can have that as a simple proper subtype of the most-important numeric
 type.
 
-Now, the Muldis D language actually has 2 most-important numeric data types
+Now, the Muldis Data Language language actually has 2 most-important numeric data types
 which are disjoint, `Int` and `Rat`, both of which are in the language
 core.  The second one is equal to the conceptual single numeric type as to
 what numeric values it can represent; the first one by contrast is
 conceptually a proper subtype which just contains all the integers, that is
 the values where the conceptual *exponent* is zero (or *denominator* is
 1) and so the *mantissa* (or *numerator*) by itself is the value.  The
-reason that Muldis D has these 2 types disjoint is to assist ease of use
+reason that Muldis Data Language has these 2 types disjoint is to assist ease of use
 and implementation; moreover, `Int` is conceptually a lot simpler, and
 `Rat` is conceptually defined in terms of `Int`.  And `Rat` isn't needed
-for bootstrapping a minimal Muldis D implementation or the system catalog,
+for bootstrapping a minimal Muldis Data Language implementation or the system catalog,
 whereas `Int` is.  *Note: The latter, system catalog, will no longer be
 the case if the system catalog definition expands to include time-stamps.*
 
 ## Ordered Types
 
-Data types in Muldis D are fundamentally unordered sets of values, and so
+Data types in Muldis Data Language are fundamentally unordered sets of values, and so
 in the general case, it does not make sense to use them in a context that
 requires some conception of values being mutually ordered.  However,
 potentially any type can externally have ordering algorithms (as defined by
@@ -1446,7 +1446,7 @@ functions) applied to it in particular contexts, and so fake the type being
 ordered, in either one or multiple ways.  Moreover, many of the common use
 cases here have system-defined functionality to support them.
 
-To maximize code reuse and polymorphism in Muldis D, you should only need
+To maximize code reuse and polymorphism in Muldis Data Language, you should only need
 to define a single order-determination function per data type whose values
 you want to sort, in the general case.  If such a function is declared in
 the appropriate format and in the appropriate place, then the multiplicity
@@ -1514,7 +1514,7 @@ type-default sorting function is attached to a scalar root type.
 Note that, for the present at least, a system-compatible fundamental
 order-determination function may only be totally ordered; that is, no 2
 distinct values of a type it is applied to may compare as `Same`.  In the
-future, Muldis D may have privileged support for partial ordering
+future, Muldis Data Language may have privileged support for partial ordering
 functions, which when applied to sort a set of values would result in a
 sequence of sets of compares-as-same values, rather than a straight
 sequence of values.  But in the meantime you can make a non-privileged
@@ -1523,10 +1523,10 @@ ordered order-determination function, and a relational group if applicable.
 
 ## Type Safety
 
-Muldis D should qualify as a *type-safe* language by many, if not all,
+Muldis Data Language should qualify as a *type-safe* language by many, if not all,
 definitions of the term *type-safe*.
 
-The Muldis D type system is used to prevent certain erroneous or
+The Muldis Data Language type system is used to prevent certain erroneous or
 undesirable program behaviour.  Type errors are usually those that result
 from attempts to perform an operation on some values, that is not
 appropriate to their data types; or any contravention of the programmer's
@@ -1541,18 +1541,18 @@ type, and a function will only ever result in a value of its declared type.
 There are no implicit type conversions, only explicit type mapping.  For
 example, it is invalid for a numeric value to appear where a character
 string value is expected, or vice-versa, but an expression or function that
-explicitly maps a numeric to a string is valid to use there.  Muldis D
+explicitly maps a numeric to a string is valid to use there.  Muldis Data Language
 follows the *principle of cautious design*.
 
-Muldis D is a hybrid dynamic and static language, and where on the spectrum
+Muldis Data Language is a hybrid dynamic and static language, and where on the spectrum
 it is varies by implementation.  At the very least, all imminent type
 errors would be prevented by the system at run time.  But the more
 potential type errors are caught at compile time, the better for users.
 
-Fundamentally, Muldis D is a dynamic language, associating type information
+Fundamentally, Muldis Data Language is a dynamic language, associating type information
 with values at run time and consulting them as needed to detect imminent
 errors; the system prevents run time imminent type errors by throwing an
-exception.  However, it is possible in many cases for Muldis D to be
+exception.  However, it is possible in many cases for Muldis Data Language to be
 treated as a static language, where type errors are found and prevented at
 compile time, such that the compilation process throws an exception.
 Ideally, all type errors would be found at compile time, and more
@@ -1562,7 +1562,7 @@ detection at compile time, a wider scope needs to be analysed than
 otherwise; in practice, the widest practical scope is to analyse the entire
 *depot* that would contain the code being compiled.
 
-By design, all Muldis D user-defined variables and routines must live in
+By design, all Muldis Data Language user-defined variables and routines must live in
 the same depot as all the user-defined types (and constraints) they are
 defined in terms of, and the same depot as all the functions that they
 invoke.  Only procedures may invoke things in depots other than their own,
@@ -1573,23 +1573,23 @@ entire depot to be proven internally free of type errors at the time of
 compilation for any entity living within it.  As for inter-depot type
 checking, that could be done at depot mount time.
 
-But that is assuming no Muldis D code in a depot will update its own system
+But that is assuming no Muldis Data Language code in a depot will update its own system
 catalog, in which case that assumption can be thrown out the window.  While
 a depot's code doesn't have to update its own system catalog, because all
 such updates could typically be done either in advance
-or later on by other utility depots' code, it is a fundamental Muldis
-D feature that code in a depot can update its own system catalog.  A
+or later on by other utility depots' code, it is a fundamental Muldis Data Language
+feature that code in a depot can update its own system catalog.  A
 depot's system catalog update constitutes recompiling the then-changed code
 in that depot, and so what types and routines and variables exist would
-have changed.  It is valid for a Muldis D procedure to define a new type or
+have changed.  It is valid for a Muldis Data Language procedure to define a new type or
 routine in one statement, and then invoke it in the next; that is how the
-Muldis D analogy of SQL's "prepared statements" works.  *Note
-that this whole matter may be subject to revisiting, such that Muldis D
+Muldis Data Language analogy of SQL's "prepared statements" works.  *Note
+that this whole matter may be subject to revisiting, such that Muldis Data Language
 code can never update the system catalog of its own depot to alter types or
 routines or variables; but other system catalog updates such as affecting
 database user privileges in the same depot may be retained.*
 
-Now, the Muldis D language spec is currently somewhat hazy in respect to
+Now, the Muldis Data Language language spec is currently somewhat hazy in respect to
 how declared types are enforced as constraints with respect to generic
 operators, and the spec currently doesn't fully formalize behaviour for
 implementations in some regards, or different parts may seem to contradict
@@ -1610,7 +1610,7 @@ is valid to compare an integer to a character string for equality; the
 result would always be false, but it is still logical; however the user
 might want the system to detect such occurrences.
 
-Therefore, Muldis D officially defines for now that the latter category is
+Therefore, Muldis Data Language officially defines for now that the latter category is
 not fatal and would just generate a warning by default.  Warnings can be
 either enabled as warnings, disabled to not display, or be promoted to
 fatal errors automatically, using a compile-time option or lexically scoped
@@ -1619,7 +1619,7 @@ pragma or something.
 All warnings are issued at compile-time only, which includes any time when
 a system catalog is being updated.
 
-Generally speaking, a Muldis D implementation can not expect at run time to
+Generally speaking, a Muldis Data Language implementation can not expect at run time to
 remember matters related to declared types of contexts that values are
 coming from.  Rather, only the most specific type of the value itself can
 be known or computable at runtime in order to enforce say the constraint
@@ -1638,16 +1638,16 @@ we want is spelled out, or alternately just the default value itself.
 
 ## Low Level Type System
 
-At the lowest, most primitive levels of Muldis D, everything is integers or
+At the lowest, most primitive levels of Muldis Data Language, everything is integers or
 sequences of integers; data types in general are just abstractions of this.
 
-The fundamental Muldis D type system has 3 compositional abstraction
+The fundamental Muldis Data Language type system has 3 compositional abstraction
 levels, which are, from lowest to highest: *atomic value*,
 *nonnamed-element collection*, *named-element collection*.
 
 An *atomic value* is named in accordance with the original meaning of
 *atom*, which is *indivisible*; an *atomic value* is not conceptually a
-collection of any kind, but rather is conceptually opaque.  Muldis D has
+collection of any kind, but rather is conceptually opaque.  Muldis Data Language has
 exactly 1 atomic value type, which is `Int`.  An `Int` is a single exact
 integral number of any magnitude; while it can be unbounded in size, by far
 most of the `Int` values actually used are quite small, and would fit in a
@@ -1656,7 +1656,7 @@ identical iff they both represent the same integer.
 
 A *nonnamed-element collection* is conceptually a transparent sequence of
 0..N elements where each element is either an *atomic value* or a
-*nonnamed-element collection*.  Muldis D has exactly 1 nonnamed-element
+*nonnamed-element collection*.  Muldis Data Language has exactly 1 nonnamed-element
 collection type, which is `List`.  A `List` is a transparent dense
 sequence of 0..N elements where each element is identified by ordinal
 position and the first element has position zero, and where each element is
@@ -1668,7 +1668,7 @@ no values that are not each of one of the first 2 types.
 
 A *named-element collection* is conceptually a collection of 0..N elements
 where each element is identified by a name rather than by an ordinal
-position.  Muldis D has 6 primary named-element collection types, which are
+position.  Muldis Data Language has 6 primary named-element collection types, which are
 `Structure`, `String`, `Tuple`, `Relation`, `ScalarWP`, `External`.
 `Structure` is a proper subtype of `List` consisting of every `List`
 value that matches one of 5 specific formats; each of those formats is
@@ -1792,18 +1792,18 @@ restrictions, and overriding what equality tests on those values result in.
 An `External` is a `Structure` having exactly 1 payload element, that is
 designated *payload*.  The *payload* is an `Int` or a `List` that the
 DBMS externally maps to a value of a type of a peer or host language to
-Muldis D, as if the payload were conceptually a memory address meaningful
+Muldis Data Language, as if the payload were conceptually a memory address meaningful
 to the external language.  For two `External`, they are considered
 identical if their *payload* are the same `Int` or `List`; otherwise the
 determination of identity is left to the other language.  Note that the
 `List` payload provision is provided so that it is possible to have some
-degree of external value structure visible in Muldis D, such as for the
-purposes of easily defining `External` proper subtypes in Muldis D.
+degree of external value structure visible in Muldis Data Language, such as for the
+purposes of easily defining `External` proper subtypes in Muldis Data Language.
 
 # ENVIRONMENT
 
-The Muldis D DBMS / virtual machine, which by definition is the
-environment in which Muldis D executes, conceptually resembles a hardware
+The Muldis Data Language DBMS / virtual machine, which by definition is the
+environment in which Muldis Data Language executes, conceptually resembles a hardware
 PC, having command processors (CPUs), standard user input and output
 channels, persistent read-only memory (ROM), volatile read-write memory
 (RAM), and persistent read-write disk or network storage.
@@ -1816,7 +1816,7 @@ be invoked by said user-input commands; the RAM starts out effectively
 empty and the persistent disk or network storage is ignored.
 
 Following this activation, the virtual machine is mostly idle except when
-executing Muldis D commands that it receives via the standard inputs.  The
+executing Muldis Data Language commands that it receives via the standard inputs.  The
 virtual machine effectively has multiple concurrent processes, where each
 process effectively handles just one (possibly complex) command at a time,
 and executes each separately and in the order received; any results or
@@ -1836,7 +1836,7 @@ volume.
 
 Any mounted depot is home to all user-defined data variables, data types,
 operators, constraints, and routines; they collectively are the
-database that the Muldis D DBMS is managing.  Most commands against the
+database that the Muldis Data Language DBMS is managing.  Most commands against the
 DBMS would typically involve reading and updating the data variables, which
 in typical database terms is performing queries and data manipulation.
 Much less frequently, you would also see "data definition" changes, namely
@@ -1851,7 +1851,7 @@ system-defined and user-defined constraints (also known as business rules),
 which are always active over the period that they are defined.  The
 constraints restrict what state the database can be in, and any commands
 which would cause the constraints to be violated will fail; this mechanism
-is a large part of what makes the Muldis D DBMS a reliable modeler of
+is a large part of what makes the Muldis Data Language DBMS a reliable modeler of
 anything in reality, since it only stores values that are reasonable.
 
 Note that in practice, the aforementioned concept of "commands" is realized
@@ -1863,21 +1863,21 @@ by "statements" or "routines".
 transactions or concurrency are considered out of date and partly untrue,
 and will need to be rewritten or excised.**
 
-Muldis D is designed such that, to nearly the maximum degree possible, the
+Muldis Data Language is designed such that, to nearly the maximum degree possible, the
 built-in language syntax is expressed just in terms of generic-syntax
 routine invocations, meaning that wherever possible the language features
 are defined in terms of being just routines.  This allows the fundamental
-Muldis D grammar to be as simple as possible and it empowers users to
+Muldis Data Language grammar to be as simple as possible and it empowers users to
 define additional features that can mimic nearly any built-in ones in both
 functionality and syntax.  There are only a few exceptions to this rule,
 where doing so has a large net benefit to the language design.
 
 ## Functions and Procedures
 
-Every Muldis D routine is exactly one of 2 main routine kinds,
+Every Muldis Data Language routine is exactly one of 2 main routine kinds,
 `function` and `procedure`, where the 2 kinds are mutually exclusive.
 Each of these 2 kinds is very distinct with regards to what
-it conceptually represents or where it may be used, and Muldis D has
+it conceptually represents or where it may be used, and Muldis Data Language has
 disjoint catalog data types for defining routines of each of the 2 kinds,
 which are `Function` and `Procedure`.
 
@@ -1906,7 +1906,7 @@ functions.
 Functions and procedures have a strict ordered proper subset/superset
 relationship with regard to what they can be used to *do* from a user's
 perspective.  A procedure is all-powerful, and anything that can be done in
-Muldis D at all can be done by invoking a procedure.  A function's
+Muldis Data Language at all can be done by invoking a procedure.  A function's
 capabilities are a proper subset of a procedure's; the most that can be
 accomplished just by invoking a function is any set of operations that can
 be accomplished just with values supplied as its explicit arguments, and
@@ -1955,7 +1955,7 @@ can be different between multiple executions where all have the same
 arguments and global (database) variable preconditions, and it is the only
 kind of routine that can; every call chain that is meant to do something
 nondeterministic must include a procedure.  In every interactive
-application consisting only of Muldis D code, the "main program" that
+application consisting only of Muldis Data Language code, the "main program" that
 starts a call chain is always a procedure.  Assuming that the
 current in-DBMS process has exclusive access to all of its mounted depots,
 a procedure is nondeterministic iff it invokes, directly or indirectly, a
@@ -1996,7 +1996,7 @@ atomic in its general case; unless a wider-scope explicit transaction is
 active, an aborted general case
 procedure will leave an incomplete update (though not one that violates any
 constraints or leaves the system in an inconsistant state), because each of
-its statements had conceptually auto-committed; so Muldis D does support
+its statements had conceptually auto-committed; so Muldis Data Language does support
 batch operations where partial completion or interruptability is
 acceptable.  A procedure can optionally constitute an explicit (lexically
 scoped) transaction; this is the case iff its defining `Procedure`'s
@@ -2096,9 +2096,9 @@ would be many more user-defined routines that are atomic than those that
 are not.  The vast majority of recipes or non-recipe procedures that exist
 will be user-defined.
 
-Muldis D is generally optimized to prefer stateless immutable-value pure
+Muldis Data Language is generally optimized to prefer stateless immutable-value pure
 functional language paradigms over variable-mutating procedural language
-paradigms.  A Muldis D program will generally have any state-sensitive or
+paradigms.  A Muldis Data Language program will generally have any state-sensitive or
 side-effect-having code confined to as small a portion of it as possible,
 generally as close to the "main program" in the call chain as possible.
 Similarly, all type definitions are pure, and any database constraints that
@@ -2106,31 +2106,31 @@ could be are built-in to data types rather than variables (which is part of
 the reason that "the database" is typically considered a single variable).
 
 There are many benefits to emphasizing functional purity.  For one thing,
-Muldis D should be relatively easy to optimize, since a compiler or runtime
+Muldis Data Language should be relatively easy to optimize, since a compiler or runtime
 environment can be confident that it can make a wide variety of changes to
 code behind the scenes to improve its performance or memory usage, such as
 changing its execution order, and know that doing so isn't going to change
 the semantics of the code.  Because data in general is immutable, neither
 users nor the compiler need to worry about making sure data is copied
 repeatedly in case some code might want to modify it while other code
-doesn't want it modified.  Similarly, Muldis D code can more readily take
+doesn't want it modified.  Similarly, Muldis Data Language code can more readily take
 advantage of the large degrees of parallelization that computers are
 trending towards, with their emphasis on more CPU cores or CPUs or machine
-clusters versus having a single CPU and increasing its speed.  A Muldis D
+clusters versus having a single CPU and increasing its speed.  A Muldis Data Language
 compiler or runtime can automatically use multiple threads and split up
 many of its operations over multiple CPUs, running them concurrently
 without changing the behaviour versus a single-threaded program, and users
-writing Muldis D code don't generally have to worry about the details.  A
-Muldis D program should also be easier to analyze statically at compile
+writing Muldis Data Language code don't generally have to worry about the details.  A
+Muldis Data Language program should also be easier to analyze statically at compile
 time, so it is easier to prove early on whether it is correct or not, and
-reduce the burden on runtime tests or chance to discover any bugs.  Muldis
-D code should be easier to write, since programmers can focus more on
+reduce the burden on runtime tests or chance to discover any bugs.  Muldis Data Language
+code should be easier to write, since programmers can focus more on
 the real problem they want to solve and less on avoiding various gotchas.
-A lot of Muldis D code can also be evaluated lazily, so a compiler or
+A lot of Muldis Data Language code can also be evaluated lazily, so a compiler or
 runtime can recognize that often work doesn't need to be done at all.
 
 Note that when converting some code from another language (such as SQL) to
-Muldis D, some reordering may be required.  For example, when you
+Muldis Data Language, some reordering may be required.  For example, when you
 conceptually want to fetch the current date or a generate a random number
 inline of a database query expression, you will actually have to perform
 the date or number fetch as a completely separate procedure statement from
@@ -2138,13 +2138,13 @@ the one that performs the database query, and use variables as
 intermediaries to include the date or number in the database query.  Or, if
 converting a "function" from another language that is allowed to have
 side-effects or update its parameters, this will have to at least partially
-be rendered as a procedure in Muldis D.  In practice however,
+be rendered as a procedure in Muldis Data Language.  In practice however,
 especially if you followed good design practices in the other languages,
 such alterations shouldn't be too common.
 
 ## More on Parameters
 
-Conceptually speaking, all Muldis D routines actually have exactly 1 or
+Conceptually speaking, all Muldis Data Language routines actually have exactly 1 or
 2 positional parameters behind the scenes, each of which is `Tuple`-typed,
 and it is the named attributes of these positional parameters that
 correspond to the official named parameters.  With all functions,
@@ -2154,7 +2154,7 @@ there are exactly 2 positional parameters named `upd_args` and
 system-defined routines such as `sys.std.Core.Cat.func_invo`, where
 you actually are supplying a set of argument values for the routine to
 invoke as a `Tuple` value.  Now this all being said, for the purposes of
-the rest of the Muldis D documentation, the term *parameter* always refers
+the rest of the Muldis Data Language documentation, the term *parameter* always refers
 to a named parameter, and the term *argument* is a value passed to said.
 
 Some subject-to-update or read-only parameters of routines may be optional,
@@ -2176,7 +2176,7 @@ finishes executing.
 ## Kinds of Functions by Structure
 
 Various subsets from all the possible functions have special significance
-in Muldis D, each of which is intended for particular tasks, and all
+in Muldis Data Language, each of which is intended for particular tasks, and all
 functions allowed to be used for each particular task must have a certain
 structure.  This documentation sub-section describes a set of 7 function
 kinds where each kind is named after either its required structure or its
@@ -2240,7 +2240,7 @@ parameter is that other data type.  Or, if the data type being selected of
 is defined over a union of multiple other data types, then the declared
 type of the `topic` parameter is `Universal`.  Note that a type with a
 `type-constraint` that unconditionally results in `Bool:False` is an
-alias for `Empty`.  Note that, because Muldis D requires dbvars to be
+alias for `Empty`.  Note that, because Muldis Data Language requires dbvars to be
 defined over named data types, all *state constraints* for a database,
 including uniqueness keys or subset constraints or other state-constraining
 business rules, are normally defined as the `type-constraint` for the type
@@ -2370,14 +2370,14 @@ parameter.  An updater may only invoke updaters and functions.
 
 ## Overloading With Virtual Routines
 
-Muldis D natively supports routine/operator overloading, in the sense that
+Muldis Data Language natively supports routine/operator overloading, in the sense that
 a collection can exist of routines that differ only in the declared types
 of their parameters, where one can invoke the collection as a whole by a
 single collective name, and one of the routines in the collection is
 dispatched to automatically based on the types of the invocation arguments.
 
 This overloading feature is utilized by way of *virtual routines*.  A
-Muldis D routine of any kind (function or procedure), that has at
+Muldis Data Language routine of any kind (function or procedure), that has at
 least one parameter, is made *virtual* by declaring that at least 1 of its
 parameters is a *dispatch parameter*; moreover, said routine definition
 would only define its interface or *heading* and not its implementation or
@@ -2407,22 +2407,22 @@ types of its arguments; a user could write this explicitly instead of using
 a virtual routine, but it is often more elegant to use a virtual, where
 that dispatch table is built automatically by the system.
 
-Muldis D requires that the declared types of the corresponding dispatch
+Muldis Data Language requires that the declared types of the corresponding dispatch
 parameters for all implementing routines of the same virtual routine to be
 mutually disjoint, so that any given dispatch argument would only ever
 qualify for exactly one of them.  Theoretically, pairs of types could be
 allowed to overlap as long as for every overlap there is an implementing
 routine in the set whose declared type is the intersection type of that
 pair, so that there is still a single most specific type to pick; however,
-Muldis D currently doesn't mandate that feature because it would be onerous
+Muldis Data Language currently doesn't mandate that feature because it would be onerous
 to determine which overlapping option is the most specific one in the
-general case.  This being said, Muldis D allows the same routine to
+general case.  This being said, Muldis Data Language allows the same routine to
 directly claim implementation of multiple virtuals, such as when two
 virtuals have essentially the same parameter lists with partially
 overlapping types, and the implementer's parameter types are in the
 intersection of that pair, should this be useful.
 
-Muldis D supports both system-defined and user-defined virtual routines,
+Muldis Data Language supports both system-defined and user-defined virtual routines,
 meaning users can define new overloadable operators, and users can add
 implementing routines to both system-defined and user-defined virtual
 routines, meaning users can overload all virtual routines, both to support
@@ -2439,13 +2439,13 @@ automatically handle new data types that are added after the invoking code
 is written, as long as the operation has the same interface and appropriate
 semantics, so repeated invoker code updates aren't needed to expand
 explicit dispatch logic with all the choices.  The second is when the
-concrete Muldis D grammar you are using has operator syntax that is
+concrete Muldis Data Language grammar you are using has operator syntax that is
 overloaded for multiple data types, such as the common mathematical symbols
 being overloaded for both `Int` and `Rat`, effectively giving multiple
 implementing routines the same name, because it would be unpleasant to do
 otherwise by invoking each variant with distinct symbols.
 
-Currently, Muldis D restricts the set of interconnected virtual plus
+Currently, Muldis Data Language restricts the set of interconnected virtual plus
 implementing routines to all live in the same depot, or a set may be partly
 system-defined as long as all of the user-defined members are in the same
 depot.  Or at least that is the case for all implementing functions of a
@@ -2454,29 +2454,29 @@ which must be in the same depot aside from system-defined members.
 
 # STIMULUS-RESPONSE RULES
 
-Muldis D natively supports the concept of *stimulus-response rules*,
+Muldis Data Language natively supports the concept of *stimulus-response rules*,
 otherwise known as *triggered routines*.  The concept involves the
 automatic execution of a procedure in response to a particular
 defined stimulus.  This is in contrast with the normal way to execute a
 routine which is in response to an explicit invocation in code.
 
 The single most important use of a stimulus-response rule is to bootstrap a
-pure Muldis D application by causing the application's "main" routine to
+pure Muldis Data Language application by causing the application's "main" routine to
 execute when the DBMS starts up and mounts the depot containing it, as
-there is no other Muldis D routine to invoke the first one in any call
-chain.  A Muldis D implementation that doesn't support stimulus-response
+there is no other Muldis Data Language routine to invoke the first one in any call
+chain.  A Muldis Data Language implementation that doesn't support stimulus-response
 rules is one that can only support mixed-language applications, such that
 code in some other language has to be the start of any call chain involving
-Muldis D routines.
+Muldis Data Language routines.
 
-Muldis D is expected to support stimulus-response rules for a wide variety
+Muldis Data Language is expected to support stimulus-response rules for a wide variety
 of stimuli, and so support the general case of any kind of trigger in any
 kind of SQL DBMS, or to support event-driven systems like general-purpose
 programming languages.
 
-However, for now, Muldis D only supports exactly one kind of
+However, for now, Muldis Data Language only supports exactly one kind of
 stimulus-response rule, which is the `after-mount` rule used for
-bootstrapping a pure Muldis D application call stack.  With `after-mount`,
+bootstrapping a pure Muldis Data Language application call stack.  With `after-mount`,
 the stimulus is the act of a depot being mounted in the DBMS, and the
 response is the execution of a procedure in that depot, such that
 the latter occurs at a separate but immediately subsequent point in time
@@ -2508,30 +2508,30 @@ specifically the `allow_auto_run` attribute.  This control empowers users
 to decide on a per-depot-mount basis whether the depot mount will permit
 any stimulus-response rules defined in the depot to automatically execute
 when triggering events occur.  This control is to provide a measure of
-security against viruses and other malware that are using Muldis D
+security against viruses and other malware that are using Muldis Data Language
 databases as a vector.  In the interest of "security-first", you have to
 explicitly enable stimulus-response rules; if you don't say anything about
 the matter then they won't run.
 
-In a similar manner, a Muldis D DBMS should have command-line parameters
+In a similar manner, a Muldis Data Language DBMS should have command-line parameters
 regarding the initial "main program" depot it is mounting that correspond
 to each of the `MountControlSet` attributes; at the very least, the
 boolean parameters `allow_auto_run` and `we_may_update` must be provided,
 in addition to any params for, say, picking the filename/etc of the initial
 depot; for security purposes, the booleans are false when not given,
 meaning users have to *always* say `--allow_auto_run` in order to run a
-pure Muldis D program, so it is quite clear up front what they are risking.
+pure Muldis Data Language program, so it is quite clear up front what they are risking.
 
 # USERS AND PRIVILEGES
 
-The Muldis D DBMS / virtual machine itself does not have its own set of
+The Muldis Data Language DBMS / virtual machine itself does not have its own set of
 named users where one must authenticate to use it.  Rather, any concept of
 such users is associated with individual persistent repositories, such that
 you may have to authenticate in order to mount them within the virtual
 machine; moreover, there may be user-specific privileges for that
 repository that restrict what users can do in regards to its contents.
 
-The Muldis D privilege system is orthogonal to the standard Muldis D
+The Muldis Data Language privilege system is orthogonal to the standard Muldis Data Language
 constraint system, though both have the same effect of conditionally
 allowing or barring a command from executing.  The constraint system is
 strictly charged with maintaining the logical integrity of the database,
@@ -2553,7 +2553,7 @@ to privileges on a computer's file system, or a typical SQL database.
 
 ## ACID
 
-This official specification of the Muldis D DBMS includes full ACID
+This official specification of the Muldis Data Language DBMS includes full ACID
 compliance as part of the core feature set; moreover, all types of changes
 within a repository are subject to transactions and can be rolled back,
 including both data manipulation and schema manipulation; moreover, an
@@ -2562,9 +2562,9 @@ not an automatic commit.  (But changes that occur outside the DBMS
 environment, such as by a `system-service`, or by a host language routine,
 are generally not affected by transactions at all.)
 
-It is important to point out that any attempt to implement Muldis D (what
+It is important to point out that any attempt to implement Muldis Data Language (what
 **Muldis Data Engine Reference** does) which does not include full ACID compliance,
-with all aspects described above, is not a true Muldis D implementation,
+with all aspects described above, is not a true Muldis Data Language implementation,
 but rather is at best a partial implementation, and should be treated with
 suspicion concerning reliability.  Of course, such partial implementations
 will likely be made and used, such as ones implemented over existing DBMS
@@ -2577,15 +2577,15 @@ does implicit commits after, say, data-definition statements, is for it to
 throw an exception if data-definition is attempted within an explicit /
 multi-statement transaction, such that a user of that Engine can only do
 data-definition outside of an explicit transaction; in this way, the
-implementation is still following all the Muldis D safety rules, and hence
-should be relatively safe to use, even if it lacks Muldis D features.*
+implementation is still following all the Muldis Data Language safety rules, and hence
+should be relatively safe to use, even if it lacks Muldis Data Language features.*
 
 ## Virtual Machine
 
-Each individual instance of the Muldis D DBMS is conceptually a multiple
+Each individual instance of the Muldis Data Language DBMS is conceptually a multiple
 concurrent process / multi-threaded virtual machine, and conceptually there
 may be several things happening in it simultaneously.  This design helps a
-Muldis D implementation use a computer's resources more efficiently when
+Muldis Data Language implementation use a computer's resources more efficiently when
 multiple hardware CPUs are available, or when multiple autonomous tasks
 need doing in the DBMS that don't necessarily need doing in a specific
 order, nor depend on each other, and either should be able to commit even
@@ -2593,14 +2593,14 @@ if the other doesn't.  Users may explicitly specify distinct processes for
 particular high-level statements when appropriate.  Moreover, many
 system-defined functions will automatically use multiple threads to do
 their work, which is often highly symmetrical and order-independent, as set
-based or relational operations often are.  This said, Muldis D has a high
+based or relational operations often are.  This said, Muldis Data Language has a high
 level of isolation between any concurrent processes so to reduce the
 complexity of using them and avoid some common pitfalls of concurrency; in
 particular, the only data that is generally shared between processes is
 the repositories themselves that are mounted by multiple processes.
 
 Within each thread of execution, conceptually only one thing is happening
-in it at a time; each individual Muldis D statement executes in sequence,
+in it at a time; each individual Muldis Data Language statement executes in sequence,
 following the completion or failure of its predecessor.  During the life of
 a statement's execution, the state of the virtual machine is constant,
 except for any updates (and side-effects of such) that the statement makes.
@@ -2634,11 +2634,11 @@ all of its committed children actually have a final committed effect or
 not.  There are no mutually autonomous transactions within the same process
 of a DBMS.
 
-Transactions in Muldis D come in both implicit and explicit varieties, but
+Transactions in Muldis Data Language come in both implicit and explicit varieties, but
 the implicit transactions only exist (that is, only have an effect) when
 there are no explicit transaction active.
 
-The way to specify an explicit transaction within Muldis D
+The way to specify an explicit transaction within Muldis Data Language
 is to take the statements comprising it and isolate them into their own
 `Procedure` whose `is_transaction` attribute is `Bool:True`; such a
 procedure is wrapped in a new child transaction that is tied to
@@ -2646,7 +2646,7 @@ its lexical scope.  The transaction will begin when that scope is entered
 and end when that scope is exited; if the scope is exited normally, its
 transaction commits; if the scope terminates early due to a thrown
 exception, its transaction rolls back.  This lexically-scoped mechanism is
-the *only* kind of explicit transaction that Muldis D code can perform
+the *only* kind of explicit transaction that Muldis Data Language code can perform
 (besides using a `recipe` rather than a `procedure` in general).
 
 Sometimes, a transaction-comprising procedure will be invoked by way of an
@@ -2659,14 +2659,14 @@ not caught by *catch*).
 *TODO:  How do we specify when to start a new thread or message with
 service threads (eg, that log errors, do sequence generation).*
 
-In a mixed-language application, when Muldis D routines are invoked by a
+In a mixed-language application, when Muldis Data Language routines are invoked by a
 host language, the host language is allowed to specify further parent-most
 explicit transactions within the DBMS that are not bound to the lexical
 scope of a block, using distinct transaction initiation and termination
 statements (suggested names being `start_trans`, `commit_trans`,
 `rollback_trans`).  Such open-ended transactions are intended for
 transactions which last over multiple DBMS invocations of an application
-(whereas Muldis D scope-bound transactions always occur entirely within one
+(whereas Muldis Data Language scope-bound transactions always occur entirely within one
 invocation of the DBMS by a host language).  But it is a recommended best
 practice that host language code will associate the invocation of said
 statements with its own lexical scopes, such as its own *try-catch*
@@ -2674,8 +2674,8 @@ constructs; host language code could easily implement the scope-tied
 paradigm if it wanted to.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D `recipe` and `system-service`, and by
-extension, every Muldis D statement that is an invocation of said.  Or more
+Muldis Data Language `recipe` and `system-service`, and by
+extension, every Muldis Data Language statement that is an invocation of said.  Or more
 accurately, an update operation (including a multi-update operation) is
 implicitly atomic, and will either succeed and commit as a whole, or fail
 and rollback as a whole.  Similarly, every functional routine is trivially
@@ -2698,7 +2698,7 @@ each non-procedure-invoking statement in a procedure or host
 language routine is the parent-most transaction, and so a failure part-way
 through said procedure will result in the prior-completed statements to be
 fully committed, and only the failed statement to have left no state
-change.  At this point, a pure Muldis D application will have exited, and a
+change.  At this point, a pure Muldis Data Language application will have exited, and a
 mixed-language application will have either exited or caught an exception
 in a host-language *try* block.
 
@@ -2706,7 +2706,7 @@ All current repository mounts (persistent and temporary both) by the same
 in-DBMS process/thread are joined at the hip with respect to transactions;
 a commit or rollback is performed on all of them simultaneously, and a
 commit either succeeds for all or fails for all (a repository suddenly
-becoming inaccessible counts as a failure).  *Note that if a Muldis D
+becoming inaccessible counts as a failure).  *Note that if a Muldis Data Language
 implementation can not guarantee such atomicity between multiple
 repositories, then it must refuse to mount more than one repository at a
 time under the same process (users can still employ multiple depots each
@@ -2714,7 +2714,7 @@ under multiple in-DBMS processes, that are not synchronized); by doing one
 of those two actions, a less capable implementation can still be considered
 reliable and recommendable.*
 
-Some Muldis D commands can not be executed within the context of a parent
+Some Muldis Data Language commands can not be executed within the context of a parent
 transaction; in other words, they can only be executed directly by a
 `procedure` etc or the host language, the main examples being those that
 mount or unmount a persistent repository; this is because such a change in
@@ -2722,7 +2722,7 @@ the environment mid-transaction would result in an inconsistent state.
 
 ## Concurrency
 
-Muldis D generally doesn't specify anything related to matters of
+Muldis Data Language generally doesn't specify anything related to matters of
 multi-process concurrency, such as what other processes see when one
 process commits on a commonly mounted repository.  So the language is
 officially agnostic to the concurrency model in use by the implementing
@@ -2730,39 +2730,39 @@ DBMS, and so a multiplicity of different models might be considered
 conformant.  So, for example, both models based on locks and models using
 MVCC may be used with it, as well as other reasonable models.
 
-However, Muldis D does minimally require that only successful commits by a
+However, Muldis Data Language does minimally require that only successful commits by a
 process will register to other processes on a commonly mounted repository.
-In other words a fully-conformant Muldis D implementation will not permit
+In other words a fully-conformant Muldis Data Language implementation will not permit
 the "READ UNCOMMITTED" SQL standard isolation level, but all of the other 3
 are permitted: "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE".  This
 is required at least because users must always perceive a database to be in
 a consistent state, and there are other good reasons besides that.
 
-Muldis D also generally requires that commonly mounted repositories be the
+Muldis Data Language also generally requires that commonly mounted repositories be the
 only point of contact between multiple processes.  No other variables can
 be shared, though immutable data can of course be shared.  If shared
 "application" variables are desired, use a common temporary repository or
 a message-passing or listen/notify mechanism.  *Not yet specified.*
 
 *Assuming that a DBMS supports multiple concurrency models or levels of
-process isolation, then Muldis D would conceivably provide ways for users
+process isolation, then Muldis Data Language would conceivably provide ways for users
 to specify which they want to use.  Still to specify, details related to
 accessing and exploiting the concurrency models of the DBMS, such as how to
 set locks or such things.*
 
 # RESOURCE MODULARITY AND PERSISTENCE
 
-The architecture of Muldis D is based on collections of highly structured
+The architecture of Muldis Data Language is based on collections of highly structured
 resources, where resources can be executable code (that is, data type and
-routine definitions) and/or user data.  Muldis D provides facilities to
+routine definitions) and/or user data.  Muldis Data Language provides facilities to
 introspect all kinds of resources, whether system-defined or user-defined,
 and it allows users to update the latter.  Resources typically have names
 within the DBMS environment, and are referred to as *entities*.
 
 ## System-Defined Resources
 
-The standard Muldis D language includes a complement of data types and
-routines that should be hardwired into every implementation of Muldis D as
+The standard Muldis Data Language language includes a complement of data types and
+routines that should be hardwired into every implementation of Muldis Data Language as
 globally visible and invokable system-defined entities.  Even if an
 implementation can't provide the whole complement, the subset that it does
 should carry identical semantics so user entities that just use the
@@ -2775,14 +2775,14 @@ default at DBMS startup, and provides the most fundamental resources that
 everything else needs.  Other system-defined modules will load
 automatically when something in them is referenced by user code; users
 never explicitly ask to use a system-defined extension, or at least not
-from within Muldis D code.  It is up to each Muldis D implementation to
+from within Muldis Data Language code.  It is up to each Muldis Data Language implementation to
 choose whether any particular system-defined entities are implemented at a
 low level using platform-specific primitives, or at a higher level over
-other Muldis D types and routines.  Users generally may only introspect the
+other Muldis Data Language types and routines.  Users generally may only introspect the
 public interface of system-defined resources, not their implementations, so
 they won't know any different.
 
-Each implementation of Muldis D may want to embrace and extend the language
+Each implementation of Muldis Data Language may want to embrace and extend the language
 with a further complement of data types and routines, which are
 non-standard and fundamentally just useable with that implementation.  They
 are implemented in the same way as standard system-defined entities, but
@@ -2792,9 +2792,9 @@ about name collisions with unofficial extensions.
 
 ## User-Defined Resources
 
-All user-defined resources in Muldis D are actually data, even those that
+All user-defined resources in Muldis Data Language are actually data, even those that
 look like code, and these all exist in one or more *depots*, which are
-the normal means provided by Muldis D for persistence.  A depot is a
+the normal means provided by Muldis Data Language for persistence.  A depot is a
 completely self-sufficient storage system for normal user data and includes
 all the metadata (type definitions) required to understand the structure
 of, and the business rules / constraints for, that normal data; the depot
@@ -2806,8 +2806,8 @@ as far as its interpretability and integrity goes.  Depots are normally
 updateable within a DBMS at runtime, but they can alternately be used
 read-only.  If a depot doesn't contain normal data, but rather just data
 type and/or routine definitions, it is essentially a code library; in fact,
-all user-defined Muldis D code libraries are implemented as depots; for
-that matter, a pure Muldis D "main program" is a Muldis D code library.
+all user-defined Muldis Data Language code libraries are implemented as depots; for
+that matter, a pure Muldis Data Language "main program" is a Muldis Data Language code library.
 
 A depot is the native perception by the application / virtual machine
 environment of some conceptually external storage system, such as a disk
@@ -2833,12 +2833,12 @@ independent unit.
 
 At DBMS startup, there is exactly one depot mount, whose mount name is the
 empty string, and that depot mount exists continuously until DBMS shutdown.
-In a non-hosted Muldis D application (that isn't a no-op), the depot that
+In a non-hosted Muldis Data Language application (that isn't a no-op), the depot that
 this mount corresponds to has at least one procedure that is the "main
 program", which has zero parameters, and which is defined to execute
 automatically after its host depot is mounted (it is an "after mount"
 stimulus-response rule/routine).  In a mixed-language application, when
-Muldis D routines are invoked by a host language, the "main program" would
+Muldis Data Language routines are invoked by a host language, the "main program" would
 be written in the host language, and this initial depot mount would most
 likely correspond to a new transient depot that is empty.
 
@@ -2868,7 +2868,7 @@ mounted) basis, so that the DBMS knows, for example, that their necessarily
 redundant data type definitions are supposed to be treated as being the
 same data types.
 
-Now, most of the time, the code for a Muldis D application would just be
+Now, most of the time, the code for a Muldis Data Language application would just be
 collected in a single depot, matters of reusability between multiple
 database-sharing applications aside.  Each depot is designed to accommodate
 its own collections of resources according to various good practices.  A
@@ -2890,7 +2890,7 @@ pseudo-variables which are attributes of their parent depot's dbvar.
 
 When a DBMS starts up, it only contains one auto-started process, which is
 the root process; the root process is defined either by the non-hosted
-Muldis D "main program" procedure (it runs at DBMS startup, and the DBMS
+Muldis Data Language "main program" procedure (it runs at DBMS startup, and the DBMS
 shuts
 down when it ends), or host language routines (the DBMS exists for the life
 of some host language object that represents it), as applicable.  This root
@@ -2902,7 +2902,7 @@ processes, through something akin to an inter-process message pipe.  Any
 process that wasn't created to autothread a function can communicate with
 the DBMS-external user, which includes the root process and/or host
 language routines, though typically where there is a host language, all
-user interaction is done there.  If a Muldis D DBMS is being used to
+user interaction is done there.  If a Muldis Data Language DBMS is being used to
 implement a multi-client server, then multiple in-DBMS processes may
 typically be started directly by the server request listener, so each
 client typically is autonomous from others, shared depot contention aside.
@@ -2926,14 +2926,14 @@ generally specific to the context of a single process; so, for example,
 each process has only a single depot mount federation.
 
 Note that the following namespaces assume that a program that is written in
-Muldis D executes possibly either standalone or a peer-to-peer process
+Muldis Data Language executes possibly either standalone or a peer-to-peer process
 that can have its global variables made visible to other processes, or have
 others' made visible to it.  Or in other words, the program can both manage
 its own dbvars and be a DBMS client, and the program can either just use
 the DBMS itself or be a server of it.  (This is also related to the
 concepts of SQL/MED or federated databases.)
 
-*Note that all entity names in Muldis D are case-sensitive, as with
+*Note that all entity names in Muldis Data Language are case-sensitive, as with
 character strings in general.  Implementations should take special care to
 compensate for any case-insensitive storage system they might use.*
 
@@ -2941,7 +2941,7 @@ This is the hierarchy of invocation namespaces of DBMS entities:
 
     sys  # system-defined builtin types, routines, and catalogs
         sys.cat  # read-only sys cat db desc entities under sys|mnt, *.cat
-        sys.std  # sys-def types and routines defined by standard Muldis D
+        sys.std  # sys-def types and routines defined by standard Muldis Data Language
             sys.std.<module-name>
                 sys.std.<module-name>[.<chi-nlx-nsp>]**0..*
                     sys.std.<module-name>[.<chi-nlx-nsp>]**0..*.<material>
@@ -2980,7 +2980,7 @@ Further details of each namespace follow below.
 
 ## User Data Variables and System Catalog Variables
 
-All globally visible Muldis D variables are database-typed and can be
+All globally visible Muldis Data Language variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
 which is actually constant) and user data variables.  The global system
 catalog variables all exist as the `[sys|mnt|fed|nlx].cat`
@@ -2996,7 +2996,7 @@ all user-defined.  They are all non-magical, in that updating them has no
 side-effects, assuming they are not defined virtual.
 
 The purpose of system catalog variables is to reflect and (where
-appropriate) empower modification to the Muldis D *meta-model*, which is
+appropriate) empower modification to the Muldis Data Language *meta-model*, which is
 the active machine readable definition of all DBMS entities in the current
 virtual machine, both system-defined (read-only) and user-defined
 (updateable); working with these is termed *data definition*.  They are
@@ -3017,7 +3017,7 @@ the user defined virtual ones; this is the only way users can effectively
 define magical variables, which otherwise isn't possible; but all such
 user-defined magical variables can only be lexical variables.
 
-The system catalog namespaces of Muldis D can be considered analogous to
+The system catalog namespaces of Muldis Data Language can be considered analogous to
 the "information schema" of SQL, but that the latter is just read-only.
 
 The individual catalog namespaces are described in other sections.
@@ -3032,7 +3032,7 @@ primary namespace, where it is referred to with an absolute path, and its
 fully qualified name along this absolute path has at least 2 parts besides
 the `sys.std`.  Beneath `sys.std`, each secondary namespace is the name
 of a module.  The most fundamental standard types and routines, those that
-are ideally the least that every Muldis D implementation would provide, are
+are ideally the least that every Muldis Data Language implementation would provide, are
 in the `Core` module; less fundamental but still standard types and
 routines are grouped under various other "extension" modules, with each
 module conceptually representing a dynamically loadable plug-in library.
@@ -3081,7 +3081,7 @@ namespace levels to be fully-qualified.  If some implementation ended up
 supporting not only its own extensions, but also the extensions of other
 implementations, then the secondary namespace would say who declared the
 entity in question; or, that is still useful for external processors of the
-extended Muldis D code.  Finally, the depth of the namespace under the
+extended Muldis Data Language code.  Finally, the depth of the namespace under the
 authority-like level is purely implementation specific, and is at least 1
 level.
 
@@ -3093,9 +3093,9 @@ catalog constant being exactly the same for all implementations.
 
 ## User-Defined Entities
 
-Users of Muldis D can define their own data types, routines, and variables,
+Users of Muldis Data Language can define their own data types, routines, and variables,
 and each of these exists in a *depot* (which is a *package*), which is
-the means provided by Muldis D for persistence.
+the means provided by Muldis Data Language for persistence.
 
 The `fed` primary namespace is for all non-lexical user-defined entities
 to be referred to with absolute paths.
@@ -3133,7 +3133,7 @@ parent namespace tree is actually mounted as a "depot" in some DBMS.  For
 example, if some stored database exists with a 2-level namespace, such as
 the "schema" namespaces common to a SQL database, then it doesn't matter
 whether it is the whole stored database or just a single "schema" which is
-mounted in a Muldis D DBMS as a "depot"; when any functions defined in the
+mounted in a Muldis Data Language DBMS as a "depot"; when any functions defined in the
 same "schema" refer to each other with the relative syntax of
 `nlx.lib.fX`, it will work exactly correctly either way.
 
@@ -3184,7 +3184,7 @@ general any references to not-lexical entities must be qualified with their
 appropriate primary namespace because they may be ambiguous otherwise as to
 which other primary namespace is relevant per context.
 
-To be specific, the prior paragraph reflects the design of the Muldis D
+To be specific, the prior paragraph reflects the design of the Muldis Data Language
 system catalog plus all of the standard dialects.  For code in the system
 catalog or in a standard dialect, the syntax for referencing a variable
 (read that as parameter or variable or named expression or statement) is
@@ -3193,7 +3193,7 @@ entities are variables, and the only way a routine can reference a
 not-lexical variable is with a third special syntax, which defines an alias
 for that not-lexical which is a lexical variable.
 
-But it is possible, in the general case, that a Muldis D dialect might use
+But it is possible, in the general case, that a Muldis Data Language dialect might use
 common syntax for referencing lexical and not-lexical variables, such as
 one that doesn't employ user-visible aliasing of globals to lexicals, in
 which case they would probably find explicit `lex` qualification useful.
@@ -3228,16 +3228,16 @@ be either zero (SQLite) or one (PostgreSQL, Oracle) layers of generic
 namespaces; where there is one, it typically corresponds to the storage
 system's concept of a *schema*; where there are two, the second typically
 corresponds to Oracle's concept of a *package*;
-but N layers are provided by Muldis D "just in case".
+but N layers are provided by Muldis Data Language "just in case".
 
-Muldis D supports the concept of *materials* (routines and types) being
+Muldis Data Language supports the concept of *materials* (routines and types) being
 nested within others, like some typical programming languages, but also
 necessitated by the
 design decision where type and routine definitions are expressly fixed
 depth trees (because they are represented by components in a relational
 catalog database), rather than N-depth trees like in a typical programming
 language.  So when a conceptually N-depth syntax tree of another language
-is converted to Muldis D, the nodes in that tree are all given distinct
+is converted to Muldis Data Language, the nodes in that tree are all given distinct
 names and then turned into a flat list, where each list item is, loosely
 speaking, a 2-level tree declaring its own name as a root and declaring its
 direct children in a set.  Any time a routine or type is conceptually
@@ -3296,7 +3296,7 @@ applied to parts of the dbvar such as individual (pseudo-)relvars.
 An important feature of a **D** language is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating.  In support of this feature,
-Muldis D's DBMS entity names have a feature extension that allows for
+Muldis Data Language's DBMS entity names have a feature extension that allows for
 attributes of tuple (but not possrep-having-scalar or relation
 in the general case; see below) typed variables to be used as
 pseudo-variables, to the Nth degree of recursion, with very terse syntax.
@@ -3330,7 +3330,7 @@ relation at once are being referenced.  An example of this is some
 canonical terse subset (foreign key) constraint definitions, where one
 might want to apply a referential constraint to elements of a TVA or RVA of
 a relation, rather than the whole relation attribute.  (For the present,
-other parts of the Muldis D documentation ignore for simplicity that an RVA
+other parts of the Muldis Data Language documentation ignore for simplicity that an RVA
 of a relation can be drilled into, but you in fact can do this where it
 makes sense.)
 
@@ -3340,21 +3340,21 @@ or of relations, get the special short-hand where an extended entity name
 can be used as the full expression.
 
 **Update:**  To be specific, when concerning general contexts such as any
-arbitrary Muldis D functional (value expressions) or procedural
+arbitrary Muldis Data Language functional (value expressions) or procedural
 (statements) code, *only* tuples may have their attributes accessed using
 this feature extension of DBMS entity names; in general contexts, the
 *only* way to access scalar possrep or relation attributes is by using
 normal accessor functions such as `sys.std.Core.Scalar.attr`.  This
-restriction is in place for practical reasons of Muldis D syntax being more
+restriction is in place for practical reasons of Muldis Data Language syntax being more
 strongly typed, such that it is possible to know at parse-time whether each
 attribute access is for a scalar or tuple or relation, and so both it is
-easier to implement Muldis D and easier to understand at a glance what
-Muldis D code is doing, even if the system catalog representation of the
+easier to implement Muldis Data Language and easier to understand at a glance what
+Muldis Data Language code is doing, even if the system catalog representation of the
 code is a bit more verbose due to requiring more explicit function calls.
 
 ## Empty-String Names
 
-Muldis D empowers users to give the entities they define any character
+Muldis Data Language empowers users to give the entities they define any character
 string at all for their declared names, including strings with
 non-alphanumeric characters that some programming languages would consider
 illegal in names/identifiers/symbols, and including the empty string, which
@@ -3363,15 +3363,15 @@ very simple rules makes for simpler implementations, the empty string is
 the most natural value for a string-like data type to use as its default
 value, and is the most natural choice for what to name the implicit
 "default" entity to be used in some context with respect to alternatives.
-Given that Muldis D is intended to be used as an intermediate language when
+Given that Muldis Data Language is intended to be used as an intermediate language when
 translating between other languages, the empty string also seems a natural
-choice for what to name some artifacts of Muldis D's representation of some
+choice for what to name some artifacts of Muldis Data Language's representation of some
 concepts which in other languages don't need to be named at all, so that an
 arbitrary import from another language can bring in entities of any names
 that the other language supports, and they won't clash with some extra
-names that Muldis D might want to use in the same namespaces.
+names that Muldis Data Language might want to use in the same namespaces.
 
-It turns out that Muldis D ascribes special meanings or semantics to
+It turns out that Muldis Data Language ascribes special meanings or semantics to
 entities in many contexts when they have the empty string as their name,
 and in fact requires some entities to have empty string names.  Each of
 those meanings or semantics are described in this documentation section.
@@ -3380,7 +3380,7 @@ Within a depot mount federation, the empty string name is reserved for the
 single depot mount that exists for the entire lifetime of an in-DBMS
 process, which begins to exist as part of the process' startup and that
 can't cease to exist except as part of the process' shutdown.  In a pure
-Muldis D application, the depot corresponding to this mount would be what
+Muldis Data Language application, the depot corresponding to this mount would be what
 contains the "main program" procedure; the in-DBMS process starts and ends
 with the starting and ending of that procedure.  This is the case not only
 for the main process but also any other processes in such an application;
@@ -3388,7 +3388,7 @@ if the other is a worker process, then the empty-name depot mount has the
 procedure defining the work that said other process exists to perform.  In
 a mixed-language application where another language has the main program,
 and the lifetime of an in-DBMS process isn't controlled by the lifetime of
-a Muldis D procedure's execution, then the empty-name depot mount may
+a Muldis Data Language procedure's execution, then the empty-name depot mount may
 simply be empty at process startup.
 
 Iff a subpackage (or a package) directly contains a material (routine or
@@ -3541,7 +3541,7 @@ type to be the same type as the child subdepot's `nlx.cat.data` names;
 if it doesn't, then the parent's type must
 exclude every database value with an attribute `foo`.
 
-Similar to the subdepot/dbvar duality, Muldis D also supports a
+Similar to the subdepot/dbvar duality, Muldis Data Language also supports a
 subdepot/relvar duality.  It is allowed for both a depot/subdepot `foo` to
 have a direct child subdepot named `bar` and also for `foo`'s self-local
 dbvar to have a relation-typed direct child attribute named `bar`.  In
@@ -3571,7 +3571,7 @@ types; or they are embedded into definitions of routine parameters.
 
 To more easily interact with entities that embed the definitions of the
 types used for their own external interfaces, which are types that don't
-have externally visible names in the normal sense, Muldis D provides an
+have externally visible names in the normal sense, Muldis Data Language provides an
 analogy to its terse pseudo-variable invocation syntax that lets you
 directly reference the type used by an entity by way of that entity's
 fully-qualified (context-sensitive) name.  To be specific, you take the
@@ -3612,7 +3612,7 @@ aforementioned remainder; for example
 `type.tuple_from.var.nlx.data.myrelvar`
 or `type.tuple_from.nlx.lib.mytype`.
 
-Muldis D also has an extension to the previously described "taking the
+Muldis Data Language also has an extension to the previously described "taking the
 type" feature such that declaring any type, embedded or otherwise, also has
 the effect of implicitly declaring simple nonscalar collection
 types over that type; but these implicit extra types only appear when you
@@ -3645,8 +3645,8 @@ Pseudo-Variable Syntax**.
 
 # SOURCE CODE METADATA
 
-The Muldis D system catalog supports the storage of some explicit metadata
-for Muldis D code, which is non-critical in that it has no impact on the
+The Muldis Data Language system catalog supports the storage of some explicit metadata
+for Muldis Data Language code, which is non-critical in that it has no impact on the
 behaviour of the code, but that rather it would be important to a
 programmer who wishes to have more control over the visual presentation of
 their code, such that said code should be easier for programmers to read
@@ -3654,10 +3654,10 @@ and update when those presentation details are respected.
 
 In this way, a programmer's code has an improved chance of surviving
 unscathed in all the aspects that matter to them, when it is translated
-between different programming languages by way of Muldis D, or between
-multiple Muldis D formats.  At the very least, when code in any given
-Muldis D dialect is first parsed into the system catalog, subsequent
-generation of code in the same Muldis D dialect from that system catalog
+between different programming languages by way of Muldis Data Language, or between
+multiple Muldis Data Language formats.  At the very least, when code in any given
+Muldis Data Language dialect is first parsed into the system catalog, subsequent
+generation of code in the same Muldis Data Language dialect from that system catalog
 should much more closely resemble the original in every possible manner.
 
 Arguably, the two most important non-behavioural metadata to preserve are
@@ -3674,13 +3674,13 @@ overview description of a function can be remembered and guide programmers
 to understanding the function.
 
 A `scm_comment` value of the empty string is special and means "no
-comment".  It is expected that any complete parser for a standard Muldis D
+comment".  It is expected that any complete parser for a standard Muldis Data Language
 dialect *will* preserve any code comments that it encounters as much as is
 reasonably possible.
 
 ## Visible Element Order
 
-Many fundamental parts of Muldis D will identify code elements by name,
+Many fundamental parts of Muldis Data Language will identify code elements by name,
 rather than by ordinal position, or all they care about for behaviour's
 sake is representing a set of elements, and the ordinal position of any of
 these elements in the original source code is not considered significant,
@@ -3707,7 +3707,7 @@ their relative ordering is implementation-defined or random, and also any
 set of associated `scm_vis_ord` is not dense, so sibling elements don't
 need to have immediately consecutive values.
 
-To clarify, it is expected that any complete parser for a standard Muldis D
+To clarify, it is expected that any complete parser for a standard Muldis Data Language
 dialect *will* set context-distinct non-zero `scm_vis_ord` values as much
 as is reasonably possible, and that zero values will generally come from
 either situations where a parser finds ordering non-applicable or from
@@ -3719,8 +3719,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

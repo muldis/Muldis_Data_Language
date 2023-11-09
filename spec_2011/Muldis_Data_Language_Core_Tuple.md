@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Tuple - Muldis D generic tuple operators
+Muldis Data Language Core Tuple - Muldis Data Language generic tuple operators
 
 # VERSION
 
-This document is Muldis::D::Core::Tuple version 0.148.1.
+This document is Muldis Data Language Core Tuple version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,7 +16,7 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document describes essentially all of the core Muldis D generic
+This document describes essentially all of the core Muldis Data Language generic
 tuple operators (for generic tuples).
 
 *This documentation is pending.*
@@ -157,7 +157,7 @@ another `topic` attribute.  Now conceptually speaking, the `inner`
 parameter is completely superfluous for this `Tuple` variant of `unwrap`;
 however, it is provided anyway so that this function has complete API
 parity with the `Relation` variant of `unwrap`, where `inner` *is*
-necessary in the general case, and so Muldis D code using this function is
+necessary in the general case, and so Muldis Data Language code using this function is
 also forced to be more self-documenting or strongly typed.  This function
 will fail if `inner` does not match the names of the attributes of
 `topic{outer}`.
@@ -278,7 +278,7 @@ the `subst` argument.  This function is a short-hand for
 `default` would fail for the same `of` argument, or if its result isn't a
 tuple type, or if the heading of `subst` isn't a subset of the heading
 of the default.  The purpose of this function is to support greater brevity
-in Muldis D coding such that users can define just part of a desired
+in Muldis Data Language coding such that users can define just part of a desired
 tuple value and have the remainder filled in from defaults for them;
 particularly useful with tuples that conceptually have some optional
 attributes.
@@ -342,8 +342,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

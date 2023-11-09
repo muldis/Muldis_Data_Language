@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Cast - Muldis D explicit type-casting operators
+Muldis Data Language Core Cast - Muldis Data Language explicit type-casting operators
 
 # VERSION
 
-This document is Muldis::D::Core::Cast version 0.148.1.
+This document is Muldis Data Language Core Cast version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,7 +16,7 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document's purpose is to consolidate all the core Muldis D
+This document's purpose is to consolidate all the core Muldis Data Language
 type-casting routines that are conceptually monadic functions between 2
 core types.  It also declares a few special data types that support them.
 
@@ -237,8 +237,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

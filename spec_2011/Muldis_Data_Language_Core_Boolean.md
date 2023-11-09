@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Boolean - Muldis D boolean logic operators
+Muldis Data Language Core Boolean - Muldis Data Language boolean logic operators
 
 # VERSION
 
-This document is Muldis::D::Core::Boolean version 0.148.1.
+This document is Muldis Data Language Core Boolean version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,7 +16,7 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document describes essentially all of the core Muldis D operators that
+This document describes essentially all of the core Muldis Data Language operators that
 are specific to the core data type `Bool`, a superset of all the generic
 ones that a typical programming language should have.
 
@@ -253,7 +253,7 @@ This function is an alias for `sys.std.Core.Boolean.none`.
 This function results in `Bool:True` iff exactly one of its input element
 values is `Bool:True`, and `Bool:False` otherwise.  Note that in some
 contexts, this operation would alternately be known as *xor*, but in
-Muldis D it is not.
+Muldis Data Language it is not.
 
 ## sys.std.Core.Boolean.not_one
 
@@ -318,8 +318,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

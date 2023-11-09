@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Text - Muldis D character string operators
+Muldis Data Language Core Text - Muldis Data Language character string operators
 
 # VERSION
 
-This document is Muldis::D::Core::Text version 0.148.1.
+This document is Muldis Data Language Core Text version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,7 +16,7 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document describes essentially all of the core Muldis D operators that
+This document describes essentially all of the core Muldis Data Language operators that
 are specific to the core data type `Text`, essentially all the generic
 ones that a typical programming language should have.
 
@@ -73,7 +73,7 @@ between each pair of consecutive `topic` elements.
 
 This function results in the length of its argument in Unicode canonical
 decomposed normal form (NFD) abstract code points, or in other words, in the
-actual length of the argument since Muldis D explicitly works natively at
+actual length of the argument since Muldis Data Language explicitly works natively at
 the abstract code point abstraction level.
 
 ## sys.std.Core.Text.len_in_graphs
@@ -129,7 +129,7 @@ operators are still sensitive to case et al, but you can pretend they're
 not by having them work with the results of these normalization functions
 rather than on the inputs to these functions.  This is useful when you want
 to emulate the semantics of insensitive though possibly preserving systems
-over Muldis D.
+over Muldis Data Language.
 
 ## sys.std.Core.Text.upper
 
@@ -232,8 +232,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

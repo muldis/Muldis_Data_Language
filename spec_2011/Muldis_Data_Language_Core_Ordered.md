@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Ordered - Muldis D generic ordered-sensitive operators
+Muldis Data Language Core Ordered - Muldis Data Language generic ordered-sensitive operators
 
 # VERSION
 
-This document is Muldis::D::Core::Ordered version 0.148.1.
+This document is Muldis Data Language Core Ordered version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,7 +16,7 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document describes essentially all of the core Muldis D
+This document describes essentially all of the core Muldis Data Language
 ordered-sensitive operators, essentially all the generic ones that a
 typical programming language should have.
 
@@ -78,7 +78,7 @@ Therefore, `Ordinal` has no *first* or *last*, and if you want to
 enumerate an ordinal type's values, the canonical means to do so is to
 start with that type's *default* value instead, which the system-defined
 `default` function provides; starting with the default value, you can
-reach all values of any ordinal Muldis D type eventually, enumerating your
+reach all values of any ordinal Muldis Data Language type eventually, enumerating your
 way to them in sequence using either `pred` to go earlier and `succ` to
 go later, for any arbitrary distance along the ordinal type's value line.
 *In the future, if a finite-ordinal mixin type is deemed useful and is
@@ -112,7 +112,7 @@ to an ordering of a type's values, and are used for such things as list
 sorting or quota queries or determining before/after/min/max/between/etc.
 They can potentially be used with values of any data type as long as said
 data type has a (total) `order-determination` function defined for it,
-and all system-defined conceptually-ordered Muldis D scalar root types do.
+and all system-defined conceptually-ordered Muldis Data Language scalar root types do.
 
 Each of these functions is a wrapper over the `order-determination`
 function named `sys.std.Core.Ordered.order` when the latter function is
@@ -216,8 +216,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Routines_Catalog - Muldis D data definition routines
+Muldis Data Language Core Routines_Catalog - Muldis Data Language data definition routines
 
 # VERSION
 
-This document is Muldis::D::Core::Routines_Catalog version 0.148.1.
+This document is Muldis Data Language Core Routines_Catalog version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -163,10 +163,10 @@ v2 : Universal) {...}`
 This `value-reduction` function unconditionally results in its `v1`
 argument regardless of the values of its arguments.
 
-# RECIPES FOR BOOTSTRAPPING A MULDIS D PROGRAM OR DATABASE
+# RECIPES FOR BOOTSTRAPPING A MULDIS DATA LANGUAGE PROGRAM OR DATABASE
 
 These recipes comprise a set of commonly useful system-defined data
-definition routines, which simplify some tasks of manipulating the Muldis D
+definition routines, which simplify some tasks of manipulating the Muldis Data Language
 system catalog dbvars.  The following recipes can do the following:
 create|mount and drop|unmount depots,
 create|drop subdepots, create|drop user-defined routines and
@@ -384,8 +384,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

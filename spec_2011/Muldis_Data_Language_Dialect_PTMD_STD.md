@@ -1,33 +1,33 @@
 # NAME
 
-Muldis::D::Dialect::PTMD_STD - How to format Plain Text Muldis D
+Muldis Data Language Dialect PTMD_STD - How to format Plain Text Muldis Data Language
 
 # VERSION
 
-This document is Muldis::D::Dialect::PTMD_STD version 0.148.1.
+This document is Muldis Data Language Dialect PTMD_STD version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document outlines the grammar of the *Plain Text Muldis D* standard
-dialect named `PTMD_STD`.  The fully-qualified name of this Muldis D
-standard dialect is `Muldis_D:"https://muldis.com":0.148.1:PTMD_STD`.
+This document outlines the grammar of the *Plain Text Muldis Data Language* standard
+dialect named `PTMD_STD`.  The fully-qualified name of this Muldis Data Language
+standard dialect is `Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD`.
 
-This dialect is designed to exactly match the Muldis D system catalog (the
-possible representation of Muldis D code that is visible to or updateable
-by Muldis D programs at runtime) as to what non-critical metadata it
+This dialect is designed to exactly match the Muldis Data Language system catalog (the
+possible representation of Muldis Data Language code that is visible to or updateable
+by Muldis Data Language programs at runtime) as to what non-critical metadata it
 explicitly stores; so code in the `PTMD_STD` dialect should be
 round-trippable with the system catalog with the result maintaining all the
 details that were started with.  Since it matches the system catalog, this
-dialect should be able to exactly represent all possible Muldis D base
+dialect should be able to exactly represent all possible Muldis Data Language base
 language code (and probably all extensions too), rather than a subset of
 it.  That said, the `PTMD_STD` dialect does provide a choice of multiple
-syntax options for writing Muldis D value literals and DBMS entity (eg type
+syntax options for writing Muldis Data Language value literals and DBMS entity (eg type
 and routine) declarations, so several very distinct `PTMD_STD` code
 artifacts may parse into the same system catalog entries.  There is even a
 considerable level of abstraction in some cases, so that it is easier for
@@ -63,10 +63,10 @@ PTMD_STD has a *linear syntax*.
 
 Given that plain text is (more or less) universally unambiguously portable
 between all general purpose languages that could be used to implement a
-DBMS, it is expected that every single Muldis D implementation will
+DBMS, it is expected that every single Muldis Data Language implementation will
 natively accept input in the `PTMD_STD` dialect, which isn't dependent on
 any specific host language and should be easy enough to process, so it
-should be considered the safest official Muldis D dialect to write in by
+should be considered the safest official Muldis Data Language dialect to write in by
 default, when you don't have a specific reason to use some other dialect.
 
 See also the dialects
@@ -78,8 +78,8 @@ other dialects are described just in the current file, for all 3 dialects.
 
 # GENERAL STRUCTURE
 
-A `PTMD_STD` Muldis D code file consists just of a Muldis
-D depot definition, which begins with a language name
+A `PTMD_STD` Muldis Data Language code file consists just of a Muldis Data Language
+depot definition, which begins with a language name
 declaration, and then has a `Database` value literal defining the depot's
 catalog, and finally has, optionally, a `Database` value literal defining
 the depot's data.  This is conceptually what a
@@ -89,14 +89,14 @@ which should be used when doing
 data-definition.  And so you typically use syntax resembling routine and
 type declarations in a general purpose programming language, where simply
 declaring such an entity will cause it to be part of the system catalog.
-Fundamentally every Muldis D depot is akin to a code library, and a Muldis
-D "main program" is nothing more than a depot having a procedure that is
+Fundamentally every Muldis Data Language depot is akin to a code library, and a Muldis Data Language
+"main program" is nothing more than a depot having a procedure that is
 designated to execute automatically after a mount event of its host depot.
 
-As a special extension feature, a `PTMD_STD` Muldis D code file may
-alternately consist just of a (language-qualified) Muldis D value literal,
+As a special extension feature, a `PTMD_STD` Muldis Data Language code file may
+alternately consist just of a (language-qualified) Muldis Data Language value literal,
 which mainly is intended for use in mixed-language environments as an
-interchange format for data values between Muldis D and other languages.
+interchange format for data values between Muldis Data Language and other languages.
 
 The grammar in this file is formatted as a hybrid between various BNF
 flavors and Raku rules (see <http://perlcabal.org/syn/S05.html> for
@@ -128,19 +128,19 @@ explicitly.  4. The meanings of any tokens with the same names as ones
 built-in to Raku but that are explicitly defined in this grammar may have
 different definitions.
 
-The root grammar token for the entire dialect is `Muldis_D`.
+The root grammar token for the entire dialect is `Muldis_Data_Language`.
 
 # START
 
 Grammar:
 
-    <Muldis_D> ::=
+    <Muldis_Data_Language> ::=
         ^ <ws>?
             <language_name> <ws>
             [<value> | <depot>]
         <ws>? $
 
-A `Muldis_D` node has 2 ordered elements where the first element is a
+A `Muldis_Data_Language` node has 2 ordered elements where the first element is a
 `language_name` node and the second element is either a `value` node or a
 `depot` node.
 
@@ -148,15 +148,15 @@ See the pod sections in this file named **LANGUAGE NAME**, **VALUE
 LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
 about the aforementioned tokens/nodes.
 
-When Muldis D is being compiled and invoked piecemeal, such as because the
-Muldis D implementing virtual machine (VM) is attached to an interactive
+When Muldis Data Language is being compiled and invoked piecemeal, such as because the
+Muldis Data Language implementing virtual machine (VM) is attached to an interactive
 user terminal, or the VM is embedded in a host language where code in the
-host language invokes Muldis D code at various times, many `value` may be
+host language invokes Muldis Data Language code at various times, many `value` may be
 fed to the VM directly for inter-language exchange, and not every one
 would then have its own `language_name`.  Usually a `language_name` would
-be supplied to the Muldis D VM just once as a VM configuration step, which
+be supplied to the Muldis Data Language VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
-Muldis D code that isn't itself qualified with a `language_name`.
+Muldis Data Language code that isn't itself qualified with a `language_name`.
 
 # LANGUAGE NAME
 
@@ -170,7 +170,7 @@ Grammar:
         <unspace> ':' <ln_extensions>
 
     <ln_base_name> ::=
-        Muldis_D
+        Muldis_Data_Language
 
     <ln_base_authority> ::=
         <ln_elem_str>
@@ -221,15 +221,15 @@ Grammar:
 *Please interpret the `''` under `<std_syn_ext_list_item>` as a
 placeholder and that there are currently zero valid list items.*
 
-As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
-must start by declaring the fully-qualified Muldis D language name it is
+As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
+must start by declaring the fully-qualified Muldis Data Language language name it is
 written in.  The `PTMD_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
 
 * `ln_base_name`
 
-This is the Muldis D language base name; it is simply the bareword
-character string `Muldis_D`.
+This is the Muldis Data Language language base name; it is simply the bareword
+character string `Muldis_Data_Language`.
 
 * `ln_base_authority`
 
@@ -261,12 +261,12 @@ later, which would likely be optional.
 
 Examples:
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
         catalog_abstraction_level => rtn_inv_alt_syn,
         op_char_repertoire => extended
     }
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
         catalog_abstraction_level => rtn_inv_alt_syn,
         op_char_repertoire => extended,
         standard_syntax_extensions => {}
@@ -275,15 +275,15 @@ Examples:
 # CATALOG ABSTRACTION LEVELS
 
 The `catalog_abstraction_level` pragma determines with a broad granularity
-how large the effective Muldis D grammar is that a programmer may employ
-with their Muldis D code.
+how large the effective Muldis Data Language grammar is that a programmer may employ
+with their Muldis Data Language code.
 
-The catalog abstraction level of some Muldis D code is a measure of how
+The catalog abstraction level of some Muldis Data Language code is a measure of how
 much or how little that code would resemble the system catalog data that
 the code would parse into.  The lower the abstraction level, the smaller
-and simpler the used Muldis D grammar is and the more like data structure
+and simpler the used Muldis Data Language grammar is and the more like data structure
 literals it is; the higher the abstraction level, the larger and more
-complicated the Muldis D grammar is and the more like
+complicated the Muldis Data Language grammar is and the more like
 general-purpose-language typical code it is.
 
 There are currently 4 specified catalog abstraction levels, which when
@@ -293,21 +293,21 @@ level has a proper superset of the grammar of every other abstraction level
 that is lower than itself, so for example any code that is valid
 `code_as_data` is also valid `plain_rtn_inv`, and so on.
 
-Choosing an abstraction level to write Muldis D code against is all a
-matter of trade-offs, perhaps mainly between advantages for Muldis D
-implementors and advantages for Muldis D users.  Lower levels have benefits
-such as that it takes less programmer effort to create a Muldis D code
+Choosing an abstraction level to write Muldis Data Language code against is all a
+matter of trade-offs, perhaps mainly between advantages for Muldis Data Language
+implementors and advantages for Muldis Data Language users.  Lower levels have benefits
+such as that it takes less programmer effort to create a Muldis Data Language code
 parser or generator that just has to support that level, and such a
 parser/generator could be made more quickly and occupy a smallar resource
 footprint.  On the other side, higher levels have benefits such that any
-Muldis D code itself can be immensely more terse and readable (and
+Muldis Data Language code itself can be immensely more terse and readable (and
 writable), as well as have a much stronger resemblence to typical
 general-purpose programming languages, which also caries the benefit that a
 lot more of a programmer's preconceptions about what they should be able to
-write in a language is more likely to just work in Muldis D, and users can
+write in a language is more likely to just work in Muldis Data Language, and users can
 adopt it with less re-training.  Essentially, lower abstraction levels are
 more like machine code while higher levels are more like human language.
-It may not need to be said that while a lower level may be for a Muldis D
+It may not need to be said that while a lower level may be for a Muldis Data Language
 implementer an easier thing to make run, it would conversely tend to be
 more difficult for them to write a test suite for, being more verbose.
 
@@ -349,7 +349,7 @@ any system-defined scalar types not in terms of possreps.
 
 Examples:
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
         catalog_abstraction_level => the_floor,
         op_char_repertoire => basic
     }
@@ -417,7 +417,7 @@ itself provides for value literals and selectors.  With this abstraction
 level, a depot consists simply of a language name plus one or two database
 value literals.  The format for specifying a system catalog is exactly the
 same as the format for specifying the user data of a database.  All a
-Muldis D parser/generator has to know is how to parse static Muldis D value
+Muldis Data Language parser/generator has to know is how to parse static Muldis Data Language value
 literals and its done.  That said, `code_as_data` includes all of the
 special grammar dealing with value literals, including those for many
 specific scalar or nonscalar types.  This level is analogous to a
@@ -431,7 +431,7 @@ AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 
 Examples:
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
         catalog_abstraction_level => code_as_data,
         op_char_repertoire => basic
     }
@@ -440,7 +440,7 @@ Examples:
         { food => 'Kiwis', qty => 30 }
     }
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
        catalog_abstraction_level => code_as_data,
        op_char_repertoire => basic
     }
@@ -494,7 +494,7 @@ following grammar definitions are in effect:
         <proc_stmt__plain_rtn_inv>
 
 This abstraction level is the lowest one that can be recommended for
-general use, and every Muldis D implementation that is expected to be
+general use, and every Muldis Data Language implementation that is expected to be
 directly used by programmers (in contrast to its main use just being by way
 of wrapper APIs or code generators) should support at least this level,
 even if that implementation is being touted as "minimal".  This abstraction
@@ -504,12 +504,12 @@ level, the `plain_rtn_inv` level makes everything that isn't conceptually
 a value literal or selector look like typical routine or type declarations
 or value expressions or statements, just as programmers typically expect.
 
-One of Muldis D's primary features is that, as much as possible, the
+One of Muldis Data Language's primary features is that, as much as possible, the
 system-defined language features are defined in terms of ordinary types and
 routines.  This means for one thing that users are empowered to create
 their own types and routines with all of the capabilities, flexibility, and
 syntax as the language's built-in features have.  This also means that it
-should be relatively simple to parse Muldis D code because the vast
+should be relatively simple to parse Muldis Data Language code because the vast
 majority of language features don't have their own special syntax to
 account for, and the **Generic Function Invocation Expressions** syntax
 covers most of them, in terms of the common prefix/polish notation that in
@@ -521,7 +521,7 @@ like user-defined routines and types.  The code is mostly just nested
 invocations of functions or procedures in basic polish notation, and both
 that code and material declarations have a C-language-like syntax.
 
-It is expected that every Muldis D implementation which supports at least
+It is expected that every Muldis Data Language implementation which supports at least
 the `plain_rtn_inv` level will, as much as is reasonably possible,
 preserve all non-behaviour-affecting metadata that is directly supported
 for storage by the system catalog itself, as described in
@@ -536,7 +536,7 @@ described in these main pod sections: **MATERIAL SPECIFICATION**,
 
 Examples:
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
         catalog_abstraction_level => plain_rtn_inv,
         op_char_repertoire => basic
     }
@@ -574,8 +574,8 @@ the following grammar definitions are in effect:
         <proc_stmt__rtn_inv_alt_syn>
 
 This abstraction level is the highest one and is the most recommended one
-for general use, assuming that all the Muldis D implementations you want to
-use support it.  The expectation is that, in general, minimal Muldis D
+for general use, assuming that all the Muldis Data Language implementations you want to
+use support it.  The expectation is that, in general, minimal Muldis Data Language
 implementations won't support it but non-minimal ones would, so code
 written to it may not be the most universally portable as-is but should be
 portable in most common environments.
@@ -591,12 +591,12 @@ mitigated somewhat by standardizing these additions in format where
 possible.  These 2 highest levels both look like a general purpose
 programming language, but `rtn_inv_alt_syn` is a lot more concise.
 
-In particular, `rtn_inv_alt_syn` is probably the *only* Muldis D dialect
+In particular, `rtn_inv_alt_syn` is probably the *only* Muldis Data Language dialect
 that conceivably can match or beat the conciseness of a majority of general
 purpose programming languages, and would probably be the most preferred
 abstraction level for developers.  This fact would also help to drive a
 majority of implementations to support this greatest complexity level.  And
-even then, this most complex of standard Muldis D grammars still generally
+even then, this most complex of standard Muldis Data Language grammars still generally
 has simpler grammar rules than a lot of general languages, even if this
 difference is more subtle.  It certainly is simpler and more easier to
 parse grammar than SQL in its general case.
@@ -608,7 +608,7 @@ EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**
 
 Examples:
 
-    Muldis_D:"https://muldis.com":0.148.1:PTMD_STD:{
+    Muldis_Data_Language:"https://muldis.com":0.148.1:PTMD_STD:{
         catalog_abstraction_level => rtn_inv_alt_syn,
         op_char_repertoire => basic
     }
@@ -657,7 +657,7 @@ special value literals that are composed of just 7-bit ASCII characters.
 This repertoire can be recommended for general use, especially since code
 written to it should be the most universally portable as-is (with respect
 to operator character repertoires), including full support even by minimal
-Muldis D implementations and older text editors.
+Muldis Data Language implementations and older text editors.
 
 When the `op_char_repertoire` pragma is `basic`, then the
 following grammar definitions are in effect:
@@ -695,9 +695,9 @@ The `extended` operator character repertoire is the largest one, and it
 supports the entire set of defined operator invocations and special value
 literals, many of which are composed of Unicode characters outside the
 7-bit ASCII repertoire.  This is the most recommended repertoire for
-general use, assuming that all the Muldis D implementations and source code
+general use, assuming that all the Muldis Data Language implementations and source code
 text editors you want to use support it.  The expectation is that, in
-general, minimal Muldis D implementations and older text editors won't
+general, minimal Muldis Data Language implementations and older text editors won't
 support it but non-minimal ones would, so code written to it may not be the
 most universally portable as-is but should be portable in most common and
 modern environments.
@@ -746,15 +746,15 @@ following grammar definitions are in effect:
 # STANDARD SYNTAX EXTENSIONS
 
 The `standard_syntax_extensions` pragma declares which optional portions
-of the Muldis D grammar a programmer may employ with their Muldis D code.
+of the Muldis Data Language grammar a programmer may employ with their Muldis Data Language code.
 
 There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
-While each *standard syntax extension* is closely related to a *Muldis D
+While each *standard syntax extension* is closely related to a *Muldis Data Language
 language extension*, you can use the latter's types and routines without
 declaring the former; you only declare you are using a *standard syntax
-extension* if you want the Muldis D parser to recognize special syntax
+extension* if you want the Muldis Data Language parser to recognize special syntax
 specific to those types and routines, and otherwise you just use them using
 the generic syntax provided for all types and routines.
 
@@ -808,39 +808,39 @@ Grammar:
         | <MPInterval>
         | <List>
 
-A `value` node is a Muldis D value literal, which is a common special case
-of a Muldis D value selector.
+A `value` node is a Muldis Data Language value literal, which is a common special case
+of a Muldis Data Language value selector.
 
 Unlike value selectors in general, which must be composed beneath a
-`depot` because they actually represent a Muldis D value expression tree
+`depot` because they actually represent a Muldis Data Language value expression tree
 of a routine or type definition, a `value`
 node does *not* represent an expression tree, but rather a value constant;
 by definition, a `value` can be completely evaluated at compile time.  A
-`Muldis_D` node with a `value` second element is hence just a serialized
-Muldis D value.
+`Muldis_Data_Language` node with a `value` second element is hence just a serialized
+Muldis Data Language value.
 
 The `PTMD_STD` grammar subsection for value literals (having the root
 grammar token `value`) is completely self-defined and can be used in
-isolation from the wider grammar as a Muldis D sub-language; for example, a
-hosted-data Muldis D implementation may have an object representing a
-Muldis D value, which is initialized using code written in that
+isolation from the wider grammar as a Muldis Data Language sub-language; for example, a
+hosted-data Muldis Data Language implementation may have an object representing a
+Muldis Data Language value, which is initialized using code written in that
 sub-language.
 
-Every grammar token, and corresponding capture node, representing a Muldis
-D value literal is similarly formatted and has 1-3 elements; the following
+Every grammar token, and corresponding capture node, representing a Muldis Data Language
+value literal is similarly formatted and has 1-3 elements; the following
 pod section **Value Literal Common Elements** describes the similarities
 once for all of them, in terms of an alternate `value` token definition
 which is called `x_value`.  And then the other pod sections specific to
 each kind of value literal then just focus on describing their unique
 aspects, namely their *payloads*.
 
-An `opaque_value_literal` node represents a conceptually opaque Muldis D
+An `opaque_value_literal` node represents a conceptually opaque Muldis Data Language
 value, such that every one of these values is defined with its own literal
 syntax that is compact and doesn't look like a collection of other nodes;
 this includes the basic numeric and string literals.
 
-A `coll_value_selector` node represents a conceptually transparent Muldis
-D value, such that every one of these values is defined visibly in terms of
+A `coll_value_selector` node represents a conceptually transparent Muldis Data Language
+value, such that every one of these values is defined visibly in terms of
 a collection of other nodes; this includes the basic tuple and relation
 selectors.
 
@@ -853,8 +853,8 @@ general case, a GCVL includes explicit *value kind* metadata (such as,
 "this is an `Int`" or "this is a `Name`"); but with a few specific data
 types (see the `value_kind` node description for details) that metadata
 may be omitted for brevity because the main literal has mutually uniquely
-identifying characteristics.  For example, each element of a generic Muldis
-D collection value, such as a member of an array or tuple, could
+identifying characteristics.  For example, each element of a generic Muldis Data Language
+collection value, such as a member of an array or tuple, could
 potentially have any type at all.  In contrast, a *specific context value
 literal* (or *SCVL*) is a value literal that does not include explicit
 value kind metadata, even when the main literal doesn't have uniquely
@@ -971,9 +971,9 @@ of omitting the `value_kind` (and `type_name`) applies: `Tuple:D0`,
 
 * `type_name`
 
-This is a Muldis D data type name, for example `sys.std.Core.Type.Int`; it
+This is a Muldis Data Language data type name, for example `sys.std.Core.Type.Int`; it
 identifies a specific subtype of the generic type denoted by `value_kind`,
-and serves as an assertion that the Muldis D value denoted by
+and serves as an assertion that the Muldis Data Language value denoted by
 `value_payload` is a member of the named subtype.  Iff `value_kind` is
 `[|DH]Scalar` then `type_name` is mandatory; otherwise, `type_name` is
 optional for all `value`, except that `type_name` must be omitted when
@@ -981,7 +981,7 @@ optional for all `value`, except that `type_name` must be omitted when
 because those 3 types can't be subtyped, but because in practice doing so
 isn't useful.
 
-How a Muldis D parser treats a `value` node with a `type_name` element
+How a Muldis Data Language parser treats a `value` node with a `type_name` element
 depends on the wider context.  In the general case where the `value` is an
 `expr` beneath the context of a `depot` node, the
 `value` is treated as if it had an extra parent `func_invo` node
@@ -1073,7 +1073,7 @@ Grammar:
         | ⊥ | ⊤
 
 A `Bool` node represents a logical boolean value.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Bool` value as follows:  The `Bool_payload`
+Muldis Data Language `sys.std.Core.Type.Bool` value as follows:  The `Bool_payload`
 is a bareword character string formatted as per a `Name` SCVL, and it maps
 directly to the matching unqualified declared name of one of the `Bool.*`
 singleton types that the `Bool` type is defined as a union over.
@@ -1107,7 +1107,7 @@ Grammar:
         Less | Same | More
 
 An `Order` node represents an order-determination.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Cat.Order` value as follows:  The
+Muldis Data Language `sys.std.Core.Type.Cat.Order` value as follows:  The
 `Order_payload` is a bareword character string formatted as per a `Name`
 SCVL, and it maps directly to the matching unqualified declared name of one
 of the `Order.*`
@@ -1136,7 +1136,7 @@ Grammar:
         | HalfEven
 
 A `RoundMeth` node represents a rounding method.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Cat.RoundMeth` value as
+interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.RoundMeth` value as
 follows:  The `RoundMeth_payload` is a bareword character string
 formatted as per a `Name` SCVL, and it maps directly to the matching
 unqualified declared name of one of the `RoundMeth.*`
@@ -1201,7 +1201,7 @@ Grammar:
         [[_?<[ 0..9 ]>+]+] ** <splitter>
 
 An `Int` node represents an integer numeric value.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Int` value as follows:
+Muldis Data Language `sys.std.Core.Type.Int` value as follows:
 
 If the `Int_payload` is composed of a `num_max_col_val` plus `int_body`,
 then the `int_body` is interpreted as a base-*N* integer where *N* might
@@ -1286,7 +1286,7 @@ Grammar:
             <unspace> '^' <d_int_body>
 
 A `Rat` node represents a rational numeric value.  It is interpreted as a
-Muldis D `sys.std.Core.Type.Rat` value as follows:
+Muldis Data Language `sys.std.Core.Type.Rat` value as follows:
 
 Fundamentally a `Rat` node is formatted and interpreted like an `Int`
 node, and any similarities won't be repeated here.  The differences of
@@ -1364,7 +1364,7 @@ Grammar:
         '\''
 
 A `Blob` node represents a general purpose bit string.  It is interpreted
-as a Muldis D `sys.std.Core.Type.Blob` value as follows:  Fundamentally
+as a Muldis Data Language `sys.std.Core.Type.Blob` value as follows:  Fundamentally
 the *body* part of a `Blob` node consists of a delimited string of digits
 and plain uppercased or lowercased letters, where each digit (`0..9`)
 represents its own number and each letter (`A..F`) represents a number in
@@ -1439,7 +1439,7 @@ Grammar:
         '#' ** 2..*
 
 A `Text` node represents a general purpose character string.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Text` value as follows:
+interpreted as a Muldis Data Language `sys.std.Core.Type.Text` value as follows:
 
 The `Text_payload` is interpreted generally as is usual for a programming
 language with such a delimited character string literal.
@@ -1456,7 +1456,7 @@ then the run is simply stripped rather than a `SPACE` taking its place.
 
 The main reason for this substitution/stripping feature is to ensure that
 the actual values being selected by string literals are not variable per
-the kind of linebreaks or indenting used to format the Muldis D source code
+the kind of linebreaks or indenting used to format the Muldis Data Language source code
 itself.  The feature is provided to support code that contains long value
 literals while still being well formatted (no extra-long lines).  If you
 want to have actual non-`SPACE` whitespace or control characters in your
@@ -1466,9 +1466,9 @@ line is broken, you have to format some as escape sequences.  If you want
 to end up with no `SPACE` at all where a line is broken, then you'll have
 to employ some other workaround, such as catenating several quoted strings.
 
-All Muldis D delimited character string literals (generally the 3 `Text`,
+All Muldis Data Language delimited character string literals (generally the 3 `Text`,
 `Name`, code comments) may contain some characters denoted with escape
-sequences rather than literally.  The Muldis D parser would substitute the
+sequences rather than literally.  The Muldis Data Language parser would substitute the
 escape sequences with the characters they represent, so the resulting
 character string values don't contain those escape sequences.  Currently
 there are 2 classes of escape sequences, called *simple* and *complex*.
@@ -1511,7 +1511,7 @@ Examples:
     '\c<LATIN SMALL LETTER OU>\c<0x263A>\c<65>'
 
 A `non_value_comment` node is strictly not part of the code
-proper; Muldis D code can contain these almost anywhere as metadata for
+proper; Muldis Data Language code can contain these almost anywhere as metadata for
 the code, and in large part it is treated as if it were part of the
 insignificant whitespace; that all being said, generally speaking any
 `non_value_comment` is retained in the parse tree adjusted to live in the
@@ -1580,7 +1580,7 @@ Grammar:
 
 A `Name` node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
-from `Text`.  It is interpreted as a Muldis D
+from `Text`.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Cat.Name` value as follows:
 
 Fundamentally a `Name` node is formatted and interpreted like a `Text`
@@ -1604,7 +1604,7 @@ character is alphabetic.
 
 A `NameChain` node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
-names.  This node is interpreted as a Muldis D
+names.  This node is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Cat.NameChain` value as follows:  A
 `NameChain_payload` has 2 variants, one that defines a nonempty chain
 (`nc_nonempty`) and one that defines an empty chain (`nc_empty`).  A
@@ -1623,7 +1623,7 @@ these 2 distinct node kinds, and so the secondary difference between the 2
 provides that rationale; the `PNSQNameChain` node supports a number of
 chain value shorthands while the `NameChain` node supports none.
 
-Strictly speaking, a Muldis D `PNSQNameChain` value is supposed to have
+Strictly speaking, a Muldis Data Language `PNSQNameChain` value is supposed to have
 at least 1 element in its sequence, and the first element of any sequence
 must be one of these 5 `Name` values, which is a top-level namespace:
 `sys`, `mnt`, `fed`, `nlx`, `rtn`.  (Actually, `type` is a
@@ -1671,7 +1671,7 @@ than `sys.std.Core.Type.Int`, `Array` rather than
 `sys.std.Core.Tuple.attr`, `fetch_trans_instant` rather than
 `sys.std.Temporal.Instant.fetch_trans_instant`,
 `array_of.Rat` rather than `array_of.sys.std.Core.Type.Rat`, and so on.
-In fact, the Muldis D spec itself uses such abbreviations frequently.
+In fact, the Muldis Data Language spec itself uses such abbreviations frequently.
 
 The second special case involves any context where a type is being
 referenced using the `type` namespace prefix feature described in
@@ -1727,7 +1727,7 @@ Grammar:
         <RoundMeth_payload>
 
 A `RatRoundRule` node represents a rational rounding rule.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Cat.RatRoundRule` value whose
+interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.RatRoundRule` value whose
 attributes are defined by the `RatRoundRule_payload`.  A
 `RatRoundRule_payload` consists mainly of a bracket-delimited sequence of
 3 comma-separated elements, which correspond in order to the 3 attributes:
@@ -1771,7 +1771,7 @@ Grammar:
         <tuple_list>
 
 A `Scalar` node represents a literal or selector invocation for a
-not-`Int|String` scalar subtype value.  It is interpreted as a Muldis D
+not-`Int|String` scalar subtype value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Scalar` subtype value whose declared type is specified
 by the node's (mandatory for `Scalar`) `type_name` and whose attributes
 are defined by the `Scalar_payload`.  If the `Scalar_payload` is just a
@@ -1851,7 +1851,7 @@ Grammar:
         D0
 
 A `Tuple` node represents a literal or selector invocation for a tuple
-value.  It is interpreted as a Muldis D `sys.std.Core.Type.Tuple` value
+value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Tuple` value
 whose attributes are defined by the `Tuple_payload`.
 
 Iff the `Tuple_payload` is a `tuple_list` then each name+expr pair
@@ -1919,7 +1919,7 @@ Grammar:
         <Tuple_payload>
 
 A `Database` node represents a literal or selector invocation for a
-'database' value.  It is interpreted as a Muldis D
+'database' value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Database` value whose attributes are defined by the
 `Database_payload`.  Each name+relation pair of the `Database_payload`
 defines a named attribute of the new 'database'; the pair's name and
@@ -1975,7 +1975,7 @@ Grammar:
         D0C0 | D0C1
 
 A `Relation` node represents a literal or selector invocation for a
-relation value.  It is interpreted as a Muldis D
+relation value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Relation` value whose attributes and tuples are
 defined by the `Relation_payload`, which is interpreted as follows:
 
@@ -2064,7 +2064,7 @@ Grammar:
         <ws>? '}'
 
 A `Set` node represents a literal or selector invocation for a set
-value.  It is interpreted as a Muldis D `sys.std.Core.Type.Set` value
+value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Set` value
 whose elements are defined by the `Set_payload`.  Each `expr` of the
 `Set_payload` defines a unary tuple of the new set; each
 `expr` defines the `value` attribute of the tuple.  If the
@@ -2116,7 +2116,7 @@ Grammar:
         | '∅'
 
 A `Maybe` node represents a literal or selector invocation for a maybe
-value.  It is interpreted as a Muldis D `sys.std.Core.Type.Maybe` value
+value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Maybe` value
 whose elements are defined by the `Maybe_payload`.
 
 Iff the `Maybe_payload` is a `maybe_list` then it defines either zero or
@@ -2168,7 +2168,7 @@ Grammar:
         <ws>? ']'
 
 An `Array` node represents a literal or selector invocation for an
-array value.  It is interpreted as a Muldis D
+array value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Array` value whose elements are defined by the
 `Array_payload`.  Each `expr` of the `Array_payload` defines a binary
 tuple of the new sequence; the `expr` defines the `value` attribute
@@ -2230,7 +2230,7 @@ Grammar:
         <ws>? '}'
 
 A `Bag` node represents a literal or selector invocation for a bag
-value.  It is interpreted as a Muldis D `sys.std.Core.Type.Bag` value
+value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Bag` value
 whose elements are defined by the `Bag_payload`, which is interpreted as
 follows:
 
@@ -2328,7 +2328,7 @@ Grammar:
         <ws>? '}'
 
 An `SPInterval` node represents a literal or selector invocation for a
-single-piece interval value.  It is interpreted as a Muldis D
+single-piece interval value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.SPInterval` value whose attributes are defined by the
 `SPInterval_payload`.  Each of `min` and `max` is an `expr` node that
 defines the `min` and `max` attribute value, respectively, of the new
@@ -2348,7 +2348,7 @@ identical to the `interval_single` and whose `interval_boundary_kind` is
 `..`.  For example, the interval `6` is shorthand for `6..6`.
 
 An `MPInterval` node represents a literal or selector invocation for a
-multi-piece interval value.  It is interpreted as a Muldis D
+multi-piece interval value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.MPInterval` value whose elements are defined by the
 `MPInterval_payload`.  Each `interval` of the `MPInterval_payload`
 defines a 4-ary tuple, representing a single-piece interval, of the new
@@ -2394,7 +2394,7 @@ Grammar:
         <ws>? ']'
 
 A `List` node represents a literal or selector invocation for a
-low-level list value.  It is interpreted as a Muldis D
+low-level list value.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Cat.List` value whose elements are defined by the
 `List_payload`.  Each `expr` of the `List_payload` defines an element
 of the new list, where the elements keep the same order.
@@ -2500,7 +2500,7 @@ system catalog database, holding user material (routine and type)
 definitions, plus optionally a normal-user-data database.
 
 A `depot_catalog_payload` node in the `PTMD_STD` grammar is interpreted as a
-Muldis D `sys.std.Core.Type.Cat.Depot` value (which is also a `Database`
+Muldis Data Language `sys.std.Core.Type.Cat.Depot` value (which is also a `Database`
 value) whose attributes are defined by its child elements.
 
 A `subdepot` node specifies a single public entity namespace under a depot
@@ -2566,7 +2566,7 @@ a depot or subdepot.
 A `material` node in the `PTMD_STD` grammar corresponds directly to a tuple
 of a (routine or type defining) attribute of a value of the catalog data
 type `sys.std.Core.Type.Cat.Depot`, which is how a material specification
-is actually represented in Muldis D's nonsugared form, which is as a
+is actually represented in Muldis Data Language's nonsugared form, which is as a
 component of the system catalog.  Or more specifically, an entire tree of
 `PTMD_STD` `material` nodes corresponds to a set of said attribute tuples,
 one attribute tuple per `material` node.  In the nonsugared form, every
@@ -2772,14 +2772,14 @@ A `function` node specifies a new function that lives in a depot or
 subdepot.  A `function` node in the `PTMD_STD` grammar corresponds directly
 to a tuple of the `functions` attribute of a value of the catalog data
 type `sys.std.Core.Type.Cat.Depot`, which is how a function specification
-is actually represented in Muldis D's nonsugared form, which is as a
+is actually represented in Muldis Data Language's nonsugared form, which is as a
 component of the system catalog.  The `functions` tuple has 2 primary
 attributes, `name` and `material`, which are valued from the `function`
 node's `material_declared_name` and `function_payload` elements,
 respectively.
 
 A `function_payload` specifies an entire function besides its name.  It is
-interpreted as a Muldis D `sys.std.Core.Type.Cat.Function` value.  The
+interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.Function` value.  The
 `function_heading` element specifies the function's public interface,
 which is these 5 attributes of the new `Function`: `result_type`,
 `params`, `opt_params`, `dispatch_params`, `implements`.  The
@@ -2947,14 +2947,14 @@ A `procedure` node specifies a new procedure that lives in a depot or
 subdepot.  A `procedure` node in the `PTMD_STD` grammar corresponds directly
 to a tuple of the `procedures` attribute of a value of the catalog data
 type `sys.std.Core.Type.Cat.Depot`, which is how a procedure specification
-is actually represented in Muldis D's nonsugared form, which is as a
+is actually represented in Muldis Data Language's nonsugared form, which is as a
 component of the system catalog.  The `procedures` tuple has 2 primary
 attributes, `name` and `material`, which are valued from the `procedure`
 node's `material_declared_name` and `procedure_payload` elements,
 respectively.
 
 A `procedure_payload` specifies an entire procedure besides its name.  It
-is interpreted as a Muldis D `sys.std.Core.Type.Cat.Procedure` value.  The
+is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.Procedure` value.  The
 `procedure_heading` element specifies the procedure's public interface,
 which is these 9 attributes of the new `Procedure`: `upd_params`,
 `ro_params`, `opt_params`, `upd_global_params`, `ro_global_params`,
@@ -3153,14 +3153,14 @@ A `scalar_type` node specifies a new scalar type that lives in a depot or
 subdepot.  A `scalar_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `scalar_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a scalar
-type specification is actually represented in Muldis D's nonsugared form,
+type specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `scalar_types` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `scalar_type` node's `material_declared_name` and
 `scalar_type_payload` elements, respectively.
 
 A `scalar_type_payload` specifies an entire scalar type besides its name.
-It is interpreted as a Muldis D `sys.std.Core.Type.Cat.ScalarType` value.
+It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.ScalarType` value.
 
 *The remaining description.*
 
@@ -3222,14 +3222,14 @@ A `tuple_type` node specifies a new tuple type that lives in a depot or
 subdepot.  A `tuple_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `tuple_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a tuple
-type specification is actually represented in Muldis D's nonsugared form,
+type specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `tuple_types` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `tuple_type` node's `material_declared_name` and
 `tuple_type_payload` elements, respectively.
 
 A `tuple_type_payload` specifies an entire tuple type besides its name.
-It is interpreted as a Muldis D `sys.std.Core.Type.Cat.TupleType` value.
+It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.TupleType` value.
 
 The `tuple_type_kind` has no impact at all on the interpretation of a
 `tuple_type`.  However, it can serve to apply additional constraints on
@@ -3321,14 +3321,14 @@ A `relation_type` node specifies a new relation type that lives in a depot
 or subdepot.  A `relation_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `relation_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a relation
-type specification is actually represented in Muldis D's nonsugared form,
+type specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `relation_types` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `relation_type` node's `material_declared_name` and
 `relation_type_payload` elements, respectively.
 
 A `relation_type_payload` specifies an entire relation type besides its
-name.  It is interpreted as a Muldis D
+name.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Cat.RelationType` value.
 
 *The remaining description.*
@@ -3397,14 +3397,14 @@ A `domain_type` node specifies a new domain type that lives in a depot or
 subdepot.  A `domain_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `domain_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a domain
-type specification is actually represented in Muldis D's nonsugared form,
+type specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `domain_types` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `domain_type` node's `material_declared_name` and
 `domain_type_payload` elements, respectively.
 
 A `domain_type_payload` specifies an entire domain type besides its name.
-It is interpreted as a Muldis D `sys.std.Core.Type.Cat.DomainType` value.
+It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.DomainType` value.
 
 *The remaining description.*
 
@@ -3454,14 +3454,14 @@ A `subset_type` node specifies a new subset type that lives in a depot or
 subdepot.  A `subset_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `subset_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a subset
-type specification is actually represented in Muldis D's nonsugared form,
+type specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `subset_types` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `subset_type` node's `material_declared_name` and
 `subset_type_payload` elements, respectively.
 
 A `subset_type_payload` specifies an entire subset type besides its name.
-It is interpreted as a Muldis D `sys.std.Core.Type.Cat.SubsetType` value.
+It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.SubsetType` value.
 
 *The remaining description.*
 
@@ -3494,14 +3494,14 @@ A `mixin_type` node specifies a new mixin type that lives in a depot or
 subdepot.  A `mixin_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `mixin_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a mixin
-type specification is actually represented in Muldis D's nonsugared form,
+type specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `mixin_types` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `mixin_type` node's `material_declared_name` and
 `mixin_type_payload` elements, respectively.
 
 A `mixin_type_payload` specifies an entire mixin type besides its name.
-It is interpreted as a Muldis D `sys.std.Core.Type.Cat.MixinType` value.
+It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.MixinType` value.
 
 *The remaining description.*
 
@@ -3529,7 +3529,7 @@ key, for a relation type, that lives in a depot or subdepot.  A
 `key_constr` node in the `PTMD_STD` grammar corresponds directly to a tuple
 of the `key_constrs` attribute of a value of the catalog data type
 `sys.std.Core.Type.Cat.Depot`, which is how a unique key constraint
-specification is actually represented in Muldis D's nonsugared form, which
+specification is actually represented in Muldis Data Language's nonsugared form, which
 is as a component of the system catalog.  The `key_constrs` tuple has 2
 primary attributes, `name` and `material`, which are valued from the
 `key_constr` node's `material_declared_name` and `key_constr_payload`
@@ -3537,7 +3537,7 @@ elements, respectively.
 
 A `key_constr_payload` specifies an entire unique key constraint or
 candidate key, for a relation type, besides its name.  It is interpreted as
-a Muldis D `sys.std.Core.Type.Cat.KeyConstr` value.  Each `attr_name_lex`
+a Muldis Data Language `sys.std.Core.Type.Cat.KeyConstr` value.  Each `attr_name_lex`
 element of a `key_constr_payload` is interpreted as a tuple of the
 `KeyConstr`'s `attrs` attribute.  Iff there are no `attr_name_lex`, then
 we have a nullary key which restricts the relation to have a maximum of 1
@@ -3612,7 +3612,7 @@ that lives in a depot or subdepot.  A `subset_constr` node in the `PTMD_STD`
 grammar corresponds directly to a tuple of the `subset_constrs` attribute
 of a value of the catalog data type `sys.std.Core.Type.Cat.Depot`, which
 is how a (non-distributed) subset constraint
-specification is actually represented in Muldis D's nonsugared form,
+specification is actually represented in Muldis Data Language's nonsugared form,
 which is as a component of the system catalog.  The `subset_constrs` tuple
 has 2 primary attributes, `name` and `material`, which are valued from
 the `subset_constr` node's `material_declared_name` and
@@ -3620,7 +3620,7 @@ the `subset_constr` node's `material_declared_name` and
 
 A `subset_constr_payload` specifies an entire (non-distributed) subset
 constraint, for a relation type, besides its name.  It is interpreted
-as a Muldis D `sys.std.Core.Type.Cat.SubsetConstr` value.
+as a Muldis Data Language `sys.std.Core.Type.Cat.SubsetConstr` value.
 
 *The remaining description.*
 
@@ -3671,7 +3671,7 @@ which are valued from the `stim_resp_rule` node's
 respectively.
 
 A `stim_resp_rule_payload` specifies an entire stimulus-response rule
-besides its name.  It is interpreted as a Muldis D
+besides its name.  It is interpreted as a Muldis Data Language
 `sys.std.Core.Type.Cat.StimRespRule` value.  The `stimulus` and
 `response` elements specify the `stimulus` and `response` attributes,
 respectively, of the new `StimRespRule`, which is the kind of stimulus and
@@ -3714,8 +3714,8 @@ Grammar:
     <named_expr> ::=
         [let <ws>]? <expr_name> <ws> <infix_bind_op> <ws> <expr>
 
-An `expr` node is the general case of a Muldis D value expression tree
-(which normally denotes a Muldis D value selector), which must be composed
+An `expr` node is the general case of a Muldis Data Language value expression tree
+(which normally denotes a Muldis Data Language value selector), which must be composed
 beneath a `depot`, or specifically into a routine or
 type or constraint (etc) definition, because in the general case
 an `expr` can *not* be completely evaluated at compile time.
@@ -3727,7 +3727,7 @@ with `value` nodes on a per-instance basis.
 An `expr` node in the `PTMD_STD` grammar corresponds directly to a tuple of
 an attribute of a value of the catalog data type
 `sys.std.Core.Type.Cat.ExprNodeSet`, which is how a value expression node
-is actually represented in Muldis D's nonsugared form, which is as a
+is actually represented in Muldis Data Language's nonsugared form, which is as a
 component of the system catalog.  Or more specifically, an entire tree of
 `PTMD_STD` `expr` nodes corresponds to a set of said attribute tuples, one
 attribute tuple per `expr` node.  In the nonsugared form, every `expr`
@@ -3763,7 +3763,7 @@ Iff an `expr` is a `named_expr`, then the `expr` element of the
 element of the `named_expr` is that name.  But if the `expr` element of
 the `named_expr` is an `expr_name` (or a `named_expr` *TODO: or a `param`*),
 then the `named_expr` is in fact declaring a new node itself
-(rather than simply naming its child node), which is a tuple of a Muldis D
+(rather than simply naming its child node), which is a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.AccExprNodeSet` value; the new node is simply
 declaring an alias for another node, namely the `expr` element.
 
@@ -3793,7 +3793,7 @@ Grammar:
 
 An `accessor` node represents an accessor or alias for an attribute of
 another, tuple-valued expression node.  It is interpreted as a tuple of a
-Muldis D `sys.std.Core.Type.Cat.AccExprNodeSet` value.  If an `accessor`
+Muldis Data Language `sys.std.Core.Type.Cat.AccExprNodeSet` value.  If an `accessor`
 is an `acc_via_named`, then the `NameChain_payload` element specifies
 the `target` attribute of the new `AccExprNodeSet`.  If an `accessor` is
 an `acc_via_topic`, then it is interpreted in exactly the same manner as
@@ -3834,7 +3834,7 @@ Grammar:
 
 A `func_invo` node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
-Muldis D `sys.std.Core.Type.Cat.FuncInvoExprNodeSet` value.  The
+Muldis Data Language `sys.std.Core.Type.Cat.FuncInvoExprNodeSet` value.  The
 `routine_name` element specifies the `function` attribute of the new
 `FuncInvoExprNodeSet`, which is the name of the function being invoked,
 and the `func_arg_list` element specifies the `args` attribute.
@@ -3866,7 +3866,7 @@ they will be treated as if they were named arguments for the `topic` and
 `topic`, and any sequentially second argument will bind to `other`.
 
 One reason for this difference between treatment of top-level namespaces is
-it allows the Muldis D parser to convert all the anonymous arguments to
+it allows the Muldis Data Language parser to convert all the anonymous arguments to
 named ones (all arguments in the system catalog are named) when parsing the
 expression-containing routine/etc in isolation from any other
 user-defined entities.  The other reason for this limitation is that it
@@ -3877,7 +3877,7 @@ language spec to find the answer.
 *Maybe TODO:  Consider adding a language pragma to enable use of the first
 4 special cases with functions in all top-level namespaces, where the cost
 of enabling is added implementation complexity and a reduction of the
-ability to parse exploiting Muldis D code piecemeal.*
+ability to parse exploiting Muldis Data Language code piecemeal.*
 
 A special shorthand for `named_ro_arg` also exists, `same_named_ro_arg`,
 which may be used only if the `expr` of the otherwise-`named_ro_arg` is
@@ -3945,7 +3945,7 @@ Grammar:
         <expr>
 
 An `if_else_expr` node represents a ternary if-then-else control flow
-expression.  It is interpreted as a tuple of a Muldis D
+expression.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.IfElseExprNodeSet` value.  The `if_expr`,
 `then_expr`, and `else_expr` elements specify the `if`, `then`, and
 `else` attributes, respectively, of the new `IfElseExprNodeSet`;
@@ -3992,7 +3992,7 @@ Grammar:
 
 A `given_when_def_expr` node represents an N-way given-when-default
 switch control flow expression that dispatches based on matching a single
-value with several options.  It is interpreted as a tuple of a Muldis D
+value with several options.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet` value.  The `given_expr`
 element specifies the `given` attribute of the new
 `GivenWhenDefExprNodeSet`, which is the control value for the expression.
@@ -4032,7 +4032,7 @@ Grammar:
 A `material_ref` node represents a selector invocation for a value of the
 `sys.std.Core.Type.Cat.AbsPathMaterialNC` type, which is selected in terms
 of a value of the `sys.std.Core.Type.Cat.RelPathMaterialNC` type.  It is
-interpreted as a tuple of a Muldis D
+interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet` value.  The
 `material_name` element specifies the `referencing` attribute of the new
 `APMaterialNCSelExprNodeSet`, which is the name, from the point of view of
@@ -4044,7 +4044,7 @@ A `material_ref` node also serves as a less-verbose alternate syntax for a
 `PNSQNameChain` node, but only for `PNSQNameChain` values where you
 actually don't want a relative-path name-chain value.  For any
 `material_ref` node whose `material_name` is already an
-`AbsPathMaterialNC` payload, a Muldis D parser will silently replace the
+`AbsPathMaterialNC` payload, a Muldis Data Language parser will silently replace the
 `material_ref` node with a `PNSQNameChain` node whose payload is its
 `material_name`.  In other words, you can safely use any primary namespace
 qualified name chain in a `material_ref` node and get the result that you
@@ -4103,7 +4103,7 @@ Grammar:
     <named_stmt> ::=
         [let <ws>]? <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
 
-A `proc_stmt` node is the general case of a Muldis D statement tree, which
+A `proc_stmt` node is the general case of a Muldis Data Language statement tree, which
 must be composed beneath a `depot`, or specifically into a procedure
 definition, because in the general case a `proc_stmt` can *not* be
 completely evaluated at compile time.
@@ -4111,7 +4111,7 @@ completely evaluated at compile time.
 A `proc_stmt` node in the `PTMD_STD` grammar corresponds directly to a tuple
 of an attribute of a value of the catalog data type
 `sys.std.Core.Type.Cat.StmtNodeSet`, which is how a statement node is
-actually represented in Muldis D's nonsugared form, which is as a component
+actually represented in Muldis Data Language's nonsugared form, which is as a component
 of the system catalog.  Or more specifically, an entire tree of `PTMD_STD`
 `proc_stmt` nodes corresponds to a set of said attribute tuples, one
 attribute tuple per `proc_stmt` node.  In the nonsugared form, every
@@ -4130,7 +4130,7 @@ explicit name rather than inline, same as the corresponding system catalog
 entry would do, and then the `stmt_name` is the invocation name of that
 child.
 
-Note that, regarding Muldis D's feature of a statement node having an
+Note that, regarding Muldis Data Language's feature of a statement node having an
 explicit name that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
@@ -4153,7 +4153,7 @@ Grammar:
 A `compound_stmt` node specifies a procedure compound statement composed
 of a sequence of 0..N other statements such that those other statements
 execute in this given sequence; each statement of the sequence conceptually
-executes at a different time.  It is interpreted as a tuple of a Muldis D
+executes at a different time.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.CompoundStmtNodeSet` value.  Each `proc_stmt`
 element of a `compound_statement` is a nested statement that is
 interpreted as its own tuple of an attribute of the `stmt` attribute of
@@ -4183,7 +4183,7 @@ procedure compound statement composed of a set of 0..N other statements
 such that those other statements execute all as one and collectively at a
 single point in time, as if the collection were a single statement that did
 all the work of the
-component statements itself.  It is interpreted as a tuple of a Muldis D
+component statements itself.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.MultiUpdStmtNodeSet` value.  Each `proc_stmt`
 element of a `multi_upd_stmt` is a nested statement that is
 interpreted as its own tuple of an attribute of the `stmt` attribute of
@@ -4255,7 +4255,7 @@ Grammar:
 
 A `proc_invo` node represents the invocation of a named procedure,
 with specific subject-to-update or read-only arguments, as a
-statement of a procedure.  It is interpreted as a tuple of a Muldis D
+statement of a procedure.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.ProcInvoStmtNodeSet` value.  The `routine_name`
 element specifies the `procedure` attribute of the new
 `ProcInvoStmtNodeSet`, which is the name of the procedure being
@@ -4323,7 +4323,7 @@ Grammar:
         <proc_stmt>
 
 A `try_catch_stmt` node represents a try-catch control flow statement.  It
-is interpreted as a tuple of a Muldis D
+is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.TryCatchStmtNodeSet` value.  The `try_stmt` and
 `catch_stmt` elements specify the `try` and `catch` attributes,
 respectively, of the new `TryCatchStmtNodeSet`, which are the names or
@@ -4360,7 +4360,7 @@ Grammar:
         <proc_stmt>
 
 An `if_else_stmt` node represents a ternary if-then-else control flow
-statement.  It is interpreted as a tuple of a Muldis D
+statement.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.IfElseStmtNodeSet` value.  The `if_expr`,
 `then_stmt`, and `else_stmt` elements specify the `if`, `then`, and
 `else` attributes, respectively, of the new `IfElseStmtNodeSet`;
@@ -4392,7 +4392,7 @@ Grammar:
 
 A `given_when_def_stmt` node represents an N-way given-when-default switch
 control flow statement that dispatches based on matching a single value
-with several options.  It is interpreted as a tuple of a Muldis D
+with several options.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet` value.  The
 `given_expr` element specifies the `given` attribute of the new
 `GivenWhenDefStmtNodeSet`, which is the control value for the statement.
@@ -4446,7 +4446,7 @@ node has the empty string as its name, then the latter will be exited; this
 is how a "return" statement is represented.  If the parent node in question
 is an iterating or looping statement, then any remaining iterations it
 might have had are skipped, especially useful if it was an infinite loop.
-A `leave_stmt` node is interpreted as a tuple of a Muldis D
+A `leave_stmt` node is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.LeaveStmtNodeSet` value.  The optional `stmt_name`
 element specifies the name of the parent statement node to completely
 abort; that name becomes the `iterate` attribute of the new
@@ -4458,7 +4458,7 @@ An `iterate_stmt` node represents an instruction to abnormally end the
 current iteration of a looping block defined by a parent statement node,
 and then start at the beginning of the next iteration of that loop if there
 are any left; or, it can also be used to "redo" any non-looping parent
-statement.  It is interpreted as a tuple of a Muldis D
+statement.  It is interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.IterateStmtNodeSet` value.  The optional
 `stmt_name` element specifies the name of the parent statement node to
 continue execution at the beginning of; that name becomes the `iterate`
@@ -4471,7 +4471,7 @@ saying to redo the whole procedure.
 
 A `loop_stmt` node represents a generic looping statement block which
 iterates until a child "leave" statement executes.  It is interpreted as a
-tuple of a Muldis D `sys.std.Core.Type.Cat.LoopStmtNodeSet` value.  The
+tuple of a Muldis Data Language `sys.std.Core.Type.Cat.LoopStmtNodeSet` value.  The
 `proc_stmt` element specifies the name or definition of the child
 statement node to be repeatedly executed; the name of that statement
 becomes the `loop` attribute of the new `LoopStmtNodeSet` tuple.
@@ -4479,12 +4479,12 @@ becomes the `loop` attribute of the new `LoopStmtNodeSet` tuple.
 A `loop_stmt` node in combination with `leave_stmt` or `iterate_stmt`
 nodes is useful for a more ad-hoc means of performing procedural iteration
 as well as for effectively simulating the syntax of common "while" or "for
-i" loops, so Muldis D doesn't include special "while" or "for i" syntax.
+i" loops, so Muldis Data Language doesn't include special "while" or "for i" syntax.
 A `loop_stmt` is *not* an effective "for each item in list" replacement,
-however; Muldis D currently doesn't provide a procedural "foreach", but
+however; Muldis Data Language currently doesn't provide a procedural "foreach", but
 typically any such tasks can effectively be performed in functional code
 using various list-processing relational routines; if a case can be made
-for procedural "foreach" then Muldis D may gain this feature in the future.
+for procedural "foreach" then Muldis Data Language may gain this feature in the future.
 
 Examples:
 
@@ -4517,7 +4517,7 @@ Grammar:
 
 A `func_invo_alt_syntax` node represents the result of invoking a named
 system-defined function with specific arguments.  It is interpreted as a
-tuple of a Muldis D `sys.std.Core.Type.Cat.FuncInvoExprNodeSet` value.  A
+tuple of a Muldis Data Language `sys.std.Core.Type.Cat.FuncInvoExprNodeSet` value.  A
 `func_invo_alt_syntax` node is a lot like a `func_invo` node in purpose
 and interpretation but it differs in several significant ways.
 
@@ -4546,7 +4546,7 @@ syntax treatment partly comes down to respecting common good practices in
 programming languages, letting people write code more like how they're
 comfortable with.  Most programming languages only have special syntax for
 a handful of their operators, such as common comparison and boolean and
-mathematical and string and element extraction operators, and so Muldis D
+mathematical and string and element extraction operators, and so Muldis Data Language
 mainly does likewise.  Functions get special alternate syntax if they would
 be frequently used and the syntax would significantly aid programmers in
 quickly writing understandeable code.
@@ -5410,7 +5410,7 @@ Grammar:
 
 A `proc_invo_alt_syntax` node represents the invocation of a named
 system-defined procedure with specific arguments.  It is
-interpreted as a tuple of a Muldis D
+interpreted as a tuple of a Muldis Data Language
 `sys.std.Core.Type.Cat.ProcInvoStmtNodeSet` value.  A
 `proc_invo_alt_syntax` node is a lot like a
 `proc_invo` node in purpose and interpretation but it differs in
@@ -5547,7 +5547,7 @@ Examples:
 
 `PTMD_STD` is designed to respect a variety of mnemonics that bring it some
 self-similarity and an association between syntax and semantics so that it
-is easier to read and write Muldis D code.  Some of these mnemonics are
+is easier to read and write Muldis Data Language code.  Some of these mnemonics are
 more about self-similarity and others are more about shared traits with
 other languages.
 
@@ -5676,8 +5676,8 @@ routine code within parenthesis is always one or more expressions.
 
 # NESTING PRECEDENCE RULES
 
-This documentation section outlines Muldis D's `PTMD_STD` dialect's nesting
-precedence rules, meaning how it accepts Muldis D code lacking explicit
+This documentation section outlines Muldis Data Language's `PTMD_STD` dialect's nesting
+precedence rules, meaning how it accepts Muldis Data Language code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
@@ -5745,8 +5745,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

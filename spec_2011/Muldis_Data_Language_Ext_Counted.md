@@ -1,30 +1,30 @@
 # NAME
 
-Muldis::D::Ext::Counted - Muldis D extension for count-sensitive relational operators
+Muldis Data Language Ext Counted - Muldis Data Language extension for count-sensitive relational operators
 
 # VERSION
 
-This document is Muldis::D::Ext::Counted version 0.148.1.
+This document is Muldis Data Language Ext Counted version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-Muldis D has a mandatory core set of system-defined (eternally available)
-entities, which is referred to as the *Muldis D core* or the *core*; they
-are the minimal entities that all Muldis D implementations need to provide;
+Muldis Data Language has a mandatory core set of system-defined (eternally available)
+entities, which is referred to as the *Muldis Data Language core* or the *core*; they
+are the minimal entities that all Muldis Data Language implementations need to provide;
 they are mutually self-describing and are either used to bootstrap the
 language or they constitute a reasonable minimum level of functionality for
 a practically useable industrial-strength (and fully *TTM*-conforming)
-programming language; any entities outside the core, called *Muldis D
+programming language; any entities outside the core, called *Muldis Data Language
 extensions*, are non-mandatory and are defined in terms of the core or each
 other, but the reverse isn't true.
 
-This current `Counted` document describes the system-defined *Muldis D
+This current `Counted` document describes the system-defined *Muldis Data Language
 Counted Extension*, which consists of relational operators that are
 sensitive to special relation attributes that store count metadata as if
 the relation conceptually was a bag of tuples rather than a set of
@@ -35,8 +35,8 @@ including that count-containing attributes have any particular names;
 rather, each operator is told what attributes to treat as special by taking
 extra explicit parameters specifying their names.  The operators are all
 short-hands for generic relational operators either in the language core or
-in other language extensions.  The *Muldis D Counted Extension* differs
-from the *Muldis D Bag Extension* in that the latter deals just with
+in other language extensions.  The *Muldis Data Language Counted Extension* differs
+from the *Muldis Data Language Bag Extension* in that the latter deals just with
 `Bag` binary relations with specific attribute names while the former
 works with any relations at all.
 
@@ -282,7 +282,7 @@ topic : bag_of.Relation, count_attr_name : Name) {...}`
 This function is like `sys.std.Counted.counted_union` but that for each
 pair of argument elements being unioned, the output `tcount` value is the
 sum of the input `tcount` values rather than being the maximum of the
-inputs.  This function is the nearest Muldis D analogy to the SQL "UNION
+inputs.  This function is the nearest Muldis Data Language analogy to the SQL "UNION
 ALL" operation, versus `sys.std.Core.Relation.union` which is the nearest
 analogy to "UNION DISTINCT".
 
@@ -335,8 +335,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

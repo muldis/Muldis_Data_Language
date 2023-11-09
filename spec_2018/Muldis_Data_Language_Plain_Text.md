@@ -1317,7 +1317,7 @@ system, but rather is a subtype by constraint of the `Array` type, and all
 nodes.  However, `<Nesting>` is the canonical grammar for all
 `Nesting` values.
 
-Examples (comments refer to their Muldis-D runtime specific interpretation):
+Examples (comments refer to their Muldis Data Language runtime specific interpretation):
 
     `The Muldis Data Language Foundation function Integer_plus, from any perspective.`
     \$foundation::Integer_plus

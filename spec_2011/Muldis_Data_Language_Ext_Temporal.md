@@ -1,39 +1,39 @@
 # NAME
 
-Muldis::D::Ext::Temporal - Muldis D extension for temporal data types and operators
+Muldis Data Language Ext Temporal - Muldis Data Language extension for temporal data types and operators
 
 # VERSION
 
-This document is Muldis::D::Ext::Temporal version 0.148.1.
+This document is Muldis Data Language Ext Temporal version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-Muldis D has a mandatory core set of system-defined (eternally available)
-entities, which is referred to as the *Muldis D core* or the *core*; they
-are the minimal entities that all Muldis D implementations need to provide;
+Muldis Data Language has a mandatory core set of system-defined (eternally available)
+entities, which is referred to as the *Muldis Data Language core* or the *core*; they
+are the minimal entities that all Muldis Data Language implementations need to provide;
 they are mutually self-describing and are either used to bootstrap the
 language or they constitute a reasonable minimum level of functionality for
 a practically useable industrial-strength (and fully *TTM*-conforming)
-programming language; any entities outside the core, called *Muldis D
+programming language; any entities outside the core, called *Muldis Data Language
 extensions*, are non-mandatory and are defined in terms of the core or each
 other, but the reverse isn't true.
 
-This current `Temporal` document describes the system-defined *Muldis D
+This current `Temporal` document describes the system-defined *Muldis Data Language
 Temporal Extension*, which consists of temporal data types and operators.
-To be specific, the *Muldis D Temporal Extension* only describes the most
+To be specific, the *Muldis Data Language Temporal Extension* only describes the most
 generic temporal-concerning mixin types, plus the most generic virtual
 routines to use with them; it does *not* define any types that compose
 these mixins, or routines that implement those virtuals.  It is expected,
 considering the complexity of temporals, that in the general case any
 temporal types and routines that would actually be used would be either
 user-defined, or implementation-defined, or both, or some other standard
-Muldis D extensions would provide them; the latter don't exist yet.
+Muldis Data Language extensions would provide them; the latter don't exist yet.
 
 See also the separately-distributed [Muldis_Data_Language_Manual::TemporalExtras](Muldis_Data_Language_Manual::TemporalExtras.md)
 document, which provides complete examples of temporal types that could
@@ -195,8 +195,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

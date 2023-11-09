@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Types - Muldis D general purpose data types
+Muldis Data Language Core Types - Muldis Data Language general purpose data types
 
 # VERSION
 
-This document is Muldis::D::Core::Types version 0.148.1.
+This document is Muldis Data Language Core Types version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -84,7 +84,7 @@ This arrangement is implementer-significant because it best illustrates the
 conceptual implementation of the types; `Int` and `List` are the only 2
 types that actually introduce values into the type system, and all other
 types are subset and/or union types composing their values; so, *every*
-Muldis D value either *is* an `Int` or *is* a `List`.  The fact that
+Muldis Data Language value either *is* an `Int` or *is* a `List`.  The fact that
 `Scalar` composes both `Int` and `List` values while
 `Tuple|Relation|External` compose only `List` values is less important.
 
@@ -240,7 +240,7 @@ compose:
 
 # MAXIMAL AND MINIMAL DATA TYPES
 
-These core data types are special and are the only Muldis D types (except
+These core data types are special and are the only Muldis Data Language types (except
 for `sys.std.Core.Type.Cat.[List|Structure]`) that are neither just scalar
 nor nonscalar nor external nor nonstructure types.  They are all
 system-defined and it is impossible for users to define more types of this
@@ -249,7 +249,7 @@ nature.
 ## sys.std.Core.Type.Universal
 
 The `Universal` type is the maximal
-type of the entire Muldis D type system, and contains every value that can
+type of the entire Muldis Data Language type system, and contains every value that can
 possibly exist.  Every other (non-aliased) type is implicitly a proper
 subtype of `Universal`, and `Universal` is implicitly a union type over
 all other types.  Its default value is `Bool:False`.  The cardinality of
@@ -260,7 +260,7 @@ domain-union type of just the 2 types `Int` and `List`.
 ## sys.std.Core.Type.Empty
 
 The `Empty` type is the minimal type of
-the entire Muldis D type system, and is the only type that contains exactly
+the entire Muldis Data Language type system, and is the only type that contains exactly
 zero values.  Every other (non-aliased) type is implicitly a proper
 supertype of `Empty` and `Empty` is implicitly an intersection type over
 all other types.  It has no default value.  The cardinality of this type is
@@ -284,7 +284,7 @@ cardinality of `Ordered` is infinity.  The default value of `Ordered` is
 `Bool:False`.  The minimum and maximum values of `Ordered` are `-Inf`
 and `Inf`, respectively; these 2 values are special singleton scalar types
 that are canonically considered to be before and after, respectively,
-*every* other value of the Muldis D type system, regardless of whether
+*every* other value of the Muldis Data Language type system, regardless of whether
 those values are composed into an ordered type.
 
 ## sys.std.Core.Type.Ordinal
@@ -324,7 +324,7 @@ all of the common mathematical operators like `+`, `-`, `*`, `/`.  Just
 a few primary system-defined types are numeric types, including `Int` and
 `Rat`.  The cardinality of `Numeric` is infinity.  The default value of
 `Numeric` is the `Int` value zero.  The `Numeric` type is not itself
-ordered, but often a type which is numeric is also ordered.  Muldis D does
+ordered, but often a type which is numeric is also ordered.  Muldis Data Language does
 not currently have any system-defined complex number types, but if it did,
 they conceivably would also compose `Numeric`; but in that case, it may
 prove useful to split the `Numeric` mixin into itself and a `Real` mixin.
@@ -379,12 +379,12 @@ cardinality of `Collective` is infinity.  The default value of
 
 # GENERIC SCALAR DATA TYPES
 
-These core scalar data types are the most fundamental Muldis D types.
-Plain Text Muldis D provides a specific syntax per type to select a value
+These core scalar data types are the most fundamental Muldis Data Language types.
+Plain Text Muldis Data Language provides a specific syntax per type to select a value
 of every one of these types (or of their super/subtypes), which does not
 look like a routine invocation, but rather like a scalar literal in a
 typical programming language; details of that syntax are not given here,
-but in [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md).  Hosted Data Muldis D as hosted in
+but in [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md).  Hosted Data Muldis Data Language as hosted in
 another language will essentially use literals of corresponding host
 language types, whatever they use for eg booleans and integers and
 character strings, but tagged with extra metadata if the host language is
@@ -395,7 +395,7 @@ types, except for `Scalar` and `DHScalar`, are all ordered.
 
 ## sys.std.Core.Type.Scalar
 
-The `Scalar` type is the maximal type of all Muldis D scalar types, and
+The `Scalar` type is the maximal type of all Muldis Data Language scalar types, and
 contains every scalar value that can possibly exist.  Every other
 (non-aliased) scalar type is implicitly a proper subtype of `Scalar`, and
 `Scalar` is implicitly a union type over all other scalar types.  Its
@@ -411,7 +411,7 @@ of just certain categories of data types, rather than allowing any data
 types at all; related to this restriction, any dh-scalar value is allowed
 to be stored in a global/persisting relational database but any other
 scalar value may only be used for transient data.  The `DHScalar` type is
-the maximal type of all Muldis D dh-scalar types, and contains every
+the maximal type of all Muldis Data Language dh-scalar types, and contains every
 dh-scalar value that can possibly exist.  Every other (non-aliased)
 dh-scalar type is implicitly a proper subtype of `DHScalar`, and
 `DHScalar` is implicitly a union type over all other dh-scalar types.  Its
@@ -427,7 +427,7 @@ as a union type over just these 2 singleton types having
 `False` and `True`.  A `Bool` represents a truth value, and is the
 result type of any `is_same` or `is_not_same` routine; it is
 the only essential general-purpose scalar data type of a generic **D**
-language, although not the only essential one in Muldis D.
+language, although not the only essential one in Muldis Data Language.
 The default and minimum value of `Bool` is
 `False`; its maximum value is `True`.  The cardinality of this type is 2.
 The `Bool` type explicitly composes the `Ordinal` mixin type, and by
@@ -457,7 +457,7 @@ type.  Its default value is zero; its minimum and maximum
 values are conceptually infinities and practically impossible.  `Int` is
 one of just two scalar root types (the other is `String`) that do *not*
 have any possreps.  `Int` is also
-the only atomic type in the Muldis D type system.  The cardinality of
+the only atomic type in the Muldis Data Language type system.  The cardinality of
 this type is infinity; to define a most-generalized finite `Int` subtype,
 you must specify the 2 integer end-points of the inclusive range that all
 its values are in.  The `Int` type explicitly composes the `Ordinal`
@@ -531,7 +531,7 @@ The `Rat` type has a default ordering algorithm which is conceptually the
 same as for `Int`; for 2 distinct `Rat` values, the value closer to
 negative infinity is ordered before the value closer to positive infinity.
 
-The `Rat` type has an implementation hint for less intelligent Muldis D
+The `Rat` type has an implementation hint for less intelligent Muldis Data Language
 implementations, that suggests using the `float` possrep as the basis for
 the physical representation.
 
@@ -655,7 +655,7 @@ used varies by code point as follows: 1 for 0x0..0x7F, 2 for 0x80..0x7FF,
 member values are semantically in canonical decomposed normal form (NFD)
 and whose `Text.Unicode`-defined possreps are properly formatted NFD.
 Two `Text.Unicode.Canon` will generally match at the grapheme abstraction
-level.  Of course, a Muldis D implementation doesn't actually have to store
+level.  Of course, a Muldis Data Language implementation doesn't actually have to store
 character data in NFD; but default matching semantics need to be as if it
 did, and NFD is what the aforementioned possreps would format it in.
 
@@ -702,7 +702,7 @@ data types they are composed of.
 ## sys.std.Core.Type.Tuple
 
 The `Tuple` type is the maximal type of
-all Muldis D tuple (nonscalar) types, and contains every
+all Muldis Data Language tuple (nonscalar) types, and contains every
 tuple value that could possibly exist.  The `Tuple` type explicitly
 composes the `Attributive` mixin type.  A `Tuple` is an unordered
 heterogeneous collection of 0..N named attributes (the count of attributes
@@ -728,7 +728,7 @@ certain categories of data types, rather than allowing any data types at
 all; related to this restriction, any dh-tuple value is allowed to be
 stored in a global/persisting relational database but any other tuple value
 may only be used for transient data.  The `DHTuple` type is the maximal
-type of all Muldis D dh-tuple (dh-nonscalar) types, and contains every
+type of all Muldis Data Language dh-tuple (dh-nonscalar) types, and contains every
 dh-tuple value that could possibly exist.  Its default value is the same as
 that of `Tuple` and matters of its cardinality are determined likewise.
 
@@ -815,7 +815,7 @@ If `excludes_min` or `excludes_max` are `Bool:True`, then `min` or
 `max` *is not* considered to be included within the interval,
 respectively; otherwise, it *is* considered to be included within the
 interval.  If both endpoints are within the interval (the use case which
-Muldis D optimizes its syntax for), the interval is *closed*; otherwise if
+Muldis Data Language optimizes its syntax for), the interval is *closed*; otherwise if
 both endpoints are not in the interval, the interval is *open*.
 
 The `SPInterval` type supports empty intervals (which include no values at
@@ -842,7 +842,7 @@ intervals that are orthogonal to data type.  This feature is implemented
 using the 2 special singleton types `-Inf` and `Inf`.  Iff `min` is
 `-Inf` then the interval is left-unbounded; iff `max` is `Inf` then the
 interval is right-unbounded.  An interval that is unbounded on both ends is
-the maximal interval, in that all Muldis D values are members of it, at
+the maximal interval, in that all Muldis Data Language values are members of it, at
 least in the general context lacking any `order-determination` function.
 
 The default value of `SPInterval` represents an empty interval where its
@@ -850,7 +850,7 @@ The default value of `SPInterval` represents an empty interval where its
 other 2 attributes are `Bool:False`.
 
 See also the `sys.std.Core.Type.MPInterval` type, which is the
-canonical means that Muldis D provides of representing the result of
+canonical means that Muldis Data Language provides of representing the result of
 set-unioning 2 `SPInterval` where the latter do not touch or overlap,
 and provides the single *canonical* empty interval value.
 
@@ -865,7 +865,7 @@ of `DHSPInterval` is the same as that of `SPInterval`.
 ## sys.std.Core.Type.Relation
 
 The `Relation` type is the maximal type
-of all Muldis D relation (nonscalar) types, and contains every
+of all Muldis Data Language relation (nonscalar) types, and contains every
 relation value that could possibly exist.  The `Relation` type explicitly
 composes the `Attributive` mixin type.  A `Relation` is
 analogous to a set of 0..N tuples where all tuples have the
@@ -895,7 +895,7 @@ stored in a global/persisting relational database but any other relation
 value may only be used for transient data.  The main difference from its
 supertype is that a dh-relation's dh-tuples' headings all have matching
 declared data types for corresponding attributes, while with relations they
-don't have to.  The `DHRelation` type is the maximal type of all Muldis D
+don't have to.  The `DHRelation` type is the maximal type of all Muldis Data Language
 dh-relation (dh-nonscalar) types, and contains every dh-relation value that
 could possibly exist.  Its default value is the same as that of `Relation`
 and matters of its cardinality are determined likewise.
@@ -932,9 +932,9 @@ type `Bar`.
 where all member values may have at most one element; that is, it is a
 unary `Relation` with a nullary key.  Operators that work specifically
 with `Maybe` subtypes can provide a syntactic shorthand for working with
-sparse data; so Muldis D has something which is conceptually close to SQL's
+sparse data; so Muldis Data Language has something which is conceptually close to SQL's
 nullable types without actually having 3-valued logic; it would probably be
-convenient for code that round-trips SQL by way of Muldis D to use the
+convenient for code that round-trips SQL by way of Muldis Data Language to use the
 `Maybe` type.  Its default value has zero tuples.
 
 ## sys.std.Core.Type.DHMaybe
@@ -947,10 +947,10 @@ known by the special name `Maybe:Nothing`, aka `Nothing`,
 aka *empty set*, aka `∅`, which serves as
 the default value of the 4 types `[|DH]Maybe` and `[|DH]Set`.  The single
 `Nothing` value, which is a relation with zero tuples and a single
-attribute named `value`, is Muldis D's answer to the SQL NULL and is
+attribute named `value`, is Muldis Data Language's answer to the SQL NULL and is
 intended to be used for the same purposes; that is, a special marker for
 missing or inapplicable information, that does not typically equal any
-normal/scalar value; however, in Muldis D, `Nothing` *is a value*, and it
+normal/scalar value; however, in Muldis Data Language, `Nothing` *is a value*, and it
 *is* equal to itself.  To be more specific, the SQL NULL is very limited
 in what it actually can do, and can not be used to say anything other than
 "this isn't a normal value", similar to what Perl's "undef" says; if you
@@ -1023,9 +1023,9 @@ constraints of its own.  The `MPInterval` type explicitly composes the
 `Collective` mixin type.  It defines a single *multi-piece interval*,
 which is conceptually either a set of 0..N intervals or a single larger
 interval that had 0..N sub-intervals sliced out.  An `MPInterval` is the
-canonical means that Muldis D provides of representing the result of
+canonical means that Muldis Data Language provides of representing the result of
 set-unioning 2 `SPInterval` where the latter do not touch or overlap.
-Moreover, an `MPInterval` also empowers Muldis D to have a single
+Moreover, an `MPInterval` also empowers Muldis Data Language to have a single
 *canonical* empty interval value, which is the only `MPInterval` with
 zero tuples; this value is also the default value of `MPInterval`.  The
 cardinality of this type is infinite.
@@ -1040,10 +1040,10 @@ cardinality of this type is infinite.
 ## sys.std.Core.Type.External
 
 An `External` is a reference within the
-Muldis D virtual machine to a value managed not by the Muldis D
+Muldis Data Language virtual machine to a value managed not by the Muldis Data Language
 implementation but rather by a peer or host language in the wider program
 that includes the VM.  All `External` values are treated as black boxes by
-Muldis D itself.  The cardinality of this type is
+Muldis Data Language itself.  The cardinality of this type is
 infinity.  The default value of this type is implementation-defined.
 Considering the low-level type system, `External` is just a proper subtype
 of `Structure` consisting of every `Structure` value whose first element
@@ -1055,8 +1055,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

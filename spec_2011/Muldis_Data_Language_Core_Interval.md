@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::Interval - Muldis D generic interval operators
+Muldis Data Language Core Interval - Muldis Data Language generic interval operators
 
 # VERSION
 
-This document is Muldis::D::Core::Interval version 0.148.1.
+This document is Muldis Data Language Core Interval version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,12 +16,12 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document describes essentially all of the core Muldis D generic
+This document describes essentially all of the core Muldis Data Language generic
 interval operators, for the canonical interval types that are tuple or
 relation types with specific nonscalar headings.  They can potentially be
 used with values of any data type as long as said data type has a (total)
 `order-determination` function defined for it, and all system-defined
-conceptually-ordered Muldis D scalar root types do.
+conceptually-ordered Muldis Data Language scalar root types do.
 
 *This documentation is pending.*
 
@@ -130,8 +130,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

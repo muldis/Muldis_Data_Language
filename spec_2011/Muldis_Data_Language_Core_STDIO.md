@@ -1,14 +1,14 @@
 # NAME
 
-Muldis::D::Core::STDIO - Muldis D routines for basic command-line user I/O
+Muldis Data Language Core STDIO - Muldis Data Language routines for basic command-line user I/O
 
 # VERSION
 
-This document is Muldis::D::Core::STDIO version 0.148.1.
+This document is Muldis Data Language Core STDIO version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis D language specification, whose root
+This document is part of the Muldis Data Language language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
@@ -16,14 +16,14 @@ document, as that forms its own tree beneath a root document branch.
 
 # DESCRIPTION
 
-This document defines all of the core Muldis D routines that provide
+This document defines all of the core Muldis Data Language routines that provide
 basic command-line user input/output.
 
 *This documentation is pending.*
 
 # GENERIC SYSTEM-SERVICES FOR STANDARD I/O
 
-These system-services are provided so Muldis D can do basic user
+These system-services are provided so Muldis Data Language can do basic user
 input/output by itself, using standard input and standard output, like any
 general purpose programming language, and help satisfy its need to be
 computationally complete.  For now they just work with plain (Unicode) text
@@ -42,7 +42,7 @@ This system-service routine will update the variable supplied as its
 end-of-line character or character sequence that `write_Text_line` appends
 to its output, and that `read_Text_line` looks out for to terminate its
 input.  The purpose of this routine is to support users that want to
-catenate Text within Muldis D for output with a single `write_Text` that
+catenate Text within Muldis Data Language for output with a single `write_Text` that
 is intended to display over multiple implementation-defined lines.
 
 ## sys.std.Core.STDIO.read_Text
@@ -123,8 +123,9 @@ Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
 See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.

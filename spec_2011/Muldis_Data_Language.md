@@ -8,7 +8,7 @@ This document is Muldis Data Language version 0.148.1.
 
 # PREFACE
 
-This is the root document of the Muldis D language specification; the
+This is the root document of the Muldis Data Language language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
 [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md), [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
@@ -21,15 +21,15 @@ to follow), [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect
 # DESCRIPTION
 
 This distribution / multi-part document is the human readable authoritative
-formal specification of the **Muldis D** language, and of the virtual
+formal specification of the **Muldis Data Language** language, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-`Muldis_D:"https://muldis.com":0.148.1`.  It is the official/original (not
-embraced and extended) Muldis D language specification by the authority
+`Muldis_Data_Language:"https://muldis.com":0.148.1`.  It is the official/original (not
+embraced and extended) Muldis Data Language language specification by the authority
 Muldis Data Systems (`https://muldis.com`), version `0.148.1` (this number
 matches the VERSION pod in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
@@ -37,96 +37,96 @@ versions of it will exist over time, some of those under the original
 author's control, and some under the control of other parties.  The
 **VERSIONING** pod section in this file presents a formal method for
 specifying the fully-qualified name of a complete language derived from
-Muldis D, including any common base plus any dialects and extensions.  All
-code written in any dialect or derivation of Muldis D should begin by
+Muldis Data Language, including any common base plus any dialects and extensions.  All
+code written in any dialect or derivation of Muldis Data Language should begin by
 specifying the fully-qualified name of the language that it is written in,
 the format of the name as defined by said method, to make the code
 unambiguous to both human and machine (eg, implementing) readers of the
 code.  The method should be very future-proof.
 
-Muldis D is a computationally / Turing complete (and industrial strength)
+Muldis Data Language is a computationally / Turing complete (and industrial strength)
 high-level programming language with fully integrated database
 functionality; you can use it to define, query, and update relational
 databases.  The language's paradigm is a mixture of declarative,
 homoiconic, functional, imperative, and object-oriented.  It is primarily
 focused on providing reliability, consistency, portability, and ease of use
 and extension.  (Logically, speed of execution can not be declared as a
-Muldis D quality because such a quality belongs to an implementation alone;
+Muldis Data Language quality because such a quality belongs to an implementation alone;
 however, the language should lend itself to making fast implementations.)
 
-Muldis D is intended to qualify as a "**D**" language as defined by
+Muldis Data Language is intended to qualify as a "**D**" language as defined by
 "*Databases, Types, and The Relational Model: The Third Manifesto*"
 (*TTM*), a formal proposal for a solid foundation for data and database
 management systems, written by Chris Date (C.J. Date) and Hugh Darwen; see
 <http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>
 for a publishers link to the book that formally publishes *TTM*.  See
 <http://www.thethirdmanifesto.com/> for some references to what *TTM* is,
-and also copies of some documents that were used in writing Muldis D.
+and also copies of some documents that were used in writing Muldis Data Language.
 
-It should be noted that Muldis D, being quite new, may omit some features
+It should be noted that Muldis Data Language, being quite new, may omit some features
 that are mandatory for a "**D**" language initially, to speed the way to a
 useable partial solution, but any omissions will be corrected later.  Also,
 it contains some features that go beyond the scope of a "**D**" language, so
-Muldis D is technically a "**D** plus extra"; examples of this are
+Muldis Data Language is technically a "**D** plus extra"; examples of this are
 constructs for creating the databases themselves and managing connections
 to them.
 
-Muldis D also incorporates design aspects and constructs that are taken
+Muldis Data Language also incorporates design aspects and constructs that are taken
 from or influenced by Raku, other general-purpose languages (particularly
 functional ones like Haskell), **Tutorial D**, various **D** implementations,
 and various SQL implementations (see the [Muldis_Data_Language_SeeAlso](Muldis_Data_Language_SeeAlso.md)
-file).  It also appears in retrospect that Muldis D has some designs in
+file).  It also appears in retrospect that Muldis Data Language has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The
 newer [C'Dent](http://cdent.org) language has some similarities as well.
 Most recently Lisp became a larger influence.
 
-In any event, the Muldis D documentation will be focusing mainly on how
-Muldis D itself works, and will spend little time in providing rationale;
+In any event, the Muldis Data Language documentation will be focusing mainly on how
+Muldis Data Language itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
 Continue reading the language spec in [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md).
 
-Muldis D is an [Acmeist](http://acmeism.org) programming language for
+Muldis Data Language is an [Acmeist](http://acmeism.org) programming language for
 writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
 
 # VERSIONING
 
-All code written in any variant of Muldis D should begin with metadata
-that explicitly states that it is written in Muldis D, and that fully
-identifies what variant of Muldis D it is, so that the code is completely
+All code written in any variant of Muldis Data Language should begin with metadata
+that explicitly states that it is written in Muldis Data Language, and that fully
+identifies what variant of Muldis Data Language it is, so that the code is completely
 unambiguous to both human and machine (eg, implementing) readers of the
 code.  This pod section explains how this metadata should be formatted,
 and it is intended to be as future-proofed as possible in the face of a
 wide variety of both anticipated and unforeseen language variants, both by
 the original author and by other parties.
 
-At the highest level, a fully-qualified Muldis D language name is a
+At the highest level, a fully-qualified Muldis Data Language language name is a
 (ordered) sequence of values having a minimum of 2 elements, and typically
 about 4-6 elements.  The elements are read one at a time, starting with the
 first; the value of each element, combined with those before it, determine
 what number and kind of elements are valid to follow it in the sequence.
-So all Muldis D variants are organized into a single hierarchy where each
+So all Muldis Data Language variants are organized into a single hierarchy where each
 child node represents a language derived from or extending the language
 represented by its parent node.
 
-In documentation, it is typical to use a Muldis D language name involving
+In documentation, it is typical to use a Muldis Data Language language name involving
 just a sub-sequence of the allowed elements that is missing child-most
 allowed elements; in that case, this language name implicitly refers to the
 entire language sub-tree having the specified elements in common; an
 example of this is the 3-element name mentioned in this file's DESCRIPTION
 section.  Even in code, sometimes certain child-most elements are optional.
 
-While not mandatory for Muldis D variants in general, it is strongly
-recommended that all elements of a Muldis D language name would, when
+While not mandatory for Muldis Data Language variants in general, it is strongly
+recommended that all elements of a Muldis Data Language language name would, when
 expressed in terms of character strings, be expressly limited to comprising
 just non-control characters in the ASCII repertoire, and not include any
 other characters such as Unicode has.  The primary reason for this is to
 make it as simple as possible to interpret a language name on all
 architectures, especially so that any explicit hints in the name on how to
-interpret the rest of the Muldis D code, including hints as to what
+interpret the rest of the Muldis Data Language code, including hints as to what
 character repertoire it is written in, can be understood without ambiguity.
-For all official Muldis D variants, ASCII-only names is actually mandatory.
+For all official Muldis Data Language variants, ASCII-only names is actually mandatory.
 
 ## Foundation
 
@@ -134,10 +134,10 @@ The actual formatting of a "sequence" used as this language name is
 dependent on the language variant itself, but it should be kept as simple
 to write and use as is possible for the medium of that variant.
 
-Generally speaking, every Muldis D variant belongs to one of just 2
+Generally speaking, every Muldis Data Language variant belongs to one of just 2
 groups, which are *non-hosted plain-text* and *hosted data*.
 
-With all non-hosted plain-text variants, the Muldis D code is represented
+With all non-hosted plain-text variants, the Muldis Data Language code is represented
 by an (ordered) string/sequence of characters like with most normal
 programming languages, and so the actual format (of the language name
 defining sequence and its elements) is defined in terms of an ordered
@@ -145,27 +145,27 @@ series of character sub-strings, each sub-string being a name sequence
 element; the sub-strings are often bounded by delimiting characters, and
 separated by separating characters.  The string of characters comprising
 this name string would be the first characters in the file, and only
-following them would be the characters for the actual Muldis D code that
+following them would be the characters for the actual Muldis Data Language code that
 the name is metadata for.
 
-With all hosted data variants, the Muldis D code is represented by
+With all hosted data variants, the Muldis Data Language code is represented by
 collection-typed values that are of some native type of some other
-programming language (eg, Perl) which is the host of Muldis D, so the
+programming language (eg, Perl) which is the host of Muldis Data Language, so the
 actual format (of the language name defining sequence and its elements) is
-simply a sequence-typed value of the host programming language.  The Muldis
-D code is written here by way of writing code in the host language.
+simply a sequence-typed value of the host programming language.  The Muldis Data Language
+code is written here by way of writing code in the host language.
 
 ## Base Name
 
-The first element of the Muldis D language name is simply the character
-string `Muldis_D`.  Any language which wants to claim to be a variant of
-Muldis D should have this exact first element; only have some other value
-if you don't want to claim a connection to Muldis D at all, and in that
+The first element of the Muldis Data Language language name is simply the character
+string `Muldis_Data_Language`.  Any language which wants to claim to be a variant of
+Muldis Data Language should have this exact first element; only have some other value
+if you don't want to claim a connection to Muldis Data Language at all, and in that
 case feel free to just ignore everything else in this multi-document.
 
 ## Base Authority
 
-The second element of the Muldis D language name is some character string
+The second element of the Muldis Data Language language name is some character string
 whose value uniquely identifies the authority or author of the variant's
 base language specification.  Generally speaking, the community at large
 should self-regulate authority identifier strings so they are reasonable
@@ -174,15 +174,15 @@ everyone recognizes as theirs.  Note that an authority/author doesn't have
 to be an individual person; it could be some corporate entity instead.
 
 While technically this string could be any distinct value at all, it is
-strongly recommended for Muldis D variant names that authority strings
+strongly recommended for Muldis Data Language variant names that authority strings
 follow the formats that are valid as authority strings for the long names
 of Raku packages, such as a CPAN identifier or an http url.
 
-For the official/original Muldis D language spec by Muldis Data Systems,
+For the official/original Muldis Data Language language spec by Muldis Data Systems,
 Inc., that string is always `https://muldis.com` during the foreseeable
 future.
 
-If someone else wants to *embrace and extend* Muldis D, then they must use
+If someone else wants to *embrace and extend* Muldis Data Language, then they must use
 their own (not `https://muldis.com`) base authority identifier, to prevent
 ambiguity, assist quality control, and give due credit.
 
@@ -203,7 +203,7 @@ delta either makes incompatible changes or adds DBMS entities in the
 
 ## Base Version Number
 
-The third element of the Muldis D language name, at the very least when the
+The third element of the Muldis Data Language language name, at the very least when the
 base authority is `https://muldis.com`, is a multi-part base version
 number, which identifies the base language spec version between all those
 by the same authority, typically indicating the relative ages of the
@@ -218,9 +218,9 @@ corresponding to the spec containing that file.
 
 ## Dialect
 
-The fourth element of the Muldis D language name, at the very least when
+The fourth element of the Muldis Data Language language name, at the very least when
 the base authority is `https://muldis.com`, uniquely identifies which
-Muldis D language primary dialect the Muldis D code (that this
+Muldis Data Language language primary dialect the Muldis Data Language code (that this
 fully-qualified language name is metadata for) is formatted in; for
 example this may be one of several non-hosted plain-text variants, or one
 of several hosted data variants (each host language has its own ones).
@@ -243,7 +243,7 @@ bundled dialects (names subject to change):
 
 ## Extensions
 
-Whether or not the Muldis D language name has a fifth or further elements
+Whether or not the Muldis Data Language language name has a fifth or further elements
 depends on the dialect.  See the documentation for each individual dialect
 to see what it supports or requires.
 
