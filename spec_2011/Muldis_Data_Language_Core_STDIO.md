@@ -34,8 +34,8 @@ future revision.
 
 ## sys.std.Core.STDIO.end_of_line_Text
 
-C<system-service end_of_line_Text (&target : Text)
-[...]>
+`system-service end_of_line_Text (&target : Text)
+[...]`
 
 This system-service routine will update the variable supplied as its
 `target` argument so that it holds the same implementation-defined
@@ -47,8 +47,8 @@ is intended to display over multiple implementation-defined lines.
 
 ## sys.std.Core.STDIO.read_Text
 
-C<system-service read_Text (&target : Text,
-len_in_graphs : NNInt) [...]>
+`system-service read_Text (&target : Text,
+len_in_graphs : NNInt) [...]`
 
 This system-service routine will attempt to read `len_in_graphs`
 characters from standard input as a single `Text` value, blocking the
@@ -60,8 +60,8 @@ any system errors occur.
 
 ## sys.std.Core.STDIO.read_Text_line
 
-C<system-service read_Text_line (&target : Text,
-ignore_empty_lines? : Bool) [...]>
+`system-service read_Text_line (&target : Text,
+ignore_empty_lines? : Bool) [...]`
 
 This system-service routine is the same as `sys.std.Core.STDIO.read_Text`
 except that it will read from standard input until an
@@ -75,7 +75,7 @@ line is read, even if it is empty.
 
 ## sys.std.Core.STDIO.write_Text
 
-C<system-service write_Text (v : Text) [...]>
+`system-service write_Text (v : Text) [...]`
 
 This system-service routine will attempt to write the characters of its
 `v` argument to standard output, blocking the current in-DBMS process
@@ -84,7 +84,7 @@ errors occur.
 
 ## sys.std.Core.STDIO.write_Text_line
 
-C<system-service write_Text_line (v? : Text) [...]>
+`system-service write_Text_line (v? : Text) [...]`
 
 This system-service routine is the same as `sys.std.Core.STDIO.write_Text`
 except that it will additionally write an implementation-defined
@@ -93,8 +93,8 @@ then this routine simply writes the end-of-line.
 
 ## sys.std.Core.STDIO.prompt_Text_line
 
-C<system-service prompt_Text_line (&target : Text,
-prompt : Text, ignore_empty_lines? : Bool ) [...]>
+`system-service prompt_Text_line (&target : Text,
+prompt : Text, ignore_empty_lines? : Bool ) [...]`
 
 This system-service routine is a wrapper over first invoking
 `sys.std.Core.STDIO.write_Text` with its `prompt` argument and then
@@ -104,14 +104,14 @@ routines being invoked repeatedly, not just `read_text_line`.
 
 ## sys.std.Core.STDIO.error_Text
 
-C<system-service error_Text (v : Text) [...]>
+`system-service error_Text (v : Text) [...]`
 
 This system-service routine is the same as `sys.std.Core.STDIO.write_Text`
 except that it will write to standard error rather than standard output.
 
 ## sys.std.Core.STDIO.error_Text_line
 
-C<system-service error_Text_line (v? : Text) [...]>
+`system-service error_Text_line (v? : Text) [...]`
 
 This system-service routine is the same as
 `sys.std.Core.STDIO.write_Text_line` except that it will write to standard
@@ -119,7 +119,7 @@ error rather than standard output.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

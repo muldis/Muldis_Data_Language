@@ -172,7 +172,7 @@ its 2 arguments.
 
 ## sys.std.Temporal.Instant.fetch_trans_instant
 
-C<system-service fetch_trans_instant (&target@ : Instant) [...]>
+`system-service fetch_trans_instant (&target@ : Instant) [...]`
 
 This virtual system-service routine will update the variable supplied as
 its `target` argument so that it holds the value of the current instant as
@@ -191,7 +191,7 @@ this routine might fail if said declared type isn't a subset of `Instant`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

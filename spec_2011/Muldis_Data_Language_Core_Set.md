@@ -108,8 +108,8 @@ named in the `func` argument, and that
 function must have 2 parameters named `v1` and `v2`, which take
 the 2 input scalar or nonscalar values for an
 invocation.  If `topic` has zero values, then `reduction` results in the
-value given in `identity`.  I<Note that `identity` may be changed to take
-a function name rather than a value, for consistency with `func`.>  This
+value given in `identity`.  *Note that `identity` may be changed to take
+a function name rather than a value, for consistency with `func`.*  This
 function will fail|warn if the |declared type of `identity` isn't a
 subtype of the |declared type of the sole attribute of `topic`.
 
@@ -211,7 +211,7 @@ underlying a SQL "ORDER BY", then `J_is_reverse_order` designates SQL's
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

@@ -194,7 +194,7 @@ result in when given the same arguments.
 
 ## sys.std.Core.Ordered.Ordinal.assign_pred
 
-C<updater assign_pred (&topic@ : Ordinal) {...}>
+`updater assign_pred (&topic@ : Ordinal) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Ordered.Ordinal.pred` function with the same argument, and
@@ -203,7 +203,7 @@ operation is also known as `:=--`.
 
 ## sys.std.Core.Ordered.Ordinal.assign_succ
 
-C<updater assign_succ (&topic@ : Ordinal) {...}>
+`updater assign_succ (&topic@ : Ordinal) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Ordered.Ordinal.succ` function with the same argument, and
@@ -212,7 +212,7 @@ operation is also known as `:=++`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

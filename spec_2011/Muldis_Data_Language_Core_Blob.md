@@ -153,7 +153,7 @@ recursively does a bitwise exclusive-or rather than a bitwise inclusive-or.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

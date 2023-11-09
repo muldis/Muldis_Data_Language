@@ -361,11 +361,11 @@ explicitly composed by other types that are considered to be collections of
 named attributes, such as generic tuples and relations.  Just a few primary
 system-defined types are attributive types, namely `Tuple` and
 `Relation`.  The cardinality of `Attributive` is infinity.  The default
-value of `Attributive` is `Tuple:D0`.  I<The `ScalarWP` type could
+value of `Attributive` is `Tuple:D0`.  *The `ScalarWP` type could
 conceivably compose `Attributive` as well, but for now it doesn't, because
 it still differs from `Tuple` and `Relation` in several ways such that
 virtual routines composed for `Tuple` and `Relation` would be impractical
-to compose for `ScalarWP` in general, but that might change later.>
+to compose for `ScalarWP` in general, but that might change later.*
 
 ## sys.std.Core.Type.Collective
 
@@ -426,7 +426,7 @@ as a union type over just these 2 singleton types having
 `sys.std.Core.Type.Bool.*`-format names:
 `False` and `True`.  A `Bool` represents a truth value, and is the
 result type of any `is_same` or `is_not_same` routine; it is
-the only essential general-purpose scalar data type of a generic B<D>
+the only essential general-purpose scalar data type of a generic **D**
 language, although not the only essential one in Muldis D.
 The default and minimum value of `Bool` is
 `False`; its maximum value is `True`.  The cardinality of this type is 2.
@@ -624,10 +624,10 @@ Similarly, any concept of nationality-specific graphemes is best expressed
 in a wrapper.  `Text` is more agnostic and generic in these matters.
 It is likely each implementation will make `maximal_chars` resemble the
 largest well known character set that it knows about, typically Unicode.
-I<TODO: Consider making `maximal_chars` formally identical to Unicode for
+*TODO: Consider making `maximal_chars` formally identical to Unicode for
 all element integers in 0..2^21, and to ASCII for all in 0..127, and then
 the subtypes could be defined in a normal and independent/portable way.
-Maybe we need to formally define what higher ranges HKSCS/etc map to.>
+Maybe we need to formally define what higher ranges HKSCS/etc map to.*
 
 ## sys.std.Core.Type.Text.Unicode
 
@@ -802,7 +802,7 @@ An `SPInterval` has these 4 attributes:
 * `min|max` - `Universal`
 
 These are the interval endpoint values; `min` defines the
-I<left|start|from> endpoint and `max` defines the I<right|end|to>
+*left|start|from* endpoint and `max` defines the *right|end|to*
 endpoint.  The endpoint values conceptually must be of the same,
 totally-ordered type (typically one of `Int`, `Rat`, `Text`,
 `TAIInstant`, etc), although strictly speaking they may be of any types at
@@ -1051,7 +1051,7 @@ is the `Int` value `5`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

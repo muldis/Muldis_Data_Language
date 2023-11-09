@@ -112,7 +112,7 @@ This virtual function results in the possibly-fractional remainder when its
 `dividend` argument is divided by its `divisor` argument using the
 semantics of real number division, and then the latter's result is rounded
 to the same or nearest whole number.  The semantics of this function
-preserve the identity C<x mod y = x - y * (x div y)> (read `x` as
+preserve the identity `x mod y = x - y * (x div y)` (read `x` as
 `dividend` and `y` as `divisor`) where the division has the same
 semantics as `sys.std.Core.Numeric.whole_quotient` (rounding guided by
 `round_meth`); the sign of this function's result always matches the sign
@@ -201,7 +201,7 @@ that this operation is also known as *exponentiation* or `^`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

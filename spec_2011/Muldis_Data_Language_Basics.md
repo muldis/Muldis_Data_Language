@@ -529,7 +529,7 @@ with instances of every `<tuple>` of the second one, with the members
 of each pair then being chained together with `and` to form a single,
 longer chain of `and`.  Note that join is commutative, so it doesn't
 matter which of the source relations is first or second, the result is the
-same, as much as C<foo and bar> is the same as C<bar and foo>.  For
+same, as much as `foo and bar` is the same as `bar and foo`.  For
 example, lets do a join of our 2 simplest relations:
 
        x is 4 and y is 7 and y is 5 and z is 6
@@ -691,7 +691,7 @@ may be made by third parties in the future, but none are currently known.
 The other parts of the current multi-document generally focus on the
 behaviours and semantic features of Muldis D, rather than its syntax, and
 what they describe is generally common to all Muldis D dialects.  The most
-important of those parts are the current B<Basics> file and the
+important of those parts are the current **Basics** file and the
 [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) file.
 
 See also **SOURCE CODE METADATA** for more details on Muldis D's standard
@@ -756,7 +756,7 @@ proper supertype of *T2*, then *T1* is an *immediate supertype* of
 Muldis D type system supports multiple inheritance, so types can form a
 lattice rather than a tree.
 
-Subtyping in Muldis D, as in any B<D> language, takes the form of
+Subtyping in Muldis D, as in any **D** language, takes the form of
 *specialization by constraint*, not *specialization by extension*.  So
 conceptually speaking, a "circle" value is an "ellipse" value, but a
 "coloured circle" is neither a "circle" value nor a "colour" value; the
@@ -780,12 +780,12 @@ no proper subtypes that also contain that value.  A value will conceptually
 always implicitly assume the most specific type that exists which contains
 it, even if a selector for a less specific type was explicitly used to
 select it (although some use of explicit `treated` may be required in code
-to assist its compilation).  With a generic B<D> language, to enforce the
+to assist its compilation).  With a generic **D** language, to enforce the
 "exactly one" requirement, which keeps answering the question a simple
 affair, it would be mandatory that when any 2 data types have values in
 common, there must exist a data type which contains only the values that
 they have in common, and hence is a subtype of both; the main intent of
-that B<D> requirement is to support polymorphism where multiple distinct
+that **D** requirement is to support polymorphism where multiple distinct
 operators that have the same name but different semantics can dispatch
 correctly based on the MST of their operands.  However, in practice, such a
 requirement would place a gratuitous large and error-prone burden on users,
@@ -866,7 +866,7 @@ values in databases move between structural and nominal typing as
 user-defined types whose names match their declared types come in and out
 of existence or mutate.
 
-B<TODO: REWRITE THIS SINGLE PARAGRAPH:>  A data type that is an atomic or
+**TODO: REWRITE THIS SINGLE PARAGRAPH:**  A data type that is an atomic or
 structure or external type is also called a *root type*; a data type that
 is an enumeration is also called a *nonroot type*.  A *leaf type* is a
 data type that has no proper subtypes save for `Empty`.
@@ -1859,9 +1859,9 @@ by "statements" or "routines".
 
 # ROUTINES
 
-B<WARNING: All statements in this documentation that mention atomicity or
+**WARNING: All statements in this documentation that mention atomicity or
 transactions or concurrency are considered out of date and partly untrue,
-and will need to be rewritten or excised.>
+and will need to be rewritten or excised.**
 
 Muldis D is designed such that, to nearly the maximum degree possible, the
 built-in language syntax is expressed just in terms of generic-syntax
@@ -2549,7 +2549,7 @@ to privileges on a computer's file system, or a typical SQL database.
 
 # TRANSACTIONS AND CONCURRENCY
 
-B<TODO: REWRITE THIS DOCUMENTATION SECTION!>
+**TODO: REWRITE THIS DOCUMENTATION SECTION!**
 
 ## ACID
 
@@ -2625,8 +2625,8 @@ variables and either catalog or data variables in a depot.
 
 ## Transactions and YYY
 
-B<TODO: Some things that the spec calls "transaction" will instead be
-called YYY, in particular "nested transaction".>
+**TODO: Some things that the spec calls "transaction" will instead be
+called YYY, in particular "nested transaction".**
 
 Transactions can be nested, by starting a new one before concluding a
 previous one, and the parent-most transaction has the final say on whether
@@ -3047,8 +3047,8 @@ The catalog namespace `sys.cat.system` is where all the relcons that
 describe, in a machine-readable way, all of the standard system-defined
 entities just discussed, as well as themselves, reside; the definitions of
 the standard data types of these relcons are also reflected by the same
-relcons.  I<Actually, this paragraph is out of date; there is no
-`sys.cat.system` and plain `sys.cat` currently fills that stated role.>
+relcons.  *Actually, this paragraph is out of date; there is no
+`sys.cat.system` and plain `sys.cat` currently fills that stated role.*
 
 ## Implementation Specific System-Defined Entities
 
@@ -3062,9 +3062,9 @@ implementations will intend some of their additions to be used for user
 data as well.  But even then, ideally such additions would be to serve
 specialized niches only, rather than being intended for general use.  Or
 ideally these would be deprecated in favor of support of the niche coming
-into the standard language as an elegantly designed extension.  I<Actually,
+into the standard language as an elegantly designed extension.  *Actually,
 this paragraph is out of date; there is no
-`sys.cat.[mount|foreign|interp]`.>
+`sys.cat.[mount|foreign|interp]`.*
 
 The `sys.imp` primary namespace is for the hardwired non-standard /
 implementation specific system-defined types and routines in the same way
@@ -3088,8 +3088,8 @@ level.
 The catalog namespace `sys.cat.impl` corresponds to `sys.cat.system`.
 The two being separated also results in the value of the `sys.cat.system`
 catalog constant being exactly the same for all implementations.
-I<Actually, this paragraph is out of date; there is no
-`sys.cat.[system|impl]`.>
+*Actually, this paragraph is out of date; there is no
+`sys.cat.[system|impl]`.*
 
 ## User-Defined Entities
 
@@ -3271,7 +3271,7 @@ collection of material (type and routine) definitions.  *where some
 parts of
 the collection are private and others are public.*  All entities that are
 under a non-`lex` namespace should all be considered public or
-globally referenceable (database user privileges notwithstanding).  I<TODO:
+globally referenceable (database user privileges notwithstanding).  TODO:
 By
 default, every material is *private*, meaning that it can only be directly
 referenceable by DBMS entities whose direct parent subdepot (which might be
@@ -3282,7 +3282,7 @@ living externally to the direct parent of the target material.  And so,
 public materials are the public API of a library, and private ones are
 its internals.  By definition, a private material may never be directly
 invoked via the `fed` primary namespace, and presumably not by a host
-language either.>  Note that a depot's data/dbvar is always implicitly
+language either.  Note that a depot's data/dbvar is always implicitly
 public to its full depth, as far as basic API (not user) concerns go; the
 only private data is lexicals.
 
@@ -3293,7 +3293,7 @@ applied to parts of the dbvar such as individual (pseudo-)relvars.
 
 ## Terse Pseudo-Variable Syntax
 
-An important feature of a B<D> language is that the components of
+An important feature of a **D** language is that the components of
 variables' current values can be addressed directly as if they were normal
 variables, both for reading and for updating.  In support of this feature,
 Muldis D's DBMS entity names have a feature extension that allows for
@@ -3339,7 +3339,7 @@ but only components of tuples, and sometimes components of scalar possreps
 or of relations, get the special short-hand where an extended entity name
 can be used as the full expression.
 
-B<Update:>  To be specific, when concerning general contexts such as any
+**Update:**  To be specific, when concerning general contexts such as any
 arbitrary Muldis D functional (value expressions) or procedural
 (statements) code, *only* tuples may have their attributes accessed using
 this feature extension of DBMS entity names; in general contexts, the
@@ -3637,7 +3637,7 @@ extension lets you declare a simple collection of any type, including those
 declared by the same feature, for example:
 `type.set_of.set_of.sys.std.Core.Type.Cat.Name`.
 
-B<Update:>  Unlike with the terse pseudo-variable syntax in general use
+**Update:**  Unlike with the terse pseudo-variable syntax in general use
 (where it may only be used with tuple attributes), for the more specific
 use of referencing data types, the terse syntax may *also* be used with
 scalar possrep and relation attributes, as described in **Terse
@@ -3715,7 +3715,7 @@ programmers updating the system catalog at runtime.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

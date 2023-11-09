@@ -561,8 +561,8 @@ following element sequences: `sys.cat`, `mnt.cat`, `fed.[cat|data]`,
 variable (or pseudo-variable or parameter or named expression or
 statement), either a system-catalog or normal data variable.  Its default
 value is a reference to the `sys.cat` catalog relcon.
-I<Conjecture:  Subtypes like `[Abs|Rel]PathDataNC` might also be defined
-later if we have some situation where such a restriction might be useful.>
+*Conjecture:  Subtypes like `[Abs|Rel]PathDataNC` might also be defined
+later if we have some situation where such a restriction might be useful.*
 
 ## sys.std.Core.Type.Cat.Comment
 
@@ -1146,8 +1146,8 @@ declarations of all of the native Muldis D types that can't be defined like
 user-defined types.  Specifically, it declares all 2 Muldis D declaration
 types in the `Core` module, and only declaration types: in the `Type`
 namespace: `Int`; in the `Type.Cat` namespace: `List`.
-B<Only the `Core` module has a nonempty `special_types`; all other
-packages must have an empty one.>
+**Only the `Core` module has a nonempty `special_types`; all other
+packages must have an empty one.**
 
 * `[scalar|tuple|relation|domain|subset|mixin]_types` -
 `[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet`
@@ -1167,15 +1167,15 @@ These are all the definitions that this [|sub]package contains of
 * `stim_resp_rules` - `StimRespRuleSet`
 
 These are all the definitions that this [|sub]package contains of
-stimulus-response rules.  I<For any system-defined package,
-`stim_resp_rules` is probably always empty.>
+stimulus-response rules.  *For any system-defined package,
+`stim_resp_rules` is probably always empty.*
 
 * `data` - `maybe_of.RPTypeNC`
 
 This is the declared data type of the self-local dbvar that this
 [|sub]package contains, iff `data` is a `Just`; if `data` is `Nothing`
 (the default), then this [|sub]package does not have a self-local dbvar.
-I<For any system-defined package, `data` is probably always `Nothing`.>
+*For any system-defined package, `data` is probably always `Nothing`.*
 
 There is a distributed binary primary key over the `parent` plus `name`
 attributes of all 8 of a `Package`'s main `DHRelation`-typed attributes.
@@ -1195,9 +1195,9 @@ that does not have any self-local dbvar.
 A `Module` specifies the entire system catalog of a single module (or
 submodule), which is a kind of package (or subpackage).  `Module` is a
 proper subtype of `Package` where for every member value its
-`stim_resp_rules` and `data` attributes are empty.  I<It is possible in
+`stim_resp_rules` and `data` attributes are empty.  *It is possible in
 the future that `Module` may change to a non-proper subtype of `Package`
-should system-defined stimulus-response rules or data dbcons be useful.>
+should system-defined stimulus-response rules or data dbcons be useful.*
 
 ## sys.std.Core.Type.Cat.Depot
 
@@ -2964,7 +2964,7 @@ representation of a value in one possrep directly from the representation
 in another possrep, and also directly in the reverse.  Every one of this
 type's possreps must be mapped bidirectionally to every other one of its
 possreps, either directly or indirectly.  So for `P` total possreps, the
-total number of bidirectional maps `M` is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
+total number of bidirectional maps `M` is in `(P-1) ≤ M ≤ ((P-1)*P/2)`.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
@@ -3396,7 +3396,7 @@ matching can be done against the same.
 All permissable operations on virtual [|pseudo-]variables are such that the
 semantics of updating them is the same as for updating base
 [|pseudo-]variables, with respect to *The Assignment Principle*: Following
-assignment of a value `v` to a variable `V`, the comparison C<v = V>
+assignment of a value `v` to a variable `V`, the comparison `v = V`
 evaluates to TRUE.  Just as an update to determinant variables will have
 the cascade effect of updating their dependent variables such that the
 functional dependency between them continues to hold, the reverse also must
@@ -3427,13 +3427,13 @@ ways, which are an insertion into just `R1`, or into just `R2`, or into
 both `R1` and `R2`; so for predictability's sake, the map should specify
 which option to do (which can vary on a case-by-case basis).
 
-I<This all being said, for the moment the `VirtualAttrMapSet` type does
+*This all being said, for the moment the `VirtualAttrMapSet` type does
 not give a way to manually specify a reverse function, so for now all the
 virtuals are either read-only or updatable due to an automatically
 generated reverse function, which might vary by implementation.  Fixing
 this matter is TODO.  Note that the reverse functions might have to be
 defined as per-tuple operations, separately for
-insert/substitute/delete.>
+insert/substitute/delete.*
 
 A `VirtualAttrMapSet` has these 6 attributes:
 
@@ -4034,8 +4034,8 @@ sequential expression, which is a specification for how to order tuples of
 a relation in terms of a list of their attributes to order on.  An
 `OrderByName` has 2 attributes, `name` (a `Name`) and
 `is_reverse_order` (a `Bool`).  Its default value has the default value
-of the `Name` and `Bool` types for their respective attributes.  I<Maybe
-TODO:  Make `name` a `PNSQNameChain` instead to drill into TVAs or SVAs.>
+of the `Name` and `Bool` types for their respective attributes.  *Maybe
+TODO:  Make `name` a `PNSQNameChain` instead to drill into TVAs or SVAs.*
 
 # TYPES FOR POSSIBLY PRIMED HIGHER-ORDER FUNCTIONS
 
@@ -4102,7 +4102,7 @@ immediate attention to problems can be supported now.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

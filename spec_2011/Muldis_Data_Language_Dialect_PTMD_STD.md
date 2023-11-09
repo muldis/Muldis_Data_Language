@@ -121,7 +121,7 @@ grouping not optionality, and that when multiple sub-pattern alternatives
 match, the one that is the longest wins.  2. The grammar portion that
 actually declares a token, that is what associates a token name with its
 definition body, is formatted like EBNF, as `<footok> ::= ...` rather
-than the Raku way like C<token footok { ... }> or C<rule footok { ... }>.
+than the Raku way like `token footok { ... }` or `rule footok { ... }`.
 3. All non-quoted whitespace is not significant and just is formatting the
 grammar itself; rather, whitespace rules in the grammar are spelled out
 explicitly.  4. The meanings of any tokens with the same names as ones
@@ -218,8 +218,8 @@ Grammar:
     <std_syn_ext_list_item> ::=
         ''
 
-I<Please interpret the `''` under `<std_syn_ext_list_item>` as a
-placeholder and that there are currently zero valid list items.>
+*Please interpret the `''` under `<std_syn_ext_list_item>` as a
+placeholder and that there are currently zero valid list items.*
 
 As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
@@ -311,10 +311,10 @@ It may not need to be said that while a lower level may be for a Muldis D
 implementer an easier thing to make run, it would conversely tend to be
 more difficult for them to write a test suite for, being more verbose.
 
-B<It should be emphasized that all catalog abstration levels are completely
+**It should be emphasized that all catalog abstration levels are completely
 expressive, and everything a user can do with one, they can do with the
 others, and code is round-trippable between all of them without loss of
-behaviour.  The choice is simply about the syntax to accomplish something.>
+behaviour.  The choice is simply about the syntax to accomplish something.**
 
 Specifying the `catalog_abstraction_level` pragma in a `language_name`
 node is mandatory, since there is no obvious abstraction level to use
@@ -548,12 +548,12 @@ Examples:
 
 ## DEPRECATED - rtn_inv_alt_syn
 
-B<The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
+**The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
 enhancements to the language in both the system catalog itself and in the
 `plain_rtn_inv` level will make the latter more capable and suitable by
 itself for normal use.  A new highest level or 3 will probably appear in
-place of `rtn_inv_alt_syn` later for their still-unique useful features.>
+place of `rtn_inv_alt_syn` later for their still-unique useful features.**
 
 When the `catalog_abstraction_level` pragma is `rtn_inv_alt_syn`, then
 the following grammar definitions are in effect:
@@ -819,7 +819,7 @@ by definition, a `value` can be completely evaluated at compile time.  A
 `Muldis_D` node with a `value` second element is hence just a serialized
 Muldis D value.
 
-The PTMD_STD grammar subsection for value literals (having the root
+The `PTMD_STD` grammar subsection for value literals (having the root
 grammar token `value`) is completely self-defined and can be used in
 isolation from the wider grammar as a Muldis D sub-language; for example, a
 hosted-data Muldis D implementation may have an object representing a
@@ -1495,7 +1495,7 @@ uppercased (not lowercased) letters and the space character, then the
 like an `Int_payload`, sans that underscores and unspace aren't
 allowed here, then the `...` is interpreted as a Unicode abstract
 code point number.  One reason for this feature is to empower more elegant
-passing of Unicode-savvy PTMD_STD source code through a communications
+passing of Unicode-savvy `PTMD_STD` source code through a communications
 channel that is more limited, such as to 7-bit ASCII.
 
 Examples:
@@ -1631,7 +1631,7 @@ must be one of these 5 `Name` values, which is a top-level namespace:
 the general case, a `PNSQNameChain_payload` must be written out in full,
 so it is completely unambiguous (and is clearly self-documenting), and it
 is always the case that a `PNSQNameChain` value in the system catalog is
-written out in full.  But the PTMD_STD grammar also has a few commonly used
+written out in full.  But the PTMD\_STD grammar also has a few commonly used
 special cases where a `PNSQNameChain_payload` may be a much shorter
 substring of its complete version, such that a simple parser, with no
 knowledge of any user-defined entities besides said shorter
@@ -2499,7 +2499,7 @@ unambiguously understood.  A `depot` node defines a (possibly empty)
 system catalog database, holding user material (routine and type)
 definitions, plus optionally a normal-user-data database.
 
-A `depot_catalog_payload` node in the PTMD_STD grammar is interpreted as a
+A `depot_catalog_payload` node in the `PTMD_STD` grammar is interpreted as a
 Muldis D `sys.std.Core.Type.Cat.Depot` value (which is also a `Database`
 value) whose attributes are defined by its child elements.
 
@@ -2563,19 +2563,19 @@ Grammar:
 A `material` node specifies a new material (routine or type) that lives in
 a depot or subdepot.
 
-A `material` node in the PTMD_STD grammar corresponds directly to a tuple
+A `material` node in the `PTMD_STD` grammar corresponds directly to a tuple
 of a (routine or type defining) attribute of a value of the catalog data
 type `sys.std.Core.Type.Cat.Depot`, which is how a material specification
 is actually represented in Muldis D's nonsugared form, which is as a
 component of the system catalog.  Or more specifically, an entire tree of
-PTMD_STD `material` nodes corresponds to a set of said attribute tuples,
+`PTMD_STD` `material` nodes corresponds to a set of said attribute tuples,
 one attribute tuple per `material` node.  In the nonsugared form, every
 `material` node has an explicitly designated name, and all child nodes are
 not declared inline with their parent nodes but rather are declared in
 parallel with them, and the parents refer to their children by their names.
-A feature of the PTMD_STD grammar is that material nodes may be declared
+A feature of the `PTMD_STD` grammar is that material nodes may be declared
 without explicit names, such that the parser would generate names for them
-when deriving system catalog entries, and that is why PTMD_STD supports,
+when deriving system catalog entries, and that is why `PTMD_STD` supports,
 and encourages the use of for code brevity/readability, the use of
 inline-declared material nodes, especially so when the `material` in
 question is a simple function or type that is only being used in one place,
@@ -2622,7 +2622,7 @@ value which
 is defined inline with the material's declaration.  When an inner material
 is declared as anonymous, it still actually has a name in the system
 catalog (*all* materials in the system catalog are named), but that name
-is generated by the PTMD_STD parser; strictly speaking this material could
+is generated by the `PTMD_STD` parser; strictly speaking this material could
 still be invoked by that name like an explicitly named one, but that would
 not be a good practice; use explicit names if you want to invoke by name.
 Strictly speaking, the algorithm to generate material names should be fully
@@ -2769,7 +2769,7 @@ Grammar:
         '{' <ws>? '...' <ws>? '}'
 
 A `function` node specifies a new function that lives in a depot or
-subdepot.  A `function` node in the PTMD_STD grammar corresponds directly
+subdepot.  A `function` node in the `PTMD_STD` grammar corresponds directly
 to a tuple of the `functions` attribute of a value of the catalog data
 type `sys.std.Core.Type.Cat.Depot`, which is how a function specification
 is actually represented in Muldis D's nonsugared form, which is as a
@@ -2944,7 +2944,7 @@ Grammar:
         '{' <ws>? '...' <ws>? '}'
 
 A `procedure` node specifies a new procedure that lives in a depot or
-subdepot.  A `procedure` node in the PTMD_STD grammar corresponds directly
+subdepot.  A `procedure` node in the `PTMD_STD` grammar corresponds directly
 to a tuple of the `procedures` attribute of a value of the catalog data
 type `sys.std.Core.Type.Cat.Depot`, which is how a procedure specification
 is actually represented in Muldis D's nonsugared form, which is as a
@@ -3150,7 +3150,7 @@ Grammar:
         <possrep_name>
 
 A `scalar_type` node specifies a new scalar type that lives in a depot or
-subdepot.  A `scalar_type` node in the PTMD_STD grammar corresponds
+subdepot.  A `scalar_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `scalar_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a scalar
 type specification is actually represented in Muldis D's nonsugared form,
@@ -3219,7 +3219,7 @@ Grammar:
         'is-updateable'
 
 A `tuple_type` node specifies a new tuple type that lives in a depot or
-subdepot.  A `tuple_type` node in the PTMD_STD grammar corresponds
+subdepot.  A `tuple_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `tuple_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a tuple
 type specification is actually represented in Muldis D's nonsugared form,
@@ -3318,7 +3318,7 @@ Grammar:
         tuple-type <ws> <type_name>
 
 A `relation_type` node specifies a new relation type that lives in a depot
-or subdepot.  A `relation_type` node in the PTMD_STD grammar corresponds
+or subdepot.  A `relation_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `relation_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a relation
 type specification is actually represented in Muldis D's nonsugared form,
@@ -3394,7 +3394,7 @@ Grammar:
         <ws>? '}'
 
 A `domain_type` node specifies a new domain type that lives in a depot or
-subdepot.  A `domain_type` node in the PTMD_STD grammar corresponds
+subdepot.  A `domain_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `domain_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a domain
 type specification is actually represented in Muldis D's nonsugared form,
@@ -3451,7 +3451,7 @@ Grammar:
         [<ws> <default_clause>]?
 
 A `subset_type` node specifies a new subset type that lives in a depot or
-subdepot.  A `subset_type` node in the PTMD_STD grammar corresponds
+subdepot.  A `subset_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `subset_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a subset
 type specification is actually represented in Muldis D's nonsugared form,
@@ -3491,7 +3491,7 @@ Grammar:
         'and-provides-its-default'
 
 A `mixin_type` node specifies a new mixin type that lives in a depot or
-subdepot.  A `mixin_type` node in the PTMD_STD grammar corresponds
+subdepot.  A `mixin_type` node in the `PTMD_STD` grammar corresponds
 directly to a tuple of the `mixin_types` attribute of a value of the
 catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a mixin
 type specification is actually represented in Muldis D's nonsugared form,
@@ -3526,7 +3526,7 @@ Grammar:
 
 A `key_constr` node specifies a new unique key constraint or candidate
 key, for a relation type, that lives in a depot or subdepot.  A
-`key_constr` node in the PTMD_STD grammar corresponds directly to a tuple
+`key_constr` node in the `PTMD_STD` grammar corresponds directly to a tuple
 of the `key_constrs` attribute of a value of the catalog data type
 `sys.std.Core.Type.Cat.Depot`, which is how a unique key constraint
 specification is actually represented in Muldis D's nonsugared form, which
@@ -3608,7 +3608,7 @@ Grammar:
 
 A `subset_constr` node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
-that lives in a depot or subdepot.  A `subset_constr` node in the PTMD_STD
+that lives in a depot or subdepot.  A `subset_constr` node in the `PTMD_STD`
 grammar corresponds directly to a tuple of the `subset_constrs` attribute
 of a value of the catalog data type `sys.std.Core.Type.Cat.Depot`, which
 is how a (non-distributed) subset constraint
@@ -3660,7 +3660,7 @@ Grammar:
         <routine_name>
 
 A `stim_resp_rule` node specifies a new stimulus-response rule that lives
-in a depot or subdepot.  A `stim_resp_rule` node in the PTMD_STD grammar
+in a depot or subdepot.  A `stim_resp_rule` node in the `PTMD_STD` grammar
 corresponds directly to a tuple of the `stim_resp_rules` attribute of a
 value of the catalog data type `sys.std.Core.Type.Cat.Depot`, which is how
 a stimulus-response rule specification is actually represented in Muldis
@@ -3724,20 +3724,20 @@ An `expr` node is a proper superset of a `value` node, and any
 occurrences of `expr` nodes in this document may optionally be substituted
 with `value` nodes on a per-instance basis.
 
-An `expr` node in the PTMD_STD grammar corresponds directly to a tuple of
+An `expr` node in the `PTMD_STD` grammar corresponds directly to a tuple of
 an attribute of a value of the catalog data type
 `sys.std.Core.Type.Cat.ExprNodeSet`, which is how a value expression node
 is actually represented in Muldis D's nonsugared form, which is as a
 component of the system catalog.  Or more specifically, an entire tree of
-PTMD_STD `expr` nodes corresponds to a set of said attribute tuples, one
+`PTMD_STD` `expr` nodes corresponds to a set of said attribute tuples, one
 attribute tuple per `expr` node.  In the nonsugared form, every `expr`
-node has an explicitly designated name, as per a PTMD_STD `named_expr`
+node has an explicitly designated name, as per a `PTMD_STD` `named_expr`
 node, and all child nodes are not declared inline with their parent nodes
 but rather are declared in parallel with them, and the parents refer to
-their children by their names.  A feature of the PTMD_STD grammar is that
+their children by their names.  A feature of the `PTMD_STD` grammar is that
 expression nodes may be declared without explicit names, such that the
 parser would generate names for them when deriving system catalog entries,
-and that is why PTMD_STD supports, and encourages the use of for code
+and that is why `PTMD_STD` supports, and encourages the use of for code
 brevity/readability, the use of inline-declared expression nodes,
 especially so when the `expr` in question is an `opaque_value_literal`.
 
@@ -3761,8 +3761,8 @@ exactly the same as a corresponding catalog entry for using an argument.
 Iff an `expr` is a `named_expr`, then the `expr` element of the
 `named_expr` is being declared with an explicit name, and the `expr_name`
 element of the `named_expr` is that name.  But if the `expr` element of
-the `named_expr` is an `expr_name` (or a `named_expr` I<TODO: or a
-`param` >), then the `named_expr` is in fact declaring a new node itself
+the `named_expr` is an `expr_name` (or a `named_expr` *TODO: or a `param`*),
+then the `named_expr` is in fact declaring a new node itself
 (rather than simply naming its child node), which is a tuple of a Muldis D
 `sys.std.Core.Type.Cat.AccExprNodeSet` value; the new node is simply
 declaring an alias for another node, namely the `expr` element.
@@ -4108,20 +4108,20 @@ must be composed beneath a `depot`, or specifically into a procedure
 definition, because in the general case a `proc_stmt` can *not* be
 completely evaluated at compile time.
 
-A `proc_stmt` node in the PTMD_STD grammar corresponds directly to a tuple
+A `proc_stmt` node in the `PTMD_STD` grammar corresponds directly to a tuple
 of an attribute of a value of the catalog data type
 `sys.std.Core.Type.Cat.StmtNodeSet`, which is how a statement node is
 actually represented in Muldis D's nonsugared form, which is as a component
-of the system catalog.  Or more specifically, an entire tree of PTMD_STD
+of the system catalog.  Or more specifically, an entire tree of `PTMD_STD`
 `proc_stmt` nodes corresponds to a set of said attribute tuples, one
 attribute tuple per `proc_stmt` node.  In the nonsugared form, every
-`proc_stmt` node has an explicitly designated name, as per a PTMD_STD
+`proc_stmt` node has an explicitly designated name, as per a `PTMD_STD`
 `named_stmt` node, and all child nodes are not declared inline with their
 parent nodes but rather are declared in parallel with them, and the parents
-refer to their children by their names.  A feature of the PTMD_STD grammar
+refer to their children by their names.  A feature of the `PTMD_STD` grammar
 is that statement nodes may be declared without explicit names, such that
 the parser would generate names for them when deriving system catalog
-entries, and that is why PTMD_STD supports, and encourages the use of for
+entries, and that is why `PTMD_STD` supports, and encourages the use of for
 code brevity/readability, the use of inline-declared statement nodes.
 
 Iff a `proc_stmt` is an `stmt_name`, then this typically means that the
@@ -5545,7 +5545,7 @@ Examples:
 
 # LANGUAGE MNEMONICS
 
-PTMD_STD is designed to respect a variety of mnemonics that bring it some
+`PTMD_STD` is designed to respect a variety of mnemonics that bring it some
 self-similarity and an association between syntax and semantics so that it
 is easier to read and write Muldis D code.  Some of these mnemonics are
 more about self-similarity and others are more about shared traits with
@@ -5648,9 +5648,9 @@ A user-defined entity name may be any character string at all.  In the
 general case, one must appear formatted as a `quoted_name_str`, but if the
 entity name only uses a limited set of characters, then it may appear
 formatted as a `nonquoted_name_str` instead, which is essentially the same
-bareword format as the PTMD_STD language keywords.
+bareword format as the `PTMD_STD` language keywords.
 
-When any PTMD_STD code contains a bareword whose meaning is ambiguous, in
+When any `PTMD_STD` code contains a bareword whose meaning is ambiguous, in
 that it could be interpreted as either a reference to a user-defined entity
 or as a specific context-appropriate language keyword (including a routine
 invocation alternate syntax), then the parser must always resolve it to the
@@ -5667,7 +5667,7 @@ left-hand-side of infix procedure calls, and some of those expressions may
 normally have the same leading syntax as some kinds of statements.  For
 example, an `Array` expression can look like a `compound_stmt`, and a
 `Set` expression can look like a `multi_upd_stmt`, an `if_else_expr` can
-look like an `if_else_stmt`, and so on.  When any PTMD_STD code exists
+look like an `if_else_stmt`, and so on.  When any `PTMD_STD` code exists
 whose meaning is ambiguous from the context as to whether it is a statement
 or an expression, then the parser must always resolve it to the statement.
 In these contexts, you must surround the expression with parenthesis, a
@@ -5676,14 +5676,14 @@ routine code within parenthesis is always one or more expressions.
 
 # NESTING PRECEDENCE RULES
 
-This documentation section outlines Muldis D's PTMD_STD dialect's nesting
+This documentation section outlines Muldis D's `PTMD_STD` dialect's nesting
 precedence rules, meaning how it accepts Muldis D code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
-PTMD_STD has 10 precedence levels when the `catalog_abstraction_level`
+`PTMD_STD` has 10 precedence levels when the `catalog_abstraction_level`
 pragma is `rtn_inv_alt_syn`; if it is `plain_rtn_inv` instead, then 6.5
-of the levels can be eliminated, so then PTMD_STD has just 3.5; if it is
+of the levels can be eliminated, so then `PTMD_STD` has just 3.5; if it is
 `code_as_data` instead, then 2.5 more can be eliminated, leaving just 1.
 
 Here we list the levels from "tightest" to "loosest", along with a few
@@ -5741,7 +5741,7 @@ for binary, ternary, or N-ary operators are interpreted as follows:
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

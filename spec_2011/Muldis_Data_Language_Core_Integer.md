@@ -134,7 +134,7 @@ This function results in the integer remainder when its `dividend`
 argument is divided by its `divisor` argument using the semantics of real
 number division, and then the latter's result is rounded to the same or
 nearest integer.  The semantics of this function preserve the identity
-C<x mod y = x - y * (x div y)> (read `x` as `dividend` and `y`
+`x mod y = x - y * (x div y)` (read `x` as `dividend` and `y`
 as `divisor`) where the division has the same semantics as
 `sys.std.Core.Integer.whole_quotient` (rounding guided by `round_meth`);
 the sign of this function's result always matches the sign of the dividend
@@ -270,8 +270,8 @@ multiplication of an empty set).  Note that this operation is also known as
 
 ## sys.std.Core.Integer.assign_pred
 
-C<updater assign_pred (&topic : Int)
-implements sys.std.Core.Ordered.Ordinal.assign_pred {...}>
+`updater assign_pred (&topic : Int)
+implements sys.std.Core.Ordered.Ordinal.assign_pred {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Integer.pred` function with the same argument, and
@@ -279,8 +279,8 @@ then assigning the result of that function to its argument.
 
 ## sys.std.Core.Integer.assign_succ
 
-C<updater assign_succ (&topic : Int)
-implements sys.std.Core.Ordered.Ordinal.assign_succ {...}>
+`updater assign_succ (&topic : Int)
+implements sys.std.Core.Ordered.Ordinal.assign_succ {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Integer.succ` function with the same argument, and
@@ -295,8 +295,8 @@ of these functions is subject to become more formalized later.
 
 ## sys.std.Core.Integer.fetch_random
 
-C<system-service fetch_random (&target : Int,
-interval : sp_interval_of.Int) [...]>
+`system-service fetch_random (&target : Int,
+interval : sp_interval_of.Int) [...]`
 
 This system-service routine will update the variable supplied as its
 `target` argument so that it holds a randomly generated integer value that
@@ -305,7 +305,7 @@ function will fail if `interval` represents an empty interval.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

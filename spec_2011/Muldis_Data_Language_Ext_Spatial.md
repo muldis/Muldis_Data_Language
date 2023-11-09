@@ -131,7 +131,7 @@ a perfect science; they stand to be revised or rewritten.*
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

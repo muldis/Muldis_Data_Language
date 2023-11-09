@@ -111,8 +111,8 @@ as `assuming`.
 
 ## sys.std.Core.Cat.proc_invo
 
-C<procedure proc_invo (procedure : APProcedureNC,
-&upd_args? : Tuple, ro_args? : Tuple) {...}>
+`procedure proc_invo (procedure : APProcedureNC,
+&upd_args? : Tuple, ro_args? : Tuple) {...}`
 
 This procedure has the same purpose and features as
 `sys.std.Core.Cat.func_invo` but that it invokes a procedure rather than a
@@ -129,7 +129,7 @@ subject-to-update argument, and it is optional otherwise.
 
 ## sys.std.Core.Cat.fail
 
-C<procedure fail (topic? : Exception) {...}>
+`procedure fail (topic? : Exception) {...}`
 
 This procedure will throw the exception given as its argument; this results
 in the call stack unwinding, and transaction rollbacks, until it is caught.
@@ -176,11 +176,11 @@ data types; they can not create or drop relvars.
 
 ## sys.std.Core.Cat.create_depot_mount
 
-C<recipe create_depot_mount (name : Name,
+`recipe create_depot_mount (name : Name,
 scm_comment? : Comment, is_temporary? : Bool, create_on_mount? : Bool,
 delete_on_unmount? : Bool, we_may_update? : Bool,
 allow_auto_run? : Bool, details? : SysScaValExprNodeSet,
-&mounts ::= mnt.cat.mounts) {...}>
+&mounts ::= mnt.cat.mounts) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar `mnt.cat.mounts`.  It will create a new depot mount in the DBMS
@@ -191,8 +191,8 @@ CONNECT statement or SQLite ATTACH statement.
 
 ## sys.std.Core.Cat.drop_depot_mount
 
-C<recipe drop_depot_mount (name : Name,
-&mounts ::= mnt.cat.mounts) {...}>
+`recipe drop_depot_mount (name : Name,
+&mounts ::= mnt.cat.mounts) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog
 relvar `mnt.cat.mounts`.  It will drop an existing depot mount from the
@@ -202,8 +202,8 @@ SQL DISCONNECT statement or SQLite DETACH statement.
 
 ## sys.std.Core.Cat.alter_depot_mount_so_we_may_not_update
 
-C<recipe alter_depot_mount_so_we_may_not_update
-(name : Name, &mounts ::= mnt.cat.mounts) {...}>
+`recipe alter_depot_mount_so_we_may_not_update
+(name : Name, &mounts ::= mnt.cat.mounts) {...}`
 
 This recipe is an abstraction over updating a tuple of the catalog
 relvar `mnt.cat.mounts` such that its `we_may_update` attribute is made
@@ -213,9 +213,9 @@ relvar `mnt.cat.mounts` such that its `we_may_update` attribute is made
 
 ## sys.std.Core.Cat.create_subdepot
 
-C<recipe create_subdepot (depot : Name,
+`recipe create_subdepot (depot : Name,
 parent? : NameChain, name : Name, scm_comment? : Comment,
-scm_vis_ord? : NNInt, &cat ::= fed.cat, &data ::= fed.data) {...}>
+scm_vis_ord? : NNInt, &cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar `fed.cat.mounts{name=depot}.depot.subdepots`.  It will create a
@@ -226,9 +226,9 @@ PACKAGE statement.
 
 ## sys.std.Core.Cat.drop_subdepot
 
-C<recipe drop_subdepot (depot : Name,
+`recipe drop_subdepot (depot : Name,
 parent? : NameChain, name : Name,
-&cat ::= fed.cat, &data ::= fed.data) {...}>
+&cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog
 relvar `fed.cat.mounts{name=depot}.depot.subdepots`.  It will drop an
@@ -239,10 +239,10 @@ statement or an Oracle DROP PACKAGE statement.
 
 ## sys.std.Core.Cat.create_function
 
-C<recipe create_function (depot : Name,
+`recipe create_function (depot : Name,
 subdepot? : NameChain, name : Name,
 scm_comment? : Comment, scm_vis_ord? : NNInt,
-material : Function, &cat ::= fed.cat, &data ::= fed.data) {...}>
+material : Function, &cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar `fed.cat.mounts{name=depot}.depot.functions`.  It will create a
@@ -252,9 +252,9 @@ recipe is analogous to a SQL CREATE FUNCTION statement.
 
 ## sys.std.Core.Cat.drop_function
 
-C<recipe drop_function (depot : Name,
+`recipe drop_function (depot : Name,
 subdepot? : NameChain, name : Name,
-&cat ::= fed.cat, &data ::= fed.data) {...}>
+&cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
 `fed.cat.mounts{name=depot}.depot.functions`.  It will drop an existing
@@ -262,10 +262,10 @@ depot function.  This recipe is analogous to a SQL DROP FUNCTION statement.
 
 ## sys.std.Core.Cat.create_procedure
 
-C<recipe create_procedure (depot : Name,
+`recipe create_procedure (depot : Name,
 subdepot? : NameChain, name : Name,
 scm_comment? : Comment, scm_vis_ord? : NNInt,
-material : Procedure, &cat ::= fed.cat) {...}>
+material : Procedure, &cat ::= fed.cat) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar `fed.cat.mounts{name=depot}.depot.procedures`.
@@ -276,8 +276,8 @@ statement.
 
 ## sys.std.Core.Cat.drop_procedure
 
-C<recipe drop_procedure (depot : Name,
-subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}>
+`recipe drop_procedure (depot : Name,
+subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
 `fed.cat.mounts{name=depot}.depot.procedures`.  It will
@@ -286,38 +286,38 @@ to a SQL DROP PROCEDURE statement.
 
 ## sys.std.Core.Cat.create_[scalar|tuple|relation|domain|subset|mixin]_type
 
-C<recipe create_[scalar|tuple|relation|domain|subset|mixin]_type
+`recipe create_[scalar|tuple|relation|domain|subset|mixin]_type
 (depot : Name, subdepot? : NameChain, name : Name,
 scm_comment? : Comment, scm_vis_ord? : NNInt,
 material : [Scalar|Tuple|Relation|Domain|Subset|Mixin]Type,
-&cat ::= fed.cat, &data ::= fed.data) {...}>
+&cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
-relvar C<fed.cat.mounts{name=depot}.depot
-.[scalar|tuple|relation|domain|subset|mixin]_types>.
+relvar `fed.cat.mounts{name=depot}.depot
+.[scalar|tuple|relation|domain|subset|mixin]_types`.
 It will create a new type, in the depot mounted under the name given by the
 `depot` argument, whose name and other details match the other arguments.
 This recipe is analogous to a SQL CREATE TYPE|DOMAIN statement.
 
 ## sys.std.Core.Cat.drop_[scalar|tuple|relation|domain|subset|mixin]_type
 
-C<recipe drop_[scalar|tuple|relation|domain|subset|mixin]_type
+`recipe drop_[scalar|tuple|relation|domain|subset|mixin]_type
 (depot : Name, subdepot? : NameChain, name : Name,
-&cat ::= fed.cat, &data ::= fed.data) {...}>
+&cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
-C<fed.cat.mounts{name=depot}.depot
-.[scalar|tuple|relation|domain|subset|mixin]_types>.
+`fed.cat.mounts{name=depot}.depot
+.[scalar|tuple|relation|domain|subset|mixin]_types`.
 It will drop an existing depot type.  This recipe is analogous to a SQL
 DROP TYPE|DOMAIN statement.
 
 ## sys.std.Core.Cat.create_[|distrib_][key|subset]_constr
 
-C<recipe create_[|distrib_][key|subset]_constr
+`recipe create_[|distrib_][key|subset]_constr
 (depot : Name, subdepot? : NameChain, name : Name,
 scm_comment? : Comment, scm_vis_ord? : NNInt,
 material : [|Distrib][Key|Subset]Constr,
-&cat ::= fed.cat, &data ::= fed.data) {...}>
+&cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar
@@ -328,9 +328,9 @@ arguments.
 
 ## sys.std.Core.Cat.drop_[|distrib_][key|subset]_constr
 
-C<recipe drop_[|distrib_][key|subset]_constr
+`recipe drop_[|distrib_][key|subset]_constr
 (depot : Name, subdepot? : NameChain, name : Name,
-&cat ::= fed.cat, &data ::= fed.data) {...}>
+&cat ::= fed.cat, &data ::= fed.data) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
 `fed.cat.mounts{name=depot}.depot.[|distrib_][key|subset]_constrs`.
@@ -338,9 +338,9 @@ It will drop an existing depot constraint.
 
 ## sys.std.Core.Cat.create_stim_resp_rule
 
-C<recipe create_stim_resp_rule (depot : Name,
+`recipe create_stim_resp_rule (depot : Name,
 subdepot? : NameChain, name : Name, scm_comment? : Comment,
-scm_vis_ord? : NNInt, material : StimRespRule, &cat ::= fed.cat) {...}>
+scm_vis_ord? : NNInt, material : StimRespRule, &cat ::= fed.cat) {...}`
 
 This recipe is an abstraction over inserting a tuple into the catalog
 relvar `fed.cat.mounts{name=depot}.depot.stim_resp_rules`.  It will
@@ -351,8 +351,8 @@ statement.
 
 ## sys.std.Core.Cat.drop_stim_resp_rule
 
-C<recipe drop_stim_resp_rule (depot : Name,
-subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}>
+`recipe drop_stim_resp_rule (depot : Name,
+subdepot? : NameChain, name : Name, &cat ::= fed.cat) {...}`
 
 This recipe is an abstraction over deleting a tuple from the catalog relvar
 `fed.cat.mounts{name=depot}.depot.stim_resp_rules`.  It will drop an
@@ -363,7 +363,7 @@ DROP TRIGGER statement.
 
 ## sys.std.Core.Cat.nil_key_constr
 
-C<key-constraint nil_key_constr {}>
+`key-constraint nil_key_constr {}`
 
 This is a unique key constraint or candidate key, for a relation type,
 which ranges over zero attributes, and is not designated a *primary key*.
@@ -373,14 +373,14 @@ tuple (`Maybe` being an example).
 
 ## sys.std.Core.Cat.nil_prim_key
 
-C<key-constraint nil_prim_key {}>
+`key-constraint nil_prim_key {}`
 
 This is exactly the same as `sys.std.Core.Cat.nil_key_constr`, a key over
 zero attributes, but that it *is* designated a *primary key*.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

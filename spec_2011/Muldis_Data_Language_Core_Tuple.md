@@ -289,8 +289,8 @@ attributes.
 
 ## sys.std.Core.Tuple.assign_rename
 
-C<updater assign_rename (&topic : Tuple, map : AttrRenameMap)
-implements sys.std.Core.Attributive.assign_rename {...}>
+`updater assign_rename (&topic : Tuple, map : AttrRenameMap)
+implements sys.std.Core.Attributive.assign_rename {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Tuple.rename` function with the same arguments, and then
@@ -303,8 +303,8 @@ each tuple of `map` corresponds to a renamed SQL table.
 
 ## sys.std.Core.Tuple.assign_static_exten
 
-C<updater assign_static_exten (&topic : Tuple, attrs : Tuple)
-implements sys.std.Core.Attributive.assign_static_exten {...}>
+`updater assign_static_exten (&topic : Tuple, attrs : Tuple)
+implements sys.std.Core.Attributive.assign_static_exten {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Tuple.static_exten` function with the same arguments,
@@ -317,8 +317,8 @@ attribute of `attrs` corresponds to a created SQL table.
 
 ## sys.std.Core.Tuple.assign_projection
 
-C<updater assign_projection (&topic : Tuple, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.assign_projection {...}>
+`updater assign_projection (&topic : Tuple, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.assign_projection {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Tuple.projection` function with the same arguments, and
@@ -326,8 +326,8 @@ then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Tuple.assign_cmpl_proj
 
-C<updater assign_cmpl_proj (&topic : Tuple, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.assign_cmpl_proj {...}>
+`updater assign_cmpl_proj (&topic : Tuple, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.assign_cmpl_proj {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Tuple.cmpl_proj` function with the same arguments,
@@ -338,7 +338,7 @@ attribute named by `attr_names` corresponds to a dropped SQL table.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

@@ -199,7 +199,7 @@ This function results in `Bool:True` iff its argument has a cardinality of
 zero (that is, it has zero tuples), and `Bool:False` otherwise.  Note
 that if you are using a `Maybe` to represent a sparse data item,
 analogously to a SQL nullable context, then testing the `Maybe` with
-`is_empty` is analogous to testing a SQL nullable with C<is null>.
+`is_empty` is analogous to testing a SQL nullable with `is null`.
 
 ## sys.std.Core.Relation.is_not_empty
 
@@ -208,7 +208,7 @@ analogously to a SQL nullable context, then testing the `Maybe` with
 This function is exactly the same as `sys.std.Core.Relation.is_empty`
 except that it results in the opposite boolean value when given the same
 argument.  And following the analogy with `is_empty`, `is_not_empty` is
-analogous to SQL's C<is not null>.
+analogous to SQL's `is not null`.
 
 ## sys.std.Core.Relation.has_member
 
@@ -590,8 +590,8 @@ result.  The `value-reduction` function to apply is named in the `func`
 argument, and that function must have 2 parameters named `v1` and `v2`,
 which take the 2 input tuples for an invocation.  If `topic` has zero
 tuples, then `reduction` results in the tuple given in `identity`.
-I<Note that `identity` may be changed to take a function name rather than
-a value, for consistency with `func`.>  This function will fail|warn if
+*Note that `identity` may be changed to take a function name rather than
+a value, for consistency with `func`.*  This function will fail|warn if
 the |declared headings of `identity` and `topic` aren't compatible.
 
 # GENERIC RELATIONAL FUNCTIONS WITH MULTIPLE INPUT RELATIONS
@@ -896,8 +896,8 @@ and `B`, and their attribute sets are respectively named `{X,Y}` and
 `{X}` (so the result and `divisor` headings are both complementary
 subsets of the `dividend` heading); the result has all tuples `{X}`
 such that a tuple `{X,Y}` appears in `A` for all tuples `{Y}`
-appearing in `B`; that is, C<(A ÷ B)> is shorthand for C<(A{X} ∖
-((A{X} × B) ∖ A){X})>.  Note that this operation is also known as
+appearing in `B`; that is, `(A ÷ B)` is shorthand for `(A{X} ∖
+((A{X} × B) ∖ A){X})`.  Note that this operation is also known as
 *divideby* or `÷`.
 
 ## sys.std.Core.Relation.composition
@@ -1169,8 +1169,8 @@ each said `primary` tuple.
 
 ## sys.std.Core.Relation.assign_rename
 
-C<updater assign_rename (&topic : Relation, map : AttrRenameMap)
-implements sys.std.Core.Attributive.assign_rename {...}>
+`updater assign_rename (&topic : Relation, map : AttrRenameMap)
+implements sys.std.Core.Attributive.assign_rename {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.rename` function with the same arguments, and then
@@ -1183,8 +1183,8 @@ column.
 
 ## sys.std.Core.Relation.assign_static_exten
 
-C<updater assign_static_exten (&topic : Relation, attrs : Tuple)
-implements sys.std.Core.Attributive.assign_static_exten {...}>
+`updater assign_static_exten (&topic : Relation, attrs : Tuple)
+implements sys.std.Core.Attributive.assign_static_exten {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.static_exten` function with the same
@@ -1197,8 +1197,8 @@ an added SQL table column.
 
 ## sys.std.Core.Relation.assign_projection
 
-C<updater assign_projection (&topic : Relation, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.assign_projection {...}>
+`updater assign_projection (&topic : Relation, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.assign_projection {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.projection` function with the same arguments, and
@@ -1206,8 +1206,8 @@ then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Relation.assign_cmpl_proj
 
-C<updater assign_cmpl_proj (&topic : Relation, attr_names : set_of.Name)
-implements sys.std.Core.Attributive.assign_cmpl_proj {...}>
+`updater assign_cmpl_proj (&topic : Relation, attr_names : set_of.Name)
+implements sys.std.Core.Attributive.assign_cmpl_proj {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.cmpl_proj` function with the same arguments,
@@ -1222,8 +1222,8 @@ dropped SQL table column.
 
 ## sys.std.Core.Relation.assign_extension
 
-C<updater assign_extension (&topic : Relation,
-attr_names : set_of.Name, func : ValMapPFuncNC) {...}>
+`updater assign_extension (&topic : Relation,
+attr_names : set_of.Name, func : ValMapPFuncNC) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.extension` function with the same arguments, and
@@ -1233,7 +1233,7 @@ then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Relation.assign_insertion
 
-C<updater assign_insertion (&r : Relation, t : Tuple) {...}>
+`updater assign_insertion (&r : Relation, t : Tuple) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.insertion` function with the same arguments, and
@@ -1242,7 +1242,7 @@ analogous to the general case of the single-row SQL "INSERT" statement.
 
 ## sys.std.Core.Relation.assign_disjoint_ins
 
-C<updater assign_disjoint_ins (&r : Relation, t : Tuple) {...}>
+`updater assign_disjoint_ins (&r : Relation, t : Tuple) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.disjoint_ins` function with the same
@@ -1250,7 +1250,7 @@ arguments, and then assigning the result of that function to `r`.
 
 ## sys.std.Core.Relation.assign_union
 
-C<updater assign_union (&topic : Relation, other : Relation) {...}>
+`updater assign_union (&topic : Relation, other : Relation) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.union` function such that it has 2 input
@@ -1261,8 +1261,8 @@ general case of the multiple-row SQL "INSERT" statement.
 
 ## sys.std.Core.Relation.assign_disjoint_union
 
-C<updater assign_disjoint_union (&topic : Relation,
-other : Relation) {...}>
+`updater assign_disjoint_union (&topic : Relation,
+other : Relation) {...}`
 
 This update operator is to `sys.std.Core.Relation.disjoint_union` what
 the function `sys.std.Core.Relation.assign_union` is to
@@ -1272,7 +1272,7 @@ the function `sys.std.Core.Relation.assign_union` is to
 
 ## sys.std.Core.Relation.assign_empty
 
-C<updater assign_empty (&topic : Relation) {...}>
+`updater assign_empty (&topic : Relation) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.empty` function with the same argument, and then
@@ -1281,7 +1281,7 @@ analogous to the SQL "TRUNCATE" statement.
 
 ## sys.std.Core.Relation.assign_deletion
 
-C<updater assign_deletion (&r : Relation, t : Tuple) {...}>
+`updater assign_deletion (&r : Relation, t : Tuple) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.deletion` function with the same arguments, and
@@ -1289,8 +1289,8 @@ then assigning the result of that function to `r`.
 
 ## sys.std.Core.Relation.assign_restriction
 
-C<updater assign_restriction (&topic : Relation,
-func : ValFiltPFuncNC) {...}>
+`updater assign_restriction (&topic : Relation,
+func : ValFiltPFuncNC) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.restriction` function with the same arguments, and
@@ -1299,8 +1299,8 @@ this operation is also known as `:=where`.
 
 ## sys.std.Core.Relation.assign_cmpl_restr
 
-C<updater assign_cmpl_restr
-(&topic : Relation, func : ValFiltPFuncNC) {...}>
+`updater assign_cmpl_restr
+(&topic : Relation, func : ValFiltPFuncNC) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.cmpl_restr` function with the same arguments, and
@@ -1310,7 +1310,7 @@ analogous to the general case of the SQL "DELETE" statement.
 
 ## sys.std.Core.Relation.assign_intersection
 
-C<updater assign_intersection (&topic : Relation, other : Relation) {...}>
+`updater assign_intersection (&topic : Relation, other : Relation) {...}`
 
 This update operator is to `sys.std.Core.Relation.intersection` what the
 function `sys.std.Core.Relation.assign_union` is to
@@ -1319,7 +1319,7 @@ also known as `:=intersect` or `:=∩`.
 
 ## sys.std.Core.Relation.assign_diff
 
-C<updater assign_diff (&source : Relation, filter : Relation) {...}>
+`updater assign_diff (&source : Relation, filter : Relation) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.diff` function with the same arguments, and
@@ -1328,7 +1328,7 @@ operation is also known as `:=minus` or `:=except` or `:=∖`.
 
 ## sys.std.Core.Relation.assign_semidiff
 
-C<updater assign_semidiff (&source : Relation, filter : Relation) {...}>
+`updater assign_semidiff (&source : Relation, filter : Relation) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.semidiff` function with the same arguments,
@@ -1340,14 +1340,14 @@ criteria is simply a set of and-ed and or-ed value equality tests.
 
 ## sys.std.Core.Relation.assign_antijoin
 
-C<updater assign_antijoin (&source : Relation, filter : Relation) {...}>
+`updater assign_antijoin (&source : Relation, filter : Relation) {...}`
 
 This update operator is an alias for
 `sys.std.Core.Relation.assign_semidiff`.
 
 ## sys.std.Core.Relation.assign_semijoin
 
-C<updater assign_semijoin (&source : Relation, filter : Relation) {...}>
+`updater assign_semijoin (&source : Relation, filter : Relation) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.semijoin` function with the same arguments, and
@@ -1358,7 +1358,7 @@ operation is also known as `:=semijoin` or `:=matching` or `:=⋉`.
 
 ## sys.std.Core.Relation.assign_exclusion
 
-C<updater assign_exclusion (&topic : Relation, other : Relation) {...}>
+`updater assign_exclusion (&topic : Relation, other : Relation) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.exclusion` function such that it has 2 input
@@ -1370,8 +1370,8 @@ also known as `:=exclude` or `:=symdiff` or `:=∆`.
 
 ## sys.std.Core.Relation.assign_substitution
 
-C<updater assign_substitution (&topic : Relation,
-attr_names : set_of.Name, func : ValMapPFuncNC) {...}>
+`updater assign_substitution (&topic : Relation,
+attr_names : set_of.Name, func : ValMapPFuncNC) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.substitution` function with the same arguments,
@@ -1381,7 +1381,7 @@ statement.
 
 ## sys.std.Core.Relation.assign_static_subst
 
-C<updater assign_static_subst (&topic : Relation, attrs : Tuple) {...}>
+`updater assign_static_subst (&topic : Relation, attrs : Tuple) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.static_subst` function with the same
@@ -1389,9 +1389,9 @@ arguments, and then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Relation.assign_subst_in_restr
 
-C<updater assign_subst_in_restr (&topic : Relation,
+`updater assign_subst_in_restr (&topic : Relation,
 restr_func : ValFiltPFuncNC, subst_attr_names : set_of.Name,
-subst_func : ValMapPFuncNC) {...}>
+subst_func : ValMapPFuncNC) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.subst_in_restr` function with the same arguments,
@@ -1400,8 +1400,8 @@ is analogous to the general case of the conditional SQL "UPDATE" statement.
 
 ## sys.std.Core.Relation.assign_static_subst_in_restr
 
-C<updater assign_static_subst_in_restr
-(&topic : Relation, restr_func : ValFiltPFuncNC, subst : Tuple) {...}>
+`updater assign_static_subst_in_restr
+(&topic : Relation, restr_func : ValFiltPFuncNC, subst : Tuple) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.static_subst_in_restr` function with the same
@@ -1409,8 +1409,8 @@ arguments, and then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Relation.assign_subst_in_semijoin
 
-C<updater assign_subst_in_semijoin (&topic : Relation, restr : Relation,
-subst_attr_names : set_of.Name, subst_func : ValMapPFuncNC) {...}>
+`updater assign_subst_in_semijoin (&topic : Relation, restr : Relation,
+subst_attr_names : set_of.Name, subst_func : ValMapPFuncNC) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.subst_in_semijoin` function with the same
@@ -1421,8 +1421,8 @@ value equality tests.
 
 ## sys.std.Core.Relation.assign_static_subst_in_semijoin
 
-C<updater assign_static_subst_in_semijoin
-(&topic : Relation, restr : Relation, subst : Tuple) {...}>
+`updater assign_static_subst_in_semijoin
+(&topic : Relation, restr : Relation, subst : Tuple) {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Relation.static_subst_in_semijoin` function with the same
@@ -1430,7 +1430,7 @@ arguments, and then assigning the result of that function to `topic`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

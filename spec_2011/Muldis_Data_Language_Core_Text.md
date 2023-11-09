@@ -31,7 +31,7 @@ other : Text, misc_args? : Tuple, is_reverse_order? : Bool)
 implements sys.std.Core.Ordered.order {...}`
 
 This is a (total) `order-determination` function specific to `Text`.
-I<TODO: What (optional) `misc_args` does this support?>
+*TODO: What (optional) `misc_args` does this support?*
 
 # FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
 
@@ -228,7 +228,7 @@ also known as *is not match using like* or `!like` or `not-like`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

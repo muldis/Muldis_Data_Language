@@ -299,7 +299,7 @@ invocation with a `name` argument of `value`, and `topic` is a `Set`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

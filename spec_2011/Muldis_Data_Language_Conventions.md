@@ -189,7 +189,7 @@ languages are oriented left-to-right anyway, and we can follow that.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

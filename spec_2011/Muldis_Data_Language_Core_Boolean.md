@@ -296,8 +296,8 @@ This function results in the count of its input element values that are
 
 ## sys.std.Core.Boolean.assign_pred
 
-C<updater assign_pred (&topic : Bool)
-implements sys.std.Core.Ordered.Ordinal.assign_pred {...}>
+`updater assign_pred (&topic : Bool)
+implements sys.std.Core.Ordered.Ordinal.assign_pred {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Boolean.pred` function with the same argument, and
@@ -305,8 +305,8 @@ then assigning the result of that function to its argument.
 
 ## sys.std.Core.Boolean.assign_succ
 
-C<updater assign_succ (&topic : Bool)
-implements sys.std.Core.Ordered.Ordinal.assign_succ {...}>
+`updater assign_succ (&topic : Bool)
+implements sys.std.Core.Ordered.Ordinal.assign_succ {...}`
 
 This update operator is a short-hand for first invoking the
 `sys.std.Core.Boolean.succ` function with the same argument, and
@@ -314,7 +314,7 @@ then assigning the result of that function to its argument.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

@@ -21,7 +21,7 @@ to follow), [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect
 # DESCRIPTION
 
 This distribution / multi-part document is the human readable authoritative
-formal specification of the B<Muldis D> language, and of the virtual
+formal specification of the **Muldis D** language, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one.
@@ -54,7 +54,7 @@ and extension.  (Logically, speed of execution can not be declared as a
 Muldis D quality because such a quality belongs to an implementation alone;
 however, the language should lend itself to making fast implementations.)
 
-Muldis D is intended to qualify as a "B<D>" language as defined by
+Muldis D is intended to qualify as a "**D**" language as defined by
 "*Databases, Types, and The Relational Model: The Third Manifesto*"
 (*TTM*), a formal proposal for a solid foundation for data and database
 management systems, written by Chris Date (C.J. Date) and Hugh Darwen; see
@@ -64,16 +64,16 @@ for a publishers link to the book that formally publishes *TTM*.  See
 and also copies of some documents that were used in writing Muldis D.
 
 It should be noted that Muldis D, being quite new, may omit some features
-that are mandatory for a "B<D>" language initially, to speed the way to a
+that are mandatory for a "**D**" language initially, to speed the way to a
 useable partial solution, but any omissions will be corrected later.  Also,
-it contains some features that go beyond the scope of a "B<D>" language, so
-Muldis D is technically a "B<D> plus extra"; examples of this are
+it contains some features that go beyond the scope of a "**D**" language, so
+Muldis D is technically a "**D** plus extra"; examples of this are
 constructs for creating the databases themselves and managing connections
 to them.
 
 Muldis D also incorporates design aspects and constructs that are taken
 from or influenced by Raku, other general-purpose languages (particularly
-functional ones like Haskell), B<Tutorial D>, various B<D> implementations,
+functional ones like Haskell), **Tutorial D**, various **D** implementations,
 and various SQL implementations (see the [Muldis_Data_Language_SeeAlso](Muldis_Data_Language_SeeAlso.md)
 file).  It also appears in retrospect that Muldis D has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The

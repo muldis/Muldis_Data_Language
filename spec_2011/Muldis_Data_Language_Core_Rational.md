@@ -137,7 +137,7 @@ is divided by its `divisor` argument using the semantics of real number
 division, and then the latter's result is rounded to the same or nearest
 integer, where the nearest is determined by the rounding method specified
 by the `round_meth` argument.  This function will fail if `divisor` is
-zero.  I<TODO: Consider making the result a whole-number `Rat` instead.>
+zero.  *TODO: Consider making the result a whole-number `Rat` instead.*
 
 ## sys.std.Core.Rational.remainder
 
@@ -149,7 +149,7 @@ This function results in the rational remainder when its `dividend`
 argument is divided by its `divisor` argument using the semantics of real
 number division, and then the latter's result is rounded to the same or
 nearest integer.  The semantics of this function preserve the identity
-C<x mod y = x - y * (x div y)> (read `x` as `dividend` and `y`
+`x mod y = x - y * (x div y)` (read `x` as `dividend` and `y`
 as `divisor`) where the division has the same semantics as
 `sys.std.Core.Rational.whole_quotient` (rounding guided by `round_meth`);
 the sign of this function's result always matches the sign of the dividend
@@ -297,8 +297,8 @@ of these functions is subject to become more formalized later.
 
 ## sys.std.Core.Rational.fetch_random
 
-C<system-service fetch_random (&target : Rat,
-radix : PInt2_N, max_denom : PInt, interval : sp_interval_of.Rat) [...]>
+`system-service fetch_random (&target : Rat,
+radix : PInt2_N, max_denom : PInt, interval : sp_interval_of.Rat) [...]`
 
 This system-service routine will update the variable supplied as its
 `target` argument so that it holds a randomly generated rational value
@@ -309,7 +309,7 @@ fail if `interval` represents an empty interval.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

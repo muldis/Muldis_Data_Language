@@ -272,7 +272,7 @@ Note that this operation is also known as `minus+` or `except+` or `∖+`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

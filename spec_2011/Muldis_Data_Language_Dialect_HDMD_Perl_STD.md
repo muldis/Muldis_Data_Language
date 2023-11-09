@@ -16,8 +16,8 @@ before you read this one, which provides subservient details.
 
 This document outlines the grammar of the *Hosted Data Muldis D* standard
 dialect named `HDMD_Perl_STD`.  The fully-qualified name of this Muldis D
-standard dialect is C<[ 'Muldis_D', 'https://muldis.com', '0.148.1',
-'HDMD_Perl_STD' ]>.
+standard dialect is `[ 'Muldis_D', 'https://muldis.com', '0.148.1',
+'HDMD_Perl_STD' ]`.
 
 The `HDMD_Perl_STD` dialect is defined to be hosted in Perl, and is
 composed of just|mainly core Perl types.  This dialect is optimized for
@@ -38,11 +38,11 @@ implementation written in Perl will natively accept input in both the
 Perl programmers besides what `PTMD_STD` would canonically parse into,
 such as the direct use of some Perl-only features.
 
-B<Note that most of the details that the 2 dialects have in common are
+**Note that most of the details that the 2 dialects have in common are
 described just in the `PTMD_STD` file, for both dialects; this current
 file will mainly focus on the differences; you should read the
 [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
-a context for better understanding it.>
+a context for better understanding it.**
 
 # GENERAL STRUCTURE
 
@@ -328,12 +328,12 @@ Examples:
 
 ## DEPRECATED - rtn_inv_alt_syn
 
-B<The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
+**The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
 enhancements to the language in both the system catalog itself and in the
 `plain_rtn_inv` level will make the latter more capable and suitable by
 itself for normal use.  A new highest level or 3 will probably appear in
-place of `rtn_inv_alt_syn` later for their still-unique useful features.>
+place of `rtn_inv_alt_syn` later for their still-unique useful features.**
 
 This abstraction level is the highest one and is the most recommended one
 for general use.
@@ -519,7 +519,7 @@ A `Bool` node represents a logical boolean value.  It is interpreted as a
 Muldis D `sys.std.Core.Type.Bool` value as follows:
 
 * The canonical payload is the specific result of a Perl logical expression,
-such as C<(1 == 0)> for `Bool:False` or C<(1 == 1)> for `Bool:True`; said
+such as `(1 == 0)` for `Bool:False` or `(1 == 1)` for `Bool:True`; said
 values are probably the empty string and number 1, respectively.
 
 * A few alternative payload formats are supported:  The Perl value literals
@@ -591,7 +591,7 @@ payload*; a key of a single character is a *max-col-val* and a
 2-character-string is a *radix-mark*.
 
 The max-col-val must be a Perl string composed of a single
-C<[ 1..9 A..Z a..z ]>
+`[ 1..9 A..Z a..z ]`
 character, and the main payload must be a Perl character string of the
 format `0` or `'-'?<[ 1..9 A..Z a..z ]>['_'?<[ 0..9 A..Z a..z ]>+]*`.
 The main payload is interpreted as a base-*N* integer where *N* might be
@@ -656,7 +656,7 @@ payload*; a key of a single character is a *max-col-val* and a
 2-character-string is a *radix-mark*.
 
 The max-col-val must be a Perl string composed of a single
-C<[ 1..9 A..Z a..z ]> character.  If the main payload is a Perl scalar,
+`[ 1..9 A..Z a..z ]` character.  If the main payload is a Perl scalar,
 then the main payload must be a Perl character string of the format
 `0'.'['_'?<[ 0..9 A..Z a..z ]>+]+` or
 `'-'?<[ 1..9 A..Z a..z ]>['_'?<[ 0..9 A..Z a..z ]>+]*'.'['_'?<[ 0..9
@@ -2366,7 +2366,7 @@ Examples:
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

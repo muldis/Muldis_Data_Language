@@ -125,7 +125,7 @@ Note that this operation is also known as `{<-%}`.
 
 ## sys.std.Core.Attributive.assign_rename
 
-C<updater assign_rename (&topic@ : Attributive, map : AttrRenameMap) {...}>
+`updater assign_rename (&topic@ : Attributive, map : AttrRenameMap) {...}`
 
 This virtual update operator is a short-hand for first invoking the
 `sys.std.Core.Attributive.rename` function with the same arguments, and
@@ -135,7 +135,7 @@ then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Attributive.assign_static_exten
 
-C<updater assign_static_exten (&topic@ : Attributive, attrs : Tuple) {...}>
+`updater assign_static_exten (&topic@ : Attributive, attrs : Tuple) {...}`
 
 This virtual update operator is a short-hand for first invoking the
 `sys.std.Core.Attributive.static_exten` function with the same arguments,
@@ -145,8 +145,8 @@ and then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Attributive.assign_projection
 
-C<updater assign_projection (&topic@ : Attributive,
-attr_names : set_of.Name) {...}>
+`updater assign_projection (&topic@ : Attributive,
+attr_names : set_of.Name) {...}`
 
 This virtual update operator is a short-hand for first invoking the
 `sys.std.Core.Attributive.projection` function with the same arguments,
@@ -154,8 +154,8 @@ and then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Attributive.assign_cmpl_proj
 
-C<updater assign_cmpl_proj (&topic@ : Attributive,
-attr_names : set_of.Name) {...}>
+`updater assign_cmpl_proj (&topic@ : Attributive,
+attr_names : set_of.Name) {...}`
 
 This virtual update operator is a short-hand for first invoking the
 `sys.std.Core.Attributive.cmpl_proj` function with the same arguments,
@@ -163,7 +163,7 @@ and then assigning the result of that function to `topic`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

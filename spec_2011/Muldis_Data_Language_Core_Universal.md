@@ -132,7 +132,7 @@ These update operators are applicable to values of any data type at all.
 
 ## sys.std.Core.Universal.assign
 
-C<updater assign (&target : Universal, v : Universal) {...}>
+`updater assign (&target : Universal, v : Universal) {...}`
 
 This update operator will update the variable supplied as its `target`
 argument so that it holds the value supplied as its `v` argument.  This
@@ -143,7 +143,7 @@ Note that this operation is also known as `:=`.
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 

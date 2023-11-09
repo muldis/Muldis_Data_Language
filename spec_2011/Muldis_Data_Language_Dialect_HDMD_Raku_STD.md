@@ -38,11 +38,11 @@ implementation written in Raku will natively accept input in both the
 Raku programmers besides what `PTMD_STD` would canonically parse into,
 such as the direct use of some Raku-only features.
 
-B<Note that most of the details that the 2 dialects have in common are
+**Note that most of the details that the 2 dialects have in common are
 described just in the `PTMD_STD` file, for both dialects; this current
 file will mainly focus on the differences; you should read the
 [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
-a context for better understanding it.>
+a context for better understanding it.**
 
 # GENERAL STRUCTURE
 
@@ -321,12 +321,12 @@ Examples:
 
 ## DEPRECATED - rtn_inv_alt_syn
 
-B<The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
+**The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
 enhancements to the language in both the system catalog itself and in the
 `plain_rtn_inv` level will make the latter more capable and suitable by
 itself for normal use.  A new highest level or 3 will probably appear in
-place of `rtn_inv_alt_syn` later for their still-unique useful features.>
+place of `rtn_inv_alt_syn` later for their still-unique useful features.**
 
 This abstraction level is the highest one and is the most recommended one
 for general use.
@@ -2226,7 +2226,7 @@ Examples:
 
 # AUTHOR
 
-Darren Duncan (`darren@DarrenDuncan.net`)
+Darren Duncan - darren@DarrenDuncan.net
 
 # LICENSE AND COPYRIGHT
 
