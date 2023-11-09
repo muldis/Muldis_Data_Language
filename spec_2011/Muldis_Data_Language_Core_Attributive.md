@@ -20,7 +20,7 @@ This document describes essentially all of the core Muldis D generic
 operators that types composed of named attributes would have.  In
 particular, all the virtual operators that tuples and relations implement.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # VIRTUAL FUNCTIONS FOR THE ATTRIBUTIVE MIXIN TYPE
 
@@ -35,15 +35,15 @@ count of attributes it has).
 
 `function is_nullary (Bool <-- topic@ : Attributive) {...}`
 
-This virtual function results in C<Bool:True> iff its argument has a degree
-of zero (that is, it has zero attributes), and C<Bool:False> otherwise.
+This virtual function results in `Bool:True` iff its argument has a degree
+of zero (that is, it has zero attributes), and `Bool:False` otherwise.
 
 ## sys.std.Core.Attributive.is_not_nullary
 
 `function is_not_nullary (Bool <-- topic@ : Attributive) {...}`
 
 This virtual function is exactly the same as
-C<sys.std.Core.Attributive.is_nullary> except
+`sys.std.Core.Attributive.is_nullary` except
 that it results in the opposite boolean value when given the same argument.
 
 ## sys.std.Core.Attributive.has_attrs
@@ -51,11 +51,11 @@ that it results in the opposite boolean value when given the same argument.
 `function has_attrs (Bool <-- topic@ : Attributive,
 attr_names : set_of.Name) {...}`
 
-This virtual function results in C<Bool:True> iff, for every one of the
-attribute names specified by its C<attr_names> argument, its C<topic>
+This virtual function results in `Bool:True` iff, for every one of the
+attribute names specified by its `attr_names` argument, its `topic`
 argument has an attribute with that name; otherwise it results in
-C<Bool:False>.  As a trivial case, this function's result is C<Bool:True>
-if C<attr_names> is empty.
+`Bool:False`.  As a trivial case, this function's result is `Bool:True`
+if `attr_names` is empty.
 
 ## sys.std.Core.Attributive.attr_names
 
@@ -69,7 +69,7 @@ its argument.
 `function rename (Attributive <-- topic@ : Attributive,
 map : AttrRenameMap) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
+*TODO: This description; meanwhile, see the implementers' descriptions.*
 Note that this operation is also known as `{<-}`.
 
 ## sys.std.Core.Attributive.projection
@@ -77,30 +77,30 @@ Note that this operation is also known as `{<-}`.
 `function projection (Attributive <-- topic@ : Attributive,
 attr_names : set_of.Name) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
-Note that this operation is also known as C<{}>.
+*TODO: This description; meanwhile, see the implementers' descriptions.*
+Note that this operation is also known as `{}`.
 
 ## sys.std.Core.Attributive.cmpl_proj
 
 `function cmpl_proj (Attributive <-- topic@ : Attributive,
 attr_names : set_of.Name) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
-Note that this operation is also known as C<{!}>.
+*TODO: This description; meanwhile, see the implementers' descriptions.*
+Note that this operation is also known as `{!}`.
 
 ## sys.std.Core.Attributive.static_exten
 
 `function static_exten (Attributive <--
 topic@ : Attributive, attrs : Tuple) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
+*TODO: This description; meanwhile, see the implementers' descriptions.*
 
 ## sys.std.Core.Attributive.wrap
 
 `function wrap (Attributive <-- topic@ : Attributive,
 outer : Name, inner : set_of.Name) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
+*TODO: This description; meanwhile, see the implementers' descriptions.*
 Note that this operation is also known as `{%<-}`.
 
 ## sys.std.Core.Attributive.cmpl_wrap
@@ -108,7 +108,7 @@ Note that this operation is also known as `{%<-}`.
 `function cmpl_wrap (Attributive <-- topic@ : Attributive,
 outer : Name, cmpl_inner : set_of.Name) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
+*TODO: This description; meanwhile, see the implementers' descriptions.*
 Note that this operation is also known as `{%<-!}`.
 
 ## sys.std.Core.Attributive.unwrap
@@ -116,7 +116,7 @@ Note that this operation is also known as `{%<-!}`.
 `function unwrap (Attributive <-- topic@ : Attributive,
 inner : set_of.Name, outer : Name) {...}`
 
-I<TODO: This description; meanwhile, see the implementers' descriptions.>
+*TODO: This description; meanwhile, see the implementers' descriptions.*
 Note that this operation is also known as `{<-%}`.
 
 # VIRTUAL UPDATERS FOR THE ATTRIBUTIVE MIXIN TYPE
@@ -128,8 +128,8 @@ Note that this operation is also known as `{<-%}`.
 C<updater assign_rename (&topic@ : Attributive, map : AttrRenameMap) {...}>
 
 This virtual update operator is a short-hand for first invoking the
-C<sys.std.Core.Attributive.rename> function with the same arguments, and
-then assigning the result of that function to C<topic>.
+`sys.std.Core.Attributive.rename` function with the same arguments, and
+then assigning the result of that function to `topic`.
 
 # Updaters That Add Attributes
 
@@ -138,8 +138,8 @@ then assigning the result of that function to C<topic>.
 C<updater assign_static_exten (&topic@ : Attributive, attrs : Tuple) {...}>
 
 This virtual update operator is a short-hand for first invoking the
-C<sys.std.Core.Attributive.static_exten> function with the same arguments,
-and then assigning the result of that function to C<topic>.
+`sys.std.Core.Attributive.static_exten` function with the same arguments,
+and then assigning the result of that function to `topic`.
 
 # Updaters That Remove Attributes
 
@@ -149,8 +149,8 @@ C<updater assign_projection (&topic@ : Attributive,
 attr_names : set_of.Name) {...}>
 
 This virtual update operator is a short-hand for first invoking the
-C<sys.std.Core.Attributive.projection> function with the same arguments,
-and then assigning the result of that function to C<topic>.
+`sys.std.Core.Attributive.projection` function with the same arguments,
+and then assigning the result of that function to `topic`.
 
 ## sys.std.Core.Attributive.assign_cmpl_proj
 
@@ -158,12 +158,12 @@ C<updater assign_cmpl_proj (&topic@ : Attributive,
 attr_names : set_of.Name) {...}>
 
 This virtual update operator is a short-hand for first invoking the
-C<sys.std.Core.Attributive.cmpl_proj> function with the same arguments,
-and then assigning the result of that function to C<topic>.
+`sys.std.Core.Attributive.cmpl_proj` function with the same arguments,
+and then assigning the result of that function to `topic`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

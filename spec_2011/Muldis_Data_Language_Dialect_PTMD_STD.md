@@ -14,24 +14,24 @@ before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document outlines the grammar of the I<Plain Text Muldis D> standard
-dialect named C<PTMD_STD>.  The fully-qualified name of this Muldis D
-standard dialect is C<Muldis_D:"https://muldis.com":0.148.1:PTMD_STD>.
+This document outlines the grammar of the *Plain Text Muldis D* standard
+dialect named `PTMD_STD`.  The fully-qualified name of this Muldis D
+standard dialect is `Muldis_D:"https://muldis.com":0.148.1:PTMD_STD`.
 
 This dialect is designed to exactly match the Muldis D system catalog (the
 possible representation of Muldis D code that is visible to or updateable
 by Muldis D programs at runtime) as to what non-critical metadata it
-explicitly stores; so code in the C<PTMD_STD> dialect should be
+explicitly stores; so code in the `PTMD_STD` dialect should be
 round-trippable with the system catalog with the result maintaining all the
 details that were started with.  Since it matches the system catalog, this
 dialect should be able to exactly represent all possible Muldis D base
 language code (and probably all extensions too), rather than a subset of
-it.  That said, the C<PTMD_STD> dialect does provide a choice of multiple
+it.  That said, the `PTMD_STD` dialect does provide a choice of multiple
 syntax options for writing Muldis D value literals and DBMS entity (eg type
-and routine) declarations, so several very distinct C<PTMD_STD> code
+and routine) declarations, so several very distinct `PTMD_STD` code
 artifacts may parse into the same system catalog entries.  There is even a
 considerable level of abstraction in some cases, so that it is easier for
-programmers to write and understand typical C<PTMD_STD> code, and so that
+programmers to write and understand typical `PTMD_STD` code, and so that
 this code isn't absurdly verbose.
 
 This dialect is designed to be as small as possible while meeting the above
@@ -39,11 +39,11 @@ criteria, and is designed such that a parser that handles all of this
 dialect can be fairly small and simple.  Likewise, a code generator for
 this dialect from the system catalog can be fairly small and simple.
 
-A significant quality of the C<PTMD_STD> dialect is that it is designed to
+A significant quality of the `PTMD_STD` dialect is that it is designed to
 work easily for a single-pass parser, or at least a single-pass lexer; all
 the context that one needs to know for how to parse or lex any arbitrary
 substring of code is provided by prior code, or any required lookahead is
-just by a few characters in general.  Therefore, a C<PTMD_STD> parser can
+just by a few characters in general.  Therefore, a `PTMD_STD` parser can
 easily work on a streaming input like a file-handle where you can't go back
 earlier in the stream.  Often this means a parser can work with little RAM.
 
@@ -59,12 +59,12 @@ can easily format (separate, indent, linewrap, order) code how they like,
 and making an automated code reformatter shouldn't be difficult.  Often,
 named elements can also be omitted entirely for brevity, in which case the
 parser would use context to supply default values for those elements.
-PTMD_STD has a I<linear syntax>.
+PTMD_STD has a *linear syntax*.
 
 Given that plain text is (more or less) universally unambiguously portable
 between all general purpose languages that could be used to implement a
 DBMS, it is expected that every single Muldis D implementation will
-natively accept input in the C<PTMD_STD> dialect, which isn't dependent on
+natively accept input in the `PTMD_STD` dialect, which isn't dependent on
 any specific host language and should be easy enough to process, so it
 should be considered the safest official Muldis D dialect to write in by
 default, when you don't have a specific reason to use some other dialect.
@@ -72,18 +72,18 @@ default, when you don't have a specific reason to use some other dialect.
 See also the dialects
 [HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD) and
 [HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD), which are derived
-directly from C<PTMD_STD>, and represent possible Raku and Perl concrete
+directly from `PTMD_STD`, and represent possible Raku and Perl concrete
 syntax trees for it; in fact, most of the details in common with those
 other dialects are described just in the current file, for all 3 dialects.
 
 # GENERAL STRUCTURE
 
-A C<PTMD_STD> Muldis D code file consists just of a Muldis
+A `PTMD_STD` Muldis D code file consists just of a Muldis
 D depot definition, which begins with a language name
-declaration, and then has a C<Database> value literal defining the depot's
-catalog, and finally has, optionally, a C<Database> value literal defining
+declaration, and then has a `Database` value literal defining the depot's
+catalog, and finally has, optionally, a `Database` value literal defining
 the depot's data.  This is conceptually what a
-C<PTMD_STD> file is, and it can even be that literally, but C<PTMD_STD>
+`PTMD_STD` file is, and it can even be that literally, but `PTMD_STD`
 provides a canonical further abstraction for defining the depot's catalog,
 which should be used when doing
 data-definition.  And so you typically use syntax resembling routine and
@@ -93,7 +93,7 @@ Fundamentally every Muldis D depot is akin to a code library, and a Muldis
 D "main program" is nothing more than a depot having a procedure that is
 designated to execute automatically after a mount event of its host depot.
 
-As a special extension feature, a C<PTMD_STD> Muldis D code file may
+As a special extension feature, a `PTMD_STD` Muldis D code file may
 alternately consist just of a (language-qualified) Muldis D value literal,
 which mainly is intended for use in mixed-language environments as an
 interchange format for data values between Muldis D and other languages.
@@ -105,9 +105,9 @@ illustrative and human readable, and would need significant changes to
 actually be a functional parser, which are different for each parser
 toolkit.
 
-The grammar consists mainly of named I<tokens> which define matching rules.
+The grammar consists mainly of named *tokens* which define matching rules.
 Loosely speaking, each parser match of a token corresponds to a capture
-I<node> or node element in the concrete syntax tree resulting from the
+*node* or node element in the concrete syntax tree resulting from the
 parse; in practice, the parser may make various alterations to the match
 when generating a node, such as adding guide keywords corresponding to the
 token name, or by merging series of trivial tokens or doing escaped
@@ -128,7 +128,7 @@ explicitly.  4. The meanings of any tokens with the same names as ones
 built-in to Raku but that are explicitly defined in this grammar may have
 different definitions.
 
-The root grammar token for the entire dialect is C<Muldis_D>.
+The root grammar token for the entire dialect is `Muldis_D`.
 
 # START
 
@@ -140,9 +140,9 @@ Grammar:
             [<value> | <depot>]
         <ws>? $
 
-A C<Muldis_D> node has 2 ordered elements where the first element is a
-C<language_name> node and the second element is either a C<value> node or a
-C<depot> node.
+A `Muldis_D` node has 2 ordered elements where the first element is a
+`language_name` node and the second element is either a `value` node or a
+`depot` node.
 
 See the pod sections in this file named **LANGUAGE NAME**, **VALUE
 LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
@@ -151,12 +151,12 @@ about the aforementioned tokens/nodes.
 When Muldis D is being compiled and invoked piecemeal, such as because the
 Muldis D implementing virtual machine (VM) is attached to an interactive
 user terminal, or the VM is embedded in a host language where code in the
-host language invokes Muldis D code at various times, many C<value> may be
+host language invokes Muldis D code at various times, many `value` may be
 fed to the VM directly for inter-language exchange, and not every one
-would then have its own C<language_name>.  Usually a C<language_name> would
+would then have its own `language_name`.  Usually a `language_name` would
 be supplied to the Muldis D VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
-Muldis D code that isn't itself qualified with a C<language_name>.
+Muldis D code that isn't itself qualified with a `language_name`.
 
 # LANGUAGE NAME
 
@@ -218,44 +218,44 @@ Grammar:
     <std_syn_ext_list_item> ::=
         ''
 
-I<Please interpret the C<''> under `<std_syn_ext_list_item>` as a
+I<Please interpret the `''` under `<std_syn_ext_list_item>` as a
 placeholder and that there are currently zero valid list items.>
 
 As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
-written in.  The C<PTMD_STD> dialect formats this name as a
-C<language_name> node having 5 ordered elements:
+written in.  The `PTMD_STD` dialect formats this name as a
+`language_name` node having 5 ordered elements:
 
-* C<ln_base_name>
+* `ln_base_name`
 
 This is the Muldis D language base name; it is simply the bareword
-character string C<Muldis_D>.
+character string `Muldis_D`.
 
-* C<ln_base_authority>
+* `ln_base_authority`
 
 This is the base authority; it is a character string formatted as per a
-specific-context C<Name> value literal, except that it must be nonempty and
+specific-context `Name` value literal, except that it must be nonempty and
 it is expressly limited to using non-control characters in the ASCII
-repertoire, and its nonquoted variant has fewer limitations than C<Name>'s;
-it is typically the delimited character string C<https://muldis.com>.
+repertoire, and its nonquoted variant has fewer limitations than `Name`'s;
+it is typically the delimited character string `https://muldis.com`.
 
-* C<ln_base_version_number>
+* `ln_base_version_number`
 
 This is the base version number; it is a character string formatted as per
-C<ln_base_authority>; it is typically a character string like C<0.148.1>.
+`ln_base_authority`; it is typically a character string like `0.148.1`.
 
-* C<ln_dialect>
+* `ln_dialect`
 
 This is the dialect name; it is simply the bareword character string
-C<PTMD_STD>.
+`PTMD_STD`.
 
-* C<ln_extensions>
+* `ln_extensions`
 
 This is a set of chosen pragma/parser-config options, which is formatted
-similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
-C<catalog_abstraction_level> (see the **CATALOG ABSTRACTION LEVELS** pod
-section) and C<op_char_repertoire> (see **OPERATOR CHARACTER REPERTOIRE**).
-The only optional pragma is C<standard_syntax_extensions> (see the
+similarly to a `Tuple` SCVL.  The only 2 mandatory pragmas are
+`catalog_abstraction_level` (see the **CATALOG ABSTRACTION LEVELS** pod
+section) and `op_char_repertoire` (see **OPERATOR CHARACTER REPERTOIRE**).
+The only optional pragma is `standard_syntax_extensions` (see the
 **STANDARD SYNTAX EXTENSIONS** pod section).  Other pragmas may be added
 later, which would likely be optional.
 
@@ -274,7 +274,7 @@ Examples:
 
 # CATALOG ABSTRACTION LEVELS
 
-The C<catalog_abstraction_level> pragma determines with a broad granularity
+The `catalog_abstraction_level` pragma determines with a broad granularity
 how large the effective Muldis D grammar is that a programmer may employ
 with their Muldis D code.
 
@@ -287,11 +287,11 @@ complicated the Muldis D grammar is and the more like
 general-purpose-language typical code it is.
 
 There are currently 4 specified catalog abstraction levels, which when
-arranged from lowest to highest amount of abstraction, are: C<the_floor>,
-C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.  Every abstraction
+arranged from lowest to highest amount of abstraction, are: `the_floor`,
+`code_as_data`, `plain_rtn_inv`, `rtn_inv_alt_syn`.  Every abstraction
 level has a proper superset of the grammar of every other abstraction level
 that is lower than itself, so for example any code that is valid
-C<code_as_data> is also valid C<plain_rtn_inv>, and so on.
+`code_as_data` is also valid `plain_rtn_inv`, and so on.
 
 Choosing an abstraction level to write Muldis D code against is all a
 matter of trade-offs, perhaps mainly between advantages for Muldis D
@@ -316,13 +316,13 @@ expressive, and everything a user can do with one, they can do with the
 others, and code is round-trippable between all of them without loss of
 behaviour.  The choice is simply about the syntax to accomplish something.>
 
-Specifying the C<catalog_abstraction_level> pragma in a C<language_name>
+Specifying the `catalog_abstraction_level` pragma in a `language_name`
 node is mandatory, since there is no obvious abstraction level to use
 implicitly when one isn't specified.
 
 ## the_floor
 
-When the C<catalog_abstraction_level> pragma is C<the_floor>, then the
+When the `catalog_abstraction_level` pragma is `the_floor`, then the
 following grammar definitions are in effect:
 
     <value> ::=
@@ -339,7 +339,7 @@ intended to actually be used.  It is meant to be analogous to those
 academic programming languages whose main design goal, in addition to still
 being programmatically complete, is to have the absolute smallest grammar
 at all costs, also analogous to an extreme-RISC machine.  This level is
-like C<code_as_data> except that it has the absolute minimum of value
+like `code_as_data` except that it has the absolute minimum of value
 literal syntaxes rather than all of them, essentially just having a single
 node kind apiece to cover all scalars, tuples, relations.  This level is
 also so minimal that many representation alternatives of the system catalog
@@ -398,7 +398,7 @@ Examples:
 
 ## code_as_data
 
-When the C<catalog_abstraction_level> pragma is C<code_as_data>, then the
+When the `catalog_abstraction_level` pragma is `code_as_data`, then the
 following grammar definitions are in effect:
 
     <value> ::=
@@ -418,14 +418,14 @@ level, a depot consists simply of a language name plus one or two database
 value literals.  The format for specifying a system catalog is exactly the
 same as the format for specifying the user data of a database.  All a
 Muldis D parser/generator has to know is how to parse static Muldis D value
-literals and its done.  That said, C<code_as_data> includes all of the
+literals and its done.  That said, `code_as_data` includes all of the
 special grammar dealing with value literals, including those for many
 specific scalar or nonscalar types.  This level is analogous to a
 high-level assembly language in a way; what you say in code is exactly what
 you get in the system catalog, but your code would be too verbose for the
 tastes of someone preferring normal high-level language code.
 
-Code written to the C<code_as_data> level can employ all of the language
+Code written to the `code_as_data` level can employ all of the language
 grammar constructs described in these main pod sections: **VALUE LITERALS
 AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 
@@ -475,7 +475,7 @@ Examples:
 
 ## plain_rtn_inv
 
-When the C<catalog_abstraction_level> pragma is C<plain_rtn_inv>, then the
+When the `catalog_abstraction_level` pragma is `plain_rtn_inv`, then the
 following grammar definitions are in effect:
 
     <value> ::=
@@ -499,8 +499,8 @@ directly used by programmers (in contrast to its main use just being by way
 of wrapper APIs or code generators) should support at least this level,
 even if that implementation is being touted as "minimal".  This abstraction
 level has the simplest grammar that could reasonably be considered as like
-that of a general purpose programming language.  Unlike the C<code_as_data>
-level, the C<plain_rtn_inv> level makes everything that isn't conceptually
+that of a general purpose programming language.  Unlike the `code_as_data`
+level, the `plain_rtn_inv` level makes everything that isn't conceptually
 a value literal or selector look like typical routine or type declarations
 or value expressions or statements, just as programmers typically expect.
 
@@ -515,22 +515,22 @@ account for, and the **Generic Function Invocation Expressions** syntax
 covers most of them, in terms of the common prefix/polish notation that in
 practice most invocations of user-defined routines are formatted as anyway.
 
-The C<plain_rtn_inv> abstraction level is all about having code that looks
+The `plain_rtn_inv` abstraction level is all about having code that looks
 like general purpose programming language code but that everything looks
 like user-defined routines and types.  The code is mostly just nested
 invocations of functions or procedures in basic polish notation, and both
 that code and material declarations have a C-language-like syntax.
 
 It is expected that every Muldis D implementation which supports at least
-the C<plain_rtn_inv> level will, as much as is reasonably possible,
+the `plain_rtn_inv` level will, as much as is reasonably possible,
 preserve all non-behaviour-affecting metadata that is directly supported
 for storage by the system catalog itself, as described in
 [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **SOURCE CODE METADATA**.  Primarily this means preserving
 non-value code comments, and preserving the declared relative ordinal
 position of code elements.
 
-Code written to the C<plain_rtn_inv> level can employ all of the language
-grammar constructs that C<code_as_data> can, plus all of those
+Code written to the `plain_rtn_inv` level can employ all of the language
+grammar constructs that `code_as_data` can, plus all of those
 described in these main pod sections: **MATERIAL SPECIFICATION**,
 **GENERIC VALUE EXPRESSIONS**, **GENERIC PROCEDURE STATEMENTS**.
 
@@ -548,14 +548,14 @@ Examples:
 
 ## DEPRECATED - rtn_inv_alt_syn
 
-B<The C<rtn_inv_alt_syn> catalog abstraction level as it currently exists
+B<The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
 enhancements to the language in both the system catalog itself and in the
-C<plain_rtn_inv> level will make the latter more capable and suitable by
+`plain_rtn_inv` level will make the latter more capable and suitable by
 itself for normal use.  A new highest level or 3 will probably appear in
-place of C<rtn_inv_alt_syn> later for their still-unique useful features.>
+place of `rtn_inv_alt_syn` later for their still-unique useful features.>
 
-When the C<catalog_abstraction_level> pragma is C<rtn_inv_alt_syn>, then
+When the `catalog_abstraction_level` pragma is `rtn_inv_alt_syn`, then
 the following grammar definitions are in effect:
 
     <value> ::=
@@ -581,17 +581,17 @@ written to it may not be the most universally portable as-is but should be
 portable in most common environments.
 
 In practice a huge payoff of improved user code brevity and readability
-(and writability) is gained by the C<rtn_inv_alt_syn> abstraction level
-over the C<plain_rtn_inv> level by adding special syntax for a lot of
+(and writability) is gained by the `rtn_inv_alt_syn` abstraction level
+over the `plain_rtn_inv` level by adding special syntax for a lot of
 commonly used built-in routines, such as infix syntax for common math
 operators or postcircumfix syntax for attribute accessors.  The tradeoff
 for this user code brevity is a significant amount of extra complexity in
 parsers, due to all the extra special cases, though this complexity can be
 mitigated somewhat by standardizing these additions in format where
 possible.  These 2 highest levels both look like a general purpose
-programming language, but C<rtn_inv_alt_syn> is a lot more concise.
+programming language, but `rtn_inv_alt_syn` is a lot more concise.
 
-In particular, C<rtn_inv_alt_syn> is probably the I<only> Muldis D dialect
+In particular, `rtn_inv_alt_syn` is probably the *only* Muldis D dialect
 that conceivably can match or beat the conciseness of a majority of general
 purpose programming languages, and would probably be the most preferred
 abstraction level for developers.  This fact would also help to drive a
@@ -601,8 +601,8 @@ has simpler grammar rules than a lot of general languages, even if this
 difference is more subtle.  It certainly is simpler and more easier to
 parse grammar than SQL in its general case.
 
-Code written to the C<rtn_inv_alt_syn> level can employ all of the language
-grammar constructs that C<plain_rtn_inv> can, plus all of those described
+Code written to the `rtn_inv_alt_syn` level can employ all of the language
+grammar constructs that `plain_rtn_inv` can, plus all of those described
 in these main pod sections: **DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
 EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**.
 
@@ -620,8 +620,8 @@ Examples:
 
 # OPERATOR CHARACTER REPERTOIRE
 
-The C<op_char_repertoire> pragma determines primarily whether or not the
-various routine invocation alternate syntaxes, herein called I<operators>,
+The `op_char_repertoire` pragma determines primarily whether or not the
+various routine invocation alternate syntaxes, herein called *operators*,
 may be composed of only ASCII characters or also other Unicode characters,
 and this pragma determines secondarily whether or not a few special value
 literals (effectively nullary operators) composed of non-ASCII Unicode
@@ -629,29 +629,29 @@ characters may exist.
 
 The pragma also determines whether or not any nonquoted DBMS entity names
 in the general case may contain non-ASCII Unicode alphanumeric characters.
-I<TODO:  Consider renaming this pragma.>
+* Consider renaming this pragma.*
 
-There are currently 2 specified operator character repertoires: C<basic>,
-C<extended>.  The latter is a proper superset of the former.
+There are currently 2 specified operator character repertoires: `basic`,
+`extended`.  The latter is a proper superset of the former.
 
-The C<op_char_repertoire> pragma is generally orthogonal to the
-C<catalog_abstraction_level> pragma, so you can combine any value of the
+The `op_char_repertoire` pragma is generally orthogonal to the
+`catalog_abstraction_level` pragma, so you can combine any value of the
 latter with any value of the former.  However, in practice the operator
 character repertoire setting will have no effect at all when the catalog
-abstraction level is C<the_floor>, and it will otherwise have very little
-effect except when the catalog abstraction level is C<rtn_inv_alt_syn>.  To
-be specific, what the C<op_char_repertoire> pragma primarily affects is
-special operator call syntaxes provided only by C<rtn_inv_alt_syn>, and
+abstraction level is `the_floor`, and it will otherwise have very little
+effect except when the catalog abstraction level is `rtn_inv_alt_syn`.  To
+be specific, what the `op_char_repertoire` pragma primarily affects is
+special operator call syntaxes provided only by `rtn_inv_alt_syn`, and
 what the former secondarily affects is special value literals provided by
-C<code_as_data> plus greater catalog abstraction levels.
+`code_as_data` plus greater catalog abstraction levels.
 
-Specifying the C<op_char_repertoire> pragma in a C<language_name> node is
+Specifying the `op_char_repertoire` pragma in a `language_name` node is
 mandatory, since there is no obviously best setting to use implicitly when
 one isn't specified.
 
 ## basic
 
-The C<basic> operator character repertoire is the smallest one, and it only
+The `basic` operator character repertoire is the smallest one, and it only
 supports writing the proper subset of defined operator invocations and
 special value literals that are composed of just 7-bit ASCII characters.
 This repertoire can be recommended for general use, especially since code
@@ -659,7 +659,7 @@ written to it should be the most universally portable as-is (with respect
 to operator character repertoires), including full support even by minimal
 Muldis D implementations and older text editors.
 
-When the C<op_char_repertoire> pragma is C<basic>, then the
+When the `op_char_repertoire` pragma is `basic`, then the
 following grammar definitions are in effect:
 
     <Singleton_payload> ::=
@@ -691,7 +691,7 @@ following grammar definitions are in effect:
 
 ## extended
 
-The C<extended> operator character repertoire is the largest one, and it
+The `extended` operator character repertoire is the largest one, and it
 supports the entire set of defined operator invocations and special value
 literals, many of which are composed of Unicode characters outside the
 7-bit ASCII repertoire.  This is the most recommended repertoire for
@@ -702,18 +702,18 @@ support it but non-minimal ones would, so code written to it may not be the
 most universally portable as-is but should be portable in most common and
 modern environments.
 
-In practice the main payoff of C<extended> is that user code can exploit
+In practice the main payoff of `extended` is that user code can exploit
 the wide range of symbols that Unicode provides which are the canonical
 means of writing various math or logic or relational et al operators in the
 wider world, and which programmers would likely have written with all along
 if it weren't for the large limitations of legacy computer systems which
 practically forced them to use various approximations instead.  While you
-can always write with ASCII approximations, using C<extended> means you
+can always write with ASCII approximations, using `extended` means you
 often don't have to, and your code can be a lot more readable as a result,
 at least to the practitioners of the domains that the symbols come from,
 and the code is otherwise more terse and arguably appears more attractive.
 
-When the C<op_char_repertoire> pragma is C<extended>, then the
+When the `op_char_repertoire` pragma is `extended`, then the
 following grammar definitions are in effect:
 
     <Singleton_payload> ::=
@@ -745,27 +745,27 @@ following grammar definitions are in effect:
 
 # STANDARD SYNTAX EXTENSIONS
 
-The C<standard_syntax_extensions> pragma declares which optional portions
+The `standard_syntax_extensions` pragma declares which optional portions
 of the Muldis D grammar a programmer may employ with their Muldis D code.
 
 There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
-While each I<standard syntax extension> is closely related to a I<Muldis D
-language extension>, you can use the latter's types and routines without
-declaring the former; you only declare you are using a I<standard syntax
-extension> if you want the Muldis D parser to recognize special syntax
+While each *standard syntax extension* is closely related to a *Muldis D
+language extension*, you can use the latter's types and routines without
+declaring the former; you only declare you are using a *standard syntax
+extension* if you want the Muldis D parser to recognize special syntax
 specific to those types and routines, and otherwise you just use them using
 the generic syntax provided for all types and routines.
 
-The C<standard_syntax_extensions> pragma is generally orthogonal to the
-C<catalog_abstraction_level> pragma, so you can combine any value of the
+The `standard_syntax_extensions` pragma is generally orthogonal to the
+`catalog_abstraction_level` pragma, so you can combine any value of the
 latter with any value-list of the former.  However, in practice all
 standard syntax extensions will have no effect when the catalog abstraction
-level is C<the_floor>, and some of their features may only take effect when
-the catalog abstraction level is C<rtn_inv_alt_syn>, as is appropriate.
+level is `the_floor`, and some of their features may only take effect when
+the catalog abstraction level is `rtn_inv_alt_syn`, as is appropriate.
 
-Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
+Specifying the `standard_syntax_extensions` pragma in a `language_name`
 node is optional, and when omitted it defaults to the empty set, meaning no
 extensions may be used.
 
@@ -808,19 +808,19 @@ Grammar:
         | <MPInterval>
         | <List>
 
-A C<value> node is a Muldis D value literal, which is a common special case
+A `value` node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
 Unlike value selectors in general, which must be composed beneath a
-C<depot> because they actually represent a Muldis D value expression tree
-of a routine or type definition, a C<value>
-node does I<not> represent an expression tree, but rather a value constant;
-by definition, a C<value> can be completely evaluated at compile time.  A
-C<Muldis_D> node with a C<value> second element is hence just a serialized
+`depot` because they actually represent a Muldis D value expression tree
+of a routine or type definition, a `value`
+node does *not* represent an expression tree, but rather a value constant;
+by definition, a `value` can be completely evaluated at compile time.  A
+`Muldis_D` node with a `value` second element is hence just a serialized
 Muldis D value.
 
 The PTMD_STD grammar subsection for value literals (having the root
-grammar token C<value>) is completely self-defined and can be used in
+grammar token `value`) is completely self-defined and can be used in
 isolation from the wider grammar as a Muldis D sub-language; for example, a
 hosted-data Muldis D implementation may have an object representing a
 Muldis D value, which is initialized using code written in that
@@ -829,42 +829,42 @@ sub-language.
 Every grammar token, and corresponding capture node, representing a Muldis
 D value literal is similarly formatted and has 1-3 elements; the following
 pod section **Value Literal Common Elements** describes the similarities
-once for all of them, in terms of an alternate C<value> token definition
-which is called C<x_value>.  And then the other pod sections specific to
+once for all of them, in terms of an alternate `value` token definition
+which is called `x_value`.  And then the other pod sections specific to
 each kind of value literal then just focus on describing their unique
-aspects, namely their I<payloads>.
+aspects, namely their *payloads*.
 
-An C<opaque_value_literal> node represents a conceptually opaque Muldis D
+An `opaque_value_literal` node represents a conceptually opaque Muldis D
 value, such that every one of these values is defined with its own literal
 syntax that is compact and doesn't look like a collection of other nodes;
 this includes the basic numeric and string literals.
 
-A C<coll_value_selector> node represents a conceptually transparent Muldis
+A `coll_value_selector` node represents a conceptually transparent Muldis
 D value, such that every one of these values is defined visibly in terms of
 a collection of other nodes; this includes the basic tuple and relation
 selectors.
 
 ## Value Literal Common Elements
 
-A I<generic context value literal> (or I<GCVL>) is a value literal that can
-be properly interpreted in a context that is expecting I<a> value but has
+A *generic context value literal* (or *GCVL*) is a value literal that can
+be properly interpreted in a context that is expecting *a* value but has
 no expectation that said value belongs to a specific data type; in the
-general case, a GCVL includes explicit I<value kind> metadata (such as,
-"this is an C<Int>" or "this is a C<Name>"); but with a few specific data
-types (see the C<value_kind> node description for details) that metadata
+general case, a GCVL includes explicit *value kind* metadata (such as,
+"this is an `Int`" or "this is a `Name`"); but with a few specific data
+types (see the `value_kind` node description for details) that metadata
 may be omitted for brevity because the main literal has mutually uniquely
 identifying characteristics.  For example, each element of a generic Muldis
 D collection value, such as a member of an array or tuple, could
-potentially have any type at all.  In contrast, a I<specific context value
-literal> (or I<SCVL>) is a value literal that does not include explicit
+potentially have any type at all.  In contrast, a *specific context value
+literal* (or *SCVL*) is a value literal that does not include explicit
 value kind metadata, even when the main literal doesn't have uniquely
 identifying characteristics, because the context of its use supplies said
 metadata.  For example, in a tuple value literal it is assumed that a
-value literal in an attribute name position must denote a C<Name>.  The
-grammar token C<value>|C<x_value> denotes a GCVL, as do most short-named
-grammar tokens, like C<Int> or C<Name>; in contrast, a grammar token
-containing C<value_payload> denotes a SCVL, like C<Int_payload> or
-C<Name_payload>.
+value literal in an attribute name position must denote a `Name`.  The
+grammar token `value`|`x_value` denotes a GCVL, as do most short-named
+grammar tokens, like `Int` or `Name`; in contrast, a grammar token
+containing `value_payload` denotes a SCVL, like `Int_payload` or
+`Name_payload`.
 
 Every GCVL has 1-3 elements, illustrated by this grammar:
 
@@ -928,79 +928,79 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <MPInterval_payload>
         | <List_payload>
 
-So a C<x_value>|C<value> node has 1-3 elements in general:
+So a `x_value`|`value` node has 1-3 elements in general:
 
-* C<value_kind>
+* `value_kind`
 
 This is a character string of the format `<[A..Z]> <[ a..z A..Z ]>+`;
 it identifies the data type of the value literal in broad terms and is the
-only external metadata of C<value_payload> generally necessary to
-interpret the latter; what grammars are valid for C<value_payload> depend
-just on C<value_kind>.
+only external metadata of `value_payload` generally necessary to
+interpret the latter; what grammars are valid for `value_payload` depend
+just on `value_kind`.
 
-For all values of just the 10 data types [C<Singleton>, C<Bool>, C<Order>,
-C<RoundMeth>, C<Int>, C<Rat>, C<Blob>, C<Text>, C<Set>,
-C<Array>], the C<value_kind> portion of a GCVL may be omitted for brevity,
+For all values of just the 10 data types [`Singleton`, `Bool`, `Order`,
+`RoundMeth`, `Int`, `Rat`, `Blob`, `Text`, `Set`,
+`Array`], the `value_kind` portion of a GCVL may be omitted for brevity,
 but the code parser should still be able to infer it easily by examining
-the first few characters of the C<value_payload>, which for each of said 11
+the first few characters of the `value_payload`, which for each of said 11
 data types has a mutually uniquely identifying format, which is also
-distinct from all possible C<value_kind>.  Note that, for the purposes of
-this discussion, the C<Maybe> type is subsumed into the C<Set> type.
+distinct from all possible `value_kind`.  Note that, for the purposes of
+this discussion, the `Maybe` type is subsumed into the `Set` type.
 
-For many values of the 3 data types [C<Bag>, C<[S|M]PInterval>], the
-C<value_kind> portion of a GCVL may be omitted for brevity; specifically,
-this may be done just for the [C<Bag>, C<[S|M]PInterval>] GCVL whose
-C<value_payload> are not valid C<value_payload> of a C<Set> GCVL.  For a
-C<Bag> GCVL, all of those formatted as `=>` separated pairs may have
-their C<value_kind> omitted, while all of those that are not formatted as
-pairs may not.  For a C<SPInterval> GCVL, all of those that are formatted
-as a range pair with C<..>/etc may have their C<value_kind> omitted, while
-all of those formatted using the single value shorthand with no C<..>/etc
-may not.  For a C<MPInterval> GCVL, all of those that are formatted as a
+For many values of the 3 data types [`Bag`, `[S|M]PInterval`], the
+`value_kind` portion of a GCVL may be omitted for brevity; specifically,
+this may be done just for the [`Bag`, `[S|M]PInterval`] GCVL whose
+`value_payload` are not valid `value_payload` of a `Set` GCVL.  For a
+`Bag` GCVL, all of those formatted as `=>` separated pairs may have
+their `value_kind` omitted, while all of those that are not formatted as
+pairs may not.  For a `SPInterval` GCVL, all of those that are formatted
+as a range pair with `..`/etc may have their `value_kind` omitted, while
+all of those formatted using the single value shorthand with no `..`/etc
+may not.  For a `MPInterval` GCVL, all of those that are formatted as a
 comma-delimited list with at least 2 list elements, where at least one of
-those elements is formatted as a range pair with C<..>/etc, may have their
-C<value_kind> omitted, while all of those either having 0..1 list elements
-or having just single value shorthand elements with no C<..>/etc may not.
+those elements is formatted as a range pair with `..`/etc, may have their
+`value_kind` omitted, while all of those either having 0..1 list elements
+or having just single value shorthand elements with no `..`/etc may not.
 
-Note that omission of C<value_kind> is only allowed when the GCVL doesn't
-include a C<type_name> element.
+Note that omission of `value_kind` is only allowed when the GCVL doesn't
+include a `type_name` element.
 
 For just these certain special values of other data types, the same option
-of omitting the C<value_kind> (and C<type_name>) applies: C<Tuple:D0>,
-C<Relation:D0C0>, C<Relation:D0C1>.
+of omitting the `value_kind` (and `type_name`) applies: `Tuple:D0`,
+`Relation:D0C0`, `Relation:D0C1`.
 
-* C<type_name>
+* `type_name`
 
-This is a Muldis D data type name, for example C<sys.std.Core.Type.Int>; it
-identifies a specific subtype of the generic type denoted by C<value_kind>,
+This is a Muldis D data type name, for example `sys.std.Core.Type.Int`; it
+identifies a specific subtype of the generic type denoted by `value_kind`,
 and serves as an assertion that the Muldis D value denoted by
-C<value_payload> is a member of the named subtype.  Iff C<value_kind> is
-C<[|DH]Scalar> then C<type_name> is mandatory; otherwise, C<type_name> is
-optional for all C<value>, except that C<type_name> must be omitted when
-C<value_kind> is one of the 3 [C<Singleton>, C<Bool>, C<Order>]; this isn't
+`value_payload` is a member of the named subtype.  Iff `value_kind` is
+`[|DH]Scalar` then `type_name` is mandatory; otherwise, `type_name` is
+optional for all `value`, except that `type_name` must be omitted when
+`value_kind` is one of the 3 [`Singleton`, `Bool`, `Order`]; this isn't
 because those 3 types can't be subtyped, but because in practice doing so
 isn't useful.
 
-How a Muldis D parser treats a C<value> node with a C<type_name> element
-depends on the wider context.  In the general case where the C<value> is an
-C<expr> beneath the context of a C<depot> node, the
-C<value> is treated as if it had an extra parent C<func_invo> node
-that invokes the C<treated> function and whose 2 argument nodes are as
-follows: C<topic> gets the C<value> without the C<type_name> element, and
-C<as> gets the C<type_name> element.  This means that in general the
-C<type_name> assertion is done at runtime.  In the common special case
-where both C<value> is an C<opaque_value_literal> and C<type_name> refers
-to a system-defined type, then the C<type_name> assertion is done at
-compile time, and then the C<type_name> element is simply eliminated, so
-the C<value> ends up simply as itself with no new C<func_invo> parent.
+How a Muldis D parser treats a `value` node with a `type_name` element
+depends on the wider context.  In the general case where the `value` is an
+`expr` beneath the context of a `depot` node, the
+`value` is treated as if it had an extra parent `func_invo` node
+that invokes the `treated` function and whose 2 argument nodes are as
+follows: `topic` gets the `value` without the `type_name` element, and
+`as` gets the `type_name` element.  This means that in general the
+`type_name` assertion is done at runtime.  In the common special case
+where both `value` is an `opaque_value_literal` and `type_name` refers
+to a system-defined type, then the `type_name` assertion is done at
+compile time, and then the `type_name` element is simply eliminated, so
+the `value` ends up simply as itself with no new `func_invo` parent.
 
-In another common special case, iff a C<value> node with a C<type_name>
-element is a C<coll_value_selector> and its C<type_name> names a
+In another common special case, iff a `value` node with a `type_name`
+element is a `coll_value_selector` and its `type_name` names a
 system-defined tuple type or relation type with a specified set of
 attributes, then the parser will automatically generate any missing
-attribute values of the C<value> node, where each has the default value of
-its declared type as per C<type_name>.  This will be done prior to the
-other use of C<type_name> which applies a constraint, so the latter acts as
+attribute values of the `value` node, where each has the default value of
+its declared type as per `type_name`.  This will be done prior to the
+other use of `type_name` which applies a constraint, so the latter acts as
 if the original code had specified the missing attributes.  In the case of
 the type being a relation type, the relation value literal doesn't even
 need to be well-formed (have the attributes per tuple) in the code, as the
@@ -1008,18 +1008,18 @@ attribute generation is done per tuple.  Since it only works for
 system-defined types, this special case is primarily useful for code
 involving values that represent code.
 
-* C<value_payload>
+* `value_payload`
 
-This is mandatory for all C<value>.
+This is mandatory for all `value`.
 
 For GCVL and SCVL examples, see the subsequent documentation sections.
 
 # OPAQUE VALUE LITERALS
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.SysScaValExprNodeSet>, a tuple of which is what
-every kind of C<opaque_value_literal> node distills to when it is beneath
-the context of a C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.SysScaValExprNodeSet`, a tuple of which is what
+every kind of `opaque_value_literal` node distills to when it is beneath
+the context of a `depot` node, as it describes some semantics.
 
 ## Singleton Literals
 
@@ -1036,8 +1036,8 @@ Grammar:
           <Singleton_payload__op_cr_basic>
         | '-∞' | '∞'
 
-A C<Singleton> node represents a value of any of the singleton scalar types
-that C<sys.std.Core.Type.Cat.Singleton> is a union over.
+A `Singleton` node represents a value of any of the singleton scalar types
+that `sys.std.Core.Type.Cat.Singleton` is a union over.
 
 Some of the keywords are aliases for each other:
 
@@ -1072,11 +1072,11 @@ Grammar:
           <Bool_payload__op_cr_basic>
         | ⊥ | ⊤
 
-A C<Bool> node represents a logical boolean value.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Bool> value as follows:  The C<Bool_payload>
-is a bareword character string formatted as per a C<Name> SCVL, and it maps
-directly to the matching unqualified declared name of one of the C<Bool.*>
-singleton types that the C<Bool> type is defined as a union over.
+A `Bool` node represents a logical boolean value.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Bool` value as follows:  The `Bool_payload`
+is a bareword character string formatted as per a `Name` SCVL, and it maps
+directly to the matching unqualified declared name of one of the `Bool.*`
+singleton types that the `Bool` type is defined as a union over.
 
 Some of the keywords are aliases for each other:
 
@@ -1106,12 +1106,12 @@ Grammar:
     <Order_payload> ::=
         Less | Same | More
 
-An C<Order> node represents an order-determination.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:  The
-C<Order_payload> is a bareword character string formatted as per a C<Name>
+An `Order` node represents an order-determination.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Cat.Order` value as follows:  The
+`Order_payload` is a bareword character string formatted as per a `Name`
 SCVL, and it maps directly to the matching unqualified declared name of one
-of the C<Order.*>
-singleton types that the C<Order> type is defined as a union over.
+of the `Order.*`
+singleton types that the `Order` type is defined as a union over.
 
 Examples:
 
@@ -1135,12 +1135,12 @@ Grammar:
         | HalfDown | HalfUp | HalfToZero | HalfToInf
         | HalfEven
 
-A C<RoundMeth> node represents a rounding method.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.RoundMeth> value as
-follows:  The C<RoundMeth_payload> is a bareword character string
-formatted as per a C<Name> SCVL, and it maps directly to the matching
-unqualified declared name of one of the C<RoundMeth.*>
-singleton types that the C<RoundMeth> type is defined as a union over.
+A `RoundMeth` node represents a rounding method.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Cat.RoundMeth` value as
+follows:  The `RoundMeth_payload` is a bareword character string
+formatted as per a `Name` SCVL, and it maps directly to the matching
+unqualified declared name of one of the `RoundMeth.*`
+singleton types that the `RoundMeth` type is defined as a union over.
 
 Examples:
 
@@ -1200,42 +1200,42 @@ Grammar:
     <d_pint_tail> ::=
         [[_?<[ 0..9 ]>+]+] ** <splitter>
 
-An C<Int> node represents an integer numeric value.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Int> value as follows:
+An `Int` node represents an integer numeric value.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Int` value as follows:
 
-If the C<Int_payload> is composed of a C<num_max_col_val> plus C<int_body>,
-then the C<int_body> is interpreted as a base-I<N> integer where I<N> might
-be between 2 and 36, and the C<num_max_col_val> says which possible value
-of I<N> to use.  Assuming all C<int_body> column values are between zero
-and I<N>-minus-one, the C<num_max_col_val> contains that I<N>-minus-one.
-So to specify, eg, bases [2,8,10,16], use C<num_max_col_val> of [1,7,9,F].
+If the `Int_payload` is composed of a `num_max_col_val` plus `int_body`,
+then the `int_body` is interpreted as a base-*N* integer where *N* might
+be between 2 and 36, and the `num_max_col_val` says which possible value
+of *N* to use.  Assuming all `int_body` column values are between zero
+and *N*-minus-one, the `num_max_col_val` contains that *N*-minus-one.
+So to specify, eg, bases [2,8,10,16], use `num_max_col_val` of [1,7,9,F].
 
-Using a C<num_radix_mark> is a recommended alternative for using a
-C<num_max_col_val> when the former can be used, which is when the
-C<num_max_col_val> would be one of [1,7,9,F]; in those cases, [0b,0o,0d,0x]
-correspond respectively, and the rules for the C<int_body> are the same.
+Using a `num_radix_mark` is a recommended alternative for using a
+`num_max_col_val` when the former can be used, which is when the
+`num_max_col_val` would be one of [1,7,9,F]; in those cases, [0b,0o,0d,0x]
+correspond respectively, and the rules for the `int_body` are the same.
 
-If the C<Int_payload> is a C<d_int_body>, then it is interpreted as a base
+If the `Int_payload` is a `d_int_body`, then it is interpreted as a base
 10 integer.
 
-Fundamentally the I<body> part of an C<Int> node consists of a string of
+Fundamentally the *body* part of an `Int` node consists of a string of
 digits and plain uppercased or lowercased letters, where each digit
-(C<0..9>) represents its own number and each letter (C<A..Z>) represents a
-number in [10..35].  A I<body> may optionally contain underscore characters
-(C<_>), which exist just to help with visual formatting, such as for
-C<10_000_000>, and these are ignored/stripped by the parser.  A I<body> may
+(`0..9`) represents its own number and each letter (`A..Z`) represents a
+number in [10..35].  A *body* may optionally contain underscore characters
+(`_`), which exist just to help with visual formatting, such as for
+`10_000_000`, and these are ignored/stripped by the parser.  A *body* may
 optionally be split into 1..N segments where each pair of consecutive
-segments is separated by a I<splitter> token, which is a
-pair of backslashes (C<\>) surrounding
+segments is separated by a *splitter* token, which is a
+pair of backslashes (`\`) surrounding
 a run of whitespace; this segmenting ability is provided to
 support code that contains very long numeric literals while still being
-well formatted (no extra long lines); the I<splitter> tokens are also
-ignored/stripped by the parser, and the I<body> is interpreted as if all
+well formatted (no extra long lines); the *splitter* tokens are also
+ignored/stripped by the parser, and the *body* is interpreted as if all
 its alphanumeric characters were contiguous.
 
-If the C<value_kind> of a C<value> node is C<NNInt> or C<PInt> rather than
-C<Int>, then the C<value> node is interpreted simply as an C<Int> node
-whose C<type_name> is C<NNInt> or C<PInt>, and the allowed I<body> is
+If the `value_kind` of a `value` node is `NNInt` or `PInt` rather than
+`Int`, then the `value` node is interpreted simply as an `Int` node
+whose `type_name` is `NNInt` or `PInt`, and the allowed *body* is
 appropriately further restricted.
 
 Examples:
@@ -1285,31 +1285,31 @@ Grammar:
         | <d_int_body> <unspace> '*' <d_pint_body>
             <unspace> '^' <d_int_body>
 
-A C<Rat> node represents a rational numeric value.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Rat> value as follows:
+A `Rat` node represents a rational numeric value.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Rat` value as follows:
 
-Fundamentally a C<Rat> node is formatted and interpreted like an C<Int>
+Fundamentally a `Rat` node is formatted and interpreted like an `Int`
 node, and any similarities won't be repeated here.  The differences of
-interpreting a C<Rat_payload> being composed of a C<num_max_col_val>
-or C<num_radix_mark> plus
-C<rat_body> versus the C<Rat_payload> being a C<d_rat_body> are as per the
-corresponding differences of interpreting an C<Int_payload>.  Also
-interpreting a C<NNRat> or C<PRat> is as per a C<NNInt> or C<PInt>.
+interpreting a `Rat_payload` being composed of a `num_max_col_val`
+or `num_radix_mark` plus
+`rat_body` versus the `Rat_payload` being a `d_rat_body` are as per the
+corresponding differences of interpreting an `Int_payload`.  Also
+interpreting a `NNRat` or `PRat` is as per a `NNInt` or `PInt`.
 
-If the I<body> part of a C<Rat> node contains a radix point (C<.>), then it
+If the *body* part of a `Rat` node contains a radix point (`.`), then it
 is interpreted as is usual for a programming language with such a literal.
 
-If the I<body> part of a C<Rat> node contains a solidus (C</>), then the
+If the *body* part of a `Rat` node contains a solidus (`/`), then the
 rational's value is interpreted as the leading integer (a numerator)
 divided by the trailing positive integer (a denominator); that is, the two
-integers collectively map to the C<ratio> possrep of the C<Rat> type.
+integers collectively map to the `ratio` possrep of the `Rat` type.
 
-If the I<body> part of a C<Rat> node contains a asterisk (C<*>) plus a
-circumflex accent (C<^>), then the rational's value is interpreted as the
+If the *body* part of a `Rat` node contains a asterisk (`*`) plus a
+circumflex accent (`^`), then the rational's value is interpreted as the
 leading integer (a mantissa) multiplied by the result of the middle
 positive integer (a radix) taken to the power of the trailing integer (an
-exponent); that is, the three integers collectively map to the C<float>
-possrep of the C<Rat> type.
+exponent); that is, the three integers collectively map to the `float`
+possrep of the `Rat` type.
 
 Examples:
 
@@ -1363,23 +1363,23 @@ Grammar:
             <[ 0..9 A..F a..f _ \s ]>*
         '\''
 
-A C<Blob> node represents a general purpose bit string.  It is interpreted
-as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  Fundamentally
-the I<body> part of a C<Blob> node consists of a delimited string of digits
-and plain uppercased or lowercased letters, where each digit (C<0..9>)
-represents its own number and each letter (C<A..F>) represents a number in
-[10..15]; this string is qualified with a C<blob_max_col_val> character
-(C<[137F]>) or a C<blob_radix_mark> (C<[0b,0o,0x]>),
-similarly to how an C<int_body> is qualified by a C<num_max_col_val>
-or C<num_radix_mark>.  Each character of the delimited string specifies a
-sequence of one of [1,2,3,4] bits, depending on whether C<blob_max_col_val>
-is [1|0b,3,7|0o,F|0x].  The I<body> may also contain underscore or
+A `Blob` node represents a general purpose bit string.  It is interpreted
+as a Muldis D `sys.std.Core.Type.Blob` value as follows:  Fundamentally
+the *body* part of a `Blob` node consists of a delimited string of digits
+and plain uppercased or lowercased letters, where each digit (`0..9`)
+represents its own number and each letter (`A..F`) represents a number in
+[10..15]; this string is qualified with a `blob_max_col_val` character
+(`[137F]`) or a `blob_radix_mark` (`[0b,0o,0x]`),
+similarly to how an `int_body` is qualified by a `num_max_col_val`
+or `num_radix_mark`.  Each character of the delimited string specifies a
+sequence of one of [1,2,3,4] bits, depending on whether `blob_max_col_val`
+is [1|0b,3,7|0o,F|0x].  The *body* may also contain underscore or
 whitespace characters between the delimiters, to aid formatting; these are
-ignored/stripped by the parser, and the I<body> is interpreted as if it
+ignored/stripped by the parser, and the *body* is interpreted as if it
 just consisted of the rest of the delimited string contiguously.  If the
-C<value_kind> of a C<value> node is C<OctetBlob>
-rather than C<Blob>, then the C<value> node is interpreted simply as a
-C<Blob> node whose C<type_name> is C<OctetBlob>, and the delimited string
+`value_kind` of a `value` node is `OctetBlob`
+rather than `Blob`, then the `value` node is interpreted simply as a
+`Blob` node whose `type_name` is `OctetBlob`, and the delimited string
 is appropriately further restricted.
 
 Examples:
@@ -1438,40 +1438,40 @@ Grammar:
     <visual_dividing_line> ::=
         '#' ** 2..*
 
-A C<Text> node represents a general purpose character string.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Text> value as follows:
+A `Text` node represents a general purpose character string.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Text` value as follows:
 
-The C<Text_payload> is interpreted generally as is usual for a programming
+The `Text_payload` is interpreted generally as is usual for a programming
 language with such a delimited character string literal.
 
-A C<Text_payload> may contain any literal characters at all, except that
-any literal occurrences of a backslash (C<\>) or single-quote (C<'>) must
+A `Text_payload` may contain any literal characters at all, except that
+any literal occurrences of a backslash (`\`) or single-quote (`'`) must
 have a leading backslash.  Every run of 1+ literal whitespace or control
-characters, that is not composed just of the C<SPACE> char (C<0x20>), is
-substituted for a single C<SPACE> character by the parser, and the
-C<Text_payload> is interpreted as if the post-substitution string had been
+characters, that is not composed just of the `SPACE` char (`0x20`), is
+substituted for a single `SPACE` character by the parser, and the
+`Text_payload` is interpreted as if the post-substitution string had been
 the original string.  However, if said run of whitespace is immediately
 preceded by an escape sequence denoting a whitespace or control character,
-then the run is simply stripped rather than a C<SPACE> taking its place.
+then the run is simply stripped rather than a `SPACE` taking its place.
 
 The main reason for this substitution/stripping feature is to ensure that
 the actual values being selected by string literals are not variable per
 the kind of linebreaks or indenting used to format the Muldis D source code
 itself.  The feature is provided to support code that contains long value
 literals while still being well formatted (no extra-long lines).  If you
-want to have actual non-C<SPACE> whitespace or control characters in your
-strings, then they must be formatted as escape sequences such as C<\n>.  If
-you want to end up with multiple C<SPACE> characters at the point where a
+want to have actual non-`SPACE` whitespace or control characters in your
+strings, then they must be formatted as escape sequences such as `\n`.  If
+you want to end up with multiple `SPACE` characters at the point where a
 line is broken, you have to format some as escape sequences.  If you want
-to end up with no C<SPACE> at all where a line is broken, then you'll have
+to end up with no `SPACE` at all where a line is broken, then you'll have
 to employ some other workaround, such as catenating several quoted strings.
 
-All Muldis D delimited character string literals (generally the 3 C<Text>,
-C<Name>, code comments) may contain some characters denoted with escape
+All Muldis D delimited character string literals (generally the 3 `Text`,
+`Name`, code comments) may contain some characters denoted with escape
 sequences rather than literally.  The Muldis D parser would substitute the
 escape sequences with the characters they represent, so the resulting
 character string values don't contain those escape sequences.  Currently
-there are 2 classes of escape sequences, called I<simple> and I<complex>.
+there are 2 classes of escape sequences, called *simple* and *complex*.
 
 The meanings of the simple escape sequences are:
 
@@ -1489,11 +1489,11 @@ The meanings of the simple escape sequences are:
 
 There is currently just one complex escape sequence, of the format
 `\c<...>`, that supports specifying characters in terms of their Unicode
-abstract code point name or number.  If the C<...> consists of just
+abstract code point name or number.  If the `...` consists of just
 uppercased (not lowercased) letters and the space character, then the
-C<...> is interpreted as a Unicode character name.  If the C<...> looks
-like an C<Int_payload>, sans that underscores and unspace aren't
-allowed here, then the C<...> is interpreted as a Unicode abstract
+`...` is interpreted as a Unicode character name.  If the `...` looks
+like an `Int_payload`, sans that underscores and unspace aren't
+allowed here, then the `...` is interpreted as a Unicode abstract
 code point number.  One reason for this feature is to empower more elegant
 passing of Unicode-savvy PTMD_STD source code through a communications
 channel that is more limited, such as to 7-bit ASCII.
@@ -1510,21 +1510,21 @@ Examples:
 
     '\c<LATIN SMALL LETTER OU>\c<0x263A>\c<65>'
 
-A C<non_value_comment> node is strictly not part of the code
+A `non_value_comment` node is strictly not part of the code
 proper; Muldis D code can contain these almost anywhere as metadata for
 the code, and in large part it is treated as if it were part of the
 insignificant whitespace; that all being said, generally speaking any
-C<non_value_comment> is retained in the parse tree adjusted to live in the
+`non_value_comment` is retained in the parse tree adjusted to live in the
 contextually nearest place where a resulting system catalog node has a
-C<scm_comment> attribute.  I<Details of determining the contextually
-nearest place for these comments to go is pending.>
+`scm_comment` attribute.  *Details of determining the contextually
+nearest place for these comments to go is pending.*
 
-Syntactically, a C<non_value_comment> node differs from C<Text_payload>
+Syntactically, a `non_value_comment` node differs from `Text_payload`
 only in that it is delimited by number-signs/hash-marks in addition to
 backticks/grave-accents.
 
-A C<visual_dividing_line> is a run of 2+ C<#> that may be used in all of
-the same places as a C<non_value_comment> but it does I<not> denote a
+A `visual_dividing_line` is a run of 2+ `#` that may be used in all of
+the same places as a `non_value_comment` but it does *not* denote a
 comment and will be stripped out by the parser as if it was insignificant
 whitespace.  This feature exists to empower things like making visual
 dividing lines in the code just out of hash-marks.
@@ -1578,75 +1578,75 @@ Grammar:
     <PNSQNameChain_payload> ::=
         <nc_nonempty>
 
-A C<Name> node represents a canonical short name for any kind of DBMS
+A `Name` node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
-from C<Text>.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.Name> value as follows:
+from `Text`.  It is interpreted as a Muldis D
+`sys.std.Core.Type.Cat.Name` value as follows:
 
-Fundamentally a C<Name> node is formatted and interpreted like a C<Text>
+Fundamentally a `Name` node is formatted and interpreted like a `Text`
 node, and any similarities won't be repeated here.  Unlike a
-C<Text_payload> literal which must always be delimited, a C<Name_payload>
-has 2 variants, one delimited (C<quoted_name_str>) and one not
-(C<nonquoted_name_str>).  The delimited C<Name_payload> form differs from
-C<Text_payload> only in that the string is delimited by
+`Text_payload` literal which must always be delimited, a `Name_payload`
+has 2 variants, one delimited (`quoted_name_str`) and one not
+(`nonquoted_name_str`).  The delimited `Name_payload` form differs from
+`Text_payload` only in that the string is delimited by
 double-quotes rather than apostrophes/single-quotes, meaning also that
 literal double-quotes instead of apostrophes must be escaped.
 
-A C<nonquoted_name_str> is composed of an alphabetic character followed by
+A `nonquoted_name_str` is composed of an alphabetic character followed by
 any sequence of alphanumeric characters.  It can not be segmented, so you
-will have to use the C<quoted_name_str> equivalent if you want a segmented
+will have to use the `quoted_name_str` equivalent if you want a segmented
 string.  The definitions of alphabetic and alphanumeric in this context
-include appropriate Unicode characters, iff the C<op_char_repertoire> is
-C<extended>; for C<basic>, they are expressly limited to the ASCII
+include appropriate Unicode characters, iff the `op_char_repertoire` is
+`extended`; for `basic`, they are expressly limited to the ASCII
 repertoire.  An underscore is always considered alphabetic.  A
-C<nonquoted_name_str> may also contain isolated hyphens provided the next
+`nonquoted_name_str` may also contain isolated hyphens provided the next
 character is alphabetic.
 
-A C<NameChain> node represents a canonical long name for invoking a DBMS
+A `NameChain` node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
 names.  This node is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.NameChain> value as follows:  A
-C<NameChain_payload> has 2 variants, one that defines a nonempty chain
-(C<nc_nonempty>) and one that defines an empty chain (C<nc_empty>).  A
-C<nc_nonempty> consists of a sequence of 1 or more C<Name_payload>
-where the elements of the sequence are separated by period (C<.>) tokens;
-each element of the sequence, in order, defines an element of the C<array>
-possrep's attribute of the result C<NameChain> value.  A C<nc_empty>
-consists simply of the special syntax of C<[]>.
+`sys.std.Core.Type.Cat.NameChain` value as follows:  A
+`NameChain_payload` has 2 variants, one that defines a nonempty chain
+(`nc_nonempty`) and one that defines an empty chain (`nc_empty`).  A
+`nc_nonempty` consists of a sequence of 1 or more `Name_payload`
+where the elements of the sequence are separated by period (`.`) tokens;
+each element of the sequence, in order, defines an element of the `array`
+possrep's attribute of the result `NameChain` value.  A `nc_empty`
+consists simply of the special syntax of `[]`.
 
-Fundamentally a C<PNSQNameChain> node is exactly the same as a C<NameChain>
+Fundamentally a `PNSQNameChain` node is exactly the same as a `NameChain`
 node in format and interpretation, with the primary difference being that
-it may only define C<NameChain> values that are also values of the proper
-subtype C<sys.std.Core.Type.Cat.PNSQNameChain>, all of which are nonempty
+it may only define `NameChain` values that are also values of the proper
+subtype `sys.std.Core.Type.Cat.PNSQNameChain`, all of which are nonempty
 chains.  Now that distinction alone wouldn't be enough rationale to have
 these 2 distinct node kinds, and so the secondary difference between the 2
-provides that rationale; the C<PNSQNameChain> node supports a number of
-chain value shorthands while the C<NameChain> node supports none.
+provides that rationale; the `PNSQNameChain` node supports a number of
+chain value shorthands while the `NameChain` node supports none.
 
-Strictly speaking, a Muldis D C<PNSQNameChain> value is supposed to have
+Strictly speaking, a Muldis D `PNSQNameChain` value is supposed to have
 at least 1 element in its sequence, and the first element of any sequence
-must be one of these 5 C<Name> values, which is a top-level namespace:
-C<sys>, C<mnt>, C<fed>, C<nlx>, C<rtn>.  (Actually, C<type> is a
+must be one of these 5 `Name` values, which is a top-level namespace:
+`sys`, `mnt`, `fed`, `nlx`, `rtn`.  (Actually, `type` is a
 6th option, but that will be treated separately in this discussion.)  In
-the general case, a C<PNSQNameChain_payload> must be written out in full,
+the general case, a `PNSQNameChain_payload` must be written out in full,
 so it is completely unambiguous (and is clearly self-documenting), and it
-is always the case that a C<PNSQNameChain> value in the system catalog is
+is always the case that a `PNSQNameChain` value in the system catalog is
 written out in full.  But the PTMD_STD grammar also has a few commonly used
-special cases where a C<PNSQNameChain_payload> may be a much shorter
+special cases where a `PNSQNameChain_payload` may be a much shorter
 substring of its complete version, such that a simple parser, with no
 knowledge of any user-defined entities besides said shorter
-C<PNSQNameChain_payload> in isolation, can still unambiguously resolve it
+`PNSQNameChain_payload` in isolation, can still unambiguously resolve it
 to its complete version; exploiting these typically makes for code that is
 a lot less verbose, and much easier to write or read.
 
 The first special case involves any context where a type or routine is
 being referenced by name.  In such a context, when the referenced entity is
 a standard system-defined type or routine, programmers may omit any number
-of consecutive leading chain elements from such a C<PNSQNameChain_payload>,
+of consecutive leading chain elements from such a `PNSQNameChain_payload`,
 so long as the remaining unqualified chain is distinct among all standard
-system-defined (C<sys.std>-prefix) DBMS entities (but that as an exception,
+system-defined (`sys.std`-prefix) DBMS entities (but that as an exception,
 a non-distinct abbreviation is allowed iff exactly 1 of the candidate
-entities is in the language core, C<sys.std.Core>-prefix, in which case
+entities is in the language core, `sys.std.Core`-prefix, in which case
 that 1 is unambiguously the entity that is resolved to; or, when more than
 1 of the candidate entities is in the language core, and iff exactly 1 of
 those in-core candidates is a virtual routine and all of the other in-core
@@ -1655,34 +1655,34 @@ or indirectly, then a non-distinct abbreviation is allowed and that 1
 virtual is unambiguously the entity that is resolved to).  For any
 system-defined entities whose names have trailing empty-string chain
 elements, those elements are ignored when determining a match for a
-C<PNSQNameChain_payload>, similarly to how specifying those elements is not
-required in a fully-qualified C<PNSQNameChain> to resolve it.  This feature
-has no effect on the namespace prefixes like C<type> or C<tuple_from> or
-C<array_of>; one still writes those as normal prepended to the otherwise
-shortened chains.  When a C<PNSQNameChain_payload>, whose context indicates
+`PNSQNameChain_payload`, similarly to how specifying those elements is not
+required in a fully-qualified `PNSQNameChain` to resolve it.  This feature
+has no effect on the namespace prefixes like `type` or `tuple_from` or
+`array_of`; one still writes those as normal prepended to the otherwise
+shortened chains.  When a `PNSQNameChain_payload`, whose context indicates
 it is a type or routine invocation, is encountered by the parser, and its
 existing first chain element isn't one of the other 6 top-level namespaces,
-then the parser will assume it is an unqualified chain in the C<sys>
-namespace and lookup the best / only match from the known C<sys.std> DBMS
-entities, to resolve to.  So for example, one can just write C<Int> rather
-than C<sys.std.Core.Type.Int>, C<Array> rather than
-C<sys.std.Core.Type.Array."">, C<is_same> rather than
-C<sys.std.Core.Universal.is_same>, C<Tuple.attr> rather than
-C<sys.std.Core.Tuple.attr>, C<fetch_trans_instant> rather than
-C<sys.std.Temporal.Instant.fetch_trans_instant>,
-C<array_of.Rat> rather than C<array_of.sys.std.Core.Type.Rat>, and so on.
+then the parser will assume it is an unqualified chain in the `sys`
+namespace and lookup the best / only match from the known `sys.std` DBMS
+entities, to resolve to.  So for example, one can just write `Int` rather
+than `sys.std.Core.Type.Int`, `Array` rather than
+`sys.std.Core.Type.Array.""`, `is_same` rather than
+`sys.std.Core.Universal.is_same`, `Tuple.attr` rather than
+`sys.std.Core.Tuple.attr`, `fetch_trans_instant` rather than
+`sys.std.Temporal.Instant.fetch_trans_instant`,
+`array_of.Rat` rather than `array_of.sys.std.Core.Type.Rat`, and so on.
 In fact, the Muldis D spec itself uses such abbreviations frequently.
 
 The second special case involves any context where a type is being
-referenced using the C<type> namespace prefix feature described in
+referenced using the `type` namespace prefix feature described in
 [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **Referencing Data Types**.  In such a context, when the
 namespace prefix contains either of the optional chain elements
-C<[|dh_]tuple_from> or
-C<[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of>, programmers may
-omit the single prefix-leading C<type> chain element.  So for example, one
-can just write C<array_of.Rat> rather than C<type.array_of.Rat>, or
-C<tuple_from.var.nlx.myrelvar> rather than
-C<type.tuple_from.var.nlx.myrelvar>.  This second special case is
+`[|dh_]tuple_from` or
+`[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of`, programmers may
+omit the single prefix-leading `type` chain element.  So for example, one
+can just write `array_of.Rat` rather than `type.array_of.Rat`, or
+`tuple_from.var.nlx.myrelvar` rather than
+`type.tuple_from.var.nlx.myrelvar`.  This second special case is
 completely orthogonal to which of the 5 normal top-level namespaces is in
 use (implicitly or explicitly) by the chain being prefixed, and works for
 all 5 of them.
@@ -1726,15 +1726,15 @@ Grammar:
     <round_meth> ::=
         <RoundMeth_payload>
 
-A C<RatRoundRule> node represents a rational rounding rule.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
-attributes are defined by the C<RatRoundRule_payload>.  A
-C<RatRoundRule_payload> consists mainly of a bracket-delimited sequence of
+A `RatRoundRule` node represents a rational rounding rule.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Cat.RatRoundRule` value whose
+attributes are defined by the `RatRoundRule_payload`.  A
+`RatRoundRule_payload` consists mainly of a bracket-delimited sequence of
 3 comma-separated elements, which correspond in order to the 3 attributes:
-C<radix> (a C<PInt2_N>), C<min_exp> (an C<Int>), and C<round_meth> (a
-C<RoundMeth>).  Each of C<radix> and C<min_exp> must qualify as a valid
-C<Int_payload>, and C<round_meth> must qualify as a valid
-C<RoundMeth_payload>.
+`radix` (a `PInt2_N`), `min_exp` (an `Int`), and `round_meth` (a
+`RoundMeth`).  Each of `radix` and `min_exp` must qualify as a valid
+`Int_payload`, and `round_meth` must qualify as a valid
+`RoundMeth_payload`.
 
 Examples:
 
@@ -1745,11 +1745,11 @@ Examples:
 # COLLECTION VALUE SELECTORS
 
 Note that, with each of the main value selector nodes documented in this
-main POD section (members of C<coll_value_selector> etc), any occurrences
-of child C<expr> nodes should be read as being C<value> nodes instead in
+main POD section (members of `coll_value_selector` etc), any occurrences
+of child `expr` nodes should be read as being `value` nodes instead in
 contexts where instances of the main nodes are being composed beneath
-C<value> nodes.  That is, any C<expr> node options beyond what C<value>
-options exist are only valid within a C<depot> node.
+`value` nodes.  That is, any `expr` node options beyond what `value`
+options exist are only valid within a `depot` node.
 
 ## Scalar Selectors
 
@@ -1770,28 +1770,28 @@ Grammar:
     <possrep_attrs> ::=
         <tuple_list>
 
-A C<Scalar> node represents a literal or selector invocation for a
-not-C<Int|String> scalar subtype value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
-by the node's (mandatory for C<Scalar>) C<type_name> and whose attributes
-are defined by the C<Scalar_payload>.  If the C<Scalar_payload> is just a
-C<possrep_attrs>, then it is interpreted as if it also had an explicit
-C<possrep_name> that is the empty string.  The C<possrep_attrs> is
+A `Scalar` node represents a literal or selector invocation for a
+not-`Int|String` scalar subtype value.  It is interpreted as a Muldis D
+`sys.std.Core.Type.Scalar` subtype value whose declared type is specified
+by the node's (mandatory for `Scalar`) `type_name` and whose attributes
+are defined by the `Scalar_payload`.  If the `Scalar_payload` is just a
+`possrep_attrs`, then it is interpreted as if it also had an explicit
+`possrep_name` that is the empty string.  The `possrep_attrs` is
 interpreted specifically as attributes of the declared type's possrep which
-is specified by the C<possrep_name>.  Each name+expr pair of the
-C<possrep_attrs> defines a named possrep attribute of the new scalar;
+is specified by the `possrep_name`.  Each name+expr pair of the
+`possrep_attrs` defines a named possrep attribute of the new scalar;
 the pair's name and expr specify, respectively, the possrep attribute name,
-and the possrep attribute value.  If the C<value_kind> of a C<value> node
-is C<DHScalar> rather than C<Scalar>, then the C<value> node is interpreted
-simply as a C<Scalar> node that is appropriately further restricted; the
-C<type_name> must name a C<DHScalar> subtype, and the C<possrep_attrs> must
+and the possrep attribute value.  If the `value_kind` of a `value` node
+is `DHScalar` rather than `Scalar`, then the `value` node is interpreted
+simply as a `Scalar` node that is appropriately further restricted; the
+`type_name` must name a `DHScalar` subtype, and the `possrep_attrs` must
 specify only deeply homogeneous typed attribute values.  If the
-C<value_kind> is C<$> then this is just an alias for C<Scalar>.
+`value_kind` is `$` then this is just an alias for `Scalar`.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.ScaSelExprNodeSet>, a tuple of which is what
-a C<Scalar> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.ScaSelExprNodeSet`, a tuple of which is what
+a `Scalar` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
 Examples:
 
@@ -1850,40 +1850,40 @@ Grammar:
     <tuple_D0> ::=
         D0
 
-A C<Tuple> node represents a literal or selector invocation for a tuple
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Tuple> value
-whose attributes are defined by the C<Tuple_payload>.
+A `Tuple` node represents a literal or selector invocation for a tuple
+value.  It is interpreted as a Muldis D `sys.std.Core.Type.Tuple` value
+whose attributes are defined by the `Tuple_payload`.
 
-Iff the C<Tuple_payload> is a C<tuple_list> then each name+expr pair
-(C<nonord_atvl>) of the
-C<Tuple_payload> defines a named attribute of the new tuple; the pair's
+Iff the `Tuple_payload` is a `tuple_list` then each name+expr pair
+(`nonord_atvl`) of the
+`Tuple_payload` defines a named attribute of the new tuple; the pair's
 name and expr specify, respectively, the attribute name, and the attribute
-value.  If the C<value_kind> of a C<value> node is C<DHTuple> rather than
-C<Tuple>, then the C<value> node is interpreted simply as a C<Tuple> node
-that is appropriately further restricted; the C<Tuple_payload> must specify
+value.  If the `value_kind` of a `value` node is `DHTuple` rather than
+`Tuple`, then the `value` node is interpreted simply as a `Tuple` node
+that is appropriately further restricted; the `Tuple_payload` must specify
 only deeply homogeneous typed attribute values.  If the
-C<value_kind> is C<%> then this is just an alias for C<Tuple>.
+`value_kind` is `%` then this is just an alias for `Tuple`.
 
-Iff the C<Tuple_payload> is a C<tuple_D0> then the C<Tuple> node is
-interpreted as the special value C<Tuple:D0> aka C<D0>, which is the only
-C<Tuple> value with exactly zero attributes.  Note that this is just an
-alternative syntax, as C<tuple_list> can select that value too.
+Iff the `Tuple_payload` is a `tuple_D0` then the `Tuple` node is
+interpreted as the special value `Tuple:D0` aka `D0`, which is the only
+`Tuple` value with exactly zero attributes.  Note that this is just an
+alternative syntax, as `tuple_list` can select that value too.
 
-A special shorthand for C<nonord_atvl> also exists,
-C<same_named_nonord_atvl>, which may be used only if the C<expr> of the
-otherwise-C<nonord_atvl> is an C<expr_name> and that C<expr_name> is
-identical to the C<attr_name>.  In this situation, the identical name can
+A special shorthand for `nonord_atvl` also exists,
+`same_named_nonord_atvl`, which may be used only if the `expr` of the
+otherwise-`nonord_atvl` is an `expr_name` and that `expr_name` is
+identical to the `attr_name`.  In this situation, the identical name can
 be specified just once, which is the shorthand; for example, the attribute
 `foo => foo` may alternately be written out as `=>foo`.
 This shorthand is to help with
 the possibly common situation where attributes of a tuple (or relation or
 scalar) selection are being valued from same-named expression nodes / etc.
-(This shorthand is like Raku's C<:$a> being short for `a => $a`.)
+(This shorthand is like Raku's `:$a` being short for `a => $a`.)
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what
-a C<Tuple> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.TupSelExprNodeSet`, a tuple of which is what
+a `Tuple` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
 Examples:
 
@@ -1918,19 +1918,19 @@ Grammar:
     <Database_payload> ::=
         <Tuple_payload>
 
-A C<Database> node represents a literal or selector invocation for a
+A `Database` node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Database> value whose attributes are defined by the
-C<Database_payload>.  Each name+relation pair of the C<Database_payload>
+`sys.std.Core.Type.Database` value whose attributes are defined by the
+`Database_payload`.  Each name+relation pair of the `Database_payload`
 defines a named attribute of the new 'database'; the pair's name and
 relation specify, respectively, the attribute name, and the attribute
-value.  While this grammar mentions that C<Database_payload> is a
-C<Tuple_payload>, it is in fact significantly further restricted, such
-that every attribute value of the C<Database> can only be a C<DHRelation>.
+value.  While this grammar mentions that `Database_payload` is a
+`Tuple_payload`, it is in fact significantly further restricted, such
+that every attribute value of the `Database` can only be a `DHRelation`.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.TupSelExprNodeSet>, a tuple of which is what
-a C<Database> node distills to same as when C<Tuple> does.
+`sys.std.Core.Type.Cat.TupSelExprNodeSet`, a tuple of which is what
+a `Database` node distills to same as when `Tuple` does.
 
 ## Relation Selectors
 
@@ -1974,54 +1974,54 @@ Grammar:
     <relation_D0> ::=
         D0C0 | D0C1
 
-A C<Relation> node represents a literal or selector invocation for a
+A `Relation` node represents a literal or selector invocation for a
 relation value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Relation> value whose attributes and tuples are
-defined by the C<Relation_payload>, which is interpreted as follows:
+`sys.std.Core.Type.Relation` value whose attributes and tuples are
+defined by the `Relation_payload`, which is interpreted as follows:
 
-Iff the C<Relation_payload> is composed of just a
-C<nonord_list_[open|close]> pair with zero elements between them, then it
+Iff the `Relation_payload` is composed of just a
+`nonord_list_[open|close]` pair with zero elements between them, then it
 defines the only relation value having zero attributes and zero tuples.
 
-Iff the C<Relation_payload> is a C<r_empty_body_payload> with at least
-one C<attr_name> element, then it defines the attribute names of a
+Iff the `Relation_payload` is a `r_empty_body_payload` with at least
+one `attr_name` element, then it defines the attribute names of a
 relation having zero tuples.
 
-Iff the C<Relation_payload> is a C<r_nonordered_attr_payload> with at
-least one C<tuple_list> element, then each element defines a tuple
-of the new relation; every C<tuple_list> must define a tuple
+Iff the `Relation_payload` is a `r_nonordered_attr_payload` with at
+least one `tuple_list` element, then each element defines a tuple
+of the new relation; every `tuple_list` must define a tuple
 of the same degree and have the same attribute names as its sibling
-C<tuple_list>; these are the degree and attribute names of the
+`tuple_list`; these are the degree and attribute names of the
 relation as a whole, which is its heading for the current purposes.
 
-Iff the C<Relation_payload> is a C<r_ordered_attr_payload>, then:  The
+Iff the `Relation_payload` is a `r_ordered_attr_payload`, then:  The
 new relation value's attribute names are defined by the
-C<attr_name> elements, and the relation body's tuples' attribute values
-are defined by the C<ordered_tuple_attrs> elements.  This format is meant
+`attr_name` elements, and the relation body's tuples' attribute values
+are defined by the `ordered_tuple_attrs` elements.  This format is meant
 to be the most compact of the generic relation selector formats, as the
 attribute names only appear once for the relation rather than repeating for
 each tuple.  As a trade-off, the attribute values per tuple from all of the
-C<ordered_tuple_attrs> elements must appear in the same order as their
-corresponding attribute names appear in the collection of C<attr_name>
+`ordered_tuple_attrs` elements must appear in the same order as their
+corresponding attribute names appear in the collection of `attr_name`
 elements, as the names and values in the relation literal are matched up by
 ordinal position here.
 
-Iff the C<Relation_payload> is a C<relation_D0> then the C<Relation> node
-is interpreted as one of the 2 special values C<Relation:d[0|1]> aka
-C<d[0|1]>, which are the only C<Relation> values with exactly zero
+Iff the `Relation_payload` is a `relation_D0` then the `Relation` node
+is interpreted as one of the 2 special values `Relation:d[0|1]` aka
+`d[0|1]`, which are the only `Relation` values with exactly zero
 attributes.  Note that this is just an alternative syntax, as other
-C<Relation_payload> formats can select those values too.
+`Relation_payload` formats can select those values too.
 
-If the C<value_kind> of a C<value> node is C<DHRelation> rather than
-C<Relation>, then the C<value> node is interpreted simply as a
-C<Relation> node that is appropriately further restricted; the
-C<Relation_payload> specify only deeply homogeneous typed attribute values.
-If the C<value_kind> is C<@> then this is just an alias for C<Relation>.
+If the `value_kind` of a `value` node is `DHRelation` rather than
+`Relation`, then the `value` node is interpreted simply as a
+`Relation` node that is appropriately further restricted; the
+`Relation_payload` specify only deeply homogeneous typed attribute values.
+If the `value_kind` is `@` then this is just an alias for `Relation`.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.RelSelExprNodeSet>, a tuple of which is what
-a C<Relation> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.RelSelExprNodeSet`, a tuple of which is what
+a `Relation` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
 Examples:
 
@@ -2063,18 +2063,18 @@ Grammar:
             [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
-A C<Set> node represents a literal or selector invocation for a set
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
-whose elements are defined by the C<Set_payload>.  Each C<expr> of the
-C<Set_payload> defines a unary tuple of the new set; each
-C<expr> defines the C<value> attribute of the tuple.  If the
-C<value_kind> of a C<value> node is C<DHSet> rather than C<Set>, then the
-C<value> node is further restricted.
+A `Set` node represents a literal or selector invocation for a set
+value.  It is interpreted as a Muldis D `sys.std.Core.Type.Set` value
+whose elements are defined by the `Set_payload`.  Each `expr` of the
+`Set_payload` defines a unary tuple of the new set; each
+`expr` defines the `value` attribute of the tuple.  If the
+`value_kind` of a `value` node is `DHSet` rather than `Set`, then the
+`value` node is further restricted.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, a tuple of which is what
-a C<Set> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.SetSelExprNodeSet`, a tuple of which is what
+a `Set` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
 Examples:
 
@@ -2115,29 +2115,29 @@ Grammar:
           <maybe_Nothing__op_cr_basic>
         | '∅'
 
-A C<Maybe> node represents a literal or selector invocation for a maybe
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Maybe> value
-whose elements are defined by the C<Maybe_payload>.
+A `Maybe` node represents a literal or selector invocation for a maybe
+value.  It is interpreted as a Muldis D `sys.std.Core.Type.Maybe` value
+whose elements are defined by the `Maybe_payload`.
 
-Iff the C<Maybe_payload> is a C<maybe_list> then it defines either zero or
-one C<expr>; in the case of one, the C<expr> defines the unary tuple of the
-new maybe, which is a 'single'; the C<expr> defines the C<value> attribute
-of the tuple.  If the C<value_kind> of a C<value> node is C<DHMaybe> or
-C<[|DH]Just> rather than C<Maybe>, then the C<value> node is further
-restricted, either to having only deeply homogeneous resulting C<expr> or
-to having exactly one C<expr>, as appropriate.
+Iff the `Maybe_payload` is a `maybe_list` then it defines either zero or
+one `expr`; in the case of one, the `expr` defines the unary tuple of the
+new maybe, which is a 'single'; the `expr` defines the `value` attribute
+of the tuple.  If the `value_kind` of a `value` node is `DHMaybe` or
+`[|DH]Just` rather than `Maybe`, then the `value` node is further
+restricted, either to having only deeply homogeneous resulting `expr` or
+to having exactly one `expr`, as appropriate.
 
-Iff the C<Maybe_payload> is a C<maybe_Nothing> then the C<Maybe> node is
-interpreted as the special value C<Maybe:Nothing>, aka C<Nothing>, aka
-I<empty set>, aka C<∅>, which is the only C<Maybe> value with zero
+Iff the `Maybe_payload` is a `maybe_Nothing` then the `Maybe` node is
+interpreted as the special value `Maybe:Nothing`, aka `Nothing`, aka
+*empty set*, aka `∅`, which is the only `Maybe` value with zero
 elements.  Note that this is just an alternative syntax, as
-C<set_expr_list> can select that value too.  As a further restriction, the
-C<value_kind> must be just one of C<[|DH]Maybe> when the C<Maybe_payload>
-is a C<maybe_Nothing>.
+`set_expr_list` can select that value too.  As a further restriction, the
+`value_kind` must be just one of `[|DH]Maybe` when the `Maybe_payload`
+is a `maybe_Nothing`.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.SetSelExprNodeSet>, a tuple of which is what
-a C<Maybe> node distills to same as when C<Set> does.
+`sys.std.Core.Type.Cat.SetSelExprNodeSet`, a tuple of which is what
+a `Maybe` node distills to same as when `Set` does.
 
 Examples:
 
@@ -2167,21 +2167,21 @@ Grammar:
             [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
 
-An C<Array> node represents a literal or selector invocation for an
+An `Array` node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Array> value whose elements are defined by the
-C<Array_payload>.  Each C<expr> of the C<Array_payload> defines a binary
-tuple of the new sequence; the C<expr> defines the C<value> attribute
-of the tuple, and the C<index> attribute of the tuple is
-generated such that the first C<expr> gets an C<index> of zero and
+`sys.std.Core.Type.Array` value whose elements are defined by the
+`Array_payload`.  Each `expr` of the `Array_payload` defines a binary
+tuple of the new sequence; the `expr` defines the `value` attribute
+of the tuple, and the `index` attribute of the tuple is
+generated such that the first `expr` gets an `index` of zero and
 subsequent ones get consecutive higher integer values.  If the
-C<value_kind> of a C<value> node is C<DHArray> rather than C<Array>, then
-the C<value> node is further restricted.
+`value_kind` of a `value` node is `DHArray` rather than `Array`, then
+the `value` node is further restricted.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.ArySelExprNodeSet>, a tuple of which is what
-an C<Array> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.ArySelExprNodeSet`, a tuple of which is what
+an `Array` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
 Examples:
 
@@ -2229,40 +2229,40 @@ Grammar:
             [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
-A C<Bag> node represents a literal or selector invocation for a bag
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value
-whose elements are defined by the C<Bag_payload>, which is interpreted as
+A `Bag` node represents a literal or selector invocation for a bag
+value.  It is interpreted as a Muldis D `sys.std.Core.Type.Bag` value
+whose elements are defined by the `Bag_payload`, which is interpreted as
 follows:
 
-Iff the C<Bag_payload> is composed of just a C<nonord_list_[open|close]>
+Iff the `Bag_payload` is composed of just a `nonord_list_[open|close]`
 pair with zero elements between them, then it defines the only bag value
 having zero elements.
 
-Iff the C<Bag_payload> is a C<bag_payload_counted_values> with at least
-one C<expr>/C<count>-pair element, then each pair defines a binary
-tuple of the new bag; the C<expr> defines the C<value>
-attribute of the tuple, and the C<count> defines the C<count>
+Iff the `Bag_payload` is a `bag_payload_counted_values` with at least
+one `expr`/`count`-pair element, then each pair defines a binary
+tuple of the new bag; the `expr` defines the `value`
+attribute of the tuple, and the `count` defines the `count`
 attribute.
 
-Iff the C<Bag_payload> is a C<bag_payload_repeated_values> with at least
-one C<expr> element, then each C<expr> contributes to a binary tuple
-of the new bag; the C<expr> defines the C<value> attribute of the
+Iff the `Bag_payload` is a `bag_payload_repeated_values` with at least
+one `expr` element, then each `expr` contributes to a binary tuple
+of the new bag; the `expr` defines the `value` attribute of the
 tuple.  The bag has 1 tuple for every distinct (after
-normalization or evaluation) C<expr> and C<expr>-derived value in the
-C<Bag_payload>, and the C<count> attribute of that tuple says how
-many instances of said C<value> there were.
+normalization or evaluation) `expr` and `expr`-derived value in the
+`Bag_payload`, and the `count` attribute of that tuple says how
+many instances of said `value` there were.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.BagSelExprNodeSet>, a tuple of which is what
-a C<Bag> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.BagSelExprNodeSet`, a tuple of which is what
+a `Bag` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
-Further concerning C<bag_payload_counted_values>, because of how
-C<BagSelExprNodeSet> is defined, a C<count> has to be a compile time
+Further concerning `bag_payload_counted_values`, because of how
+`BagSelExprNodeSet` is defined, a `count` has to be a compile time
 constant, since an integer is stored in the system catalog rather than the
-name of an expression node like with C<value>; if you actually want the
-bag value being selected at runtime to have runtime-determined C<count>
-values, then you must use a C<Relation> node rather than a C<Bag> node.
+name of an expression node like with `value`; if you actually want the
+bag value being selected at runtime to have runtime-determined `count`
+values, then you must use a `Relation` node rather than a `Bag` node.
 
 Examples:
 
@@ -2327,37 +2327,37 @@ Grammar:
             [<interval> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
-An C<SPInterval> node represents a literal or selector invocation for a
+An `SPInterval` node represents a literal or selector invocation for a
 single-piece interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.SPInterval> value whose attributes are defined by the
-C<SPInterval_payload>.  Each of C<min> and C<max> is an C<expr> node that
-defines the C<min> and C<max> attribute value, respectively, of the new
-single-piece interval.  Each of the 4 C<interval_boundary_kind> values
-C<..>, C<..^>, C<^..>, C<^..^> corresponds to one of the 4 possible
-combinations of C<excludes_min> and C<excludes_max> values that the new
-single-piece interval can have, which in order are: C<[False,False]>,
-C<[False,True]>, C<[True,False]>, C<[True,True]>.
+`sys.std.Core.Type.SPInterval` value whose attributes are defined by the
+`SPInterval_payload`.  Each of `min` and `max` is an `expr` node that
+defines the `min` and `max` attribute value, respectively, of the new
+single-piece interval.  Each of the 4 `interval_boundary_kind` values
+`..`, `..^`, `^..`, `^..^` corresponds to one of the 4 possible
+combinations of `excludes_min` and `excludes_max` values that the new
+single-piece interval can have, which in order are: `[False,False]`,
+`[False,True]`, `[True,False]`, `[True,True]`.
 
-A special shorthand for C<interval_range> also exists, C<interval_single>,
+A special shorthand for `interval_range` also exists, `interval_single`,
 which is to help with the possibly common situation where an interval is a
 singleton, meaning the interval has exactly 1 value; the shorthand empowers
 that value to be specified just once rather than twice.  Iff the
-C<interval> is an C<interval_single>, then the C<interval> is treated as if
-it was instead an C<interval_range> whose C<min> and C<max> are both
-identical to the C<interval_single> and whose C<interval_boundary_kind> is
-C<..>.  For example, the interval C<6> is shorthand for C<6..6>.
+`interval` is an `interval_single`, then the `interval` is treated as if
+it was instead an `interval_range` whose `min` and `max` are both
+identical to the `interval_single` and whose `interval_boundary_kind` is
+`..`.  For example, the interval `6` is shorthand for `6..6`.
 
-An C<MPInterval> node represents a literal or selector invocation for a
+An `MPInterval` node represents a literal or selector invocation for a
 multi-piece interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.MPInterval> value whose elements are defined by the
-C<MPInterval_payload>.  Each C<interval> of the C<MPInterval_payload>
+`sys.std.Core.Type.MPInterval` value whose elements are defined by the
+`MPInterval_payload`.  Each `interval` of the `MPInterval_payload`
 defines a 4-ary tuple, representing a single-piece interval, of the new
 multi-piece interval.
 
 See also the definition of the 2 catalog data types
-C<sys.std.Core.Type.Cat.[S|M]PIvlSelExprNodeSet>, a tuple of which is what
-an C<[S|M]PInterval> node distills to, respectively, when it is beneath the
-context of a C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.[S|M]PIvlSelExprNodeSet`, a tuple of which is what
+an `[S|M]PInterval` node distills to, respectively, when it is beneath the
+context of a `depot` node, as it describes some semantics.
 
 Examples:
 
@@ -2393,16 +2393,16 @@ Grammar:
             [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
 
-A C<List> node represents a literal or selector invocation for a
+A `List` node represents a literal or selector invocation for a
 low-level list value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.List> value whose elements are defined by the
-C<List_payload>.  Each C<expr> of the C<List_payload> defines an element
+`sys.std.Core.Type.Cat.List` value whose elements are defined by the
+`List_payload`.  Each `expr` of the `List_payload` defines an element
 of the new list, where the elements keep the same order.
 
 See also the definition of the catalog data type
-C<sys.std.Core.Type.Cat.ListSelExprNodeSet>, a tuple of which is what
-a C<List> node distills to when it is beneath the context of a
-C<depot> node, as it describes some semantics.
+`sys.std.Core.Type.Cat.ListSelExprNodeSet`, a tuple of which is what
+a `List` node distills to when it is beneath the context of a
+`depot` node, as it describes some semantics.
 
 Examples:
 
@@ -2492,36 +2492,36 @@ Grammar:
     <self_local_dbvar_type> ::=
         'self-local-dbvar-type' <ws> <PNSQNameChain_payload>
 
-A C<depot> node specifies a single complete depot, which is the widest
+A `depot` node specifies a single complete depot, which is the widest
 scope user-defined DBMS entity that is a completely self-defined, and
 doesn't rely on any user-defined entities external to itself to be
-unambiguously understood.  A C<depot> node defines a (possibly empty)
+unambiguously understood.  A `depot` node defines a (possibly empty)
 system catalog database, holding user material (routine and type)
 definitions, plus optionally a normal-user-data database.
 
-A C<depot_catalog_payload> node in the PTMD_STD grammar is interpreted as a
-Muldis D C<sys.std.Core.Type.Cat.Depot> value (which is also a C<Database>
+A `depot_catalog_payload` node in the PTMD_STD grammar is interpreted as a
+Muldis D `sys.std.Core.Type.Cat.Depot` value (which is also a `Database`
 value) whose attributes are defined by its child elements.
 
-A C<subdepot> node specifies a single public entity namespace under a depot
-and all of the C<subdepot> nodes under a C<depot> comprise a hierarchy of
+A `subdepot` node specifies a single public entity namespace under a depot
+and all of the `subdepot` nodes under a `depot` comprise a hierarchy of
 such namespaces.
 
-But a C<subdepot> node doesn't have a corresponding data type for its
-entire content like with a C<depot_catalog_payload>; rather, a C<subdepot>
+But a `subdepot` node doesn't have a corresponding data type for its
+entire content like with a `depot_catalog_payload`; rather, a `subdepot`
 node hierarchy is stored flattened in the system catalog, such that each
-tuple of the C<subdepots> attribute from the parent C<Depot> names one
+tuple of the `subdepots` attribute from the parent `Depot` names one
 subdepot that exists, and all the subdepot's materials are flattened into
-tuples of the materials-defining attributes of the C<Depot>.
+tuples of the materials-defining attributes of the `Depot`.
 
-A C<self_local_dbvar_type> node specifies what the normal-user-data
-database has as its declared data type.  The value of the C<data> attribute
-of the parent C<Depot> is determined from this node.  Iff
-C<self_local_dbvar_type> is not specified then C<depot_data> must be
-omitted; iff C<self_local_dbvar_type> is specified then C<depot_data> must
-be present.  The most liberal value of C<self_local_dbvar_type> is simply
-C<Database>, meaning C<depot_data> may define any database value at all.  A
-C<depot_catalog_payload> may have at most 1 C<self_local_dbvar_type>.
+A `self_local_dbvar_type` node specifies what the normal-user-data
+database has as its declared data type.  The value of the `data` attribute
+of the parent `Depot` is determined from this node.  Iff
+`self_local_dbvar_type` is not specified then `depot_data` must be
+omitted; iff `self_local_dbvar_type` is specified then `depot_data` must
+be present.  The most liberal value of `self_local_dbvar_type` is simply
+`Database`, meaning `depot_data` may define any database value at all.  A
+`depot_catalog_payload` may have at most 1 `self_local_dbvar_type`.
 
 Examples:
 
@@ -2560,68 +2560,68 @@ Grammar:
         | <distrib_subset_constr>
         | <stim_resp_rule>
 
-A C<material> node specifies a new material (routine or type) that lives in
+A `material` node specifies a new material (routine or type) that lives in
 a depot or subdepot.
 
-A C<material> node in the PTMD_STD grammar corresponds directly to a tuple
+A `material` node in the PTMD_STD grammar corresponds directly to a tuple
 of a (routine or type defining) attribute of a value of the catalog data
-type C<sys.std.Core.Type.Cat.Depot>, which is how a material specification
+type `sys.std.Core.Type.Cat.Depot`, which is how a material specification
 is actually represented in Muldis D's nonsugared form, which is as a
 component of the system catalog.  Or more specifically, an entire tree of
-PTMD_STD C<material> nodes corresponds to a set of said attribute tuples,
-one attribute tuple per C<material> node.  In the nonsugared form, every
-C<material> node has an explicitly designated name, and all child nodes are
+PTMD_STD `material` nodes corresponds to a set of said attribute tuples,
+one attribute tuple per `material` node.  In the nonsugared form, every
+`material` node has an explicitly designated name, and all child nodes are
 not declared inline with their parent nodes but rather are declared in
 parallel with them, and the parents refer to their children by their names.
 A feature of the PTMD_STD grammar is that material nodes may be declared
 without explicit names, such that the parser would generate names for them
 when deriving system catalog entries, and that is why PTMD_STD supports,
 and encourages the use of for code brevity/readability, the use of
-inline-declared material nodes, especially so when the C<material> in
+inline-declared material nodes, especially so when the `material` in
 question is a simple function or type that is only being used in one place,
-such as a typical C<value-filter> function or a typical subset type.
+such as a typical `value-filter` function or a typical subset type.
 
-When a C<material> node is contained within another C<material> node, the
+When a `material` node is contained within another `material` node, the
 first material is conceptually part of the implementation of the second
-material; the first material is hereafter referred to as an I<inner>
-material for this inter-material relationship.  When a C<material> node is
-I<not> contained within any other C<material> node, but rather is directly
-contained within a C<depot_catalog_payload> node, then this material is
-hereafter referred to as an I<outer> material.  Both inner and outer
-C<material> nodes may contain 0..N other (inner) C<material> nodes.
+material; the first material is hereafter referred to as an *inner*
+material for this inter-material relationship.  When a `material` node is
+*not* contained within any other `material` node, but rather is directly
+contained within a `depot_catalog_payload` node, then this material is
+hereafter referred to as an *outer* material.  Both inner and outer
+`material` nodes may contain 0..N other (inner) `material` nodes.
 
-When a C<material> node defines an outer material C<foo> directly within a
-subdepot (or depot) C<bar>, and C<foo> has no child inner materials, then
+When a `material` node defines an outer material `foo` directly within a
+subdepot (or depot) `bar`, and `foo` has no child inner materials, then
 the material definition will be stored in the system catalog exactly as
-conceived, as a new material named C<foo> directly in the subdepot C<bar>.
-For example, the outer material will have the name C<fed.lib.mydb.bar.foo>.
+conceived, as a new material named `foo` directly in the subdepot `bar`.
+For example, the outer material will have the name `fed.lib.mydb.bar.foo`.
 
-In contrast, when said C<material> node has at least one child inner
-material C<baz>, then what happens in the system catalog instead is that a
-new subdepot named C<foo> is created directly in the subdepot C<bar> and
-every one of the whole hierarchy of said C<material> nodes is stored
-directly in the subdepot C<foo>; the outer material is stored under the
+In contrast, when said `material` node has at least one child inner
+material `baz`, then what happens in the system catalog instead is that a
+new subdepot named `foo` is created directly in the subdepot `bar` and
+every one of the whole hierarchy of said `material` nodes is stored
+directly in the subdepot `foo`; the outer material is stored under the
 name that is the empty string, and its inner materials are stored under
 their own names.  For example, the outer material will have the name
-C<fed.lib.mydb.bar.foo.""> and the inner will be named
-C<fed.lib.mydb.bar.foo.baz>.
+`fed.lib.mydb.bar.foo.""` and the inner will be named
+`fed.lib.mydb.bar.foo.baz`.
 Such a material hierarchy is stored in a flat namespace so it is required
 for all inner materials having a common outer material to have distinct
 declaration names, none of which are the empty string, regardless of
 whether any of them was declared inside another inner material node or
 directly inside the common outer node.
 
-It is mandatory for outer C<material> nodes to have explicitly specified
+It is mandatory for outer `material` nodes to have explicitly specified
 declaration names, because they are expected to be invoked by name in the
-general case, like any public routine or type.  An inner C<material> may
+general case, like any public routine or type.  An inner `material` may
 optionally have an explicitly specified declaration name, for either
 self-documentation purposes or in case it might be invoked by name; however
-an inner C<material> may also be anonymous, in which case it may only be
-used inline with its declaration, or by way of an C<AbsPathMaterialNC>
+an inner `material` may also be anonymous, in which case it may only be
+used inline with its declaration, or by way of an `AbsPathMaterialNC`
 value which
 is defined inline with the material's declaration.  When an inner material
 is declared as anonymous, it still actually has a name in the system
-catalog (I<all> materials in the system catalog are named), but that name
+catalog (*all* materials in the system catalog are named), but that name
 is generated by the PTMD_STD parser; strictly speaking this material could
 still be invoked by that name like an explicitly named one, but that would
 not be a good practice; use explicit names if you want to invoke by name.
@@ -2689,32 +2689,32 @@ Every material has 2-3 elements, illustrated by this grammar:
         | <distrib_subset_constr_payload>
         | <stim_resp_rule_payload>
 
-So a C<x_material>|C<material> node has 2-3 elements in general:
+So a `x_material`|`material` node has 2-3 elements in general:
 
-* C<material_kind>
+* `material_kind`
 
 This is a character string of the format `[<[ a..z ]>+] ** '-'`; it
 identifies the kind of the material and is the only external metadata of
-C<material_payload> generally necessary to interpret the latter; what
-grammars are valid for C<material_payload> depend just on C<material_kind>.
+`material_payload` generally necessary to interpret the latter; what
+grammars are valid for `material_payload` depend just on `material_kind`.
 
-* C<material_declared_name>
+* `material_declared_name`
 
 This is the declared name of the material within the namespace defined by
-its subdepot (or depot).  It is explicitly specified iff the C<material> is
-a C<named_material>
+its subdepot (or depot).  It is explicitly specified iff the `material` is
+a `named_material`
 
-* C<material_payload>
+* `material_payload`
 
-This is mandatory for all C<material>.  It specifies the entire material
-sans its name.  Format varies with C<material_kind>.
+This is mandatory for all `material`.  It specifies the entire material
+sans its name.  Format varies with `material_kind`.
 
 For material examples, see the subsequent documentation sections.
 
 Note that, for simplicity, the subsequent sections assume for now that
-C<named_material> is the only valid option, and so the
-C<material_declared_name> isn't optional, and the only way to embed a
-material in another is using a C<with_clause>.
+`named_material` is the only valid option, and so the
+`material_declared_name` isn't optional, and the only way to embed a
+material in another is using a `with_clause`.
 
 ## Function Specification
 
@@ -2768,35 +2768,35 @@ Grammar:
     <empty_function_body> ::=
         '{' <ws>? '...' <ws>? '}'
 
-A C<function> node specifies a new function that lives in a depot or
-subdepot.  A C<function> node in the PTMD_STD grammar corresponds directly
-to a tuple of the C<functions> attribute of a value of the catalog data
-type C<sys.std.Core.Type.Cat.Depot>, which is how a function specification
+A `function` node specifies a new function that lives in a depot or
+subdepot.  A `function` node in the PTMD_STD grammar corresponds directly
+to a tuple of the `functions` attribute of a value of the catalog data
+type `sys.std.Core.Type.Cat.Depot`, which is how a function specification
 is actually represented in Muldis D's nonsugared form, which is as a
-component of the system catalog.  The C<functions> tuple has 2 primary
-attributes, C<name> and C<material>, which are valued from the C<function>
-node's C<material_declared_name> and C<function_payload> elements,
+component of the system catalog.  The `functions` tuple has 2 primary
+attributes, `name` and `material`, which are valued from the `function`
+node's `material_declared_name` and `function_payload` elements,
 respectively.
 
-A C<function_payload> specifies an entire function besides its name.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.Function> value.  The
-C<function_heading> element specifies the function's public interface,
-which is these 5 attributes of the new C<Function>: C<result_type>,
-C<params>, C<opt_params>, C<dispatch_params>, C<implements>.  The
-C<function_body> element specifies the function's implementation, which is
-the 1 attribute C<expr> of the new C<Function>.
+A `function_payload` specifies an entire function besides its name.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Cat.Function` value.  The
+`function_heading` element specifies the function's public interface,
+which is these 5 attributes of the new `Function`: `result_type`,
+`params`, `opt_params`, `dispatch_params`, `implements`.  The
+`function_body` element specifies the function's implementation, which is
+the 1 attribute `expr` of the new `Function`.
 
-The C<function_kind> has no impact at all on the interpretation of a
-C<function>.  However, it can serve to apply additional constraints on the
-allowed values of the resulting C<Function>, in the manner of simple
+The `function_kind` has no impact at all on the interpretation of a
+`function`.  However, it can serve to apply additional constraints on the
+allowed values of the resulting `Function`, in the manner of simple
 subset-type constraints, and similarly it can serve to add
 self-documentation to the intended purpose or use of the function.  Iff
-C<function_kind> is C<function> then there are no such subset-type
+`function_kind` is `function` then there are no such subset-type
 constraints applied, as the node is simply denoting a generic function; any
-other value of C<function_kind> means that the node is denoting a value of
-a proper subtype of C<Function>, and so that subtype's respective
-constraints are applied to the new C<Function>.  The various
-C<function_kind> map to C<Function> subtypes as follows:
+other value of `function_kind` means that the node is denoting a value of
+a proper subtype of `Function`, and so that subtype's respective
+constraints are applied to the new `Function`.  The various
+`function_kind` map to `Function` subtypes as follows:
 
     function kind         | catalog data type
     ----------------------+------------------
@@ -2809,23 +2809,23 @@ C<function_kind> map to C<Function> subtypes as follows:
     value-reduction       | ValRedFunc
     order-determination   | OrdDetFunc
 
-The C<function_heading>'s C<result_type> is interpreted as the
-C<Function>'s C<result_type> attribute.
+The `function_heading`'s `result_type` is interpreted as the
+`Function`'s `result_type` attribute.
 
-Any of these kinds of components of a C<function> node are interpreted in
-exactly the same manner as for a C<procedure> node, as a C<Function> is to
-a C<Procedure>: C<ro_reg_param> (but that the C<Function> attribute is
-named C<params> rather than C<ro_params>), C<implements_clause>,
-C<empty_function_body>, C<with_clause>, C<named_expr>.
+Any of these kinds of components of a `function` node are interpreted in
+exactly the same manner as for a `procedure` node, as a `Function` is to
+a `Procedure`: `ro_reg_param` (but that the `Function` attribute is
+named `params` rather than `ro_params`), `implements_clause`,
+`empty_function_body`, `with_clause`, `named_expr`.
 
-A C<nonempty_function_body> must have at least one C<expr>, because a
-function must by definition result in a value, and that C<expr> says what
-this result value is.  Said result-determining C<expr> must either not be a
-C<named_expr> or it must be a C<named_expr> whose direct C<expr_name> is
+A `nonempty_function_body` must have at least one `expr`, because a
+function must by definition result in a value, and that `expr` says what
+this result value is.  Said result-determining `expr` must either not be a
+`named_expr` or it must be a `named_expr` whose direct `expr_name` is
 the empty string; the latter option is saying explicitly what the parser
-would otherwise name the C<expr> implicitly.  A C<nonempty_function_body>
-may have at most one C<expr> that isn't a C<named_expr>, because it can
-only have one result-determining C<expr>.
+would otherwise name the `expr` implicitly.  A `nonempty_function_body`
+may have at most one `expr` that isn't a `named_expr`, because it can
+only have one result-determining `expr`.
 
 Examples:
 
@@ -2943,42 +2943,42 @@ Grammar:
     <empty_recipe_body> ::=
         '{' <ws>? '...' <ws>? '}'
 
-A C<procedure> node specifies a new procedure that lives in a depot or
-subdepot.  A C<procedure> node in the PTMD_STD grammar corresponds directly
-to a tuple of the C<procedures> attribute of a value of the catalog data
-type C<sys.std.Core.Type.Cat.Depot>, which is how a procedure specification
+A `procedure` node specifies a new procedure that lives in a depot or
+subdepot.  A `procedure` node in the PTMD_STD grammar corresponds directly
+to a tuple of the `procedures` attribute of a value of the catalog data
+type `sys.std.Core.Type.Cat.Depot`, which is how a procedure specification
 is actually represented in Muldis D's nonsugared form, which is as a
-component of the system catalog.  The C<procedures> tuple has 2 primary
-attributes, C<name> and C<material>, which are valued from the C<procedure>
-node's C<material_declared_name> and C<procedure_payload> elements,
+component of the system catalog.  The `procedures` tuple has 2 primary
+attributes, `name` and `material`, which are valued from the `procedure`
+node's `material_declared_name` and `procedure_payload` elements,
 respectively.
 
-A C<procedure_payload> specifies an entire procedure besides its name.  It
-is interpreted as a Muldis D C<sys.std.Core.Type.Cat.Procedure> value.  The
-C<procedure_heading> element specifies the procedure's public interface,
-which is these 9 attributes of the new C<Procedure>: C<upd_params>,
-C<ro_params>, C<opt_params>, C<upd_global_params>, C<ro_global_params>,
-C<dispatch_params>, C<implements>, C<is_system_service>, C<is_transaction>.
-The C<procedure_body> element specifies the procedure's implementation,
-which is these 3 attributes of the new C<procedure>: C<vars>, C<exprs>,
-C<stmt>.
+A `procedure_payload` specifies an entire procedure besides its name.  It
+is interpreted as a Muldis D `sys.std.Core.Type.Cat.Procedure` value.  The
+`procedure_heading` element specifies the procedure's public interface,
+which is these 9 attributes of the new `Procedure`: `upd_params`,
+`ro_params`, `opt_params`, `upd_global_params`, `ro_global_params`,
+`dispatch_params`, `implements`, `is_system_service`, `is_transaction`.
+The `procedure_body` element specifies the procedure's implementation,
+which is these 3 attributes of the new `procedure`: `vars`, `exprs`,
+`stmt`.
 
-The C<procedure_kind> often has no impact at all on the interpretation of a
-C<procedure>.  However, it can serve to apply additional constraints on the
-allowed values of the resulting C<procedure>, in the manner of simple
+The `procedure_kind` often has no impact at all on the interpretation of a
+`procedure`.  However, it can serve to apply additional constraints on the
+allowed values of the resulting `procedure`, in the manner of simple
 subset-type constraints, and similarly it can serve to add
 self-documentation to the intended purpose or use of the procedure.  Iff
-C<procedure_kind> is C<procedure> then there are no such subset-type
+`procedure_kind` is `procedure` then there are no such subset-type
 constraints applied, as the node is simply denoting a generic procedure;
-any other value of C<procedure_kind> means that the node is denoting a
-value of a proper subtype of C<procedure>, and so that subtype's respective
-constraints are applied to the new C<procedure>.  Iff C<procedure_kind> is
-a C<recipe_kind>, then C<procedure_body> is also constrained to be one of
-C<[|non]empty_recipe_body>.  The C<procedure_kind> is
-the sole determinant of the values of the C<is_system_service> and
-C<is_transaction> attributes of the resulting C<Procedure>; for each valid
-combination there also exists a C<Procedure> subtype.  The
-various C<procedure_kind> map to attribute values and C<Procedure> subtypes
+any other value of `procedure_kind` means that the node is denoting a
+value of a proper subtype of `procedure`, and so that subtype's respective
+constraints are applied to the new `procedure`.  Iff `procedure_kind` is
+a `recipe_kind`, then `procedure_body` is also constrained to be one of
+`[|non]empty_recipe_body`.  The `procedure_kind` is
+the sole determinant of the values of the `is_system_service` and
+`is_transaction` attributes of the resulting `Procedure`; for each valid
+combination there also exists a `Procedure` subtype.  The
+various `procedure_kind` map to attribute values and `Procedure` subtypes
 as follows:
 
     procedure kind | is_system_service | is_transaction | catalog data type
@@ -2989,89 +2989,89 @@ as follows:
     recipe         | Bool:False        | Bool:True      | Recipe
     updater        | Bool:False        | Bool:True      | Updater
 
-Iff the C<procedure_heading> has at least one C<upd_reg_param> or
-C<ro_reg_param>, then the procedure has one or more regular parameters,
+Iff the `procedure_heading` has at least one `upd_reg_param` or
+`ro_reg_param`, then the procedure has one or more regular parameters,
 which are what another routine can explicitly supply arguments for in an
 invocation of the procedure; each regular parameter is either
-subject-to-update or read-only.  Each C<upd_reg_param> is primarily
-interpreted as a tuple of the C<procedure>'s C<upd_params> attribute, and
-each C<ro_reg_param> is primarily interpreted as a tuple of the
-C<procedure>'s C<ro_params> attribute; for each tuple, the C<param_name>
-and C<type_name>, respectively, of the C<upd_reg_param> or C<ro_reg_param>
-provide the tuple's C<name> and C<type> attribute.  Iff any of the
-parameters have an C<opt_param_flag>, then those parameters are optional to
-supply arguments for; for each parameter with an C<opt_param_flag>, the
-C<procedure>'s C<opt_params> attribute has a tuple with the parameter's
-C<param_name>.  Iff any of the parameters have a C<dispatch_param_flag>,
+subject-to-update or read-only.  Each `upd_reg_param` is primarily
+interpreted as a tuple of the `procedure`'s `upd_params` attribute, and
+each `ro_reg_param` is primarily interpreted as a tuple of the
+`procedure`'s `ro_params` attribute; for each tuple, the `param_name`
+and `type_name`, respectively, of the `upd_reg_param` or `ro_reg_param`
+provide the tuple's `name` and `type` attribute.  Iff any of the
+parameters have an `opt_param_flag`, then those parameters are optional to
+supply arguments for; for each parameter with an `opt_param_flag`, the
+`procedure`'s `opt_params` attribute has a tuple with the parameter's
+`param_name`.  Iff any of the parameters have a `dispatch_param_flag`,
 then the procedure is being explicitly declared to be a virtual procedure,
-and so the C<procedure_body> must be C<empty_[procedure|recipe]_body>; for
-each parameter with a C<dispatch_param_flag>, the C<procedure>'s
-C<dispatch_params> attribute has a tuple with the parameter's
-C<param_name>.
+and so the `procedure_body` must be `empty_[procedure|recipe]_body`; for
+each parameter with a `dispatch_param_flag`, the `procedure`'s
+`dispatch_params` attribute has a tuple with the parameter's
+`param_name`.
 
-Iff the C<procedure_heading> has at least one C<upd_global_param> or
-C<ro_global_param>, then the procedure has one or more global parameters,
+Iff the `procedure_heading` has at least one `upd_global_param` or
+`ro_global_param`, then the procedure has one or more global parameters,
 which are lexical aliases for global variables; each global parameter is
-either subject-to-update or read-only.  Each C<upd_global_param> is
-primarily interpreted as a tuple of the C<procedure>'s C<upd_global_params>
-attribute, and each C<ro_global_param> is primarily interpreted as a tuple
-of the C<procedure>'s C<ro_global_params> attribute; for each tuple, the
-C<param_name> and C<global_var_name>, respectively, of the
-C<upd_global_param> or C<ro_global_param> provide the tuple's C<name> and
-C<global> attribute.
+either subject-to-update or read-only.  Each `upd_global_param` is
+primarily interpreted as a tuple of the `procedure`'s `upd_global_params`
+attribute, and each `ro_global_param` is primarily interpreted as a tuple
+of the `procedure`'s `ro_global_params` attribute; for each tuple, the
+`param_name` and `global_var_name`, respectively, of the
+`upd_global_param` or `ro_global_param` provide the tuple's `name` and
+`global` attribute.
 
-Iff the C<procedure_heading> has at least one C<implements_clause>, then
+Iff the `procedure_heading` has at least one `implements_clause`, then
 the procedure is explicitly declaring that it implements one or more
-virtual procedure, one being named by each C<implements_clause>.  Each
-C<implements_clause> is interpreted as a tuple of the C<procedure>'s
-C<implements> attribute.
+virtual procedure, one being named by each `implements_clause`.  Each
+`implements_clause` is interpreted as a tuple of the `procedure`'s
+`implements` attribute.
 
-Iff the C<procedure_body> is an C<empty_[procedure|recipe]_body>, then the
-C<procedure>'s C<vars>, C<exprs> and C<stmt> attributes are all empty.
+Iff the `procedure_body` is an `empty_[procedure|recipe]_body`, then the
+`procedure`'s `vars`, `exprs` and `stmt` attributes are all empty.
 
-Iff the C<procedure_body> has at least one C<with_clause>, then the
+Iff the `procedure_body` has at least one `with_clause`, then the
 procedure is explicitly declaring that it has one or more inner materials,
 such that the other materials are conceptually part of the implementation
-of the procedure; each C<with_clause> specifies one inner material in its
-C<named_material> element.  A C<with_clause> is not interpreted as any part
-of the C<procedure> but rather results in other additions to its parent
-C<Depot>, in a manner similar to as if the C<named_material> were specified
-externally of the C<procedure> node; but see the **MATERIAL SPECIFICATION**
+of the procedure; each `with_clause` specifies one inner material in its
+`named_material` element.  A `with_clause` is not interpreted as any part
+of the `procedure` but rather results in other additions to its parent
+`Depot`, in a manner similar to as if the `named_material` were specified
+externally of the `procedure` node; but see the **MATERIAL SPECIFICATION**
 main description for details on the complete effects of specifying an inner
 material.
 
-Iff the C<procedure_body> has at least one C<proc_var>, then the procedure
-has one or more regular lexical variables.  Each C<proc_var> is interpreted
-as a tuple of the C<Procedure>'s C<vars> attribute; for each tuple, the
-C<var_name> and C<type_name>, respectively, of the C<proc_var> provide the
-tuple's C<name> and C<type> attribute.
+Iff the `procedure_body` has at least one `proc_var`, then the procedure
+has one or more regular lexical variables.  Each `proc_var` is interpreted
+as a tuple of the `Procedure`'s `vars` attribute; for each tuple, the
+`var_name` and `type_name`, respectively, of the `proc_var` provide the
+tuple's `name` and `type` attribute.
 
-Iff the C<procedure_body> directly has at least one C<named_expr>, then
-each such C<named_expr> is interpreted as a tuple of an attribute of the
-C<procedure>'s C<exprs> attribute such that said tuple's C<name> is
-explicitly user-defined rather than generated by the parser.  Any C<expr>
-contained in a C<procedure_body> by way of one of its direct C<proc_stmt>
-or C<named_expr> will similarly be interpreted as a tuple of an attribute
-of the C<procedure>'s C<exprs> attribute, where said tuple's C<name> is
-either user-defined or generated as appropriate for the kind of C<expr>.
+Iff the `procedure_body` directly has at least one `named_expr`, then
+each such `named_expr` is interpreted as a tuple of an attribute of the
+`procedure`'s `exprs` attribute such that said tuple's `name` is
+explicitly user-defined rather than generated by the parser.  Any `expr`
+contained in a `procedure_body` by way of one of its direct `proc_stmt`
+or `named_expr` will similarly be interpreted as a tuple of an attribute
+of the `procedure`'s `exprs` attribute, where said tuple's `name` is
+either user-defined or generated as appropriate for the kind of `expr`.
 
-Each C<proc_stmt> of a C<nonempty_procedure_body> is interpreted as a tuple
-of an attribute of the the C<Procedure>'s C<stmt> attribute.  A
-C<proc_stmt> may also, and typically does, also have nested C<proc_stmt>,
+Each `proc_stmt` of a `nonempty_procedure_body` is interpreted as a tuple
+of an attribute of the the `Procedure`'s `stmt` attribute.  A
+`proc_stmt` may also, and typically does, also have nested `proc_stmt`,
 thereby forming a tree, and that tree is flattened with each nested
-C<proc_stmt> becoming its own tuple under C<stmt> like with the first.  In
+`proc_stmt` becoming its own tuple under `stmt` like with the first.  In
 fact, all of a procedure's statements form a single statement tree, and the
 root node of this tree is an implicit compound statement node (whose name
 is the empty string) whose direct child statements are all of the direct
-child C<proc_stmt> elements of the C<nonempty_procedure_body>, in order.
-Iff a C<nonempty_procedure_body> has no C<proc_stmt> member elements, then
+child `proc_stmt` elements of the `nonempty_procedure_body`, in order.
+Iff a `nonempty_procedure_body` has no `proc_stmt` member elements, then
 the procedure has a defined body that is an unconditional no-op.
 
-A C<nonempty_recipe_body> must have at least one C<update_stmt>, because
+A `nonempty_recipe_body` must have at least one `update_stmt`, because
 a recipe must by definition update at least one of its (regular or
 global) parameters, though possibly to the same value it already has, lest
-it otherwise be an unconditional no-op.  Each C<update_stmt> is interpreted
-as a tuple of the C<procedure>'s C<stmt> attribute.
+it otherwise be an unconditional no-op.  Each `update_stmt` is interpreted
+as a tuple of the `procedure`'s `stmt` attribute.
 
 Examples:
 
@@ -3149,22 +3149,22 @@ Grammar:
     <p2> ::=
         <possrep_name>
 
-A C<scalar_type> node specifies a new scalar type that lives in a depot or
-subdepot.  A C<scalar_type> node in the PTMD_STD grammar corresponds
-directly to a tuple of the C<scalar_types> attribute of a value of the
-catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how a scalar
+A `scalar_type` node specifies a new scalar type that lives in a depot or
+subdepot.  A `scalar_type` node in the PTMD_STD grammar corresponds
+directly to a tuple of the `scalar_types` attribute of a value of the
+catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a scalar
 type specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<scalar_types> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<scalar_type> node's C<material_declared_name> and
-C<scalar_type_payload> elements, respectively.
+which is as a component of the system catalog.  The `scalar_types` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `scalar_type` node's `material_declared_name` and
+`scalar_type_payload` elements, respectively.
 
-A C<scalar_type_payload> specifies an entire scalar type besides its name.
-It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.ScalarType> value.
+A `scalar_type_payload` specifies an entire scalar type besides its name.
+It is interpreted as a Muldis D `sys.std.Core.Type.Cat.ScalarType` value.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Tuple Type Specification
 
@@ -3218,30 +3218,30 @@ Grammar:
     <is_updateable_clause> ::=
         'is-updateable'
 
-A C<tuple_type> node specifies a new tuple type that lives in a depot or
-subdepot.  A C<tuple_type> node in the PTMD_STD grammar corresponds
-directly to a tuple of the C<tuple_types> attribute of a value of the
-catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how a tuple
+A `tuple_type` node specifies a new tuple type that lives in a depot or
+subdepot.  A `tuple_type` node in the PTMD_STD grammar corresponds
+directly to a tuple of the `tuple_types` attribute of a value of the
+catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a tuple
 type specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<tuple_types> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<tuple_type> node's C<material_declared_name> and
-C<tuple_type_payload> elements, respectively.
+which is as a component of the system catalog.  The `tuple_types` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `tuple_type` node's `material_declared_name` and
+`tuple_type_payload` elements, respectively.
 
-A C<tuple_type_payload> specifies an entire tuple type besides its name.
-It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.TupleType> value.
+A `tuple_type_payload` specifies an entire tuple type besides its name.
+It is interpreted as a Muldis D `sys.std.Core.Type.Cat.TupleType` value.
 
-The C<tuple_type_kind> has no impact at all on the interpretation of a
-C<tuple_type>.  However, it can serve to apply additional constraints on
-the allowed values of the resulting C<TupleType>, in the manner of simple
+The `tuple_type_kind` has no impact at all on the interpretation of a
+`tuple_type`.  However, it can serve to apply additional constraints on
+the allowed values of the resulting `TupleType`, in the manner of simple
 subset-type constraints, and similarly it can serve to add
 self-documentation to the intended purpose or use of the tuple type.  Iff
-C<tuple_type_kind> is C<tuple-type> then there are no such subset-type
+`tuple_type_kind` is `tuple-type` then there are no such subset-type
 constraints applied, as the node is simply denoting a generic tuple type;
-iff C<tuple_type_kind> is C<database-type> then there is a constraint
+iff `tuple_type_kind` is `database-type` then there is a constraint
 applied such that the node is denoting a database type.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
 Examples:
 
@@ -3317,21 +3317,21 @@ Grammar:
     <tuple_type_clause> ::=
         tuple-type <ws> <type_name>
 
-A C<relation_type> node specifies a new relation type that lives in a depot
-or subdepot.  A C<relation_type> node in the PTMD_STD grammar corresponds
-directly to a tuple of the C<relation_types> attribute of a value of the
-catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how a relation
+A `relation_type` node specifies a new relation type that lives in a depot
+or subdepot.  A `relation_type` node in the PTMD_STD grammar corresponds
+directly to a tuple of the `relation_types` attribute of a value of the
+catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a relation
 type specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<relation_types> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<relation_type> node's C<material_declared_name> and
-C<relation_type_payload> elements, respectively.
+which is as a component of the system catalog.  The `relation_types` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `relation_type` node's `material_declared_name` and
+`relation_type_payload` elements, respectively.
 
-A C<relation_type_payload> specifies an entire relation type besides its
+A `relation_type_payload` specifies an entire relation type besides its
 name.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.RelationType> value.
+`sys.std.Core.Type.Cat.RelationType` value.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
 Examples:
 
@@ -3393,22 +3393,22 @@ Grammar:
             [<type_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
-A C<domain_type> node specifies a new domain type that lives in a depot or
-subdepot.  A C<domain_type> node in the PTMD_STD grammar corresponds
-directly to a tuple of the C<domain_types> attribute of a value of the
-catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how a domain
+A `domain_type` node specifies a new domain type that lives in a depot or
+subdepot.  A `domain_type` node in the PTMD_STD grammar corresponds
+directly to a tuple of the `domain_types` attribute of a value of the
+catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a domain
 type specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<domain_types> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<domain_type> node's C<material_declared_name> and
-C<domain_type_payload> elements, respectively.
+which is as a component of the system catalog.  The `domain_types` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `domain_type` node's `material_declared_name` and
+`domain_type_payload` elements, respectively.
 
-A C<domain_type_payload> specifies an entire domain type besides its name.
-It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.DomainType> value.
+A `domain_type_payload` specifies an entire domain type besides its name.
+It is interpreted as a Muldis D `sys.std.Core.Type.Cat.DomainType` value.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Subset Type Specification
 
@@ -3450,22 +3450,22 @@ Grammar:
         [<ws> <constraint_clause>]?
         [<ws> <default_clause>]?
 
-A C<subset_type> node specifies a new subset type that lives in a depot or
-subdepot.  A C<subset_type> node in the PTMD_STD grammar corresponds
-directly to a tuple of the C<subset_types> attribute of a value of the
-catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how a subset
+A `subset_type` node specifies a new subset type that lives in a depot or
+subdepot.  A `subset_type` node in the PTMD_STD grammar corresponds
+directly to a tuple of the `subset_types` attribute of a value of the
+catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a subset
 type specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<subset_types> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<subset_type> node's C<material_declared_name> and
-C<subset_type_payload> elements, respectively.
+which is as a component of the system catalog.  The `subset_types` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `subset_type` node's `material_declared_name` and
+`subset_type_payload` elements, respectively.
 
-A C<subset_type_payload> specifies an entire subset type besides its name.
-It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.SubsetType> value.
+A `subset_type_payload` specifies an entire subset type besides its name.
+It is interpreted as a Muldis D `sys.std.Core.Type.Cat.SubsetType` value.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Mixin Type Specification
 
@@ -3490,22 +3490,22 @@ Grammar:
     <prov_def_clause> ::=
         'and-provides-its-default'
 
-A C<mixin_type> node specifies a new mixin type that lives in a depot or
-subdepot.  A C<mixin_type> node in the PTMD_STD grammar corresponds
-directly to a tuple of the C<mixin_types> attribute of a value of the
-catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how a mixin
+A `mixin_type` node specifies a new mixin type that lives in a depot or
+subdepot.  A `mixin_type` node in the PTMD_STD grammar corresponds
+directly to a tuple of the `mixin_types` attribute of a value of the
+catalog data type `sys.std.Core.Type.Cat.Depot`, which is how a mixin
 type specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<mixin_types> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<mixin_type> node's C<material_declared_name> and
-C<mixin_type_payload> elements, respectively.
+which is as a component of the system catalog.  The `mixin_types` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `mixin_type` node's `material_declared_name` and
+`mixin_type_payload` elements, respectively.
 
-A C<mixin_type_payload> specifies an entire mixin type besides its name.
-It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.MixinType> value.
+A `mixin_type_payload` specifies an entire mixin type besides its name.
+It is interpreted as a Muldis D `sys.std.Core.Type.Cat.MixinType` value.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Key Constraint Specification
 
@@ -3524,27 +3524,27 @@ Grammar:
             [<attr_name_lex> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
 
-A C<key_constr> node specifies a new unique key constraint or candidate
+A `key_constr` node specifies a new unique key constraint or candidate
 key, for a relation type, that lives in a depot or subdepot.  A
-C<key_constr> node in the PTMD_STD grammar corresponds directly to a tuple
-of the C<key_constrs> attribute of a value of the catalog data type
-C<sys.std.Core.Type.Cat.Depot>, which is how a unique key constraint
+`key_constr` node in the PTMD_STD grammar corresponds directly to a tuple
+of the `key_constrs` attribute of a value of the catalog data type
+`sys.std.Core.Type.Cat.Depot`, which is how a unique key constraint
 specification is actually represented in Muldis D's nonsugared form, which
-is as a component of the system catalog.  The C<key_constrs> tuple has 2
-primary attributes, C<name> and C<material>, which are valued from the
-C<key_constr> node's C<material_declared_name> and C<key_constr_payload>
+is as a component of the system catalog.  The `key_constrs` tuple has 2
+primary attributes, `name` and `material`, which are valued from the
+`key_constr` node's `material_declared_name` and `key_constr_payload`
 elements, respectively.
 
-A C<key_constr_payload> specifies an entire unique key constraint or
+A `key_constr_payload` specifies an entire unique key constraint or
 candidate key, for a relation type, besides its name.  It is interpreted as
-a Muldis D C<sys.std.Core.Type.Cat.KeyConstr> value.  Each C<attr_name_lex>
-element of a C<key_constr_payload> is interpreted as a tuple of the
-C<KeyConstr>'s C<attrs> attribute.  Iff there are no C<attr_name_lex>, then
+a Muldis D `sys.std.Core.Type.Cat.KeyConstr` value.  Each `attr_name_lex`
+element of a `key_constr_payload` is interpreted as a tuple of the
+`KeyConstr`'s `attrs` attribute.  Iff there are no `attr_name_lex`, then
 we have a nullary key which restricts the relation to have a maximum of 1
-tuple.  The C<key_constr_kind> element of a C<key_constr> node is the sole
-determinant of the value of the C<is_primary> attribute of the resulting
-C<KeyConstr>; C<primary-key> means C<Bool:True>, while C<key-constraint>
-means C<Bool:False>.
+tuple.  The `key_constr_kind` element of a `key_constr` node is the sole
+determinant of the value of the `is_primary` attribute of the resulting
+`KeyConstr`; `primary-key` means `Bool:True`, while `key-constraint`
+means `Bool:False`.
 
 Examples:
 
@@ -3559,7 +3559,7 @@ Examples:
 
 ## Distributed Key Constraint Specification
 
-I<TODO.>
+*TODO.*
 
 ## Subset Constraint Specification
 
@@ -3606,23 +3606,23 @@ Grammar:
     <parent_attr> ::=
         <attr_name_lex>
 
-A C<subset_constr> node specifies a (non-distributed) subset constraint
+A `subset_constr` node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
-that lives in a depot or subdepot.  A C<subset_constr> node in the PTMD_STD
-grammar corresponds directly to a tuple of the C<subset_constrs> attribute
-of a value of the catalog data type C<sys.std.Core.Type.Cat.Depot>, which
+that lives in a depot or subdepot.  A `subset_constr` node in the PTMD_STD
+grammar corresponds directly to a tuple of the `subset_constrs` attribute
+of a value of the catalog data type `sys.std.Core.Type.Cat.Depot`, which
 is how a (non-distributed) subset constraint
 specification is actually represented in Muldis D's nonsugared form,
-which is as a component of the system catalog.  The C<subset_constrs> tuple
-has 2 primary attributes, C<name> and C<material>, which are valued from
-the C<subset_constr> node's C<material_declared_name> and
-C<subset_constr_payload> elements, respectively.
+which is as a component of the system catalog.  The `subset_constrs` tuple
+has 2 primary attributes, `name` and `material`, which are valued from
+the `subset_constr` node's `material_declared_name` and
+`subset_constr_payload` elements, respectively.
 
-A C<subset_constr_payload> specifies an entire (non-distributed) subset
+A `subset_constr_payload` specifies an entire (non-distributed) subset
 constraint, for a relation type, besides its name.  It is interpreted
-as a Muldis D C<sys.std.Core.Type.Cat.SubsetConstr> value.
+as a Muldis D `sys.std.Core.Type.Cat.SubsetConstr` value.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
 Examples:
 
@@ -3639,7 +3639,7 @@ Examples:
 
 ## Distributed Subset Constraint Specification
 
-I<TODO.>
+*TODO.*
 
 ## Stimulus-Response Rule Specification
 
@@ -3659,24 +3659,24 @@ Grammar:
     <response> ::=
         <routine_name>
 
-A C<stim_resp_rule> node specifies a new stimulus-response rule that lives
-in a depot or subdepot.  A C<stim_resp_rule> node in the PTMD_STD grammar
-corresponds directly to a tuple of the C<stim_resp_rules> attribute of a
-value of the catalog data type C<sys.std.Core.Type.Cat.Depot>, which is how
+A `stim_resp_rule` node specifies a new stimulus-response rule that lives
+in a depot or subdepot.  A `stim_resp_rule` node in the PTMD_STD grammar
+corresponds directly to a tuple of the `stim_resp_rules` attribute of a
+value of the catalog data type `sys.std.Core.Type.Cat.Depot`, which is how
 a stimulus-response rule specification is actually represented in Muldis
 D's nonsugared form, which is as a component of the system catalog.  The
-C<stim_resp_rules> tuple has 2 primary attributes, C<name> and C<material>,
-which are valued from the C<stim_resp_rule> node's
-C<material_declared_name> and C<stim_resp_rule_payload> elements,
+`stim_resp_rules` tuple has 2 primary attributes, `name` and `material`,
+which are valued from the `stim_resp_rule` node's
+`material_declared_name` and `stim_resp_rule_payload` elements,
 respectively.
 
-A C<stim_resp_rule_payload> specifies an entire stimulus-response rule
+A `stim_resp_rule_payload` specifies an entire stimulus-response rule
 besides its name.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.StimRespRule> value.  The C<stimulus> and
-C<response> elements specify the C<stimulus> and C<response> attributes,
-respectively, of the new C<StimRespRule>, which is the kind of stimulus and
+`sys.std.Core.Type.Cat.StimRespRule` value.  The `stimulus` and
+`response` elements specify the `stimulus` and `response` attributes,
+respectively, of the new `StimRespRule`, which is the kind of stimulus and
 the name of the procedure being invoked in response.  Currently,
-C<after-mount> is the only kind of stimulus supported; other kinds will be
+`after-mount` is the only kind of stimulus supported; other kinds will be
 defined in the future.
 
 Examples:
@@ -3714,24 +3714,24 @@ Grammar:
     <named_expr> ::=
         [let <ws>]? <expr_name> <ws> <infix_bind_op> <ws> <expr>
 
-An C<expr> node is the general case of a Muldis D value expression tree
+An `expr` node is the general case of a Muldis D value expression tree
 (which normally denotes a Muldis D value selector), which must be composed
-beneath a C<depot>, or specifically into a routine or
+beneath a `depot`, or specifically into a routine or
 type or constraint (etc) definition, because in the general case
-an C<expr> can I<not> be completely evaluated at compile time.
+an `expr` can *not* be completely evaluated at compile time.
 
-An C<expr> node is a proper superset of a C<value> node, and any
-occurrences of C<expr> nodes in this document may optionally be substituted
-with C<value> nodes on a per-instance basis.
+An `expr` node is a proper superset of a `value` node, and any
+occurrences of `expr` nodes in this document may optionally be substituted
+with `value` nodes on a per-instance basis.
 
-An C<expr> node in the PTMD_STD grammar corresponds directly to a tuple of
+An `expr` node in the PTMD_STD grammar corresponds directly to a tuple of
 an attribute of a value of the catalog data type
-C<sys.std.Core.Type.Cat.ExprNodeSet>, which is how a value expression node
+`sys.std.Core.Type.Cat.ExprNodeSet`, which is how a value expression node
 is actually represented in Muldis D's nonsugared form, which is as a
 component of the system catalog.  Or more specifically, an entire tree of
-PTMD_STD C<expr> nodes corresponds to a set of said attribute tuples, one
-attribute tuple per C<expr> node.  In the nonsugared form, every C<expr>
-node has an explicitly designated name, as per a PTMD_STD C<named_expr>
+PTMD_STD `expr` nodes corresponds to a set of said attribute tuples, one
+attribute tuple per `expr` node.  In the nonsugared form, every `expr`
+node has an explicitly designated name, as per a PTMD_STD `named_expr`
 node, and all child nodes are not declared inline with their parent nodes
 but rather are declared in parallel with them, and the parents refer to
 their children by their names.  A feature of the PTMD_STD grammar is that
@@ -3739,33 +3739,33 @@ expression nodes may be declared without explicit names, such that the
 parser would generate names for them when deriving system catalog entries,
 and that is why PTMD_STD supports, and encourages the use of for code
 brevity/readability, the use of inline-declared expression nodes,
-especially so when the C<expr> in question is an C<opaque_value_literal>.
+especially so when the `expr` in question is an `opaque_value_literal`.
 
-Iff an C<expr> is a C<delim_expr>, then it is interpreted simply as if it
-were its child C<expr> element; the I<only> reason that the C<delim_expr>
+Iff an `expr` is a `delim_expr`, then it is interpreted simply as if it
+were its child `expr` element; the *only* reason that the `delim_expr`
 grammar element exists is to assist the parser in determining the
-boundaries of an C<expr> where code otherwise might be ambiguous or be
+boundaries of an `expr` where code otherwise might be ambiguous or be
 interpreted differently than desired due to nesting precedence rules (see
 **NESTING PRECEDENCE RULES** for more about those).  There is never a
-distinct node in a parser's output for a C<delim_expr> itself.
+distinct node in a parser's output for a `delim_expr` itself.
 
-Iff an C<expr> is an C<expr_name>, then this typically means that the
-parent C<expr> is having at least one of its children declared with an
+Iff an `expr` is an `expr_name`, then this typically means that the
+parent `expr` is having at least one of its children declared with an
 explicit name rather than inline, same as the corresponding system catalog
-entry would do, and then the C<expr_name> is the invocation name of that
-child.  Alternately, the C<expr_name> may be the invocation name of one of
-the expression-containing routine's parameters, in which case the C<expr>
+entry would do, and then the `expr_name` is the invocation name of that
+child.  Alternately, the `expr_name` may be the invocation name of one of
+the expression-containing routine's parameters, in which case the `expr`
 in question represents the current argument to that parameter; this also is
 exactly the same as a corresponding catalog entry for using an argument.
 
-Iff an C<expr> is a C<named_expr>, then the C<expr> element of the
-C<named_expr> is being declared with an explicit name, and the C<expr_name>
-element of the C<named_expr> is that name.  But if the C<expr> element of
-the C<named_expr> is an C<expr_name> (or a C<named_expr> I<TODO: or a
-C<param> >), then the C<named_expr> is in fact declaring a new node itself
+Iff an `expr` is a `named_expr`, then the `expr` element of the
+`named_expr` is being declared with an explicit name, and the `expr_name`
+element of the `named_expr` is that name.  But if the `expr` element of
+the `named_expr` is an `expr_name` (or a `named_expr` I<TODO: or a
+`param` >), then the `named_expr` is in fact declaring a new node itself
 (rather than simply naming its child node), which is a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.AccExprNodeSet> value; the new node is simply
-declaring an alias for another node, namely the C<expr> element.
+`sys.std.Core.Type.Cat.AccExprNodeSet` value; the new node is simply
+declaring an alias for another node, namely the `expr` element.
 
 Examples:
 
@@ -3791,20 +3791,20 @@ Grammar:
     <acc_via_anon> ::=
         <expr> <unspace> '.' <nc_nonempty>
 
-An C<accessor> node represents an accessor or alias for an attribute of
+An `accessor` node represents an accessor or alias for an attribute of
 another, tuple-valued expression node.  It is interpreted as a tuple of a
-Muldis D C<sys.std.Core.Type.Cat.AccExprNodeSet> value.  If an C<accessor>
-is an C<acc_via_named>, then the C<NameChain_payload> element specifies
-the C<target> attribute of the new C<AccExprNodeSet>.  If an C<accessor> is
-an C<acc_via_topic>, then it is interpreted in exactly the same manner as
-for an C<acc_via_named> except that the C<NameChain_payload> element is
-interpreted with a C<topic> element prepended to it; so for example a
-C<.foo> is treated as being C<topic.foo>.  If an C<accessor> is
-an C<acc_via_anon>, then the C<target> is derived from a catenation of the
-node name that C<expr> has (explicitly or that will be generated for it by
-the parser) with the C<nc_nonempty> in that order.  Note that an
-C<acc_via_anon> whose C<expr> is an C<expr_name> is also an
-C<acc_via_named>, and vice-versa.
+Muldis D `sys.std.Core.Type.Cat.AccExprNodeSet` value.  If an `accessor`
+is an `acc_via_named`, then the `NameChain_payload` element specifies
+the `target` attribute of the new `AccExprNodeSet`.  If an `accessor` is
+an `acc_via_topic`, then it is interpreted in exactly the same manner as
+for an `acc_via_named` except that the `NameChain_payload` element is
+interpreted with a `topic` element prepended to it; so for example a
+`.foo` is treated as being `topic.foo`.  If an `accessor` is
+an `acc_via_anon`, then the `target` is derived from a catenation of the
+node name that `expr` has (explicitly or that will be generated for it by
+the parser) with the `nc_nonempty` in that order.  Note that an
+`acc_via_anon` whose `expr` is an `expr_name` is also an
+`acc_via_named`, and vice-versa.
 
 Examples:
 
@@ -3832,38 +3832,38 @@ Grammar:
     <func_arg> ::=
         <named_ro_arg> | <anon_ro_arg> | <same_named_ro_arg>
 
-A C<func_invo> node represents the result of invoking a named
+A `func_invo` node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
-Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  The
-C<routine_name> element specifies the C<function> attribute of the new
-C<FuncInvoExprNodeSet>, which is the name of the function being invoked,
-and the C<func_arg_list> element specifies the C<args> attribute.
+Muldis D `sys.std.Core.Type.Cat.FuncInvoExprNodeSet` value.  The
+`routine_name` element specifies the `function` attribute of the new
+`FuncInvoExprNodeSet`, which is the name of the function being invoked,
+and the `func_arg_list` element specifies the `args` attribute.
 
 In the general case of a function invocation, all of the arguments are
-named, as per C<named_ro_arg>, and formatting a C<func_invo> node that
+named, as per `named_ro_arg`, and formatting a `func_invo` node that
 way is always allowed.  In some (common) special cases, some (which might
-be all) arguments may be anonymous, as per C<anon_ro_arg>.
+be all) arguments may be anonymous, as per `anon_ro_arg`.
 
-With just functions in the top-level namespaces C<sys.std>,
+With just functions in the top-level namespaces `sys.std`,
 these 4 special cases apply:  If a function has exactly one parameter, then
 it may be invoked with a single anonymous argument and the latter will bind
 to that parameter.  Or, if a function has multiple parameters but exactly
 one of those is mandatory, then it may be invoked with just one anonymous
 argument, which is assumed to bind to the single mandatory parameter, and
 all optional arguments must be named.  Or, if a function has multiple
-mandatory parameters and one of them is named C<topic>, then it may be
+mandatory parameters and one of them is named `topic`, then it may be
 invoked with a single anonymous argument and the latter will bind to that
 parameter.  Or, if a function has multiple mandatory parameters and two of
-them are named C<topic> and C<other>, then it may be invoked with two
+them are named `topic` and `other`, then it may be invoked with two
 anonymous arguments and the latter will bind to those parameters in
-sequential order, the first one to C<topic> and the second one to C<other>.
+sequential order, the first one to `topic` and the second one to `other`.
 
-With just functions in all top-level namespaces I<except> C<sys.std>,
+With just functions in all top-level namespaces *except* `sys.std`,
 these 2 special cases apply (similar to the prior-mentioned latter
 2):  If a function invocation has either 1 or 2 anonymous arguments, then
-they will be treated as if they were named arguments for the C<topic> and
-C<other> parameters; the only or sequentially first argument will bind to
-C<topic>, and any sequentially second argument will bind to C<other>.
+they will be treated as if they were named arguments for the `topic` and
+`other` parameters; the only or sequentially first argument will bind to
+`topic`, and any sequentially second argument will bind to `other`.
 
 One reason for this difference between treatment of top-level namespaces is
 it allows the Muldis D parser to convert all the anonymous arguments to
@@ -3874,22 +3874,22 @@ helps with self-documentation; programmers wanting to know an anonymous
 argument's parameter name won't have to look outside the
 language spec to find the answer.
 
-I<Maybe TODO:  Consider adding a language pragma to enable use of the first
+*Maybe TODO:  Consider adding a language pragma to enable use of the first
 4 special cases with functions in all top-level namespaces, where the cost
 of enabling is added implementation complexity and a reduction of the
-ability to parse exploiting Muldis D code piecemeal.>
+ability to parse exploiting Muldis D code piecemeal.*
 
-A special shorthand for C<named_ro_arg> also exists, C<same_named_ro_arg>,
-which may be used only if the C<expr> of the otherwise-C<named_ro_arg> is
-an C<expr_name> and that C<expr_name> is identical to the
-C<invo_param_name>.
+A special shorthand for `named_ro_arg` also exists, `same_named_ro_arg`,
+which may be used only if the `expr` of the otherwise-`named_ro_arg` is
+an `expr_name` and that `expr_name` is identical to the
+`invo_param_name`.
 In this situation, the identical name can be specified just once, which is
 the shorthand; for example, the named argument `foo => foo` may
 alternately be written out as `=>foo`.
 This shorthand is to help with the possibly common
 situation where two successive routines in a call-chain have any same-named
 parameters and arguments are simply being passed through.
-(This shorthand is like Raku's C<:$a> being short for `a => $a`.)
+(This shorthand is like Raku's `:$a` being short for `a => $a`.)
 
 Examples:
 
@@ -3944,15 +3944,15 @@ Grammar:
     <else_expr> ::=
         <expr>
 
-An C<if_else_expr> node represents a ternary if-then-else control flow
+An `if_else_expr` node represents a ternary if-then-else control flow
 expression.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.IfElseExprNodeSet> value.  The C<if_expr>,
-C<then_expr>, and C<else_expr> elements specify the C<if>, C<then>, and
-C<else> attributes, respectively, of the new C<IfElseExprNodeSet>;
-C<if_expr> is the condition to evaluate at runtime and must result in a
-C<Bool>; iff the result of that condition is C<Bool:True> then the
-C<then_expr> is evaluated and its result is the result of the whole
-if-then-else expression at runtime; otherwise, the C<else_expr> is
+`sys.std.Core.Type.Cat.IfElseExprNodeSet` value.  The `if_expr`,
+`then_expr`, and `else_expr` elements specify the `if`, `then`, and
+`else` attributes, respectively, of the new `IfElseExprNodeSet`;
+`if_expr` is the condition to evaluate at runtime and must result in a
+`Bool`; iff the result of that condition is `Bool:True` then the
+`then_expr` is evaluated and its result is the result of the whole
+if-then-else expression at runtime; otherwise, the `else_expr` is
 evaluated and its result is the whole if-then-else's result.
 
 Examples:
@@ -3990,20 +3990,20 @@ Grammar:
     <default_expr> ::=
         <expr>
 
-A C<given_when_def_expr> node represents an N-way given-when-default
+A `given_when_def_expr` node represents an N-way given-when-default
 switch control flow expression that dispatches based on matching a single
 value with several options.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet> value.  The C<given_expr>
-element specifies the C<given> attribute of the new
-C<GivenWhenDefExprNodeSet>, which is the control value for the expression.
-The whole collection of nonordered 0..N C<when_expr> + C<then_expr>
-elements specifies the C<when_then> attribute, which is a set of I<when>
-comparands; if any of these I<when> values matches the value of C<given>,
-its associated I<then> result value is the result of the
-C<given_when_def_expr>.  The C<default_expr> element specifies the
-C<default> attribute, which determines the result value of the
-C<given_when_def_expr> at runtime if either C<when_then> is an empty set or
-none of its comparands match C<given>.
+`sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet` value.  The `given_expr`
+element specifies the `given` attribute of the new
+`GivenWhenDefExprNodeSet`, which is the control value for the expression.
+The whole collection of nonordered 0..N `when_expr` + `then_expr`
+elements specifies the `when_then` attribute, which is a set of *when*
+comparands; if any of these *when* values matches the value of `given`,
+its associated *then* result value is the result of the
+`given_when_def_expr`.  The `default_expr` element specifies the
+`default` attribute, which determines the result value of the
+`given_when_def_expr` at runtime if either `when_then` is an empty set or
+none of its comparands match `given`.
 
 Examples:
 
@@ -4029,33 +4029,33 @@ Grammar:
     <primed_func> ::=
         <material_ref> <unspace> <func_arg_list>
 
-A C<material_ref> node represents a selector invocation for a value of the
-C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
-of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.  It is
+A `material_ref` node represents a selector invocation for a value of the
+`sys.std.Core.Type.Cat.AbsPathMaterialNC` type, which is selected in terms
+of a value of the `sys.std.Core.Type.Cat.RelPathMaterialNC` type.  It is
 interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet> value.  The
-C<material_name> element specifies the C<referencing> attribute of the new
-C<APMaterialNCSelExprNodeSet>, which is the name, from the point of view of
+`sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet` value.  The
+`material_name` element specifies the `referencing` attribute of the new
+`APMaterialNCSelExprNodeSet`, which is the name, from the point of view of
 the routine embedding this expression node, of the routine or type that the
-new C<AbsPathMaterialNC> value is supposed to facilitate portable invoking
+new `AbsPathMaterialNC` value is supposed to facilitate portable invoking
 of, from any other routine besides the embedding routine.
 
-A C<material_ref> node also serves as a less-verbose alternate syntax for a
-C<PNSQNameChain> node, but only for C<PNSQNameChain> values where you
+A `material_ref` node also serves as a less-verbose alternate syntax for a
+`PNSQNameChain` node, but only for `PNSQNameChain` values where you
 actually don't want a relative-path name-chain value.  For any
-C<material_ref> node whose C<material_name> is already an
-C<AbsPathMaterialNC> payload, a Muldis D parser will silently replace the
-C<material_ref> node with a C<PNSQNameChain> node whose payload is its
-C<material_name>.  In other words, you can safely use any primary namespace
-qualified name chain in a C<material_ref> node and get the result that you
+`material_ref` node whose `material_name` is already an
+`AbsPathMaterialNC` payload, a Muldis D parser will silently replace the
+`material_ref` node with a `PNSQNameChain` node whose payload is its
+`material_name`.  In other words, you can safely use any primary namespace
+qualified name chain in a `material_ref` node and get the result that you
 would reasonably expect.  This is primarily useful for system-defined types
 and routines.
 
-A C<primed_func> node represents a value of the
-C<sys.std.Core.Type.Cat.PrimedFuncNC> type.  It is a special shorthand
-syntax for a C<Tuple> node that defines a tuple with 2 attributes,
-C<function> and C<args>, where the first's value is a C<material_ref> node
-and the second's value is a C<Tuple> node as per a C<func_invo> node's
+A `primed_func` node represents a value of the
+`sys.std.Core.Type.Cat.PrimedFuncNC` type.  It is a special shorthand
+syntax for a `Tuple` node that defines a tuple with 2 attributes,
+`function` and `args`, where the first's value is a `material_ref` node
+and the second's value is a `Tuple` node as per a `func_invo` node's
 argument list.
 
 Examples:
@@ -4103,20 +4103,20 @@ Grammar:
     <named_stmt> ::=
         [let <ws>]? <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
 
-A C<proc_stmt> node is the general case of a Muldis D statement tree, which
-must be composed beneath a C<depot>, or specifically into a procedure
-definition, because in the general case a C<proc_stmt> can I<not> be
+A `proc_stmt` node is the general case of a Muldis D statement tree, which
+must be composed beneath a `depot`, or specifically into a procedure
+definition, because in the general case a `proc_stmt` can *not* be
 completely evaluated at compile time.
 
-A C<proc_stmt> node in the PTMD_STD grammar corresponds directly to a tuple
+A `proc_stmt` node in the PTMD_STD grammar corresponds directly to a tuple
 of an attribute of a value of the catalog data type
-C<sys.std.Core.Type.Cat.StmtNodeSet>, which is how a statement node is
+`sys.std.Core.Type.Cat.StmtNodeSet`, which is how a statement node is
 actually represented in Muldis D's nonsugared form, which is as a component
 of the system catalog.  Or more specifically, an entire tree of PTMD_STD
-C<proc_stmt> nodes corresponds to a set of said attribute tuples, one
-attribute tuple per C<proc_stmt> node.  In the nonsugared form, every
-C<proc_stmt> node has an explicitly designated name, as per a PTMD_STD
-C<named_stmt> node, and all child nodes are not declared inline with their
+`proc_stmt` nodes corresponds to a set of said attribute tuples, one
+attribute tuple per `proc_stmt` node.  In the nonsugared form, every
+`proc_stmt` node has an explicitly designated name, as per a PTMD_STD
+`named_stmt` node, and all child nodes are not declared inline with their
 parent nodes but rather are declared in parallel with them, and the parents
 refer to their children by their names.  A feature of the PTMD_STD grammar
 is that statement nodes may be declared without explicit names, such that
@@ -4124,10 +4124,10 @@ the parser would generate names for them when deriving system catalog
 entries, and that is why PTMD_STD supports, and encourages the use of for
 code brevity/readability, the use of inline-declared statement nodes.
 
-Iff a C<proc_stmt> is an C<stmt_name>, then this typically means that the
-parent C<proc_stmt> is having at least one of its children declared with an
+Iff a `proc_stmt` is an `stmt_name`, then this typically means that the
+parent `proc_stmt` is having at least one of its children declared with an
 explicit name rather than inline, same as the corresponding system catalog
-entry would do, and then the C<stmt_name> is the invocation name of that
+entry would do, and then the `stmt_name` is the invocation name of that
 child.
 
 Note that, regarding Muldis D's feature of a statement node having an
@@ -4150,18 +4150,18 @@ Grammar:
     <compound_stmt> ::=
         <nonempty_procedure_body_or_compound_stmt>
 
-A C<compound_stmt> node specifies a procedure compound statement composed
+A `compound_stmt` node specifies a procedure compound statement composed
 of a sequence of 0..N other statements such that those other statements
 execute in this given sequence; each statement of the sequence conceptually
 executes at a different time.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.CompoundStmtNodeSet> value.  Each C<proc_stmt>
-element of a C<compound_statement> is a nested statement that is
-interpreted as its own tuple of an attribute of the C<stmt> attribute of
-the host C<Procedure>; for each said tuple, there exists an element of the
-C<CompoundStmtNodeSet>'s C<stmts> attribute which matches the C<name>
-attribute of the tuple.  Any C<with_clause> or C<proc_var> direct elements
-of a C<compound_stmt> are interpreted as if they were directly in the
-C<nonempty_procedure_body> that the C<compound_stmt> is under.
+`sys.std.Core.Type.Cat.CompoundStmtNodeSet` value.  Each `proc_stmt`
+element of a `compound_statement` is a nested statement that is
+interpreted as its own tuple of an attribute of the `stmt` attribute of
+the host `Procedure`; for each said tuple, there exists an element of the
+`CompoundStmtNodeSet`'s `stmts` attribute which matches the `name`
+attribute of the tuple.  Any `with_clause` or `proc_var` direct elements
+of a `compound_stmt` are interpreted as if they were directly in the
+`nonempty_procedure_body` that the `compound_stmt` is under.
 
 Examples:
 
@@ -4178,20 +4178,20 @@ Grammar:
     <multi_upd_stmt> ::=
         <nonempty_recipe_body_or_multi_upd_stmt>
 
-A C<multi_upd_stmt> node specifies a multi-update statement, which is a
+A `multi_upd_stmt` node specifies a multi-update statement, which is a
 procedure compound statement composed of a set of 0..N other statements
 such that those other statements execute all as one and collectively at a
 single point in time, as if the collection were a single statement that did
 all the work of the
 component statements itself.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.MultiUpdStmtNodeSet> value.  Each C<proc_stmt>
-element of a C<multi_upd_stmt> is a nested statement that is
-interpreted as its own tuple of an attribute of the C<stmt> attribute of
-the host C<Procedure>; for each said tuple, there exists an element of the
-C<MultiUpdStmtNodeSet>'s C<stmts> attribute which matches the C<name>
-attribute of the tuple.  Any C<with_clause> direct elements
-of a C<multi_upd_stmt> are interpreted as if they were directly in the
-C<nonempty_procedure_body> that the C<multi_upd_stmt> is under.
+`sys.std.Core.Type.Cat.MultiUpdStmtNodeSet` value.  Each `proc_stmt`
+element of a `multi_upd_stmt` is a nested statement that is
+interpreted as its own tuple of an attribute of the `stmt` attribute of
+the host `Procedure`; for each said tuple, there exists an element of the
+`MultiUpdStmtNodeSet`'s `stmts` attribute which matches the `name`
+attribute of the tuple.  Any `with_clause` direct elements
+of a `multi_upd_stmt` are interpreted as if they were directly in the
+`nonempty_procedure_body` that the `multi_upd_stmt` is under.
 
 Examples:
 
@@ -4253,22 +4253,22 @@ Grammar:
     <same_named_ro_arg> ::=
         '=>' <invo_param_name>
 
-A C<proc_invo> node represents the invocation of a named procedure,
+A `proc_invo` node represents the invocation of a named procedure,
 with specific subject-to-update or read-only arguments, as a
 statement of a procedure.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.ProcInvoStmtNodeSet> value.  The C<routine_name>
-element specifies the C<procedure> attribute of the new
-C<ProcInvoStmtNodeSet>, which is the name of the procedure being
-invoked, and the C<proc_arg_list> element specifies the C<upd_args>
-plus C<ro_args> attributes, one tuple thereof per C<proc_arg>; each
-C<proc_arg> having an C<upd_sigil> yields an C<upd_args> tuple, and
-each C<proc_arg> without one yields a C<ro_args> tuple.
+`sys.std.Core.Type.Cat.ProcInvoStmtNodeSet` value.  The `routine_name`
+element specifies the `procedure` attribute of the new
+`ProcInvoStmtNodeSet`, which is the name of the procedure being
+invoked, and the `proc_arg_list` element specifies the `upd_args`
+plus `ro_args` attributes, one tuple thereof per `proc_arg`; each
+`proc_arg` having an `upd_sigil` yields an `upd_args` tuple, and
+each `proc_arg` without one yields a `ro_args` tuple.
 
 In the general case of a procedure invocation, all of the arguments are
-named, as per C<named_[upd|ro]_arg>, and formatting a C<proc_invo> node
+named, as per `named_[upd|ro]_arg`, and formatting a `proc_invo` node
 that way is always allowed.  In some (common) special cases, some (which
-might be all) arguments may be anonymous, as per C<anon_[upd|ro]_arg>.  For
-further details on this, see the C<func_invo> node kind, under **Generic
+might be all) arguments may be anonymous, as per `anon_[upd|ro]_arg`.  For
+further details on this, see the `func_invo` node kind, under **Generic
 Function Invocation Expressions**, because the rules regarding when
 arguments may be anonymous or must be named are the same for both main
 routine kinds.
@@ -4277,15 +4277,15 @@ The sole exception to said rules is that the rules are evaluated
 independently for subject-to-update arguments and read-only arguments,
 because those 2 argument groups and their corresponding parameters
 effectively have independent namespaces with respect to that the presence
-or absence of an C<upd_sigil> can always be counted on to distinguish the
+or absence of an `upd_sigil` can always be counted on to distinguish the
 groups.  This means, for example, that you can have an anonymous
 subject-to-update argument plus an anonymous read-only argument to a
 system-defined procedure where none of the corresponding parameters are
-named C<topic>.
+named `topic`.
 
-The C<proc_invo> node kind also has the same special shorthand for named
-arguments, in the form of C<same_named_[upd|ro]_arg>, as the C<func_invo>
-node kind does with its C<same_named_ro_arg>, but that C<proc_invo>'s
+The `proc_invo` node kind also has the same special shorthand for named
+arguments, in the form of `same_named_[upd|ro]_arg`, as the `func_invo`
+node kind does with its `same_named_ro_arg`, but that `proc_invo`'s
 version also works with subject-to-update arguments.
 
 Examples:
@@ -4322,21 +4322,21 @@ Grammar:
     <catch_stmt> ::=
         <proc_stmt>
 
-A C<try_catch_stmt> node represents a try-catch control flow statement.  It
+A `try_catch_stmt` node represents a try-catch control flow statement.  It
 is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.TryCatchStmtNodeSet> value.  The C<try_stmt> and
-C<catch_stmt> elements specify the C<try> and C<catch> attributes,
-respectively, of the new C<TryCatchStmtNodeSet>, which are the names or
+`sys.std.Core.Type.Cat.TryCatchStmtNodeSet` value.  The `try_stmt` and
+`catch_stmt` elements specify the `try` and `catch` attributes,
+respectively, of the new `TryCatchStmtNodeSet`, which are the names or
 definitions of statements that represent the invocation of named
-procedures.  The C<try> routine is unconditionally invoked first and then
+procedures.  The `try` routine is unconditionally invoked first and then
 iff
-C<try> throws an exception then it will be caught and the C<catch> routine,
-if any, will be invoked immediately after to handle it; if C<catch> also
+`try` throws an exception then it will be caught and the `catch` routine,
+if any, will be invoked immediately after to handle it; if `catch` also
 throws an exception then it will not be caught.  It is invalid for
-C<try_stmt> or C<catch_stmt> to name or define a procedure statement that
+`try_stmt` or `catch_stmt` to name or define a procedure statement that
 isn't just a routine invocation, though the grammar itself doesn't say so;
-mainly the valid options are: C<proc_invo>, C<multi_upd_stmt>,
-C<proc_invo_alt_syntax>, and C<stmt_name> or C<named_stmt> for the first 3.
+mainly the valid options are: `proc_invo`, `multi_upd_stmt`,
+`proc_invo_alt_syntax`, and `stmt_name` or `named_stmt` for the first 3.
 
 Examples:
 
@@ -4359,14 +4359,14 @@ Grammar:
     <else_stmt> ::=
         <proc_stmt>
 
-An C<if_else_stmt> node represents a ternary if-then-else control flow
+An `if_else_stmt` node represents a ternary if-then-else control flow
 statement.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.IfElseStmtNodeSet> value.  The C<if_expr>,
-C<then_stmt>, and C<else_stmt> elements specify the C<if>, C<then>, and
-C<else> attributes, respectively, of the new C<IfElseStmtNodeSet>;
-C<if_expr> is the condition to evaluate at runtime and must result in a
-C<Bool>; iff the result of that condition is C<Bool:True> then C<else_stmt>
-is invoked; otherwise, C<then_stmt> is invoked.
+`sys.std.Core.Type.Cat.IfElseStmtNodeSet` value.  The `if_expr`,
+`then_stmt`, and `else_stmt` elements specify the `if`, `then`, and
+`else` attributes, respectively, of the new `IfElseStmtNodeSet`;
+`if_expr` is the condition to evaluate at runtime and must result in a
+`Bool`; iff the result of that condition is `Bool:True` then `else_stmt`
+is invoked; otherwise, `then_stmt` is invoked.
 
 Examples:
 
@@ -4390,20 +4390,20 @@ Grammar:
     <default_stmt> ::=
         <proc_stmt>
 
-A C<given_when_def_stmt> node represents an N-way given-when-default switch
+A `given_when_def_stmt` node represents an N-way given-when-default switch
 control flow statement that dispatches based on matching a single value
 with several options.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet> value.  The
-C<given_expr> element specifies the C<given> attribute of the new
-C<GivenWhenDefStmtNodeSet>, which is the control value for the statement.
-The whole collection of nonordered 0..N C<when_expr> + C<then_stmt>
-elements specifies the C<when_then> attribute, which is a set of I<when>
-comparands; if any of these I<when> values matches the value of C<given>,
-its associated I<then> statement is executed as if it were the whole
-C<given_when_def_stmt>.  The C<default_stmt> element specifies the
-C<default> attribute, which determines the statement that is executed at
-runtime as if it were the whole C<given_when_def_stmt> if either
-C<proc_when_then> is an empty set or none of its comparands match C<given>.
+`sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet` value.  The
+`given_expr` element specifies the `given` attribute of the new
+`GivenWhenDefStmtNodeSet`, which is the control value for the statement.
+The whole collection of nonordered 0..N `when_expr` + `then_stmt`
+elements specifies the `when_then` attribute, which is a set of *when*
+comparands; if any of these *when* values matches the value of `given`,
+its associated *then* statement is executed as if it were the whole
+`given_when_def_stmt`.  The `default_stmt` element specifies the
+`default` attribute, which determines the statement that is executed at
+runtime as if it were the whole `given_when_def_stmt` if either
+`proc_when_then` is an empty set or none of its comparands match `given`.
 
 Examples:
 
@@ -4435,10 +4435,10 @@ Grammar:
     <loop_stmt> ::=
         loop <ws> <proc_stmt>
 
-The 3 node kinds C<leave_stmt>, C<iterate_stmt>, C<loop_stmt> are all very
+The 3 node kinds `leave_stmt`, `iterate_stmt`, `loop_stmt` are all very
 useable independently and are also commonly used together.
 
-A C<leave_stmt> node represents an instruction to abnormally exit the block
+A `leave_stmt` node represents an instruction to abnormally exit the block
 defined by a parent statement node (a normal exit is to simply execute to
 the end of the block).  If the parent node in question is the root
 (compound) statement node for the host procedure, that is, if the parent
@@ -4446,41 +4446,41 @@ node has the empty string as its name, then the latter will be exited; this
 is how a "return" statement is represented.  If the parent node in question
 is an iterating or looping statement, then any remaining iterations it
 might have had are skipped, especially useful if it was an infinite loop.
-A C<leave_stmt> node is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.LeaveStmtNodeSet> value.  The optional C<stmt_name>
+A `leave_stmt` node is interpreted as a tuple of a Muldis D
+`sys.std.Core.Type.Cat.LeaveStmtNodeSet` value.  The optional `stmt_name`
 element specifies the name of the parent statement node to completely
-abort; that name becomes the C<iterate> attribute of the new
-C<LeaveStmtNodeSet> tuple.  Iff the C<leave_stmt> has no C<stmt_name>
+abort; that name becomes the `iterate` attribute of the new
+`LeaveStmtNodeSet` tuple.  Iff the `leave_stmt` has no `stmt_name`
 element then the parser will automatically generate said element with a
 value of the empty string, meaning it is a "return" statement.
 
-An C<iterate_stmt> node represents an instruction to abnormally end the
+An `iterate_stmt` node represents an instruction to abnormally end the
 current iteration of a looping block defined by a parent statement node,
 and then start at the beginning of the next iteration of that loop if there
 are any left; or, it can also be used to "redo" any non-looping parent
 statement.  It is interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.IterateStmtNodeSet> value.  The optional
-C<stmt_name> element specifies the name of the parent statement node to
-continue execution at the beginning of; that name becomes the C<iterate>
-attribute of the new C<IterateStmtNodeSet> tuple.  Iff the C<iterate_stmt>
-has no C<stmt_name> element then the parser will automatically generate
-said element with a value of the empty string.  Having the C<stmt_name>
+`sys.std.Core.Type.Cat.IterateStmtNodeSet` value.  The optional
+`stmt_name` element specifies the name of the parent statement node to
+continue execution at the beginning of; that name becomes the `iterate`
+attribute of the new `IterateStmtNodeSet` tuple.  Iff the `iterate_stmt`
+has no `stmt_name` element then the parser will automatically generate
+said element with a value of the empty string.  Having the `stmt_name`
 value of the empty string means that the root (compound) statement of the
-host procedure is being referenced, in which case the C<iterate_stmt> is
+host procedure is being referenced, in which case the `iterate_stmt` is
 saying to redo the whole procedure.
 
-A C<loop_stmt> node represents a generic looping statement block which
+A `loop_stmt` node represents a generic looping statement block which
 iterates until a child "leave" statement executes.  It is interpreted as a
-tuple of a Muldis D C<sys.std.Core.Type.Cat.LoopStmtNodeSet> value.  The
-C<proc_stmt> element specifies the name or definition of the child
+tuple of a Muldis D `sys.std.Core.Type.Cat.LoopStmtNodeSet` value.  The
+`proc_stmt` element specifies the name or definition of the child
 statement node to be repeatedly executed; the name of that statement
-becomes the C<loop> attribute of the new C<LoopStmtNodeSet> tuple.
+becomes the `loop` attribute of the new `LoopStmtNodeSet` tuple.
 
-A C<loop_stmt> node in combination with C<leave_stmt> or C<iterate_stmt>
+A `loop_stmt` node in combination with `leave_stmt` or `iterate_stmt`
 nodes is useful for a more ad-hoc means of performing procedural iteration
 as well as for effectively simulating the syntax of common "while" or "for
 i" loops, so Muldis D doesn't include special "while" or "for i" syntax.
-A C<loop_stmt> is I<not> an effective "for each item in list" replacement,
+A `loop_stmt` is *not* an effective "for each item in list" replacement,
 however; Muldis D currently doesn't provide a procedural "foreach", but
 typically any such tasks can effectively be performed in functional code
 using various list-processing relational routines; if a case can be made
@@ -4515,33 +4515,33 @@ Grammar:
         | <ord_compare_op_invo>
         | ...
 
-A C<func_invo_alt_syntax> node represents the result of invoking a named
+A `func_invo_alt_syntax` node represents the result of invoking a named
 system-defined function with specific arguments.  It is interpreted as a
-tuple of a Muldis D C<sys.std.Core.Type.Cat.FuncInvoExprNodeSet> value.  A
-C<func_invo_alt_syntax> node is a lot like a C<func_invo> node in purpose
+tuple of a Muldis D `sys.std.Core.Type.Cat.FuncInvoExprNodeSet` value.  A
+`func_invo_alt_syntax` node is a lot like a `func_invo` node in purpose
 and interpretation but it differs in several significant ways.
 
-While a C<func_invo> node can be used to invoke any function at all,
-a C<func_invo_alt_syntax> node can only invoke a fraction of them, and only
-standard system-defined functions.  While a C<func_invo> node uses a simple
+While a `func_invo` node can be used to invoke any function at all,
+a `func_invo_alt_syntax` node can only invoke a fraction of them, and only
+standard system-defined functions.  While a `func_invo` node uses a simple
 common format with all functions, written in prefix notation with generally
-named arguments, a C<func_invo_alt_syntax> node uses potentially unique
+named arguments, a `func_invo_alt_syntax` node uses potentially unique
 syntax for each function, often written in infix notation, although
 inter-function format consistency is still applied as much as is reasonably
 possible.
 
-Broadly speaking, a C<func_invo_alt_syntax> node has 2-3 kinds of payload
+Broadly speaking, a `func_invo_alt_syntax` node has 2-3 kinds of payload
 elements:  The first is the determinant of what function to invoke,
-hereafter referred to as an I<op> or I<keyword>.  The second is an ordered
-list of 1-N mandatory function inputs, hereafter referred to as I<main op
-args>, whose elements typically have generic names like C<expr> or C<lhs>
-or C<rhs>.  The (optional) third is a named list of optional function
-inputs, hereafter referred to as I<extra op args>, whose elements tend to
-have more purpose-specific names such as C<using_clause>, though note that
-things like C<using_clause> can be either mandatory or optional depending
+hereafter referred to as an *op* or *keyword*.  The second is an ordered
+list of 1-N mandatory function inputs, hereafter referred to as *main op
+args*, whose elements typically have generic names like `expr` or `lhs`
+or `rhs`.  The (optional) third is a named list of optional function
+inputs, hereafter referred to as *extra op args*, whose elements tend to
+have more purpose-specific names such as `using_clause`, though note that
+things like `using_clause` can be either mandatory or optional depending
 on the op they are being used with.
 
-The decision of I<which> system-defined functions get the special alternate
+The decision of *which* system-defined functions get the special alternate
 syntax treatment partly comes down to respecting common good practices in
 programming languages, letting people write code more like how they're
 comfortable with.  Most programming languages only have special syntax for
@@ -4573,22 +4573,22 @@ Grammar:
         | '⋈' | '×'
         | '∪+' | '∪++' | '∩+'
 
-A C<comm_infix_reduce_op_invo> node is for using infix notation to invoke a
+A `comm_infix_reduce_op_invo` node is for using infix notation to invoke a
 (homogeneous) commutative N-adic reduction operator function.  Such a
 function takes exactly 1 actual argument, which is unordered-collection
 typed (set or bag), and the elements of that collection are the inputs
 of the operation; the inputs are all of the same type as each other and of
-the result.  A single C<comm_infix_reduce_op_invo> node is equivalent to a
-single C<func_invo> node whose C<func_arg_list> element defines a single
-argument, whose value is a C<Set> or C<Bag> node, which has a payload
-C<expr> element for each C<expr> element of the
-C<comm_infix_reduce_op_invo>, and the relative sequence of the C<expr>
-elements isn't significant.  A C<comm_infix_reduce_op_invo> node requires
-at least 2 input value providing child nodes (C<expr> must match at least
+the result.  A single `comm_infix_reduce_op_invo` node is equivalent to a
+single `func_invo` node whose `func_arg_list` element defines a single
+argument, whose value is a `Set` or `Bag` node, which has a payload
+`expr` element for each `expr` element of the
+`comm_infix_reduce_op_invo`, and the relative sequence of the `expr`
+elements isn't significant.  A `comm_infix_reduce_op_invo` node requires
+at least 2 input value providing child nodes (`expr` must match at least
 twice), which are its 2-N main op args; if you already have your inputs in
-a single collection-valued node then use C<func_invo> to invoke the
-function instead.  If C<comm_infix_reduce_op> matches more than once in the
-same C<comm_infix_reduce_op_invo>, then all of the C<comm_infix_reduce_op>
+a single collection-valued node then use `func_invo` to invoke the
+function instead.  If `comm_infix_reduce_op` matches more than once in the
+same `comm_infix_reduce_op_invo`, then all of the `comm_infix_reduce_op`
 matches must be identical / the same operator.
 
 Some of the keywords are aliases for each other:
@@ -4664,24 +4664,24 @@ Grammar:
     <noncomm_infix_reduce_op> ::=
         '[<=>]' | '~' | '//'
 
-A C<noncomm_infix_reduce_op_invo> node is for using infix notation to
+A `noncomm_infix_reduce_op_invo` node is for using infix notation to
 invoke a (homogeneous) non-commutative N-adic reduction operator function.
 Such a function takes exactly 1 actual argument, which is
 ordered-collection typed (array), and the elements of that collection are
 the inputs of the operation; the inputs are all of the same type as each
-other and of the result.  A single C<noncomm_infix_reduce_op_invo> node is
-equivalent to a single C<func_invo> node whose C<func_arg_list> element
-defines a single argument, whose value is an C<Array> node, which has a
-payload C<expr> element for each C<expr> element of the
-C<noncomm_infix_reduce_op_invo>, and the C<expr> elements have the same
-relative sequence.  A C<noncomm_infix_reduce_op_invo> node requires at
-least 2 input value providing child nodes (C<expr> must match at least
+other and of the result.  A single `noncomm_infix_reduce_op_invo` node is
+equivalent to a single `func_invo` node whose `func_arg_list` element
+defines a single argument, whose value is an `Array` node, which has a
+payload `expr` element for each `expr` element of the
+`noncomm_infix_reduce_op_invo`, and the `expr` elements have the same
+relative sequence.  A `noncomm_infix_reduce_op_invo` node requires at
+least 2 input value providing child nodes (`expr` must match at least
 twice), which are its 2-N main op args; if you already have your inputs in
-a single collection-valued node then use C<func_invo> to invoke the
-function instead.  If C<noncomm_infix_reduce_op> matches more than once in
-the same C<noncomm_infix_reduce_op_invo>, then all of the
-C<noncomm_infix_reduce_op> matches must be identical / the same operator.
-Exception: with some of these, the actual C<func_arg_list> derived from
+a single collection-valued node then use `func_invo` to invoke the
+function instead.  If `noncomm_infix_reduce_op` matches more than once in
+the same `noncomm_infix_reduce_op_invo`, then all of the
+`noncomm_infix_reduce_op` matches must be identical / the same operator.
+Exception: with some of these, the actual `func_arg_list` derived from
 this has 2 actual arguments, the first a collection and the second taking a
 different type of value, from the last op input list element.
 
@@ -4722,14 +4722,14 @@ Grammar:
         | '≠'
         | '⊼' | '↑' | '⊽' | '↓'
 
-A C<sym_dyadic_infix_op_invo> node is for using infix notation to invoke a
+A `sym_dyadic_infix_op_invo` node is for using infix notation to invoke a
 symmetric dyadic operator function.  Such a function takes exactly 2
 arguments, which are the inputs of the operation; the inputs are all of the
 same type as each other but the result might be of either that type or a
-different type.  A single C<sym_dyadic_infix_op_invo> node is equivalent
-to a single C<func_invo> node whose C<func_arg_list> element defines 2
-arguments, and the 2 C<expr> elements of the C<sym_dyadic_infix_op_invo>
-supply the values of those arguments, and which arguments get which C<expr>
+different type.  A single `sym_dyadic_infix_op_invo` node is equivalent
+to a single `func_invo` node whose `func_arg_list` element defines 2
+arguments, and the 2 `expr` elements of the `sym_dyadic_infix_op_invo`
+supply the values of those arguments, and which arguments get which `expr`
 isn't significant.
 
 Some of the keywords are aliases for each other:
@@ -4807,14 +4807,14 @@ Grammar:
         | '∖' | '⊿' | '⋉' | '÷'
         | '∖+'
 
-A C<nonsym_dyadic_infix_op_invo> node is for using infix notation to
+A `nonsym_dyadic_infix_op_invo` node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
 exactly 2 arguments, which are the inputs of the operation; the inputs
 and the result may possibly be all of the same type, or they might all be
-of different types.  A single C<nonsym_dyadic_infix_op_invo> node is
-equivalent to a single C<func_invo> node whose C<func_arg_list> element
-defines 2 arguments, and the 2 C<expr> elements of the
-C<nonsym_dyadic_infix_op_invo> supply the values of those arguments, which
+of different types.  A single `nonsym_dyadic_infix_op_invo` node is
+equivalent to a single `func_invo` node whose `func_arg_list` element
+defines 2 arguments, and the 2 `expr` elements of the
+`nonsym_dyadic_infix_op_invo` supply the values of those arguments, which
 are associated in the appropriate sequence.
 
 Some of the keywords are aliases for each other:
@@ -4923,10 +4923,10 @@ This table indicates which function is invoked by each keyword:
     like  -> Core.Text.is_like( look_in => lhs, look_for => rhs )
     !like -> Core.Text.is_not_like( look_in => lhs, look_for => rhs )
 
-Note that while the C<is[|_not]_like> functions also have an optional third
-parameter C<escape>, you will have to use a C<func_invo> node to exploit
-it; for simplicity, the infix C<like> and C<!like> don't support that
-customization; but most actual uses of like/etc don't use C<escape> anyway.
+Note that while the `is[|_not]_like` functions also have an optional third
+parameter `escape`, you will have to use a `func_invo` node to exploit
+it; for simplicity, the infix `like` and `!like` don't support that
+customization; but most actual uses of like/etc don't use `escape` anyway.
 
 Examples:
 
@@ -4989,12 +4989,12 @@ Grammar:
           <monadic_prefix_op__op_cr_basic>
         | '¬'
 
-A C<monadic_prefix_op_invo> node is for using prefix notation to invoke a
+A `monadic_prefix_op_invo` node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
-is the input of the operation.  A single C<monadic_prefix_op_invo> node is
-equivalent to a single C<func_invo> node whose C<func_arg_list> element
-defines 1 argument, and the 1 C<expr> element of the
-C<monadic_prefix_op_invo> supplies the value of that argument.
+is the input of the operation.  A single `monadic_prefix_op_invo` node is
+equivalent to a single `func_invo` node whose `func_arg_list` element
+defines 1 argument, and the 1 `expr` element of the
+`monadic_prefix_op_invo` supplies the value of that argument.
 
 Some of the keywords are aliases for each other:
 
@@ -5035,12 +5035,12 @@ Grammar:
     <monadic_postfix_op> ::=
         '++' | '--' | '!'
 
-A C<monadic_postfix_op_invo> node is for using prefix notation to invoke a
+A `monadic_postfix_op_invo` node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
-is the input of the operation.  A single C<monadic_postfix_op_invo> node is
-equivalent to a single C<func_invo> node whose C<func_arg_list> element
-defines 1 argument, and the 1 C<expr> element of the
-C<monadic_postfix_op_invo> supplies the value of that argument.
+is the input of the operation.  A single `monadic_postfix_op_invo` node is
+equivalent to a single `func_invo` node whose `func_arg_list` element
+defines 1 argument, and the 1 `expr` element of the
+`monadic_postfix_op_invo` supplies the value of that argument.
 
 This table indicates which function is invoked by each keyword:
 
@@ -5182,18 +5182,18 @@ Grammar:
     <max_index> ::=
         <index>
 
-A C<postcircumfix_op_invo> node is for using postcircumfix notation to
+A `postcircumfix_op_invo` node is for using postcircumfix notation to
 invoke a relational operator function whose operation involves deriving a
 single tuple|relation from another single tuple|relation customized only by
 further inputs that are attribute names.  Such a function takes exactly 2
-(C<expr> and C<pcf_rename_map>|C<pcf_atnms>) or 3 (C<expr> and
-C<outer_atnm> and C<inner_atnms>|C<cmpl_inner_atnms>) or 3 (C<expr> and
-C<count_atnm> and C<cmpl_inner_atnms>) primary arguments, which are the
-inputs of the operation.  A single C<postcircumfix_op_invo> node is
-equivalent to a single C<func_invo> node whose C<func_arg_list> element
+(`expr` and `pcf_rename_map`|`pcf_atnms`) or 3 (`expr` and
+`outer_atnm` and `inner_atnms`|`cmpl_inner_atnms`) or 3 (`expr` and
+`count_atnm` and `cmpl_inner_atnms`) primary arguments, which are the
+inputs of the operation.  A single `postcircumfix_op_invo` node is
+equivalent to a single `func_invo` node whose `func_arg_list` element
 defines 2-3 arguments, and the 2-3
-C<expr|pcf[_rename_map|atnms]|[outer|count]_atnm|[|cmpl_]inner_atnms>
-elements of the C<postcircumfix_op_invo> supply the values of those
+`expr|pcf[_rename_map|atnms]|[outer|count]_atnm|[|cmpl_]inner_atnms`
+elements of the `postcircumfix_op_invo` supply the values of those
 arguments, which are associated in the appropriate sequence.
 
 This table indicates which function is invoked by each format-keyword:
@@ -5336,16 +5336,16 @@ Grammar:
     <round_rule> ::=
         <expr>
 
-A C<num_op_invo_with_round> node is for using infix or prefix or postfix
+A `num_op_invo_with_round` node is for using infix or prefix or postfix
 notation to invoke a rational numeric operator function whose operation
 involves rounding a number to one with less precision.  Such a function
-takes exactly 1 (C<expr>) or 2 (C<lhs> and C<rhs>) primary arguments,
-which are the inputs of the operation, plus a special C<round_rule>
+takes exactly 1 (`expr`) or 2 (`lhs` and `rhs`) primary arguments,
+which are the inputs of the operation, plus a special `round_rule`
 argument which specifies explicitly the semantics of the numeric rounding
-in a declarative way (all 2 or 3 of these are I<main op args>).  A single
-C<num_op_invo_with_round> node is equivalent to a single C<func_invo> node
-whose C<func_arg_list> element defines 2-3 arguments, and the
-C<expr|lhs|rhs|round_[meth|rule]> elements of the C<num_op_invo_with_round>
+in a declarative way (all 2 or 3 of these are *main op args*).  A single
+`num_op_invo_with_round` node is equivalent to a single `func_invo` node
+whose `func_arg_list` element defines 2-3 arguments, and the
+`expr|lhs|rhs|round_[meth|rule]` elements of the `num_op_invo_with_round`
 supply the values of those arguments, which are associated in the
 appropriate sequence.
 
@@ -5388,8 +5388,8 @@ Grammar:
             [<ws> <assuming_clause>]?
             [<ws> <reversed_clause>]?
 
-An C<ord_compare_op_invo> node is for using infix notation to invoke an
-order comparison operator function.  I<Details are pending.>
+An `ord_compare_op_invo` node is for using infix notation to invoke an
+order comparison operator function.  *Details are pending.*
 
 This table indicates which function is invoked by each keyword:
 
@@ -5408,33 +5408,33 @@ Grammar:
         | <proc_nonsym_dyadic_infix_op_invo>
         | ...
 
-A C<proc_invo_alt_syntax> node represents the invocation of a named
+A `proc_invo_alt_syntax` node represents the invocation of a named
 system-defined procedure with specific arguments.  It is
 interpreted as a tuple of a Muldis D
-C<sys.std.Core.Type.Cat.ProcInvoStmtNodeSet> value.  A
-C<proc_invo_alt_syntax> node is a lot like a
-C<proc_invo> node in purpose and interpretation but it differs in
+`sys.std.Core.Type.Cat.ProcInvoStmtNodeSet` value.  A
+`proc_invo_alt_syntax` node is a lot like a
+`proc_invo` node in purpose and interpretation but it differs in
 several significant ways.
 
-While a C<proc_invo> node can be used to invoke any procedure at all,
-a C<proc_invo_alt_syntax> node can only invoke a fraction of
+While a `proc_invo` node can be used to invoke any procedure at all,
+a `proc_invo_alt_syntax` node can only invoke a fraction of
 them, and only standard system-defined procedures.  While a
-C<proc_invo> node uses a simple common format with
+`proc_invo` node uses a simple common format with
 all procedures, written in prefix notation with generally named
-arguments, a C<proc_invo_alt_syntax> node uses potentially unique syntax
+arguments, a `proc_invo_alt_syntax` node uses potentially unique syntax
 for each procedure, often written in infix notation, although
 inter-procedure format consistency is still applied as much as is
 reasonably possible.
 
-Broadly speaking, a C<proc_invo_alt_syntax> node has 2-3 kinds of payload
+Broadly speaking, a `proc_invo_alt_syntax` node has 2-3 kinds of payload
 elements:  The first is the determinant of what procedure to
-invoke, hereafter referred to as an I<op> or I<keyword>.  The second is an
+invoke, hereafter referred to as an *op* or *keyword*.  The second is an
 ordered list of 1-N mandatory procedure inputs, hereafter referred
-to as I<main op args>, whose elements typically have generic names like
-C<expr> or C<lhs> or C<rhs>.  The (optional) third is a named
+to as *main op args*, whose elements typically have generic names like
+`expr` or `lhs` or `rhs`.  The (optional) third is a named
 list of optional procedure inputs, hereafter referred to as
-I<extra op args>, whose elements tend to have more purpose-specific names
-such as C<using_clause>, though note that things like C<using_clause> can
+*extra op args*, whose elements tend to have more purpose-specific names
+such as `using_clause`, though note that things like `using_clause` can
 be either mandatory or optional depending on the op they are being used
 with.
 
@@ -5453,13 +5453,13 @@ Grammar:
     <proc_monadic_postfix_op> ::=
         ':=++' | ':=--'
 
-A C<proc_monadic_postfix_op_invo> node is for using prefix notation to
+A `proc_monadic_postfix_op_invo` node is for using prefix notation to
 invoke a monadic operator procedure.  Such a procedure
 takes exactly 1 argument, which is the input of the operation.  A single
-C<proc_monadic_postfix_op_invo> node is equivalent to a single
-C<proc_invo> node whose
-C<proc_arg_list> element defines 1 argument, and the 1 C<expr>
-element of the C<proc_monadic_postfix_op_invo> supplies the value of that
+`proc_monadic_postfix_op_invo` node is equivalent to a single
+`proc_invo` node whose
+`proc_arg_list` element defines 1 argument, and the 1 `expr`
+element of the `proc_monadic_postfix_op_invo` supplies the value of that
 argument and takes its result.
 
 This table indicates which procedure is invoked by each keyword:
@@ -5495,15 +5495,15 @@ Grammar:
         | ':=∩' | ':=∖' | ':=⊿' | ':=⋉'
         | ':=∆'
 
-A C<proc_nonsym_dyadic_infix_op_invo> node is for using infix notation to
+A `proc_nonsym_dyadic_infix_op_invo` node is for using infix notation to
 invoke a non-symmetric dyadic operator procedure.  Such a
 procedure takes exactly 2 arguments.  A single
-C<proc_nonsym_dyadic_infix_op_invo> node is equivalent to a single
-C<proc_invo> node whose
-C<proc_arg_list> element defines 2 arguments, and the 2
-C<expr> elements of the C<proc_nonsym_dyadic_infix_op_invo> supply the
+`proc_nonsym_dyadic_infix_op_invo` node is equivalent to a single
+`proc_invo` node whose
+`proc_arg_list` element defines 2 arguments, and the 2
+`expr` elements of the `proc_nonsym_dyadic_infix_op_invo` supply the
 values of those arguments, which are associated in the appropriate
-sequence.  When using this infix syntax, the C<&> sigil isn't used to
+sequence.  When using this infix syntax, the `&` sigil isn't used to
 mark the subject-to-update argument(s).
 
 Some of the keywords are aliases for each other:
@@ -5551,55 +5551,55 @@ is easier to read and write Muldis D code.  Some of these mnemonics are
 more about self-similarity and others are more about shared traits with
 other languages.
 
-I<Note that some of these details aren't yet otherwise specified and
-describe near-future planned changes.>
+*Note that some of these details aren't yet otherwise specified and
+describe near-future planned changes.*
 
 ## Bareword Strings
 
 All barewords, meaning runs of non-quoted non-whitespace alphanumeric
-characters plus {C<_>,C<->,C<.>}, are generally either of these 3 things:
+characters plus {`_`,`-`,`.`}, are generally either of these 3 things:
 language keywords, entity names (including declarations or invocations of
 routines/operators, types, variables), numeric literals (which may also
-contain {C<#>,C</>,C<*>,C<^>}).
+contain {`#`,`/`,`*`,`^`}).
 
 ## Quoted Strings
 
 All quoted strings, meaning runs of characters delimited with any of
-{C<'>,C<">,C<`>}, are generally either of these 3 things: entity names (iff
-C<">-quoted), value literals for general purpose string-like types (if
-C<'>-quoted), code comments (iff C<`>-quoted, and typically also
-C<#>-delimited forming double-character delimiters).
+{`'`,`"`,``` ` ```}, are generally either of these 3 things: entity names (iff
+`"`-quoted), value literals for general purpose string-like types (if
+`'`-quoted), code comments (iff ``` ` ```-quoted, and typically also
+`#`-delimited forming double-character delimiters).
 
-## C<#>
+## `#`
 
-The C<#> character is mainly associated with numbers in some way but is
+The `#` character is mainly associated with numbers in some way but is
 also associated with code comments, though in the latter case it always
-appears together with C<`>.  Iff C<#> appears as part of a numeric value
+appears together with ``` ` ```.  Iff `#` appears as part of a numeric value
 literal, it is in a manner like and inspired by the "based" literals of the
 Ada language, and separates the radix specifier from the main part of the
-literal that it describes.  If C<#> appears other than for a code comment
+literal that it describes.  If `#` appears other than for a code comment
 or numeric literal then it generally means "count" or "cardinality".
 
-## {C<$>,C<%>,C<@>}
+## {`$`,`%`,`@`}
 
-The {C<$>,C<%>,C<@>} characters are mainly associated with scalars, tuples,
+The {`$`,`%`,`@`} characters are mainly associated with scalars, tuples,
 and relations, respectively.  They are used both to distinguish value
 literals of those types as well as operators for those types.  In addition,
-the C<@> character is used to indicate routine "dispatch" parameters.
+the `@` character is used to indicate routine "dispatch" parameters.
 
 ## Bracketing Characters
 
-Pairs of corresponding bracketing characters, meaning {C<()>,C<[]>,C<{}>},
+Pairs of corresponding bracketing characters, meaning {`()`,`[]`,`{}`},
 are generally associated with groupings or lists of various kinds and serve
-to delimit such.  The C<()> round-parenthesis pair is associated with
+to delimit such.  The `()` round-parenthesis pair is associated with
 routine signatures (parameter list or result declarations), routine
 invocations (argument list consisting of ordered or named arguments), and
 disambiguating any functional code or value expressions (any
 parenthesis-delimited routine body or code block therein is a function or a
-value expression).  The C<[]> square-bracket pair is associated with
+value expression).  The `[]` square-bracket pair is associated with
 ordered lists and is used for: delimiting sequences of procedure
 statements, delimiting array value literals, and in array-subscripting
-operators, and for the reduction meta-operator.  The C<{}> pair is
+operators, and for the reduction meta-operator.  The `{}` pair is
 associated with unordered lists and is used for: delimiting multi-update
 statements, delimiting value literals of {tuples, relations,
 (component-wise) scalars, sets, bags}, and in postcircumfix operators for
@@ -5607,35 +5607,35 @@ those same types.
 
 ## List-Separating Characters
 
-The C<,> and C<;> characters are mainly used to separate (or trail) each of
-the 0..N members of groupings or lists.  The C<,> comma is considered
+The `,` and `;` characters are mainly used to separate (or trail) each of
+the 0..N members of groupings or lists.  The `,` comma is considered
 tighter and is used for most groupings or lists, including: routine
 signatures, routine invocations, collection value literals, postcircumfix
-operators.  The C<;> semicolon is considered looser and is used for such
+operators.  The `;` semicolon is considered looser and is used for such
 things as separating off-side-defined things like named value expressions
 or variables or statements or inner materials.
 
-## C<::=>
+## `::=`
 
-The C<::=> infix token is used for name binding; it declares that
+The `::=` infix token is used for name binding; it declares that
 whatever is on the right-hand side is associated with the entity name given
-on the left-hand side.  The C<::=> is thusly used to explicitly name value
+on the left-hand side.  The `::=` is thusly used to explicitly name value
 expressions, procedure statements, library materials, and to associate
 global variables with lexical aliases.
 
 ## Pairs
 
-The infix tokens {C<:>,`=>`,`<-`,`<--`} are mainly used
+The infix tokens {`:`,`=>`,`<-`,`<--`} are mainly used
 between two items to designate that the they form a pair of some kind.  The
-C<:> is the most common and is used for any context where the left-hand
+`:` is the most common and is used for any context where the left-hand
 side of the pair is always an entity name or heading, including: a
 variable/parameter/attribute-like typed entity declaration
 (var/param/attr-name : type-name), a named argument or tuple literal
 attribute (arg/attr-name : value-expr), and a routine heading from a
-routine body; a C<:> also separates the main parts of some value literals,
+routine body; a `:` also separates the main parts of some value literals,
 such as the literal kind keyword from the main literal.  The `=>` is
 used for any context where two arbitrary value expressions are paired such
-as in a C<Bag> literal or a C<Dict> literal.  The `<-` is used just
+as in a `Bag` literal or a `Dict` literal.  The `<-` is used just
 between 2 entity names in the postcircumfix renaming operator.  The `<--`
 is used just in a function signature between the result type and
 parameter list.
@@ -5645,9 +5645,9 @@ parameter list.
 ## Entity Names vs Keywords
 
 A user-defined entity name may be any character string at all.  In the
-general case, one must appear formatted as a C<quoted_name_str>, but if the
+general case, one must appear formatted as a `quoted_name_str`, but if the
 entity name only uses a limited set of characters, then it may appear
-formatted as a C<nonquoted_name_str> instead, which is essentially the same
+formatted as a `nonquoted_name_str` instead, which is essentially the same
 bareword format as the PTMD_STD language keywords.
 
 When any PTMD_STD code contains a bareword whose meaning is ambiguous, in
@@ -5655,9 +5655,9 @@ that it could be interpreted as either a reference to a user-defined entity
 or as a specific context-appropriate language keyword (including a routine
 invocation alternate syntax), then the parser must always resolve it to the
 keyword.  In these contexts, you must format a user-defined entity name as
-a C<quoted_name_str> in order for it to be interpreted correctly.
+a `quoted_name_str` in order for it to be interpreted correctly.
 
-Similarly, a user-defined entity name in C<quoted_name_str> format is
+Similarly, a user-defined entity name in `quoted_name_str` format is
 guaranteed to never be confused with a language keyword.
 
 ## Statements vs Expressions
@@ -5665,13 +5665,13 @@ guaranteed to never be confused with a language keyword.
 Within a procedure, arbitrary value expressions may be used as the
 left-hand-side of infix procedure calls, and some of those expressions may
 normally have the same leading syntax as some kinds of statements.  For
-example, an C<Array> expression can look like a C<compound_stmt>, and a
-C<Set> expression can look like a C<multi_upd_stmt>, an C<if_else_expr> can
-look like an C<if_else_stmt>, and so on.  When any PTMD_STD code exists
+example, an `Array` expression can look like a `compound_stmt`, and a
+`Set` expression can look like a `multi_upd_stmt`, an `if_else_expr` can
+look like an `if_else_stmt`, and so on.  When any PTMD_STD code exists
 whose meaning is ambiguous from the context as to whether it is a statement
 or an expression, then the parser must always resolve it to the statement.
 In these contexts, you must surround the expression with parenthesis, a
-C<delim_expr> in order for it to be interpreted correctly.  Similarly, any
+`delim_expr` in order for it to be interpreted correctly.  Similarly, any
 routine code within parenthesis is always one or more expressions.
 
 # NESTING PRECEDENCE RULES
@@ -5681,10 +5681,10 @@ precedence rules, meaning how it accepts Muldis D code lacking explicit
 expression delimiters and implicitly delimits the expressions therein, in a
 fully deterministic manner.
 
-PTMD_STD has 10 precedence levels when the C<catalog_abstraction_level>
-pragma is C<rtn_inv_alt_syn>; if it is C<plain_rtn_inv> instead, then 6.5
+PTMD_STD has 10 precedence levels when the `catalog_abstraction_level`
+pragma is `rtn_inv_alt_syn`; if it is `plain_rtn_inv` instead, then 6.5
 of the levels can be eliminated, so then PTMD_STD has just 3.5; if it is
-C<code_as_data> instead, then 2.5 more can be eliminated, leaving just 1.
+`code_as_data` instead, then 2.5 more can be eliminated, leaving just 1.
 
 Here we list the levels from "tightest" to "loosest", along with a few
 examples of each level:
@@ -5729,7 +5729,7 @@ examples of each level:
 Any imperative code that embeds a value expression has looser precedence
 than all value expressions.
 
-Using two C<!> symbols below generically to represent any pair of operators
+Using two `!` symbols below generically to represent any pair of operators
 that have the same precedence, the associativities specified above
 for binary, ternary, or N-ary operators are interpreted as follows:
 
@@ -5741,7 +5741,7 @@ for binary, ternary, or N-ary operators are interpreted as follows:
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

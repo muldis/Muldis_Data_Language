@@ -20,7 +20,7 @@ This document describes essentially all of the core Muldis D
 stringy operators, essentially all the generic ones that a
 typical programming language should have.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # VIRTUAL FUNCTIONS FOR THE STRINGY MIXIN TYPE
 
@@ -32,26 +32,26 @@ This virtual function results in the catenation of the N element values of
 its argument; it is a reduction operator that recursively takes each
 consecutive pair of input values and catenates (which is associative) them
 together until just one is left, which is the result.  Conceptually, if
-C<topic> has zero values, then C<catenation> results in the empty string or
+`topic` has zero values, then `catenation` results in the empty string or
 empty sequence, which is the identity value for catenation; however, while
-each implementing function of C<catenation> could actually result in a
+each implementing function of `catenation` could actually result in a
 type-specific value of the empty string or empty sequence, this virtual
-function itself will instead fail when C<topic> has zero values, because
+function itself will instead fail when `topic` has zero values, because
 then it would lack the necessary type information to know which
 type-specific implementing function to dispatch to.  Note that this
-operation is also known as C<~>.
+operation is also known as `~`.
 
 ## sys.std.Core.Stringy.replication
 
 `function replication (Stringy <--
 topic@ : Stringy, count : NNInt) {...}`
 
-This virtual function results in the catenation of C<count> instances of
-C<topic>.  Note that this operation is also known as C<~#>.
+This virtual function results in the catenation of `count` instances of
+`topic`.  Note that this operation is also known as `~#`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

@@ -23,17 +23,17 @@ Note that whenever an attribute of one of the nonscalar types isn't
 significant, given the context (determined by other attributes of the same
 type), and should be ignored, its value is the default for its type.
 
-Note that many of the tuple types might conceptually have C<name>
+Note that many of the tuple types might conceptually have `name`
 attributes, but those would actually be provided by any larger types in
 which they are embedded, rather than by these types themselves.
 
-I<Note that for every relation type defined in this file, there also exists
+*Note that for every relation type defined in this file, there also exists
 a corresponding tuple type in terms of which the relation type is partly
 defined; that tuple type is not yet explicitly defined in this file but a
-future spec update should change this.>
+future spec update should change this.*
 
-I<To keep things simpler for now, most constraint definitions for these
-types are missing, or just defined informally.>
+*To keep things simpler for now, most constraint definitions for these
+types are missing, or just defined informally.*
 
 # TYPE SUMMARY
 
@@ -278,302 +278,302 @@ structures, how their common 5 main subtypes are defined in terms of them.
 
 ## sys.std.Core.Type.Cat.List
 
-The C<List> type is the sub-maximal type of the entire Muldis D type
-system, and contains every non-C<Int> value that can possibly exist.  Every
+The `List` type is the sub-maximal type of the entire Muldis D type
+system, and contains every non-`Int` value that can possibly exist.  Every
 value in the Muldis D type system is declared by just one of two types,
-where C<Int> is one and C<List> is the other; therefore, C<Int> and C<List>
-are each other's I<negation type>, and the union of just those 2 types is
-C<Universal>.  A C<List> is a transparent dense sequence of 0..N elements
+where `Int` is one and `List` is the other; therefore, `Int` and `List`
+are each other's *negation type*, and the union of just those 2 types is
+`Universal`.  A `List` is a transparent dense sequence of 0..N elements
 where each element is identified by ordinal position and the first element
-has position zero, and where each element is either an C<Int> or a C<List>;
+has position zero, and where each element is either an `Int` or a `List`;
 in the general case, this can be an arbitrarily complex hierarchical
 structure of unlimited size, where the leaves of this hierarchy are each
-C<Int>.  The C<List> type is neither scalar nor nonscalar et al, same as
-with C<Universal>, and it contains values from all main value categories.
-The default value of C<List> is C<Bool:False>.  The cardinality of this
+`Int`.  The `List` type is neither scalar nor nonscalar et al, same as
+with `Universal`, and it contains values from all main value categories.
+The default value of `List` is `Bool:False`.  The cardinality of this
 type is infinity.
 
 ## sys.std.Core.Type.Cat.Structure
 
-C<Structure> is a proper subtype of C<List> consisting of every C<List>
+`Structure` is a proper subtype of `List` consisting of every `List`
 value that matches one of 5 specific formats; each of those formats is
 represented by exactly one of 5 mutually disjoint proper subtypes of
-C<Structure>, which are: C<String>, C<Tuple>, C<Relation>, C<ScalarWP>,
-C<External>; C<Structure> is a union type over all 5 of those types, and
-C<Structure> has no values which are not each of one of those 5 types.  A
-C<Structure> is a C<List> having at least 2 elements, where the first
-element is an C<Int> in the range C<1..5> (one per each of the 5 subtypes)
-that indicates how to interpret the remainder of the C<Structure> elements.
-The default value of C<Structure> is C<Bool:False>.  The cardinality of
+`Structure`, which are: `String`, `Tuple`, `Relation`, `ScalarWP`,
+`External`; `Structure` is a union type over all 5 of those types, and
+`Structure` has no values which are not each of one of those 5 types.  A
+`Structure` is a `List` having at least 2 elements, where the first
+element is an `Int` in the range `1..5` (one per each of the 5 subtypes)
+that indicates how to interpret the remainder of the `Structure` elements.
+The default value of `Structure` is `Bool:False`.  The cardinality of
 this type is infinity.
 
 ## sys.std.Core.Type.Cat.Nonstructure
 
-C<Nonstructure> is the difference type when C<Structure> is subtracted from
-C<List>.  The only main reason why C<Nonstructure> exists as a named type
+`Nonstructure` is the difference type when `Structure` is subtracted from
+`List`.  The only main reason why `Nonstructure` exists as a named type
 is to round out the 5 main broad value categories of the Muldis D type
 system, where each category has its own maximal type; a nonstructure value
 is any value which is neither a scalar nor a tuple nor a relation nor an
-external.  The default value of C<Nonstructure> is the sole C<List> value
+external.  The default value of `Nonstructure` is the sole `List` value
 with zero elements.  The cardinality of this type is infinity.
 
 # SIMPLE GENERIC SCALAR TYPES
 
 ## sys.std.Core.Type.Cat.ScalarWP
 
-C<ScalarWP> (scalar with possreps) is a proper subtype of C<Scalar> where
-every one of its values has at least one possrep.  C<ScalarWP> is just the
-difference type where both C<Int> and C<String> are subtracted from
-C<Scalar>.  Its default value is C<Bool:False>.  The cardinality of this
-type is infinity.  Considering the low-level type system, C<ScalarWP> is
-just a proper subtype of C<Structure> consisting of every
-C<Structure> value whose first element is the C<Int> value C<4>.
+`ScalarWP` (scalar with possreps) is a proper subtype of `Scalar` where
+every one of its values has at least one possrep.  `ScalarWP` is just the
+difference type where both `Int` and `String` are subtracted from
+`Scalar`.  Its default value is `Bool:False`.  The cardinality of this
+type is infinity.  Considering the low-level type system, `ScalarWP` is
+just a proper subtype of `Structure` consisting of every
+`Structure` value whose first element is the `Int` value `4`.
 
 ## sys.std.Core.Type.Cat.DHScalarWP
 
-C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>.  Its
-default value is C<Bool:False>, same as both of its parent types.  The
+`DHScalarWP` is the intersection type of `ScalarWP` and `DHScalar`.  Its
+default value is `Bool:False`, same as both of its parent types.  The
 cardinality of this type is infinity.  All Muldis D scalar values that are
 allowed to be stored in a global/persisting relational database, besides
-C<Int> and C<String> values, are C<DHScalarWP> values.
+`Int` and `String` values, are `DHScalarWP` values.
 
 ## sys.std.Core.Type.Cat.SysScalar
 
-The C<SysScalar> type is explicitly defined as a domain-union type over all
-system-defined C<DHScalar> root types, which typically corresponds to
+The `SysScalar` type is explicitly defined as a domain-union type over all
+system-defined `DHScalar` root types, which typically corresponds to
 those types for whose values all of the Muldis D standard dialects provide
-"opaque value literal" syntax for:  C<Bool>, C<Int>, C<Rat>, C<Blob>,
-C<Text>, C<Name>, C<NameChain>, C<Comment>, C<Order>,
-C<RoundMeth>, C<RatRoundRule>, C<Singleton>.  The C<SysScalar> type is
+"opaque value literal" syntax for:  `Bool`, `Int`, `Rat`, `Blob`,
+`Text`, `Name`, `NameChain`, `Comment`, `Order`,
+`RoundMeth`, `RatRoundRule`, `Singleton`.  The `SysScalar` type is
 mainly intended to be used as the declared type of some attributes of some
 other system-defined catalog types, as a compact or hard-coded way to
-represent scalar values that are I<not> being specified explicitly in terms
-of possrep attributes.  The C<SysScalar> type is I<not> intended to be used
+represent scalar values that are *not* being specified explicitly in terms
+of possrep attributes.  The `SysScalar` type is *not* intended to be used
 as the declared type of any user type attributes, generally speaking; if
-they would even consider it, they should be using C<DHScalar> instead.  Its
-default value is C<Bool:False>.  The cardinality of this type is infinity.
+they would even consider it, they should be using `DHScalar` instead.  Its
+default value is `Bool:False`.  The cardinality of this type is infinity.
 
 ## sys.std.Core.Type.Cat.String
 
-A C<String> is a string of integers, or more specifically it is a dense
-sequence of 0..N elements (I<not> defined over C<Relation>) where each
-element is an C<Int>.  The C<String> type explicitly composes the
-C<Stringy> mixin type.  A C<String> subtype is normally composed into any
+A `String` is a string of integers, or more specifically it is a dense
+sequence of 0..N elements (*not* defined over `Relation`) where each
+element is an `Int`.  The `String` type explicitly composes the
+`Stringy` mixin type.  A `String` subtype is normally composed into any
 system-defined type that is conceptually a string of integers or bits or
-characters, such as C<Blob> or C<Text>.  The C<String> type's default and
+characters, such as `Blob` or `Text`.  The `String` type's default and
 canonical minimum value is the empty sequence; its canonical maximum value
-is an infinite-length sequence and practically impossible.  C<String> is
-one of just two scalar root types (the other is C<Int>) that do I<not> have
+is an infinite-length sequence and practically impossible.  `String` is
+one of just two scalar root types (the other is `Int`) that do *not* have
 any possreps.  The cardinality of this type is infinity; to define a
-most-generalized finite C<String> subtype, you must specify a maximum
+most-generalized finite `String` subtype, you must specify a maximum
 length in elements that the subtype's values can have, and you must specify
-the 2 integer end-points of the inclusive range that all its values' C<Int>
-element values are in.  The C<String> type explicitly composes the
-C<Ordered> mixin type.  The C<String> type has a default ordering
-algorithm; for 2 distinct C<String> values, their order is determined as
+the 2 integer end-points of the inclusive range that all its values' `Int`
+element values are in.  The `String` type explicitly composes the
+`Ordered` mixin type.  The `String` type has a default ordering
+algorithm; for 2 distinct `String` values, their order is determined as
 follows:  First eliminate any identical leading element sequences from both
 strings as those alone would make the strings compare as same (if the
 remainder of both strings was the empty string, then the strings are
 identical).  Then, iff the remainder of just one string is the empty
 string, then that string is ordered before the non-empty one; otherwise,
 compare the first element of each of the string remainders according to the
-default ordering algorithm of C<Int> to get the order of their respective
-strings.  Considering the low-level type system, C<String> is just a proper
-subtype of C<Structure> consisting of every C<Structure> value whose first
-element is the C<Int> value C<1>.
+default ordering algorithm of `Int` to get the order of their respective
+strings.  Considering the low-level type system, `String` is just a proper
+subtype of `Structure` consisting of every `Structure` value whose first
+element is the `Int` value `1`.
 
 ## sys.std.Core.Type.Cat.BString
 
-C<BString> (bit string) is a proper subtype of C<String> where all member
+`BString` (bit string) is a proper subtype of `String` where all member
 value elements are between zero and 1 inclusive.  One can be used to
 represent a string of bits.
 
 ## sys.std.Core.Type.Cat.OString
 
-C<OString> (octet string) is a proper subtype of C<String> where all member
+`OString` (octet string) is a proper subtype of `String` where all member
 value elements are between zero and 255 inclusive.  One can be used to
 represent a string of octets.
 
 ## sys.std.Core.Type.Cat.CoreText
 
-C<CoreText> is a proper subtype of C<Text> (and of C<Text.ASCII>) where all
+`CoreText` is a proper subtype of `Text` (and of `Text.ASCII`) where all
 member values have just the abstract characters in the 95-character
 repertoire of 7-bit ASCII which are its 94 printable characters or its 1
-space character but are not its 33 control characters.  C<CoreText> adds 1
-system-defined possrep named C<coretext_chars> which consists of 1
-C<OString>-typed attribute whose name is the empty string and whose element
+space character but are not its 33 control characters.  `CoreText` adds 1
+system-defined possrep named `coretext_chars` which consists of 1
+`OString`-typed attribute whose name is the empty string and whose element
 values are all in the range 32..126 inclusive, each element being a
 code point representing the same abstract character as the same code point of
-7-bit ASCII.  The purpose of C<CoreText> is to provide a reasonable minimum
+7-bit ASCII.  The purpose of `CoreText` is to provide a reasonable minimum
 of support for character strings in the Muldis D language core.  All
 system-defined entity names in the core and in most official modules use
-only the C<CoreText> repertoire, and this type's primary purpose is to be
+only the `CoreText` repertoire, and this type's primary purpose is to be
 used for entity names.  It can also be employed for user data though.
 
 ## sys.std.Core.Type.Cat.Name
 
-A C<Name> (scalar) is a canonical short
+A `Name` (scalar) is a canonical short
 name for any kind of DBMS entity (or named component) when declaring it;
 this short name is sufficient to identify the entity within its immediate
 namespace.  Similarly, a DBMS entity can often be invoked or referred to
-using just its C<Name>, depending on the context; other times, a
-C<NameChain> must be used instead to also qualify the reference with a
-namespace.  The C<Name> type explicitly composes the C<Textual> mixin
-type, and by extension also implicitly composes the C<Stringy> mixin
-type.  A C<Name> has 1 system-defined possrep whose name is the empty
-string, which has 1 C<Text>-typed attribute whose name is the empty
-string.  The C<Name> type explicitly composes the C<Ordered> mixin type.
-A C<Name> is a simple wrapper for a C<Text> and all of its other
+using just its `Name`, depending on the context; other times, a
+`NameChain` must be used instead to also qualify the reference with a
+namespace.  The `Name` type explicitly composes the `Textual` mixin
+type, and by extension also implicitly composes the `Stringy` mixin
+type.  A `Name` has 1 system-defined possrep whose name is the empty
+string, which has 1 `Text`-typed attribute whose name is the empty
+string.  The `Name` type explicitly composes the `Ordered` mixin type.
+A `Name` is a simple wrapper for a `Text` and all of its other
 details such as default and minimum and maximum values and cardinality and
-default ordering algorithm all correspond directly.  But C<Name> is
-explicitly disjoint from C<Text> due to having a different intended
+default ordering algorithm all correspond directly.  But `Name` is
+explicitly disjoint from `Text` due to having a different intended
 interpretation; it is specifically intended for use in naming DBMS entities
 rather than being for general-purpose user data.
 
 ## sys.std.Core.Type.Cat.NameChain
 
-A C<NameChain> (scalar) is a canonical long
+A `NameChain` (scalar) is a canonical long
 name for invoking or referring to a DBMS entity, when its name needs to be
-qualified with a namespace.  A C<NameChain> is used in declaring system
+qualified with a namespace.  A `NameChain` is used in declaring system
 catalogs where DBMS entities live under a potentially N-depth namespace,
 such as package entities grouped in a
-subpackage hierarchy.  The C<NameChain> type explicitly composes the
-C<Stringy> mixin type.  A C<NameChain> is conceptually a sequence of
-0..N C<Name>, the 0..N elements being ordered from parent-most to
-child-most component name.  A C<NameChain> has 1 system-defined possrep
-named C<array> which directly matches the conception of the type; it
+subpackage hierarchy.  The `NameChain` type explicitly composes the
+`Stringy` mixin type.  A `NameChain` is conceptually a sequence of
+0..N `Name`, the 0..N elements being ordered from parent-most to
+child-most component name.  A `NameChain` has 1 system-defined possrep
+named `array` which directly matches the conception of the type; it
 consists of 1 attribute whose name is the empty string; the attribute is an
-C<Array> whose C<value> attribute has a declared type of C<Name>.  The
+`Array` whose `value` attribute has a declared type of `Name`.  The
 default and minimum value of
-C<NameChain> is a zero element sequence; its maximum value is an infinite
-sequence where each element is the maximum value of C<Name> (an
+`NameChain` is a zero element sequence; its maximum value is an infinite
+sequence where each element is the maximum value of `Name` (an
 infinite-length string) and practically impossible.  The cardinality of
-this type is infinity; to define a most-generalized finite C<NameChain>
+this type is infinity; to define a most-generalized finite `NameChain`
 subtype, you must specify a maximum number of sequence elements of its
-values, and each element must be of a finite C<Name> subtype.  The
-C<NameChain> type explicitly composes the C<Ordered> mixin type.  The
-C<NameChain> type has a default ordering algorithm; for 2 distinct
-C<NameChain> values, their order is determined as follows:  First eliminate
+values, and each element must be of a finite `Name` subtype.  The
+`NameChain` type explicitly composes the `Ordered` mixin type.  The
+`NameChain` type has a default ordering algorithm; for 2 distinct
+`NameChain` values, their order is determined as follows:  First eliminate
 any identical parent-most elements from both chains as those alone would
 make the chains compare as same (if the remainder of both chains was the
 empty chain, then the chains are identical).  Then, iff the remainder of
 just one chain is the empty chain, then that chain is ordered before the
 non-empty one; otherwise, compare the first element of each of the chain
-remainders according to the default ordering algorithm of C<Name> to get
+remainders according to the default ordering algorithm of `Name` to get
 the order of their respective chains.
 
 ## sys.std.Core.Type.Cat.PNSQNameChain
 
-C<PNSQNameChain> (primary namespace
-qualified name chain) is a proper subtype of C<NameChain> where every
+`PNSQNameChain` (primary namespace
+qualified name chain) is a proper subtype of `NameChain` where every
 member value's chain starts with one of the following element sequences:
-C<sys.[cat|std|imp]>, C<mnt.cat>, C<fed.[cat|lib|data]>,
-C<nlx[.par]**0..*.[cat|lib|data]>, C<rtn>, C<type>.  I<The
+`sys.[cat|std|imp]`, `mnt.cat`, `fed.[cat|lib|data]`,
+`nlx[.par]**0..*.[cat|lib|data]`, `rtn`, `type`.  *The
 definition of the type is actually more restrictive than this, as per the
 balance of the invariant rules of the primary namespaces in question, but
-those aren't detailed here for brevity.>  One can be used to reference a
+those aren't detailed here for brevity.*  One can be used to reference a
 material (routine or type or etc) for invocation, either system-defined or
 user-defined, or one can be used to reference a variable (or
 pseudo-variable or parameter or named expression or statement), either a
 system-catalog or normal data variable.  Its default value is a reference
-to the C<sys.std.Core.Type.Universal> type.
+to the `sys.std.Core.Type.Universal` type.
 
 ## sys.std.Core.Type.Cat.MaterialNC
 
-C<MaterialNC> is a proper subtype of
-C<PNSQNameChain> where every member value's chain starts with one of the
-following element sequences: C<sys.[std|imp]>, C<fed.lib>,
-C<nlx[.par]**0..*.lib>, C<rtn>, C<type>.  One can be used to reference a
+`MaterialNC` is a proper subtype of
+`PNSQNameChain` where every member value's chain starts with one of the
+following element sequences: `sys.[std|imp]`, `fed.lib`,
+`nlx[.par]**0..*.lib`, `rtn`, `type`.  One can be used to reference a
 material (routine or type or etc) for invocation, either system-defined or
 user-defined.  Its default value is a reference to the
-C<sys.std.Core.Type.Universal> type.
+`sys.std.Core.Type.Universal` type.
 
 ## sys.std.Core.Type.Cat.AbsPathMaterialNC
 
-C<AbsPathMaterialNC> is a proper subtype
-of C<MaterialNC> where every member value's chain starts with either C<sys>
-or C<fed> (or a C<type>-prefix followed by those) but not C<nlx> or C<rtn>.
+`AbsPathMaterialNC` is a proper subtype
+of `MaterialNC` where every member value's chain starts with either `sys`
+or `fed` (or a `type`-prefix followed by those) but not `nlx` or `rtn`.
 One is used when conceptually a routine or type is being passed as an
 argument to a routine, such as because it is a higher-order function or
 closure, and it is in fact the name of the invocant being passed; only an
 absolute path can be used in this situation for the general case because
 the target is being invoked from a different context than where the
 reference to the target is being selected; a relative path doesn't work
-because C<nlx> or C<rtn> means something different on each side of the
-NC-argument-taking-routine.  Conceptually speaking, an C<AbsPathMaterialNC>
-that points to a routine I<is> a closure, or a higher-order function if it
+because `nlx` or `rtn` means something different on each side of the
+NC-argument-taking-routine.  Conceptually speaking, an `AbsPathMaterialNC`
+that points to a routine *is* a closure, or a higher-order function if it
 points to a function.
 
 ## sys.std.Core.Type.Cat.APFunctionNC
 
-C<APFunctionNC> is a proper subtype of
-C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
-of the C<sys>-prefix values.  Its default value is a reference to the
-C<sys.std.Core.Universal.is_same> function.
+`APFunctionNC` is a proper subtype of
+`AbsPathMaterialNC` that excludes the `type`-prefix values and a subset
+of the `sys`-prefix values.  Its default value is a reference to the
+`sys.std.Core.Universal.is_same` function.
 
 ## sys.std.Core.Type.Cat.APProcedureNC
 
-C<APProcedureNC> is a proper subtype of
-C<AbsPathMaterialNC> that excludes the C<type>-prefix values and a subset
-of the C<sys>-prefix values.  Its default
-value is a reference to the C<sys.std.Core.Universal.assign> updater.
+`APProcedureNC` is a proper subtype of
+`AbsPathMaterialNC` that excludes the `type`-prefix values and a subset
+of the `sys`-prefix values.  Its default
+value is a reference to the `sys.std.Core.Universal.assign` updater.
 
 ## sys.std.Core.Type.Cat.APTypeNC
 
-C<APTypeNC> is a proper subtype of C<AbsPathMaterialNC> that excludes a
-subset of the C<sys>-prefix values.  Its default value is a reference to
-the C<sys.std.Core.Type.Universal> data type.
+`APTypeNC` is a proper subtype of `AbsPathMaterialNC` that excludes a
+subset of the `sys`-prefix values.  Its default value is a reference to
+the `sys.std.Core.Type.Universal` data type.
 
 ## sys.std.Core.Type.Cat.RelPathMaterialNC
 
-C<RelPathMaterialNC> is a proper subtype
-of C<MaterialNC> where every member value's chain starts with either C<sys>
-or C<nlx> or C<rtn> (or a C<type>-prefix followed by those) but not C<fed>.
+`RelPathMaterialNC` is a proper subtype
+of `MaterialNC` where every member value's chain starts with either `sys`
+or `nlx` or `rtn` (or a `type`-prefix followed by those) but not `fed`.
 One is used in a context where a user-defined routine or type may only be
 invoked directly when both the invoker and invoked are in the same package.
 
 ## sys.std.Core.Type.Cat.RPFunctionNC
 
-C<RPFunctionNC> is a proper subtype of C<RelPathMaterialNC> that excludes
-the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
-default value is a reference to the C<sys.std.Core.Universal.is_same>
+`RPFunctionNC` is a proper subtype of `RelPathMaterialNC` that excludes
+the `type`-prefix values and a subset of the `sys`-prefix values.  Its
+default value is a reference to the `sys.std.Core.Universal.is_same`
 function.
 
 ## sys.std.Core.Type.Cat.RPProcedureNC
 
-C<RPProcedureNC> is a proper subtype of C<RelPathMaterialNC> that excludes
-the C<type>-prefix values and a subset of the C<sys>-prefix values.  Its
-default value is a reference to the C<sys.std.Core.Universal.assign>
+`RPProcedureNC` is a proper subtype of `RelPathMaterialNC` that excludes
+the `type`-prefix values and a subset of the `sys`-prefix values.  Its
+default value is a reference to the `sys.std.Core.Universal.assign`
 updater.
 
 ## sys.std.Core.Type.Cat.RPTypeNC
 
-C<RPTypeNC> is a proper subtype of C<RelPathMaterialNC> that excludes the
-C<rtn> value and a subset of the C<sys>-prefix values.  Its default value
-is a reference to the C<sys.std.Core.Type.Universal> data type.
+`RPTypeNC` is a proper subtype of `RelPathMaterialNC` that excludes the
+`rtn` value and a subset of the `sys`-prefix values.  Its default value
+is a reference to the `sys.std.Core.Type.Universal` data type.
 
 ## sys.std.Core.Type.Cat.DataNC
 
-C<DataNC> is a proper subtype of
-C<PNSQNameChain> where every member value's chain starts with one of the
-following element sequences: C<sys.cat>, C<mnt.cat>, C<fed.[cat|data]>,
-C<nlx[.par]**0..*.[cat|data]>.  One can be used to reference a
+`DataNC` is a proper subtype of
+`PNSQNameChain` where every member value's chain starts with one of the
+following element sequences: `sys.cat`, `mnt.cat`, `fed.[cat|data]`,
+`nlx[.par]**0..*.[cat|data]`.  One can be used to reference a
 variable (or pseudo-variable or parameter or named expression or
 statement), either a system-catalog or normal data variable.  Its default
-value is a reference to the C<sys.cat> catalog relcon.
-I<Conjecture:  Subtypes like C<[Abs|Rel]PathDataNC> might also be defined
+value is a reference to the `sys.cat` catalog relcon.
+I<Conjecture:  Subtypes like `[Abs|Rel]PathDataNC` might also be defined
 later if we have some situation where such a restriction might be useful.>
 
 ## sys.std.Core.Type.Cat.Comment
 
-A C<Comment> (scalar) is the text of a
+A `Comment` (scalar) is the text of a
 Muldis D code comment, which programmers can populate as an attribute of
 several catalog data types, such as whole routines or statements or
-expression nodes.  The C<Comment> type explicitly composes the C<Textual>
-mixin type, and by extension also implicitly composes the C<Stringy>
-mixin type.  The C<Comment> type explicitly composes the
-C<Ordered> mixin type.  Every detail of C<Comment>'s representation (its 1
-possrep, default value and ordering algorithm, etc) is the same as C<Name>
+expression nodes.  The `Comment` type explicitly composes the `Textual`
+mixin type, and by extension also implicitly composes the `Stringy`
+mixin type.  The `Comment` type explicitly composes the
+`Ordered` mixin type.  Every detail of `Comment`'s representation (its 1
+possrep, default value and ordering algorithm, etc) is the same as `Name`
 but it is explicitly disjoint due to having a different intended
 interpretation; it is intended just for commenting Muldis D code.  One main
 intended use of this type is to help preserve comments in code translated
@@ -582,277 +582,277 @@ comments in the AST rather than discarding them.
 
 ## sys.std.Core.Type.Cat.Order
 
-The C<Order> (order determination) type
+The `Order` (order determination) type
 is explicitly defined as a union type over just these 3 singleton types
-having C<sys.std.Core.Type.Cat.Order.*>-format names:
-C<Less>, C<Same>, C<More>.  When some context
+having `sys.std.Core.Type.Cat.Order.*`-format names:
+`Less`, `Same`, `More`.  When some context
 (such as within a list sort or range check operation) needs to know the
 relative order of 2 values according to some criteria, it can invoke a
 function that applies that criteria to those 2 values, which are its
-main/only arguments, and that function results in an C<Order> value for the
+main/only arguments, and that function results in an `Order` value for the
 context to make use of.  The
-default value of C<Order> is C<Same>; its minimum and maximum values are,
-respectively, C<Less> and C<More>.  The cardinality of this type is
-3.  The C<Order> type explicitly composes the C<Ordinal> mixin type, and by
-extension also implicitly composes the C<Ordered> mixin type.
-The C<Order> type has a default ordering algorithm that corresponds
+default value of `Order` is `Same`; its minimum and maximum values are,
+respectively, `Less` and `More`.  The cardinality of this type is
+3.  The `Order` type explicitly composes the `Ordinal` mixin type, and by
+extension also implicitly composes the `Ordered` mixin type.
+The `Order` type has a default ordering algorithm that corresponds
 directly to the sequence in which its values are documented here;
-C<Less> is ordered before C<Same>, and C<Same> before C<More>.
+`Less` is ordered before `Same`, and `Same` before `More`.
 
 ## sys.std.Core.Type.Cat.Order.*
 
-There are exactly 3 types having C<sys.std.Core.Type.Cat.Order.*>-format;
+There are exactly 3 types having `sys.std.Core.Type.Cat.Order.*`-format;
 for the rest of this
-description, the type name C<Order.Value> will be used as a proxy for each
-and every one of them.  A C<Order.Value> has 1 system-defined possrep whose
+description, the type name `Order.Value` will be used as a proxy for each
+and every one of them.  A `Order.Value` has 1 system-defined possrep whose
 name is the empty string and which has zero attributes.  The cardinality of
 this type is 1, and its only value is its default and minimum and maximum
 value.
 
 ## sys.std.Core.Type.Cat.RoundMeth
 
-The C<RoundMeth> (rounding method)
+The `RoundMeth` (rounding method)
 type is explicitly defined as a union type over just these 9 singleton
-types having C<sys.std.Core.Type.Cat.RoundMeth.*>-format names:
-C<Down>, C<Up>, C<ToZero>, C<ToInf>, C<HalfDown>, C<HalfUp>, C<HalfToZero>,
-C<HalfToInf>, C<HalfEven>.  When a value
+types having `sys.std.Core.Type.Cat.RoundMeth.*`-format names:
+`Down`, `Up`, `ToZero`, `ToInf`, `HalfDown`, `HalfUp`, `HalfToZero`,
+`HalfToInf`, `HalfEven`.  When a value
 of some ordered type needs to be mapped into a proper subtype that doesn't
 contain that value, such as when mapping an arbitrary number to one with
 less precision, some rounding method is applied to determine which value of
 the subtype is to be mapped to while most accurately reflecting the
-original value.  The C<RoundMeth> type enumerates the rounding methods
-that Muldis D operators can typically apply.  With C<Down> (aka I<floor>),
-C<Up> (aka I<ceiling>), C<ToZero> (aka I<truncate>), and C<ToInf>, the
+original value.  The `RoundMeth` type enumerates the rounding methods
+that Muldis D operators can typically apply.  With `Down` (aka *floor*),
+`Up` (aka *ceiling*), `ToZero` (aka *truncate*), and `ToInf`, the
 original value will always be mapped to the single adjacent value that is
 lower than it, or higher than it, or towards "zero" from it, or towards the
-nearer infinity from it, respectively.  With C<HalfDown>,
-C<HalfUp>, C<HalfToZero>, C<HalfToInf>,
-and C<HalfEven> (aka I<unbiased rounding>, I<convergent
-rounding>, I<statistician's rounding>, or I<bankers' rounding>), the
+nearer infinity from it, respectively.  With `HalfDown`,
+`HalfUp`, `HalfToZero`, `HalfToInf`,
+and `HalfEven` (aka *unbiased rounding*, *convergent
+rounding*, *statistician's rounding*, or *bankers' rounding*), the
 original value will be mapped to the single target value that it is closest
 to, if there is one; otherwise, if it is exactly half-way between 2
-adjacent target values, then C<HalfDown> will round towards negative
-infinity, C<HalfUp> will round towards positive infinity,
-C<HalfToZero> will round towards "zero", C<HalfToInf> will round towards
-the nearer infinity, and C<HalfEven> will round towards the nearest "even"
-target.  The default value of C<RoundMeth> is C<HalfEven>, since in general
+adjacent target values, then `HalfDown` will round towards negative
+infinity, `HalfUp` will round towards positive infinity,
+`HalfToZero` will round towards "zero", `HalfToInf` will round towards
+the nearer infinity, and `HalfEven` will round towards the nearest "even"
+target.  The default value of `RoundMeth` is `HalfEven`, since in general
 that should be the most likely to minimize the rounding error from a
 sequence of operations that each round, which is especially useful in
 contexts where a rounding method is implicit.  The
-C<RoundMeth> type does I<not> have a default ordering algorithm.
+`RoundMeth` type does *not* have a default ordering algorithm.
 
 ## sys.std.Core.Type.Cat.RoundMeth.*
 
 There are exactly 9 types having
-C<sys.std.Core.Type.Cat.RoundMeth.*>-format names;
+`sys.std.Core.Type.Cat.RoundMeth.*`-format names;
 for the rest of this description, the type name
-C<RoundMeth.Value> will be used as a proxy for each and every one of
-them.  A C<RoundMeth.Value> has 1 system-defined possrep whose name is
+`RoundMeth.Value` will be used as a proxy for each and every one of
+them.  A `RoundMeth.Value` has 1 system-defined possrep whose name is
 the empty string and which has zero attributes.  The cardinality of this
 type is 1, and its only value is its default and minimum and maximum value.
 
 ## sys.std.Core.Type.Cat.RatRoundRule
 
-A C<RatRoundRule> (scalar) specifies a
+A `RatRoundRule` (scalar) specifies a
 controlled (and typically degrading) coercion of a real number into a
 rational number having a specific radix and precision.  It is mainly used
 to deterministically massage an operation, whose conceptual result is
 generally an irrational number, so that its actual result is a best
 approximating rational number.  It is also used to define a generic
 rounding operation on a rational number that derives a typically less
-precise rational.  A C<RatRoundRule> has 1 system-defined possrep whose
-name is the empty string, which has these 3 attributes: C<radix> (a
-C<PInt2_N>), C<min_exp> (an C<Int>), and C<round_meth> (a C<RoundMeth>).
+precise rational.  A `RatRoundRule` has 1 system-defined possrep whose
+name is the empty string, which has these 3 attributes: `radix` (a
+`PInt2_N`), `min_exp` (an `Int`), and `round_meth` (a `RoundMeth`).
 The rational resulting from the operation is as close as possible to the
 conceptual result but that it is an exact multiple of the rational value
-resulting from C<radix> taken to the power of C<min_exp>; if rounding is
-needed, then C<round_meth> dictates the rounding method.  The default value
-of C<RatRoundRule> specifies a coersion to a whole number using the
-C<HalfEven> rounding method (its radix is 2 and its min exp is 0).  The
-C<RatRoundRule> type does I<not> have a default ordering algorithm.
+resulting from `radix` taken to the power of `min_exp`; if rounding is
+needed, then `round_meth` dictates the rounding method.  The default value
+of `RatRoundRule` specifies a coersion to a whole number using the
+`HalfEven` rounding method (its radix is 2 and its min exp is 0).  The
+`RatRoundRule` type does *not* have a default ordering algorithm.
 
 ## sys.std.Core.Type.Cat.Singleton
 
-The C<Singleton> type is explicitly defined as a union type over just the
+The `Singleton` type is explicitly defined as a union type over just the
 system-defined core singleton types which aren't otherwise included in
-another union type specific to a group of singleton types.  C<Singleton>
+another union type specific to a group of singleton types.  `Singleton`
 only exists as a convenience for concrete Muldis D grammars that want to
-have a group type name for every system-defined opaque value.  C<Singleton>
-currently unions just these 2 types: C<-Inf>, C<Inf>.
+have a group type name for every system-defined opaque value.  `Singleton`
+currently unions just these 2 types: `-Inf`, `Inf`.
 
 ## sys.std.Core.Type.Cat."-Inf"
 
-C<-Inf> is a singleton scalar type whose only value represents negative
+`-Inf` is a singleton scalar type whose only value represents negative
 infinity.  It is intended for use as a special value in contexts that are
 sensitive to the ordering of a type's values, wherein it can be the
 canonical minimum-most value, and so would be ordered before every other
-possible value of C<Universal> that it might be compared with.  A C<-Inf>
+possible value of `Universal` that it might be compared with.  A `-Inf`
 has 1 system-defined possrep whose name is the empty string and which has
 zero attributes.  The cardinality of this type is 1, and its only value is
-its default and minimum and maximum value.  The only value of C<-Inf> is
-also known as C<-∞>.  C<-Inf> explicitly composes C<Ordinal>.
+its default and minimum and maximum value.  The only value of `-Inf` is
+also known as `-∞`.  `-Inf` explicitly composes `Ordinal`.
 
 ## sys.std.Core.Type.Cat.Inf
 
-C<Inf> is a singleton scalar type whose only value represents positive
-infinity.  It is the same as C<-Inf> in every way except it is the
+`Inf` is a singleton scalar type whose only value represents positive
+infinity.  It is the same as `-Inf` in every way except it is the
 canonical maximum-most value rather than minimum-most.  The only value of
-C<Inf> is also known as C<∞>.  C<Inf> explicitly composes C<Ordinal>.
+`Inf` is also known as `∞`.  `Inf` explicitly composes `Ordinal`.
 
 # TYPES FOR DEFINING SYSTEM-DEFINED ENTITIES
 
 ## sys.std.Core.Type.Cat.System
 
-A C<System> is a C<Database>.  It specifies the public interfaces of
+A `System` is a `Database`.  It specifies the public interfaces of
 system-defined entities, specifically all the system-defined types,
 routines, and catalogs.  Both standard system-defined entities and
 implementation-specific system-defined entities are specified here,
 specifically all the relcons and relvars with the names
-C<[sys|mnt|fed|nlx].cat>.  The system catalog constant named
-C<sys.cat> is of the C<System> type.
+`[sys|mnt|fed|nlx].cat`.  The system catalog constant named
+`sys.cat` is of the `System` type.
 
-A C<System> has these 4 attributes:
+A `System` has these 4 attributes:
 
-* C<scm_comment> - C<just_of.Comment>
+* `scm_comment` - `just_of.Comment`
 
 This is an optional programmer comment about the collection of
 system-defined entities as a whole.
 
-* C<special_namespaces> - C<SpecialNspSet>
+* `special_namespaces` - `SpecialNspSet`
 
 These are all the special system-defined namespaces where not-lexical DBMS
 entities may live, or that otherwise always exist due to being
 system-defined, which are not defined like users can define namespaces;
 all non-special system namespaces are defined by modules instead.
 Specifically, it declares these 15 standard language namespaces:
-C<[sys|mnt|fed|nlx|rtn]> (which have the nameless global
-root namespace as their parent, spelled as the empty C<NameChain>
-value, that isn't also declared here), C<sys.[cat|std|imp]>,
-C<mnt.cat>, C<[fed|nlx].[cat|lib|data]>; it also declares,
+`[sys|mnt|fed|nlx|rtn]` (which have the nameless global
+root namespace as their parent, spelled as the empty `NameChain`
+value, that isn't also declared here), `sys.[cat|std|imp]`,
+`mnt.cat`, `[fed|nlx].[cat|lib|data]`; it also declares,
 where applicable, implementation-specific extensions (none are yet known).
 
-* C<modules> - C<ModuleSet>
+* `modules` - `ModuleSet`
 
 These are all the system-defined modules, which have all the system-defined
 routines and types.  This always contains at least the single standard
-C<Core> module and optionally contains other standard or
+`Core` module and optionally contains other standard or
 implementation-specific modules, as the current DBMS provides.
 
-* C<catalogs> - C<CatalogSet>
+* `catalogs` - `CatalogSet`
 
 These are the interfaces of all the catalog relcons and relvars.
 Specifically, it declares these 4 standard catalogs:
-C<[sys|mnt|fed|nlx].cat>; the first is a relcon, the others not.
+`[sys|mnt|fed|nlx].cat`; the first is a relcon, the others not.
 
-The default value of C<System> defines a system with zero builtins.
+The default value of `System` defines a system with zero builtins.
 
 ## sys.std.Core.Type.Cat.SpecialNspSet
 
-A C<SpecialNspSet> is a C<DHRelation> that specifies the set of special
+A `SpecialNspSet` is a `DHRelation` that specifies the set of special
 system namespaces that exist for organizing all other DBMS public entities;
 these special system namespaces are organized into a tree whose root has no
-name.  A C<SpecialNspSet> only specifies that a special system namespace
-exists, not which public entities it contains; see the C<System> which
+name.  A `SpecialNspSet` only specifies that a special system namespace
+exists, not which public entities it contains; see the `System` which
 contains it for that.
 
-A C<SpecialNspSet> has these 4 attributes:
+A `SpecialNspSet` has these 4 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the special system namespace's parent special system namespace.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the special system namespace within the
-special namespace defined by C<parent>; other Muldis D code would reference
-it with the combination of C<parent> and C<name>.
+special namespace defined by `parent`; other Muldis D code would reference
+it with the combination of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this specific special system
 namespace.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this namespace's declaration relative to all
-of the named entities directly within the namespace defined by C<parent>.
+of the named entities directly within the namespace defined by `parent`.
 
-A C<SpecialNspSet> has a binary primary key on the C<parent> plus
-C<name> attributes.  Its default value is empty.
+A `SpecialNspSet` has a binary primary key on the `parent` plus
+`name` attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.ModuleSet
 
-A C<ModuleSet> is a C<DHRelation> that specifies a set of system-defined
+A `ModuleSet` is a `DHRelation` that specifies a set of system-defined
 modules, such that each tuple is a single module.
 
-A C<ModuleSet> has these 5 attributes:
+A `ModuleSet` has these 5 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
 This is the fully-qualified name, in the nameless global root namespace, of
 the module's parent special system namespace.  This is always either
-C<sys.std> or C<sys.imp>.
+`sys.std` or `sys.imp`.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the module within the
-special namespace defined by C<parent>; other Muldis D code would reference
-it with the combination of C<parent> and C<name>.
+special namespace defined by `parent`; other Muldis D code would reference
+it with the combination of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this specific module.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this module's declaration relative to all
-of the named entities directly within the namespace defined by C<parent>.
+of the named entities directly within the namespace defined by `parent`.
 
-* C<module> - C<Module>
+* `module` - `Module`
 
 This defines the entire system catalog of the module.
 
-A C<ModuleSet> has a unary primary key on the C<name> attribute.
+A `ModuleSet` has a unary primary key on the `name` attribute.
 Its default value is empty.
 
 ## sys.std.Core.Type.Cat.CatalogSet
 
-A C<CatalogSet> is a C<DHRelation> that specifies a set of system-defined
+A `CatalogSet` is a `DHRelation` that specifies a set of system-defined
 catalog dbvars; each tuple specifies one catalog dbvar.
 
-A C<CatalogSet> has these 5 attributes:
+A `CatalogSet` has these 5 attributes:
 
-* C<name> - C<DataNC>
+* `name` - `DataNC`
 
 This is the fully-qualified name of the catalog dbvar.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the catalog dbvar as a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this catalog's declaration relative to all of
 the other catalogs.
 
-* C<is_readonly> - C<Bool>
+* `is_readonly` - `Bool`
 
-This is C<Bool:True> if a catalog relcon is being described; it is
-C<Bool:False> if a catalog relvar is being described.
+This is `Bool:True` if a catalog relcon is being described; it is
+`Bool:False` if a catalog relvar is being described.
 
-* C<catalog> - C<MaterialNC>
+* `catalog` - `MaterialNC`
 
 This is the declared data type of the catalog dbvar.
 
-A C<CatalogSet> has a unary primary key on the C<name> attribute.  Its
+A `CatalogSet` has a unary primary key on the `name` attribute.  Its
 default value is empty.
 
 # TYPES FOR DEFINING MOUNT CONTROLS
 
 ## sys.std.Core.Type.Cat.MountControlCat
 
-A C<MountControlCat> is a C<Database>.  It specifies the control
+A `MountControlCat` is a `Database`.  It specifies the control
 interface for mounting and unmounting (and creating and deleting) depots
 within the current in-DBMS process.  The scope of these controls includes
 specifying what name the depot is mounted with, whether the mount is
@@ -861,24 +861,24 @@ specific details like storage file names or network login credentials.
 Updates to this catalog have side-effects in what other user-updateable
 catalogs exist, making them appear or disappear.  This catalog may only be
 updated when the current process has no active transaction.  The system
-catalog variable named C<mnt.cat> is of the C<MountControlCat> type.
+catalog variable named `mnt.cat` is of the `MountControlCat` type.
 
-A C<MountControlCat> has these 2 attributes:
+A `MountControlCat` has these 2 attributes:
 
-* C<scm_comment> - C<just_of.Comment>
+* `scm_comment` - `just_of.Comment`
 
 This is an optional programmer comment about the depot mount control
 catalog as a whole.
 
-* C<mounts> - C<MountControlSet>
+* `mounts` - `MountControlSet`
 
 These are the controls for the current depot mounts.
 
-The default value of C<MountControlCat> has zero depot mount controls.
+The default value of `MountControlCat` has zero depot mount controls.
 
 ## sys.std.Core.Type.Cat.MountControlSet
 
-A C<MountControlSet> is a C<DHRelation> that specifies a set of controls
+A `MountControlSet` is a `DHRelation` that specifies a set of controls
 per depot mounts, such that each tuple is a single control for a depot
 mount, and each depot mount has 1 mount control.  Inserting a tuple will
 result in either an existing depot being mounted or a new depot being
@@ -887,165 +887,165 @@ details of that depot mount's status, such as making it readonly or
 updateable; deleting a tuple will result in a mounted depot being either
 unmounted or unmounted plus deleted (if possible).
 
-A C<MountControlSet> has these 8 attributes:
+A `MountControlSet` has these 8 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the depot mount; other Muldis D code would
 reference it with this name.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this specific mount of the
 depot.
 
-* C<is_temporary> - C<Bool>
+* `is_temporary` - `Bool`
 
-This is C<Bool:True> if the depot mount is for a transient depot that would
-automatically be created when mounted I<and> automatically be deleted when
+This is `Bool:True` if the depot mount is for a transient depot that would
+automatically be created when mounted *and* automatically be deleted when
 unmounted, because it is only intended for use as the application's current
 working memory, and its maximum lifetime is the lifetime of the in-DBMS
-process.  This is C<Bool:False> (the default) if the depot mount is for a
-depot that either should already exist before being mounted, I<or> that
+process.  This is `Bool:False` (the default) if the depot mount is for a
+depot that either should already exist before being mounted, *or* that
 should continue to exist after being unmounted, because it is intended for
-persistent data.  Note that the C<is_temporary> status is orthogonal to
+persistent data.  Note that the `is_temporary` status is orthogonal to
 whether the depot's storage is in volatile memory (eg, RAM) or in stable
-memory (eg, on disk); a I<not-temporary> depot is simply one that is meant
-to be reusable by multiple depot mounts or processes.  The C<is_temporary>
-status may not be updated on an existing depot mount control.  I<These
-details are subject to revision.>
+memory (eg, on disk); a *not-temporary* depot is simply one that is meant
+to be reusable by multiple depot mounts or processes.  The `is_temporary`
+status may not be updated on an existing depot mount control.  *These
+details are subject to revision.*
 
-* C<create_on_mount> - C<Bool>
+* `create_on_mount` - `Bool`
 
-This is C<Bool:True> if the depot mount must represent a depot that was
+This is `Bool:True` if the depot mount must represent a depot that was
 newly created at the time the depot mount was created, where the depot
 creation is a direct side-effect of the mount operation.  This is
-C<Bool:False> (the default) if the depot being mounted must already exist
+`Bool:False` (the default) if the depot being mounted must already exist
 without the mounting process having any hand in creating it.  Note that
 there is no option provided to conditionally create a depot depending on
 whether it already exists, as a perceived safety feature (this detail is
 subject to change); to get that behaviour, first try creating the depot
-mount control with this attribute C<Bool:False>, and if that fails due to
-nonexistence, then try again with it set to C<Bool:True>.  This attribute
-is ignored / not applicable when C<is_temporary> is true.
+mount control with this attribute `Bool:False`, and if that fails due to
+nonexistence, then try again with it set to `Bool:True`.  This attribute
+is ignored / not applicable when `is_temporary` is true.
 
-* C<delete_on_unmount> - C<Bool>
+* `delete_on_unmount` - `Bool`
 
-This is C<Bool:True> if the depot should be deleted at the same time it is
+This is `Bool:True` if the depot should be deleted at the same time it is
 unmounted, that is, when this depot mount control tuple is deleted.  This
-is C<Bool:False> (the default) if the depot should not be deleted as part
+is `Bool:False` (the default) if the depot should not be deleted as part
 of the unmount process.  This attribute is ignored / not applicable when
-C<is_temporary> is true.
+`is_temporary` is true.
 
-* C<we_may_update> - C<Bool>
+* `we_may_update` - `Bool`
 
-This is C<Bool:True> if the depot mount will permit the current in-DBMS
+This is `Bool:True` if the depot mount will permit the current in-DBMS
 process to make any kind of update to the depot, such as data manipulation,
-data definition, or creating/deleting it.  This is C<Bool:False> (the
+data definition, or creating/deleting it.  This is `Bool:False` (the
 default) if the depot mount is only providing readonly access to the depot.
 When a depot mount is readonly, any attempt to update the depot through it
-will throw a runtime exception.  The C<we_may_update> attribute may be set
-to C<Bool:False> at any time (when there is no active transaction), but it
-may only be set to C<Bool:True> at the time the depot is mounted; this is
+will throw a runtime exception.  The `we_may_update` attribute may be set
+to `Bool:False` at any time (when there is no active transaction), but it
+may only be set to `Bool:True` at the time the depot is mounted; this is
 for safety, such that if a depot mount won't let you update the depot now,
 there's no way it will let you update it later, save by unmounting and
 remounting the depot (the result of which is a different depot mount).
-Note that the C<we_may_update> status is orthogonal to the depot locking
+Note that the `we_may_update` status is orthogonal to the depot locking
 mechanism; it won't block any other process from reading or updating that
 depot, so unless you have locks on the depot using some other means, it may
 still be updated by others while mounted readonly for you, so consistent
 reads between distinct statements outside of transactions are not
-guaranteed.  I<These details are subject to revision, such as in regards to
-what autonomous child processes of the current process may do.>
+guaranteed.  *These details are subject to revision, such as in regards to
+what autonomous child processes of the current process may do.*
 
-* C<allow_auto_run> - C<Bool>
+* `allow_auto_run` - `Bool`
 
-This is C<Bool:True> if the depot mount will permit any stimulus-response
+This is `Bool:True` if the depot mount will permit any stimulus-response
 rules defined in the depot to automatically execute when triggering events
 occur; those events could be nearly anything, including the very act of
-mounting (or unmounting) that depot.  This is C<Bool:False> (the default)
+mounting (or unmounting) that depot.  This is `Bool:False` (the default)
 if the depot mount will prohibit all stimulus-response rules defined in the
 depot from automatically executing.  The primary purpose of the
-C<allow_auto_run> attribute is to provide a measure of security against
+`allow_auto_run` attribute is to provide a measure of security against
 viruses and other malware that are using Muldis D databases as a vector,
 especially where the malicious code is setup to run automatically as soon
 as its host depot is mounted, which is insidious because in general users
 have to mount a depot in order to even examine it to see if its contents
 are safe, at which point it is too late.  When you have a depot with a
-dubious history, mounting it initially with a false C<allow_auto_run> will
+dubious history, mounting it initially with a false `allow_auto_run` will
 allow you to examine the depot for malware without giving the latter any
 opportunity to run; moreover, you will be able to clean out a virus
 infection from a depot that you otherwise wish to preserve (it is just
 data, after all); and then you can remount the depot with a true
-C<allow_auto_run> once you know it is clean, in order for benign
+`allow_auto_run` once you know it is clean, in order for benign
 auto-running code to work.  If a depot is "the main program" in a pure
-Muldis D application, then C<allow_auto_run> must be C<Bool:True> in order
+Muldis D application, then `allow_auto_run` must be `Bool:True` in order
 for it to work properly since auto-running is how the initial Muldis D
 routine of a call chain is invoked, and otherwise the program will
-immediately exit on launch without doing anything.  When C<allow_auto_run>
-is C<Bool:False> (and C<we_may_update> is C<Bool:True>), then the depot's
+immediately exit on launch without doing anything.  When `allow_auto_run`
+is `Bool:False` (and `we_may_update` is `Bool:True`), then the depot's
 catalog dbvar is updateable, so that you can purge any viruses, but the
 depot's data dbvar is read-only, because in the general case there may be
 some database constraints or benign side-effects of data manipulation that
 would be prevented from doing their jobs because they are defined as
 stimulus-response rules, and allowing data manipulation then could lead to
 violations of otherwise-enforced business rules.  Note that a false
-C<allow_auto_run> will not prohibit you from manually invoking code in the
+`allow_auto_run` will not prohibit you from manually invoking code in the
 depot, so be careful not to invoke something unsafe.  Note that having a
-false C<we_may_update> status alone isn't adequate protection against
+false `we_may_update` status alone isn't adequate protection against
 malware because even in that situation any stimulus-response rules whose
 triggers aren't data manipulation events will still automatically run, and
 the malware can still do all sorts of harm, since stimulus-response rules
-in general can do anything a C<procedure> can, including various I/O or
+in general can do anything a `procedure` can, including various I/O or
 manipulating other depots.
 
-* C<details> - C<SysScaValExprNodeSet>
+* `details` - `SysScaValExprNodeSet`
 
 These are the 0..N other miscellaneous details that define this depot mount
-control.  Each tuple in C<details> specifies an implementation-specific
+control.  Each tuple in `details` specifies an implementation-specific
 attribute name and (scalar) value.  Example such implementation-specific
 details include the name of a local file that the depot is stored as, or
 the name of a DBMS server on the network plus authentication credentials to
 connect to it with.  See each Muldis D implementation for details.  Note
-that C<details> generally corresponds to the Perl DBI's concept of a data
-source name or connection string.  But C<details> can also have other
+that `details` generally corresponds to the Perl DBI's concept of a data
+source name or connection string.  But `details` can also have other
 details like customizations on how to map a foreign DBMS' concepts to
 native Muldis D equivalents, or maybe information on where to find extra
 metadata that has such info, or info to instruct a Muldis D interface to
 fill in functionality missing in the actual depot of a less capable DBMS,
 like constraints or stored invokable routines.
 
-A C<MountControlSet> has a unary primary key on the C<name> attribute.  Its
-default value is empty.  C<mnt.cat> also has a transition constraint that
+A `MountControlSet` has a unary primary key on the `name` attribute.  Its
+default value is empty.  `mnt.cat` also has a transition constraint that
 prevents changing some attributes of a depot mount control once set.  Note
-that the 3 attributes [C<is_temporary>, C<create_on_mount>,
-C<delete_on_unmount>] may be merged into a single enumerated-typed
+that the 3 attributes [`is_temporary`, `create_on_mount`,
+`delete_on_unmount`] may be merged into a single enumerated-typed
 attribute or otherwise be reorganized.
 
 # TYPES FOR DEFINING FEDERATIONS
 
 ## sys.std.Core.Type.Cat.Federation
 
-A C<Federation> is a C<Database>.  It specifies a federation of depot
+A `Federation` is a `Database`.  It specifies a federation of depot
 mounts, that is, all the depot mounts that an in-DBMS process can see or
 update, and that defines the scope of an active transaction.  There is
 exactly one of these per process and it doesn't have a name.  The system
-catalog variable named C<fed.cat> is of the C<Federation> type.
+catalog variable named `fed.cat` is of the `Federation` type.
 
-A C<Federation> has these 3 attributes:
+A `Federation` has these 3 attributes:
 
-* C<scm_comment> - C<just_of.Comment>
+* `scm_comment` - `just_of.Comment`
 
 This is an optional programmer comment about the federation as a whole.
 
-* C<mounts> - C<DepotMountSet>
+* `mounts` - `DepotMountSet`
 
 These are the depot mounts that comprise the federation.
 
-* C<type_maps> - C<FedTypeMapSet>
+* `type_maps` - `FedTypeMapSet`
 
 When this federation has more than one depot mount, and the depots have
-copies of the same data types, then C<type_maps> is used to specify which
+copies of the same data types, then `type_maps` is used to specify which
 types in each depot correspond to types in others, so that during the time
 period of common mounting, those data types can be treated as aliases and
 so be used interchangeably.  Mainly this is used when either a procedure in
@@ -1056,456 +1056,456 @@ common use case would be when there are 2 depot mounts, one being a
 persistent database and the other being transient application-specific code
 that creates or otherwise works with that persistent database.
 
-The default value of C<Federation> has zero depot mounts.
+The default value of `Federation` has zero depot mounts.
 
 ## sys.std.Core.Type.Cat.DepotMountSet
 
-A C<DepotMountSet> is a C<DHRelation> that specifies a set of depot
+A `DepotMountSet` is a `DHRelation` that specifies a set of depot
 mounts, such that each tuple is a single depot mount.  A depot mount is a
 named in-DBMS context by which a depot is referenced from either other
 depots or by the main application, and it also specifies the catalog
 content of the depot itself.
 
-A C<DepotMountSet> has these 3 attributes:
+A `DepotMountSet` has these 3 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the depot mount; other Muldis D code would
 reference it with this name.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this specific mount of the
 depot.
 
-* C<depot> - C<Depot>
+* `depot` - `Depot`
 
 This defines the entire system catalog of the depot that this mount has
 made visible to the DBMS.
 
-A C<DepotMountSet> has a unary primary key on the C<name> attribute.
+A `DepotMountSet` has a unary primary key on the `name` attribute.
 Its default value is empty.
 
 ## sys.std.Core.Type.Cat.FedTypeMapSet
 
-A C<FedTypeMapSet> is a C<DHRelation> such that each tuple in it
+A `FedTypeMapSet` is a `DHRelation` such that each tuple in it
 specifies which of multiple depots have a copy of the same data type, for
 the purpose of treating all the copies as being interchangeable, so to
 support cross-depot interaction.
 
-A C<FedTypeMapSet> has these 2 attributes:
+A `FedTypeMapSet` has these 2 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this type mapping.
 
-* C<types> - C<set_of.APTypeNC>
+* `types` - `set_of.APTypeNC`
 
-This lists the C<fed.>-qualified names of 0..N data types that are all
+This lists the `fed.`-qualified names of 0..N data types that are all
 considered to be copies of the same 1 type, and should be treated
 interchangeably by the DBMS.
 
-A C<FedTypeMapSet> has a primary key on the C<map> attribute.  Its
+A `FedTypeMapSet` has a primary key on the `map` attribute.  Its
 default value is empty.
 
 # TYPES FOR DEFINING PACKAGES AND SUBPACKAGES
 
 ## sys.std.Core.Type.Cat.Package
 
-A C<Package> is a C<Database>.  It specifies the entire system catalog of a
+A `Package` is a `Database`.  It specifies the entire system catalog of a
 single package, that is, the widest scope within which all entities must be
 fully defined in terms of just user-defined entities within the same scope
 or of system-defined entities.  It also doubles to specify the system
 catalog of a subpackage, which is an arbitrary subset of a package's
 entities that internally looks like a package; a package can have 0..N
 subpackages, and any that exist are arranged in a hierarchy with the
-package as the root.  The system catalog variable named C<nlx.cat> is of
-the C<Package> type.
+package as the root.  The system catalog variable named `nlx.cat` is of
+the `Package` type.
 
-A C<Package> has these 17 attributes:
+A `Package` has these 17 attributes:
 
-* C<scm_comment> - C<just_of.Comment>
+* `scm_comment` - `just_of.Comment`
 
 This is an optional programmer comment about the [|sub]package as a whole.
 
-* C<subpackages> - C<SubpackageSet>
+* `subpackages` - `SubpackageSet`
 
 These are all the subpackages that this system catalog contains (which
 might be none).
 
-* C<functions|procedures> - C<[Function|Procedure]Set>
+* `functions|procedures` - `[Function|Procedure]Set`
 
 These are all the definitions that this [|sub]package contains of
 functions, procedures.
 
-* C<special_types> - C<SpecialTypeSet>
+* `special_types` - `SpecialTypeSet`
 
 These are the few central system-defined data types that have special
 hard-coded meanings and are not defined like any other types; these are
 declarations of all of the native Muldis D types that can't be defined like
 user-defined types.  Specifically, it declares all 2 Muldis D declaration
-types in the C<Core> module, and only declaration types: in the C<Type>
-namespace: C<Int>; in the C<Type.Cat> namespace: C<List>.
-B<Only the C<Core> module has a nonempty C<special_types>; all other
+types in the `Core` module, and only declaration types: in the `Type`
+namespace: `Int`; in the `Type.Cat` namespace: `List`.
+B<Only the `Core` module has a nonempty `special_types`; all other
 packages must have an empty one.>
 
-* C<[scalar|tuple|relation|domain|subset|mixin]_types> -
-C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet>
+* `[scalar|tuple|relation|domain|subset|mixin]_types` -
+`[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet`
 
 These are all the definitions that this [|sub]package contains of scalar
 types with possreps, complete tuple and relation types, domain types, and
 subset types, and mixin types.  This includes the 2 Muldis D type system
-maximal and minimal (enumeration) types, C<Universal> and C<Empty>, which
+maximal and minimal (enumeration) types, `Universal` and `Empty`, which
 are declared as domain types.  This includes all enumeration types, period.
 
-* C<[|distrib_][key|subset]_constrs> -
-C<[|Distrib][Key|Subset]ConstrSet>
+* `[|distrib_][key|subset]_constrs` -
+`[|Distrib][Key|Subset]ConstrSet`
 
 These are all the definitions that this [|sub]package contains of
 |distributed key|subset constraints.
 
-* C<stim_resp_rules> - C<StimRespRuleSet>
+* `stim_resp_rules` - `StimRespRuleSet`
 
 These are all the definitions that this [|sub]package contains of
 stimulus-response rules.  I<For any system-defined package,
-C<stim_resp_rules> is probably always empty.>
+`stim_resp_rules` is probably always empty.>
 
-* C<data> - C<maybe_of.RPTypeNC>
+* `data` - `maybe_of.RPTypeNC`
 
 This is the declared data type of the self-local dbvar that this
-[|sub]package contains, iff C<data> is a C<Just>; if C<data> is C<Nothing>
+[|sub]package contains, iff `data` is a `Just`; if `data` is `Nothing`
 (the default), then this [|sub]package does not have a self-local dbvar.
-I<For any system-defined package, C<data> is probably always C<Nothing>.>
+I<For any system-defined package, `data` is probably always `Nothing`.>
 
-There is a distributed binary primary key over the C<parent> plus C<name>
-attributes of all 8 of a C<Package>'s main C<DHRelation>-typed attributes.
+There is a distributed binary primary key over the `parent` plus `name`
+attributes of all 8 of a `Package`'s main `DHRelation`-typed attributes.
 
-A C<Package> is constrained such that all of its C<Name>-typed components
+A `Package` is constrained such that all of its `Name`-typed components
 must have possrep attribute values of the same system-defined
-possrep-adding C<Text> subtype (such as C<CoreText> or C<Text.Unicode>),
-and hence are all directly comparable.  Similarly, a C<Package> is
-constrained such that all of its C<Comment>-typed components must have
-possrep attribute values of the same possrep-adding C<Text> subtype.
+possrep-adding `Text` subtype (such as `CoreText` or `Text.Unicode`),
+and hence are all directly comparable.  Similarly, a `Package` is
+constrained such that all of its `Comment`-typed components must have
+possrep attribute values of the same possrep-adding `Text` subtype.
 
-The default value of C<Package> defines an empty [|sub]package
+The default value of `Package` defines an empty [|sub]package
 that does not have any self-local dbvar.
 
 ## sys.std.Core.Type.Cat.Module
 
-A C<Module> specifies the entire system catalog of a single module (or
-submodule), which is a kind of package (or subpackage).  C<Module> is a
-proper subtype of C<Package> where for every member value its
-C<stim_resp_rules> and C<data> attributes are empty.  I<It is possible in
-the future that C<Module> may change to a non-proper subtype of C<Package>
+A `Module` specifies the entire system catalog of a single module (or
+submodule), which is a kind of package (or subpackage).  `Module` is a
+proper subtype of `Package` where for every member value its
+`stim_resp_rules` and `data` attributes are empty.  I<It is possible in
+the future that `Module` may change to a non-proper subtype of `Package`
 should system-defined stimulus-response rules or data dbcons be useful.>
 
 ## sys.std.Core.Type.Cat.Depot
 
-A C<Depot> specifies the entire system catalog of a single depot (or
-subdepot), which is a kind of package (or subpackage).  C<Depot> is a
-proper subtype of C<Package> where for every member value its
-C<special_types> attribute is empty.
+A `Depot` specifies the entire system catalog of a single depot (or
+subdepot), which is a kind of package (or subpackage).  `Depot` is a
+proper subtype of `Package` where for every member value its
+`special_types` attribute is empty.
 
 ## sys.std.Core.Type.Cat.SubpackageSet
 
-A C<SubpackageSet> is a C<DHRelation> that specifies the set of subpackages
+A `SubpackageSet` is a `DHRelation` that specifies the set of subpackages
 that a package might optionally have for organizing its entities;
 these subpackages are organized into a tree whose root is the package.  A
-C<SubpackageSet> only specifies that a subpackage exists, not which package
-entities it contains; see the C<Package> which contains it for that.
+`SubpackageSet` only specifies that a subpackage exists, not which package
+entities it contains; see the `Package` which contains it for that.
 
-A C<SubpackageSet> has these 4 attributes:
+A `SubpackageSet` has these 4 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the `nlx.[cat|lib|data]` namespace,
 of any hypothetical immediate child namespace of the package, of the
 subpackage's parent subpackage, which is often just the package itself.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the subpackage within the namespace defined by
-C<parent>; other Muldis D code would reference it with the combination of
-C<parent> and C<name>.
+`parent`; other Muldis D code would reference it with the combination of
+`parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this specific subpackage as
 associated with this subpackage name.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this subpackage's declaration relative to all
-of the named entities directly within the namespace defined by C<parent>.
+of the named entities directly within the namespace defined by `parent`.
 
-A C<SubpackageSet> has a binary primary key on the C<parent> plus
-C<name> attributes.  Its default value is empty.
+A `SubpackageSet` has a binary primary key on the `parent` plus
+`name` attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.[Function|Procedure]Set
 
-A C<[Function|Procedure]Set> is a C<DHRelation> that
+A `[Function|Procedure]Set` is a `DHRelation` that
 specifies a set of functions|procedures
-that a [|sub]package might directly contain.  I<TODO: each routine may be
-either public for the DBMS as a whole or private to the subpackage.>
+that a [|sub]package might directly contain.  *each routine may be
+either public for the DBMS as a whole or private to the subpackage.*
 
-A C<[Function|Procedure]Set> has these 5 attributes:
+A `[Function|Procedure]Set` has these 5 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the `nlx.[cat|lib|data]` namespace,
 of any hypothetical immediate child namespace of the package, of the
 function|procedure's parent [|sub]package.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the function|procedure within
-the namespace defined by C<parent>; other Muldis D code would reference it
-with the combination of C<parent> and C<name>.
+the namespace defined by `parent`; other Muldis D code would reference it
+with the combination of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the
 function|procedure as a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this routine's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
+the named entities directly within the namespace defined by `parent`.
 
-* C<material> - C<Function|Procedure>
+* `material` - `Function|Procedure`
 
 This defines the entire function|procedure sans its name.
 Note that it is not mandatory for a system-defined routine to have a
-specified I<body> (just a specified I<heading> is mandatory), and often it
+specified *body* (just a specified *heading* is mandatory), and often it
 won't; but often it will, especially if it is a function used in the
 definition of a system-defined data type.
 
-A C<[Function|Procedure]Set> has a binary primary key on the
-C<parent> plus C<name> attributes.  Its default value is empty.
+A `[Function|Procedure]Set` has a binary primary key on the
+`parent` plus `name` attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.SpecialTypeSet
 
-A C<SpecialTypeSet> is a C<DHRelation> that specifies a set of
+A `SpecialTypeSet` is a `DHRelation` that specifies a set of
 system-defined types which are particularly special and unlike other types;
 it is used for declaring all system types that can't be defined like user
-types.  It is only nonempty for the C<Core> module.
+types.  It is only nonempty for the `Core` module.
 
-A C<SpecialTypeSet> has these 4 attributes:
+A `SpecialTypeSet` has these 4 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the `nlx.[cat|lib|data]` namespace,
 of any hypothetical immediate child namespace of the package, of the
 special type's parent [|sub]package.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the special type within the namespace defined
-by C<parent>; other Muldis D code would reference it with the combination
-of C<parent> and C<name>.
+by `parent`; other Muldis D code would reference it with the combination
+of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the special type as a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this type's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
+the named entities directly within the namespace defined by `parent`.
 
-A C<SpecialTypeSet> has a binary primary key on the C<parent> plus
-C<name> attributes.  Its default value is empty.
+A `SpecialTypeSet` has a binary primary key on the `parent` plus
+`name` attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet
 
-A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> is a C<DHRelation>
+A `[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet` is a `DHRelation`
 that specifies a set of scalar|tuple|relation|domain|subset|mixin types
-that a [|sub]package might directly contain.  I<TODO: each type may be
-either public for the DBMS as a whole or private to the subpackage.>
+that a [|sub]package might directly contain.  *each type may be
+either public for the DBMS as a whole or private to the subpackage.*
 
-A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has these 5
+A `[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet` has these 5
 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the `nlx.[cat|lib|data]` namespace,
 of any hypothetical immediate child namespace of the package, of the
 scalar|tuple|relation|domain|subset|mixin type's parent [|sub]package.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the scalar|tuple|relation|domain|subset|mixin
-type within the namespace defined by C<parent>; other Muldis D code would
-reference it with the combination of C<parent> and C<name>.
+type within the namespace defined by `parent`; other Muldis D code would
+reference it with the combination of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the
 scalar|tuple|relation|domain|subset|mixin type as a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this type's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
+the named entities directly within the namespace defined by `parent`.
 
-* C<material> - C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type>
+* `material` - `[Scalar|Tuple|Relation|Domain|Subset|Mixin]Type`
 
 This defines the entire scalar|tuple|relation|domain|subset|mixin type sans
 its name.
 
-A C<[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet> has a binary
-primary key on the C<parent> plus C<name> attributes.  Its default value is
+A `[Scalar|Tuple|Relation|Domain|Subset|Mixin]TypeSet` has a binary
+primary key on the `parent` plus `name` attributes.  Its default value is
 empty.
 
 ## sys.std.Core.Type.Cat.[|Distrib][Key|Subset]ConstrSet
 
-A C<[|Distrib][Key|Subset]ConstrSet> is a C<DHRelation> that specifies a
+A `[|Distrib][Key|Subset]ConstrSet` is a `DHRelation` that specifies a
 set of |distributed key|subset constraints that a [|sub]package might
 directly contain.
 
-A C<[|Distrib][Key|Subset]ConstrSet> has these 5 attributes:
+A `[|Distrib][Key|Subset]ConstrSet` has these 5 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the `nlx.[cat|lib|data]` namespace,
 of any hypothetical immediate child namespace of the package, of the
 |distributed key|subset constraint's parent [|sub]package.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the |distributed key|subset constraint within
-the namespace defined by C<parent>; other Muldis D code would reference it
-with the combination of C<parent> and C<name>.
+the namespace defined by `parent`; other Muldis D code would reference it
+with the combination of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the |distributed key|subset
 constraint as a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this constraint's declaration relative to all
-of the named entities directly within the namespace defined by C<parent>.
+of the named entities directly within the namespace defined by `parent`.
 
-* C<material> - C<[|Distrib][Key|Subset]Constr>
+* `material` - `[|Distrib][Key|Subset]Constr`
 
 This defines the entire |distributed key|subset constraint sans its name.
 
-A C<[|Distrib][Key|Subset]ConstrSet> has a binary primary key on the
-C<parent> plus C<name> attributes.  Its default value is empty.
+A `[|Distrib][Key|Subset]ConstrSet` has a binary primary key on the
+`parent` plus `name` attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.StimRespRuleSet
 
-A C<StimRespRuleSet> is a C<DHRelation> that specifies a set of
+A `StimRespRuleSet` is a `DHRelation` that specifies a set of
 stimulus-response rules that a [|sub]package might directly contain.
 
-A C<StimRespRuleSet> has these 5 attributes:
+A `StimRespRuleSet` has these 5 attributes:
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
-This is the fully-qualified name, in the C<nlx.[cat|lib|data]> namespace,
+This is the fully-qualified name, in the `nlx.[cat|lib|data]` namespace,
 of any hypothetical immediate child namespace of the package, of the
 stimulus-response rule's parent [|sub]package.
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the stimulus-response rule within the
-namespace defined by C<parent>; other Muldis D code would reference it with
-the combination of C<parent> and C<name>.
+namespace defined by `parent`; other Muldis D code would reference it with
+the combination of `parent` and `name`.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the stimulus-response rule as
 a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this rule's declaration relative to all of
-the named entities directly within the namespace defined by C<parent>.
+the named entities directly within the namespace defined by `parent`.
 
-* C<material> - C<StimRespRule>
+* `material` - `StimRespRule`
 
 This defines the entire stimulus-response rule sans its name.
 
-A C<StimRespRuleSet> has a binary primary key on the C<parent> plus C<name>
+A `StimRespRuleSet` has a binary primary key on the `parent` plus `name`
 attributes.  Its default value is empty.
 
 # TYPES FOR DEFINING ROUTINES
 
 ## sys.std.Core.Type.Cat.Function
 
-A C<Function> is a C<DHTuple>.  It defines a new function, which has 2
-main parts, called I<heading> and I<body>:  The I<heading> defines the
+A `Function` is a `DHTuple`.  It defines a new function, which has 2
+main parts, called *heading* and *body*:  The *heading* defines the
 function's entire public interface, which is all the details of how to use
 it, except for its name, and no more detail than
-necessary about how it is implemented.  The I<body> defines the function's
+necessary about how it is implemented.  The *body* defines the function's
 entire implementation (or the main body of a function), besides its
-name/etc and what the I<heading> defines.  The function's name is
+name/etc and what the *heading* defines.  The function's name is
 provided by the larger context that embeds the
-C<Function>, which is either a C<Package> or C<System>.  Every C<Function>
-must have a specified I<heading>, but having a specified I<body> is
-optional iff the C<Function> is embedded in a C<System>, because often the
+`Function`, which is either a `Package` or `System`.  Every `Function`
+must have a specified *heading*, but having a specified *body* is
+optional iff the `Function` is embedded in a `System`, because often the
 implementations of system-defined routines are not defined in terms of
-other Muldis D routines, but that the I<body> must not be specified if the
-C<Function> is virtual.
+other Muldis D routines, but that the *body* must not be specified if the
+`Function` is virtual.
 
-A C<Function> has these 7 attributes, of which the 5 C<result_type>,
-C<params>, C<opt_params>, C<dispatch_params>, C<implements> define the
-I<heading> and the 1 C<expr> defines the I<body>:
+A `Function` has these 7 attributes, of which the 5 `result_type`,
+`params`, `opt_params`, `dispatch_params`, `implements` define the
+*heading* and the 1 `expr` defines the *body*:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the function as a whole.
 
-* C<result_type> - C<RPTypeNC>
+* `result_type` - `RPTypeNC`
 
 This is the declared result data type of the function as a whole.
 
-* C<params> - C<NameTypeMap>
+* `params` - `NameTypeMap`
 
 This is the declared parameter list of the function, which has 0..N named
 and typed parameters.
 
-* C<opt_params> - C<set_of.Name>
+* `opt_params` - `set_of.Name`
 
 This indicates the subset of the function's parameters that are optional,
 that is, do not need to be supplied explicit arguments when the function is
 invoked; any function parameters not named here must be supplied explicit
 arguments.  Any parameter marked as optional which is not given an explicit
 argument will implicitly default to the default value of its declared type.
-Each element of C<opt_params> must match a parameter name in C<params>.
+Each element of `opt_params` must match a parameter name in `params`.
 
-* C<dispatch_params> - C<set_of.Name>
+* `dispatch_params` - `set_of.Name`
 
-Iff C<dispatch_params> is nonempty then this function is a virtual
+Iff `dispatch_params` is nonempty then this function is a virtual
 function; otherwise, empty means not virtual.  A virtual function must
-have no I<body> specified.  This attribute indicates the subset of the
+have no *body* specified.  This attribute indicates the subset of the
 function's parameters whose invocation arguments' types are consulted to
 determine which other function, that explicitly implements this virtual
-one, is automatically dispatched to.  Each element of C<dispatch_params>
-must match a parameter name in C<params>.  Any given parameter can not be
+one, is automatically dispatched to.  Each element of `dispatch_params`
+must match a parameter name in `params`.  Any given parameter can not be
 both a dispatch parameter and an optional parameter.
 
-* C<implements> - C<set_of.RPFunctionNC>
+* `implements` - `set_of.RPFunctionNC`
 
-Iff C<implements> is nonempty then this function is explicitly declaring
+Iff `implements` is nonempty then this function is explicitly declaring
 that it implements the other (typically just one), virtual functions named
 by its elements; otherwise, empty means not implementing any virtuals.  An
 implementing function must have the same parameter list as its virtuals,
 save that the implementer's parameters' and result's declared types must be
 subtypes of the corresponding ones of the virtuals.
 
-* C<expr> - C<ExprNodeSet>
+* `expr` - `ExprNodeSet`
 
 This defines the value expression tree that comprises the entire
 function body.
 
-Iff a C<Function> has no specified I<body>, then C<expr> must have zero
-member nodes; otherwise, C<expr> must have at least 1 member node.
+Iff a `Function` has no specified *body*, then `expr` must have zero
+member nodes; otherwise, `expr` must have at least 1 member node.
 
-A C<Function> with a specified I<body>
+A `Function` with a specified *body*
 specifies a simple value expression tree of named
-expression nodes, each of which is a tuple of one of its C<expr.\w+_exprs>
+expression nodes, each of which is a tuple of one of its `expr.\w+_exprs`
 attributes.  It must have at least 1 member node, and
 all member nodes must define a
 simple expression node tree, such that every member except one (which is
@@ -1519,80 +1519,80 @@ tree must denote a value
 expression whose result type is of the result type of the function
 it is composed into, and which references all of the function's parameters.
 
-C<Function> has a distributed primary key over the C<name> attributes of
-C<params> and the C<name> attributes of all the attributes of C<expr>.  Its
-default value has zero parameters, a result type of C<Bool>, and has no
-specified I<body>.
+`Function` has a distributed primary key over the `name` attributes of
+`params` and the `name` attributes of all the attributes of `expr`.  Its
+default value has zero parameters, a result type of `Bool`, and has no
+specified *body*.
 
 ## sys.std.Core.Type.Cat.NamedValFunc
 
-A C<NamedValFunc> defines a C<named-value>, which is a kind of function.
-C<NamedValFunc> is a proper subtype of C<Function> where all member values
+A `NamedValFunc` defines a `named-value`, which is a kind of function.
+`NamedValFunc` is a proper subtype of `Function` where all member values
 declare a function that is nullary / has exactly zero parameters.  Its
 default value is a function whose invocation unconditionally results in
-C<Bool:False>.
+`Bool:False`.
 
 ## sys.std.Core.Type.Cat.ValMapFunc
 
-A C<ValMapFunc> defines a C<value-map>, which is a kind of function.
-C<ValMapFunc> is a proper subtype of C<Function> where all member values
+A `ValMapFunc` defines a `value-map`, which is a kind of function.
+`ValMapFunc` is a proper subtype of `Function` where all member values
 declare a function that has at least 1 parameter, and that 1 is named
-C<topic>.  Its default value is the same as that of its C<ValMapUFunc>
+`topic`.  Its default value is the same as that of its `ValMapUFunc`
 subtype.
 
 ## sys.std.Core.Type.Cat.ValMapUFunc
 
-A C<ValMapUFunc> defines a C<value-map-unary>, which is a kind of
-C<value-map>.  C<ValMapUFunc> is a proper subtype of C<ValMapFunc> where
+A `ValMapUFunc` defines a `value-map-unary`, which is a kind of
+`value-map`.  `ValMapUFunc` is a proper subtype of `ValMapFunc` where
 all member values declare a function that is unary / has exactly one
-parameter (just the C<topic> parameter).  Its default value is a function
-whose invocation unconditionally results in its C<topic> argument and whose
-only parameter has a declared type of C<Universal>.
+parameter (just the `topic` parameter).  Its default value is a function
+whose invocation unconditionally results in its `topic` argument and whose
+only parameter has a declared type of `Universal`.
 
 ## sys.std.Core.Type.Cat.ValFiltFunc
 
-A C<ValFiltFunc> defines a C<value-filter>, which is a kind of
-C<value-map>.  C<ValFiltFunc> is a proper subtype of C<ValMapFunc> where
+A `ValFiltFunc` defines a `value-filter`, which is a kind of
+`value-map`.  `ValFiltFunc` is a proper subtype of `ValMapFunc` where
 all member values declare a function whose result's declared type is
-C<Bool>.  Its default value is the same as that of its C<ValConstrFunc>
+`Bool`.  Its default value is the same as that of its `ValConstrFunc`
 subtype.
 
 ## sys.std.Core.Type.Cat.ValConstrFunc
 
-A C<ValConstrFunc> defines a C<value-constraint>, which is a kind of
-C<value-filter> I<and> a kind of C<value-map-unary>.  C<ValConstrFunc> is
-the intersection type of C<ValFiltFunc> and C<ValMapUFunc>.  Its default
+A `ValConstrFunc` defines a `value-constraint`, which is a kind of
+`value-filter` *and* a kind of `value-map-unary`.  `ValConstrFunc` is
+the intersection type of `ValFiltFunc` and `ValMapUFunc`.  Its default
 value is a function whose invocation unconditionally results in
-C<Bool:True> and whose only parameter has a declared type of C<Universal>.
+`Bool:True` and whose only parameter has a declared type of `Universal`.
 
 ## sys.std.Core.Type.Cat.ValRedFunc
 
-A C<ValRedFunc> defines a C<value-reduction>, which is a kind of function.
-C<ValRedFunc> is a proper subtype of C<Function> where all member values
+A `ValRedFunc` defines a `value-reduction`, which is a kind of function.
+`ValRedFunc` is a proper subtype of `Function` where all member values
 declare a function that has at least 2 parameters, and those 2 are named
-C<v1> and C<v2>, and the declared types of those 2 parameters are
+`v1` and `v2`, and the declared types of those 2 parameters are
 identical, and the declared type of the function's result is identical to
 that of either of those 2 parameters.  Its default value is a function,
-whose invocation unconditionally results in its C<v1> argument, and that
-has exactly 2 parameters, and all 3 of its declared types are C<Universal>.
+whose invocation unconditionally results in its `v1` argument, and that
+has exactly 2 parameters, and all 3 of its declared types are `Universal`.
 
 ## sys.std.Core.Type.Cat.OrdDetFunc
 
-An C<OrdDetFunc> defines an C<order-determination>, which is a kind of
-function.  C<OrdDetFunc> is a proper subtype of C<Function> where all
+An `OrdDetFunc` defines an `order-determination`, which is a kind of
+function.  `OrdDetFunc` is a proper subtype of `Function` where all
 member values declare a function that has at least 3 parameters, and those
-3 are named C<topic>, C<other> and C<is_reverse_order>, and the declared
-types of C<topic> and C<other> are identical, and the declared type of
-C<is_reverse_order> is C<Bool>, and the declared type of the function's
-result is C<Order>.  Its default value is a function, whose C<topic> and
-C<other> parameters both have the declared type of C<Bool>, which orders
-C<Bool:False> before C<Bool:True>.
+3 are named `topic`, `other` and `is_reverse_order`, and the declared
+types of `topic` and `other` are identical, and the declared type of
+`is_reverse_order` is `Bool`, and the declared type of the function's
+result is `Order`.  Its default value is a function, whose `topic` and
+`other` parameters both have the declared type of `Bool`, which orders
+`Bool:False` before `Bool:True`.
 
 ## sys.std.Core.Type.Cat.ExprNodeSet
 
-An C<ExprNodeSet> is a C<Database> that specifies a set of named value
+An `ExprNodeSet` is a `Database` that specifies a set of named value
 expression nodes.  It is typically composed into a
-function or procedure.  Each tuple of an C<ExprNodeSet> attribute is a
+function or procedure.  Each tuple of an `ExprNodeSet` attribute is a
 named expression node, which is the majority component of functional Muldis
 D code.  All arbitrarily complex Muldis D expression trees, including
 relational queries, are composed of just expression nodes, either directly,
@@ -1607,525 +1607,525 @@ position of a generic assignment statement; in that case the leaf nodes /
 only node of the expression must map to a subject-to-update parameter or
 variable of the expression-containing procedure.
 
-An C<ExprNodeSet> has these 15 attributes:
+An `ExprNodeSet` has these 15 attributes:
 
-* C<sys_sca_val_exprs> - C<SysScaValExprNodeSet>
+* `sys_sca_val_exprs` - `SysScaValExprNodeSet`
 
 These are expression nodes that represent scalar values of types such that
 all of the standard Muldis D dialects provide special "opaque value
 literal" syntax specific to the type.  These are expression nodes that
-represent scalar value literals that are I<not> specified simply in terms
+represent scalar value literals that are *not* specified simply in terms
 of possrep attributes.
 
-* C<sca_sel_exprs> - C<ScaSelExprNodeSet>
+* `sca_sel_exprs` - `ScaSelExprNodeSet`
 
 These are expression nodes that represent generic scalar value
 selections specified just in terms of possrep attributes.
 
-* C<tup_sel_exprs> - C<TupSelExprNodeSet>
+* `tup_sel_exprs` - `TupSelExprNodeSet`
 
 These are expression nodes that represent tuple value selections.
 
-* C<rel_sel_exprs> - C<RelSelExprNodeSet>
+* `rel_sel_exprs` - `RelSelExprNodeSet`
 
 These are expression nodes that represent generic relation value
 selections.
 
-* C<set_sel_exprs> - C<SetSelExprNodeSet>
+* `set_sel_exprs` - `SetSelExprNodeSet`
 
 These are expression nodes that represent set value selections.
 
-* C<ary_sel_exprs> - C<ArySelExprNodeSet>
+* `ary_sel_exprs` - `ArySelExprNodeSet`
 
 These are expression nodes that represent array value selections.
 
-* C<bag_sel_exprs> - C<BagSelExprNodeSet>
+* `bag_sel_exprs` - `BagSelExprNodeSet`
 
 These are expression nodes that represent bag value selections.
 
-* C<sp_ivl_sel_exprs> - C<SPIvlSelExprNodeSet>
+* `sp_ivl_sel_exprs` - `SPIvlSelExprNodeSet`
 
 These are expression nodes that represent single-piece interval value
 selections.
 
-* C<mp_ivl_sel_exprs> - C<MPIvlSelExprNodeSet>
+* `mp_ivl_sel_exprs` - `MPIvlSelExprNodeSet`
 
 These are expression nodes that represent multi-piece interval value
 selections.
 
-* C<list_sel_exprs> - C<ListSelExprNodeSet>
+* `list_sel_exprs` - `ListSelExprNodeSet`
 
 These are expression nodes that represent low-level list value selections.
 
-* C<acc_exprs> - C<AccExprNodeSet>
+* `acc_exprs` - `AccExprNodeSet`
 
 These are expression nodes that represent accessors of attributes of other,
 tuple-valued expression nodes, or aliases of other expression nodes.
 
-* C<func_invo_exprs> - C<FuncInvoExprNodeSet>
+* `func_invo_exprs` - `FuncInvoExprNodeSet`
 
 These are expression nodes that represent function invocations.
 
-* C<if_else_exprs> - C<IfElseExprNodeSet>
+* `if_else_exprs` - `IfElseExprNodeSet`
 
 These are expression nodes that represent if-else control flow expressions.
 
-* C<given_when_def_exprs> - C<GivenWhenDefExprNodeSet>
+* `given_when_def_exprs` - `GivenWhenDefExprNodeSet`
 
 These are expression nodes that represent given-when-default control flow
 expressions.
 
-* C<ap_material_nc_sel_exprs> - C<APMaterialNCSelExprNodeSet>
+* `ap_material_nc_sel_exprs` - `APMaterialNCSelExprNodeSet`
 
 These are expression nodes that define routine or type reference literals.
 
-There is a distributed primary key over the C<name> attributes of all of an
-C<ExprNodeSet>'s attributes.  Its default value is empty.
+There is a distributed primary key over the `name` attributes of all of an
+`ExprNodeSet`'s attributes.  Its default value is empty.
 
-Note that, for each expression node in an C<ExprNodeSet>, iff the
+Note that, for each expression node in an `ExprNodeSet`, iff the
 expression node is declared directly within its host routine's body,
-then its C<scm_vis_ord> attribute is non-zero, and the latter gives the
+then its `scm_vis_ord` attribute is non-zero, and the latter gives the
 node's visible order relative to all other such expression nodes, and all
 update statements if applicable, of the host routine, and all update
 statements of said host routine; otherwise, iff the expression node is
 nested beneath another expression node or a statement node, then the
-C<scm_vis_ord> attribute isn't applicable, and is zero.  In other words,
-when generating concrete Muldis D code from a C<Function> or C<Procedure>,
+`scm_vis_ord` attribute isn't applicable, and is zero.  In other words,
+when generating concrete Muldis D code from a `Function` or `Procedure`,
 the sole determinant of whether to nest any given expression node under
 another expression or statement node, or not, is based on whether its
-C<scm_vis_ord> is zero or not; zero means nested, non-zero means otherwise.
+`scm_vis_ord` is zero or not; zero means nested, non-zero means otherwise.
 
 ## sys.std.Core.Type.Cat.SysScaValExprNodeSet
 
-An C<SysScaValExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `SysScaValExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node is a hard-coded scalar literal that is
-I<not> being specified explicitly in terms of possrep attributes, but
+*not* being specified explicitly in terms of possrep attributes, but
 rather is specified using special "opaque value literal" syntax that all
 of the Muldis D standard dialects provide.
 
-An C<SysScaValExprNodeSet> has these 4 attributes:
+An `SysScaValExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the expression (leaf) node.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<value> - C<SysScalar>
+* `value` - `SysScalar`
 
 This is the actual scalar value that the expression node represents.
 
-An C<SysScaValExprNodeSet> has a unary primary key on the C<name>
+An `SysScaValExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.ScaSelExprNodeSet
 
-A C<ScaSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+A `ScaSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a scalar value
 selection that is specified explicitly in terms of possrep attributes.
 This node kind may be used for values of absolutely any scalar type at all,
-including all system-defined types, except for values of C<Int>
-and C<String>, although
-optimized Muldis D code will likely use C<SysScaValExprNodeSet> where it
-can do so instead of C<ScaSelExprNodeSet>.
+including all system-defined types, except for values of `Int`
+and `String`, although
+optimized Muldis D code will likely use `SysScaValExprNodeSet` where it
+can do so instead of `ScaSelExprNodeSet`.
 
-A C<ScaSelExprNodeSet> has these 6 attributes:
+A `ScaSelExprNodeSet` has these 6 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<type_name> - C<RPTypeNC>
+* `type_name` - `RPTypeNC`
 
 This is the name of the type that the scalar value belongs to.
 
-* C<possrep_name> - C<Name>
+* `possrep_name` - `Name`
 
-This is the name of the possrep, of the type named by C<type_name>, in
+This is the name of the possrep, of the type named by `type_name`, in
 terms of whose attributes the scalar value is being selected.
 
-* C<possrep_attrs> - C<NameExprMap>
+* `possrep_attrs` - `NameExprMap`
 
-These represent the attributes (names and values) of the C<possrep_name>
+These represent the attributes (names and values) of the `possrep_name`
 possrep of the scalar value being selected.
 
-A C<ScaSelExprNodeSet> has a unary primary key on the C<name>
+A `ScaSelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.TupSelExprNodeSet
 
-A C<TupSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+A `TupSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a tuple value selection.
 
-A C<TupSelExprNodeSet> has these 4 attributes:
+A `TupSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<attrs> - C<NameExprMap>
+* `attrs` - `NameExprMap`
 
 These represent the attributes (names and values) of the tuple
 value being selected.
 
-A C<TupSelExprNodeSet> has a unary primary key on the C<name>
+A `TupSelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.RelSelExprNodeSet
 
-A C<RelSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+A `RelSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a relation value selection.
 
-A C<RelSelExprNodeSet> has these 5 attributes:
+A `RelSelExprNodeSet` has these 5 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<head> - C<set_of.Name>
+* `head` - `set_of.Name`
 
 These are the names of all of this relation value's attributes.
 
-* C<body> - C<set_of.NameExprMap>
+* `body` - `set_of.NameExprMap`
 
 These represent the tuples of the relation value being
 selected.  When this value expression is evaluated, if any child expression
 nodes are such that any duplicate tuples might be input to this
-C<RelSelExprNodeSet> selector, the duplicates are silently eliminated and
+`RelSelExprNodeSet` selector, the duplicates are silently eliminated and
 do not constitute a failure condition.
 
-A C<RelSelExprNodeSet> has a unary primary key on the C<name>
+A `RelSelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.SetSelExprNodeSet
 
-A C<SetSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+A `SetSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a set value selection.
 
-A C<SetSelExprNodeSet> has these 4 attributes:
+A `SetSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<elems> - C<set_of.Name>
+* `elems` - `set_of.Name`
 
 These represent the elements of the set value being selected.
 When this value expression is evaluated, if any child expression nodes are
-such that any duplicate tuples might be input to this C<SetSelExprNodeSet>
+such that any duplicate tuples might be input to this `SetSelExprNodeSet`
 selector, the duplicates are silently eliminated and do not constitute a
 failure condition.
 
-A C<SetSelExprNodeSet> has a unary primary key on the C<name>
+A `SetSelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.ArySelExprNodeSet
 
-An C<ArySelExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `ArySelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents an array value selection.
 
-An C<ArySelExprNodeSet> has these 4 attributes:
+An `ArySelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<elems> - C<array_of.Name>
+* `elems` - `array_of.Name`
 
 These represent the elements of the array value being selected.
 
-An C<ArySelExprNodeSet> has a unary primary key on the C<name>
+An `ArySelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.BagSelExprNodeSet
 
-A C<BagSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+A `BagSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a bag value selection.
 
-A C<BagSelExprNodeSet> has these 4 attributes:
+A `BagSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<elems> - C<bag_of.Name>
+* `elems` - `bag_of.Name`
 
 These represent the elements of the bag value being selected.
 When this value expression is evaluated, if any child expression nodes are
-such that any tuple pairs with duplicate C<value> attribute values might be
-input to this C<BagSelExprNodeSet> selector, the tuple pairs are silently
+such that any tuple pairs with duplicate `value` attribute values might be
+input to this `BagSelExprNodeSet` selector, the tuple pairs are silently
 merged as per the semantics of bag union; the replacement tuple for such a
-pair has a C<count> attribute that is the sum of that attribute of each of
-the originals in said pair; any duplicate C<value> do not constitute a
+pair has a `count` attribute that is the sum of that attribute of each of
+the originals in said pair; any duplicate `value` do not constitute a
 failure condition.
 
-Note that, because of how C<BagSelExprNodeSet> is defined, the C<count>
-attribute value of each C<elems> tuple is a compile time constant, since an
+Note that, because of how `BagSelExprNodeSet` is defined, the `count`
+attribute value of each `elems` tuple is a compile time constant, since an
 integer is stored in the system catalog rather than the name of an
-expression node like with C<value>; if you actually want the bag value
-being selected at runtime to have runtime-determined C<count> values, then
-you must use a C<RelSelExprNodeSet> rather than a C<BagSelExprNodeSet>.
+expression node like with `value`; if you actually want the bag value
+being selected at runtime to have runtime-determined `count` values, then
+you must use a `RelSelExprNodeSet` rather than a `BagSelExprNodeSet`.
 
-A C<BagSelExprNodeSet> has a unary primary key on the C<name>
+A `BagSelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.SPIvlSelExprNodeSet
 
-An C<SPIvlSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `SPIvlSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a single-piece interval value
 selection.
 
-An C<SPIvlSelExprNodeSet> has these 4 attributes:
+An `SPIvlSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<interval> - C<sp_interval_of.Name>
+* `interval` - `sp_interval_of.Name`
 
 These represent the attributes of the single-piece interval value being
 selected.
 
-Note that, because of how C<SPIvlSelExprNodeSet> is defined, the
-C<excludes_[min|max]> attribute values of the single-piece interval are
+Note that, because of how `SPIvlSelExprNodeSet` is defined, the
+`excludes_[min|max]` attribute values of the single-piece interval are
 compile time constants, since a boolean is stored in the system catalog for
-each rather than the name of an expression node like with the C<min> and
-C<max> attributes; if you actually want the single-piece interval value
-being selected at runtime to have runtime-determined C<excludes_[min|max]>
-attribute values, then you must use a C<TupSelExprNodeSet> rather than an
-C<SPIvlSelExprNodeSet>.
+each rather than the name of an expression node like with the `min` and
+`max` attributes; if you actually want the single-piece interval value
+being selected at runtime to have runtime-determined `excludes_[min|max]`
+attribute values, then you must use a `TupSelExprNodeSet` rather than an
+`SPIvlSelExprNodeSet`.
 
-An C<SPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
+An `SPIvlSelExprNodeSet` has a unary primary key on the `name` attribute.
 Its default value is empty.
 
 ## sys.std.Core.Type.Cat.MPIvlSelExprNodeSet
 
-An C<MPIvlSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `MPIvlSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a multi-piece interval value
 selection.
 
-An C<MPIvlSelExprNodeSet> has these 4 attributes:
+An `MPIvlSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<elems> - C<mp_interval_of.Name>
+* `elems` - `mp_interval_of.Name`
 
 These represent the elements, each of which is a single-piece interval, of
 the multi-piece interval value being selected.  When this value expression
 is evaluated, if any child expression nodes are such that any duplicate
-tuples might be input to this C<MPIvlSelExprNodeSet> selector, the
+tuples might be input to this `MPIvlSelExprNodeSet` selector, the
 duplicates are silently eliminated and do not constitute a failure
 condition.
 
-Note that, because of how C<MPIvlSelExprNodeSet> is defined, the
-C<excludes_[min|max]> attribute values of the multi-piece interval are
+Note that, because of how `MPIvlSelExprNodeSet` is defined, the
+`excludes_[min|max]` attribute values of the multi-piece interval are
 compile time constants, since a boolean is stored in the system catalog for
-each rather than the name of an expression node like with the C<min> and
-C<max> attributes; if you actually want the multi-piece interval value
-being selected at runtime to have runtime-determined C<excludes_[min|max]>
-attribute values, then you must use a C<RelSelExprNodeSet> rather than an
-C<MPIvlSelExprNodeSet>.
+each rather than the name of an expression node like with the `min` and
+`max` attributes; if you actually want the multi-piece interval value
+being selected at runtime to have runtime-determined `excludes_[min|max]`
+attribute values, then you must use a `RelSelExprNodeSet` rather than an
+`MPIvlSelExprNodeSet`.
 
-An C<MPIvlSelExprNodeSet> has a unary primary key on the C<name> attribute.
+An `MPIvlSelExprNodeSet` has a unary primary key on the `name` attribute.
 Its default value is empty.
 
 ## sys.std.Core.Type.Cat.ListSelExprNodeSet
 
-An C<ListSelExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `ListSelExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a low-level list value
 selection.
 
-An C<ListSelExprNodeSet> has these 4 attributes:
+An `ListSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<elems> - C<array_of.Name>
+* `elems` - `array_of.Name`
 
 These represent the elements of the low-level list value being selected.
 
-An C<ListSelExprNodeSet> has a unary primary key on the C<name>
+An `ListSelExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.AccExprNodeSet
 
-An C<AccExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `AccExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node is an accessor or alias for an attribute
 of another, tuple-valued expression node, or is simply an alias for another
-expression node, defined in terms of a C<NameChain>.
+expression node, defined in terms of a `NameChain`.
 
-An C<AccExprNodeSet> has these 4 attributes:
+An `AccExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the expression (leaf) node.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<target> - C<NameChain>
+* `target` - `NameChain`
 
 This is the fully-qualified invocation name of the expression node, or
 attribute thereof if it is tuple-valued, being accessed or aliased.
 
-An C<AccExprNodeSet> has a unary primary key on the C<name>
+An `AccExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.FuncInvoExprNodeSet
 
-A C<FuncInvoExprNodeSet> is a C<DHRelation> that specifies a set of value
+A `FuncInvoExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents the result of invoking a named
 function with specific arguments.
 
-A C<FuncInvoExprNodeSet> has these 5 attributes:
+A `FuncInvoExprNodeSet` has these 5 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<function> - C<MaterialNC>
+* `function` - `MaterialNC`
 
 This is the name of the function being invoked.
 
-* C<args> - C<NameExprMap>
+* `args` - `NameExprMap`
 
 These are the arguments for the function invocation.  Each element
-defines one argument value, with the element C<name> matching the invoked
-function's parameter name, and the element C<expr> naming another
+defines one argument value, with the element `name` matching the invoked
+function's parameter name, and the element `expr` naming another
 local expression node (or parameter) which defines the value.
 
-A C<FuncInvoExprNodeSet> has a unary primary key on the C<name>
+A `FuncInvoExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.IfElseExprNodeSet
 
-An C<IfElseExprNodeSet> is a C<DHRelation> that specifies a set of value
+An `IfElseExprNodeSet` is a `DHRelation` that specifies a set of value
 expression nodes where each node represents a ternary if-then-else control
 flow expression.  An if-then-else node has 3 child expression nodes (which
 may just be named references to expressions or parameters or variables)
-here designated C<if>, C<then>, and C<else>; the C<if> node is the
-condition to evaluate and must result in a C<Bool>; iff the result of that
-condition is C<Bool:True> then the C<then> node is evaluated and its result
-is the result of the whole if-then-else expression; otherwise, the C<else>
+here designated `if`, `then`, and `else`; the `if` node is the
+condition to evaluate and must result in a `Bool`; iff the result of that
+condition is `Bool:True` then the `then` node is evaluated and its result
+is the result of the whole if-then-else expression; otherwise, the `else`
 node is evaluated and its result is the whole if-then-else's result.
 
-The reason that the C<IfElseExprNodeSet> expression node kind exists,
+The reason that the `IfElseExprNodeSet` expression node kind exists,
 rather than this functionality being provided by an ordinary function
 invocation, is because the semantics of an if-else expression require its
 sub-expressions to be evaluated in a specific sequence and that later
@@ -2142,43 +2142,43 @@ for the certain data type (invoking it on something else would result in a
 failure/exception); so only known-safe/appropriate expressions then get
 evaluated.
 
-An C<IfElseExprNodeSet> has these 6 attributes:
+An `IfElseExprNodeSet` has these 6 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<if> - C<Name>
+* `if` - `Name`
 
-This is the name of the local C<Bool>-resulting conditional expression node
+This is the name of the local `Bool`-resulting conditional expression node
 that is unconditionally evaluated first.
 
-* C<then> - C<Name>
+* `then` - `Name`
 
 This is the name of the local expression node whose evaluation provides the
-result of the whole if-then-else expression iff C<if> is C<Bool:True>.
+result of the whole if-then-else expression iff `if` is `Bool:True`.
 
-* C<else> - C<Name>
+* `else` - `Name`
 
 This is the name of the local expression node whose evaluation provides the
-result of the whole if-then-else expression iff C<if> is C<Bool:False>.
+result of the whole if-then-else expression iff `if` is `Bool:False`.
 
-An C<IfElseExprNodeSet> has a unary primary key on the C<name>
+An `IfElseExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.GivenWhenDefExprNodeSet
 
-A C<GivenWhenDefExprNodeSet> is a C<DHRelation> that specifies a set of
+A `GivenWhenDefExprNodeSet` is a `DHRelation` that specifies a set of
 value expression nodes where each node represents an N-way
 given-when-then-default switch control flow expression that dispatches
 based on matching a single value with several options.
@@ -2189,65 +2189,65 @@ simple value equality test and one of the operands is the same for all the
 conditions in the set; also, with a given-when-then-default it doesn't
 matter what order the conditionals are tested to find a true resulting one.
 
-A C<GivenWhenDefExprNodeSet> has these 6 attributes:
+A `GivenWhenDefExprNodeSet` has these 6 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the expression node or
 the expression node (sub-)tree it is the root of.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<given> - C<Name>
+* `given` - `Name`
 
 This is the single operand value that is common to all the conditions; it
 is the control value for the expression.
 
-* C<when_then> - C<WhenThenExprMap>
+* `when_then` - `WhenThenExprMap`
 
 This is a set of distinct condition operand values, each of which has an
 associated result expression.  If a condition operand matches the value of
-C<given>, its associated result expression will evaluate and be the result
+`given`, its associated result expression will evaluate and be the result
 of the larger if-else sequence; no result expressions will be evaluated
 except the one with the matching conditional operand.
 
-* C<default> - C<Name>
+* `default` - `Name`
 
-Iff none of the condition operand values in C<when_then> matches the value
-of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
+Iff none of the condition operand values in `when_then` matches the value
+of `given` (or as a trivial case, if `when_then` has no tuples), then the
 result expression represented by the local expression node (or parameter)
-named by C<default> will be evaluated, and be the result of the larger
+named by `default` will be evaluated, and be the result of the larger
 given-when-default.
 
-A C<GivenWhenDefExprNodeSet> has a unary primary key on the C<name>
+A `GivenWhenDefExprNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.WhenThenExprMap
 
-A C<WhenThenExprMap> is a C<DHRelation>.  It defines a set of dispatch
-options for a given-when-default expression.  A C<WhenThenExprMap> has 2
-attributes, C<when> and C<then>, each of which is a C<Name>; C<when> has
-the name of a local expression node (or parameter), and C<then> has
-likewise.  The C<when> node is the not-common / distinct operand for each
-condition.  If a C<when> value is matched, then the C<then> node is
+A `WhenThenExprMap` is a `DHRelation`.  It defines a set of dispatch
+options for a given-when-default expression.  A `WhenThenExprMap` has 2
+attributes, `when` and `then`, each of which is a `Name`; `when` has
+the name of a local expression node (or parameter), and `then` has
+likewise.  The `when` node is the not-common / distinct operand for each
+condition.  If a `when` value is matched, then the `then` node is
 evaluated and its result is the result of the whole g-w-d expression;
-otherwise, C<then> is not evaluated.  Its default value has zero tuples.
+otherwise, `then` is not evaluated.  Its default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.APMaterialNCSelExprNodeSet
 
-An C<APMaterialNCSelExprNodeSet> is a C<DHRelation> that specifies a set of
+An `APMaterialNCSelExprNodeSet` is a `DHRelation` that specifies a set of
 expression nodes where each node represents a value of the
-C<sys.std.Core.Type.Cat.AbsPathMaterialNC> type, which is selected in terms
-of a value of the C<sys.std.Core.Type.Cat.RelPathMaterialNC> type.
+`sys.std.Core.Type.Cat.AbsPathMaterialNC` type, which is selected in terms
+of a value of the `sys.std.Core.Type.Cat.RelPathMaterialNC` type.
 
-The reason that the C<APMaterialNCSelExprNodeSet> expression node kind
+The reason that the `APMaterialNCSelExprNodeSet` expression node kind
 exists, rather than the functionality of mapping relative paths to absolute
 paths being provided by an ordinary unary function invocation, is because
 the semantics of the operation depend on the location of the referencing
@@ -2257,69 +2257,69 @@ the system catalog of a depot mount into native machine code) so at normal
 runtime it is as if the absolute-path value was what was originally a value
 literal in the source code.
 
-An C<APMaterialNCSelExprNodeSet> has these 4 attributes:
+An `APMaterialNCSelExprNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the expression node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the expression (leaf) node.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order, if applicable, of this non-nested expression
 node relative to all of its sibling such expression nodes, or statements.
 
-* C<referencing> - C<RelPathMaterialNC>
+* `referencing` - `RelPathMaterialNC`
 
 This is the name, from the point of view of the routine embedding this
-expression node, of the routine or type that the new C<AbsPathMaterialNC>
+expression node, of the routine or type that the new `AbsPathMaterialNC`
 value is supposed to facilitate portable invoking of.
 
-An C<APMaterialNCSelExprNodeSet> has a unary (unique) key on the C<name>
-attribute, plus another such key on the C<referencing> attribute.  Its
+An `APMaterialNCSelExprNodeSet` has a unary (unique) key on the `name`
+attribute, plus another such key on the `referencing` attribute.  Its
 default value is empty.
 
 ## sys.std.Core.Type.Cat.Procedure
 
-A C<Procedure> is a C<DHTuple>.  It defines a new procedure, which has 2
-main parts, called I<heading> and I<body>:  The I<heading> defines the
+A `Procedure` is a `DHTuple`.  It defines a new procedure, which has 2
+main parts, called *heading* and *body*:  The *heading* defines the
 procedure's entire public interface, which is all the details of how to use
 it, except for its name, and no more detail than
-necessary about how it is implemented.  The I<body> defines the procedure's
+necessary about how it is implemented.  The *body* defines the procedure's
 entire implementation (or the main body of a procedure), besides its
-name/etc and what the I<heading> defines.  The procedure's name is
-provided by the larger context that embeds the C<Procedure>,
-which is either a C<Package> or C<System>.  Every C<Procedure>
-must have a specified I<heading>, but having a specified I<body> is
-optional iff the C<Procedure> is embedded in a C<System>, because often the
+name/etc and what the *heading* defines.  The procedure's name is
+provided by the larger context that embeds the `Procedure`,
+which is either a `Package` or `System`.  Every `Procedure`
+must have a specified *heading*, but having a specified *body* is
+optional iff the `Procedure` is embedded in a `System`, because often the
 implementations of system-defined routines are not defined in terms of
-other Muldis D routines, but that the I<body> must not be specified if the
-C<Procedure> is virtual.
+other Muldis D routines, but that the *body* must not be specified if the
+`Procedure` is virtual.
 
-A C<Procedure> has these 13 attributes, of which the 9 C<upd_params>,
-C<ro_params>, C<opt_params>, C<upd_global_params>, C<ro_global_params>,
-C<dispatch_params>, C<implements>, C<is_system_service>, C<is_transaction>
-define the I<heading> and the 3 C<vars>, C<exprs>, C<stmt> define the
-I<body>:
+A `Procedure` has these 13 attributes, of which the 9 `upd_params`,
+`ro_params`, `opt_params`, `upd_global_params`, `ro_global_params`,
+`dispatch_params`, `implements`, `is_system_service`, `is_transaction`
+define the *heading* and the 3 `vars`, `exprs`, `stmt` define the
+*body*:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the procedure as a whole.
 
-* C<upd_params> - C<NameTypeMap>
+* `upd_params` - `NameTypeMap`
 
 This is the declared subject-to-update parameter list of the procedure,
 which has 0..N named and typed such parameters.
 
-* C<ro_params> - C<NameTypeMap>
+* `ro_params` - `NameTypeMap`
 
 This is the declared read-only parameter list of the procedure, which has
 0..N named and typed such parameters.
 
-* C<opt_params> - C<set_of.Name>
+* `opt_params` - `set_of.Name`
 
 This indicates the subset of the procedure's subject-to-update or read-only
 parameters that are optional, that is, do not need to be supplied explicit
@@ -2330,67 +2330,67 @@ default value of its declared type; any subject-to-update parameter marked
 as optional which is not given a explicit argument will implicitly bind to
 a new anonymous variable (with the aforementioned default value) which is
 discarded after the procedure finishes executing.  Each element of
-C<opt_params> must match a parameter name in either C<upd_params> or
-C<ro_params>.
+`opt_params` must match a parameter name in either `upd_params` or
+`ro_params`.
 
-* C<upd_global_params> - C<ProcGlobalVarAliasMap>
+* `upd_global_params` - `ProcGlobalVarAliasMap`
 
 This declares 0..N lexical aliases for global variables which will
 serve as implicit subject-to-update parameters of the procedure.
 
-* C<ro_global_params> - C<ProcGlobalVarAliasMap>
+* `ro_global_params` - `ProcGlobalVarAliasMap`
 
 This declares 0..N lexical aliases for global variables which will
 serve as implicit read-only parameters of the procedure.
 
-* C<dispatch_params> - C<set_of.Name>
+* `dispatch_params` - `set_of.Name`
 
-Iff C<dispatch_params> is nonempty then this procedure is a virtual
+Iff `dispatch_params` is nonempty then this procedure is a virtual
 procedure; otherwise, empty means not virtual.  A virtual procedure must
-have no I<body> specified.  This attribute indicates the subset of the
+have no *body* specified.  This attribute indicates the subset of the
 procedure's parameters whose invocation arguments' types are consulted to
 determine which other procedure, that explicitly implements this virtual
-one, is automatically dispatched to.  Each element of C<dispatch_params>
-must match a parameter name in C<upd_params> or C<ro_params>.  Any given
+one, is automatically dispatched to.  Each element of `dispatch_params`
+must match a parameter name in `upd_params` or `ro_params`.  Any given
 parameter can not be both a dispatch parameter and an optional parameter.
 
-* C<implements> - C<set_of.RPProcedureNC>
+* `implements` - `set_of.RPProcedureNC`
 
-Iff C<implements> is nonempty then this procedure is explicitly declaring
+Iff `implements` is nonempty then this procedure is explicitly declaring
 that it implements the other (typically just one), virtual procedures named
 by its elements; otherwise, empty means not implementing any virtuals.  An
 implementing procedure must have the same parameter list as its virtuals,
 save that the implementer's parameters' declared types must be
 subtypes of the corresponding ones of the virtuals.
 
-* C<is_system_service> - C<Bool>
+* `is_system_service` - `Bool`
 
-Iff this is C<Bool:True> then the procedure is explicitly declared to be a
-C<system-service>, meaning it will be subject to tighter constraints on its
+Iff this is `Bool:True` then the procedure is explicitly declared to be a
+`system-service`, meaning it will be subject to tighter constraints on its
 allowed actions (it may not invoke any globals) and its execution
 will automatically be entirely contained within a single transaction of the
 highest possible isolation level, "serializable", same as an recipe is;
-iff this is C<Bool:False> then the procedure is I<not> explicitly declared
-to be a C<system-service>, and the other restrictions or automatic wrapper
-transaction won't be present for supporting a C<system-service>.
+iff this is `Bool:False` then the procedure is *not* explicitly declared
+to be a `system-service`, and the other restrictions or automatic wrapper
+transaction won't be present for supporting a `system-service`.
 
-* C<is_transaction> - C<Bool>
+* `is_transaction` - `Bool`
 
-If this is C<Bool:True> then the procedure constitutes an explicit (main or
+If this is `Bool:True` then the procedure constitutes an explicit (main or
 child) transaction of its own; the transaction will commit if the procedure
 completes its execution normally and it will roll back if the procedure
-completes abnormally by throwing an exception; if this is C<Bool:False>
-then the procedure does I<not> constitute its own transaction.  Note that a
-procedure's C<is_transaction> must be C<Bool:True> if its
-C<is_system_service> is C<Bool:True>; otherwise,
-C<is_transaction> may be either C<Bool:True> or C<Bool:False>.
+completes abnormally by throwing an exception; if this is `Bool:False`
+then the procedure does *not* constitute its own transaction.  Note that a
+procedure's `is_transaction` must be `Bool:True` if its
+`is_system_service` is `Bool:True`; otherwise,
+`is_transaction` may be either `Bool:True` or `Bool:False`.
 
-* C<vars> - C<NameTypeMap>
+* `vars` - `NameTypeMap`
 
 This defines the 0..N (non-parameter) lexical variables of the
 procedure; they initialize to the default values of their declared types.
 
-* C<exprs> - C<ExprNodeSet>
+* `exprs` - `ExprNodeSet`
 
 This defines the expression trees that are composed into the statements
 comprising the procedure body.  They may either be defined inline of the
@@ -2398,19 +2398,19 @@ statements or offside; in the latter case they are given explicit names by
 the programmers and common expression trees may be reused in multiple
 statements, wherein they are semantically like macros.
 
-* C<stmt> - C<StmtNodeSet>
+* `stmt` - `StmtNodeSet`
 
 This defines the statement tree that comprises the entire procedure body.
 
-Iff a C<Procedure> has no specified I<body>, then C<stmt> and
-C<exprs> must have zero
-member nodes and C<vars> must have zero member tuples; otherwise, C<stmt>
+Iff a `Procedure` has no specified *body*, then `stmt` and
+`exprs` must have zero
+member nodes and `vars` must have zero member tuples; otherwise, `stmt`
 must have at least 1 member node, which is a compound statement node
 (having just that 1 node means the procedure is an unconditional no-op).
 
-A C<Procedure> with a specified I<body>
+A `Procedure` with a specified *body*
 specifies a simple statement tree of named statement
-nodes, each of which is a tuple of one of its C<stmt.\w+_stmts> attributes.
+nodes, each of which is a tuple of one of its `stmt.\w+_stmts` attributes.
 It must have at least 1 member node, and
 all member nodes must define a simple statement node tree, such
 that every member except one (which is the root node) has one of its peers
@@ -2421,87 +2421,87 @@ composed-into procedure's parameters (regular and global) and lexical
 variables are also implicitly expression tree nodes, and are referenced by
 name into the statements the same way as any other named expression node
 is.  The root node must also be a compound statement node, meaning a tuple
-of either the procedure's C<stmt.compound_stmts> attribute or its
-C<stmt.multi_upd_stmts> attribute; while making this requirement isn't
+of either the procedure's `stmt.compound_stmts` attribute or its
+`stmt.multi_upd_stmts` attribute; while making this requirement isn't
 strictly necessary in general, that requirement allows the corresponding
 concrete Muldis D grammars to be simpler, and a compound statement node
 would end up being the root anyway in 99% of likely real procedures.  The
 statement tree should reference all of the parameters and lexical variables
 that the procedure has, but this isn't a strict requirement.
 
-C<Procedure> has a distributed primary key over the C<name> attributes of
-C<upd_params> and C<ro_params> and C<upd_global_params> and
-C<ro_global_params> and C<vars> and the C<name> attributes of
-all the attributes of C<stmt>.  Its default value has zero parameters and
-has no specified I<body>.
+`Procedure` has a distributed primary key over the `name` attributes of
+`upd_params` and `ro_params` and `upd_global_params` and
+`ro_global_params` and `vars` and the `name` attributes of
+all the attributes of `stmt`.  Its default value has zero parameters and
+has no specified *body*.
 
 ## sys.std.Core.Type.Cat.SystemService
 
-A C<SystemService> defines a C<system-service>, which is a kind of
-procedure.  C<SystemService> is a proper subtype of C<Procedure> where for
-every member value its C<is_system_service> attribute is C<Bool:True>.
+A `SystemService` defines a `system-service`, which is a kind of
+procedure.  `SystemService` is a proper subtype of `Procedure` where for
+every member value its `is_system_service` attribute is `Bool:True`.
 
 ## sys.std.Core.Type.Cat.Transaction
 
-A C<Transaction> defines a C<transaction>, which is a kind of procedure.
-C<Transaction> is a proper subtype of C<Procedure> where for every member
-value its C<is_transaction> attribute is C<Bool:True> and its
-C<is_system_service> attribute is C<Bool:False>.
+A `Transaction` defines a `transaction`, which is a kind of procedure.
+`Transaction` is a proper subtype of `Procedure` where for every member
+value its `is_transaction` attribute is `Bool:True` and its
+`is_system_service` attribute is `Bool:False`.
 
 ## sys.std.Core.Type.Cat.Recipe
 
-A C<Recipe> defines a C<recipe>, which is a kind of C<transaction>.
-C<Recipe> is a proper subtype of C<Transaction> where for every member
-value its C<vars> attribute is empty, and at least one of its C<upd_params>
-and C<upd_global_params> attributes is nonempty, and for its C<stmt>
-attribute, the root node is a C<multi_upd_stmt> node.  Its default value
-has 1 subject-to-update, non-optional parameter whose name is C<topic> and
-whose declared type is C<Bool>; it has zero read-only parameters and zero
-lexical-alias variables; it has no specified I<body>.
+A `Recipe` defines a `recipe`, which is a kind of `transaction`.
+`Recipe` is a proper subtype of `Transaction` where for every member
+value its `vars` attribute is empty, and at least one of its `upd_params`
+and `upd_global_params` attributes is nonempty, and for its `stmt`
+attribute, the root node is a `multi_upd_stmt` node.  Its default value
+has 1 subject-to-update, non-optional parameter whose name is `topic` and
+whose declared type is `Bool`; it has zero read-only parameters and zero
+lexical-alias variables; it has no specified *body*.
 
 ## sys.std.Core.Type.Cat.Updater
 
-An C<Updater> defines an C<updater>, which is a kind of recipe.
-C<Updater> is a proper subtype of C<Recipe> where for every member value
-its C<upd_global_params> and C<ro_global_params> attributes are empty and
-its C<upd_params> attribute is nonempty.
+An `Updater` defines an `updater`, which is a kind of recipe.
+`Updater` is a proper subtype of `Recipe` where for every member value
+its `upd_global_params` and `ro_global_params` attributes are empty and
+its `upd_params` attribute is nonempty.
 
 ## sys.std.Core.Type.Cat.ProcGlobalVarAliasMap
 
-A C<ProcGlobalVarAliasMap> is a C<DHRelation>.  It defines a set of lexical
+A `ProcGlobalVarAliasMap` is a `DHRelation`.  It defines a set of lexical
 variable names, with a declared global variable for each.  It is used to
 define lexical variables of procedures that are aliases for global
-variables, for reading or updating.  A C<ProcGlobalVarAliasMap> has 4
-attributes, C<name> (a C<Name>), C<global> (a C<DataNC>), C<scm_comment> (a
-C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of
-the lexical alias, and comprises a unary key; the C<global> is the
+variables, for reading or updating.  A `ProcGlobalVarAliasMap` has 4
+attributes, `name` (a `Name`), `global` (a `DataNC`), `scm_comment` (a
+`Comment`), and `scm_vis_ord` (a `NNInt`); the `name` is the name of
+the lexical alias, and comprises a unary key; the `global` is the
 invocation name of the global variable.  Its default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.StmtNodeSet
 
-A C<StmtNodeSet> is a C<Database> that specifies a set of named
+A `StmtNodeSet` is a `Database` that specifies a set of named
 statement nodes.  It is typically composed into a procedure.  Each
-tuple of a C<StmtNodeSet> attribute is a named statement node, from
+tuple of a `StmtNodeSet` attribute is a named statement node, from
 which procedural Muldis D code is composed.
 
 Note that, regarding Muldis D's feature of a statement node having an
-explicit C<name> that can be referenced by "leave" and "iterate" control
+explicit `name` that can be referenced by "leave" and "iterate" control
 flow statements to leave or re-iterate the corresponding block, both SQL
 and Perl have native counterpart features in the form of block labels.
 
-A C<StmtNodeSet> has these 9 attributes:
+A `StmtNodeSet` has these 9 attributes:
 
-* C<leave_stmts> - C<LeaveStmtNodeSet>
+* `leave_stmts` - `LeaveStmtNodeSet`
 
 These are statement nodes that represent abnormal block exit statements.
 
-* C<compound_stmts> - C<CompoundStmtNodeSet>
+* `compound_stmts` - `CompoundStmtNodeSet`
 
 These are statement nodes that each represent a compound statement having a
 sequence of 0..N procedure statements that conceptually are executed in
 order and at distinct points in time.
 
-* C<multi_upd_stmts> - C<MultiUpdStmtNodeSet>
+* `multi_upd_stmts` - `MultiUpdStmtNodeSet`
 
 These are statement nodes that each represent a multi-update statement,
 which is a compound statement having a set of 0..N procedure statements
@@ -2509,37 +2509,37 @@ that conceptually are executed all as one and collectively at a single
 point in time, as if the collection were a single statement that did all
 the work of the component statements itself.
 
-* C<proc_invo_stmts> - C<ProcInvoStmtNodeSet>
+* `proc_invo_stmts` - `ProcInvoStmtNodeSet`
 
 These are statement nodes that represent procedure invocations.
 
-* C<try_catch_stmts> - C<TryCatchStmtNodeSet>
+* `try_catch_stmts` - `TryCatchStmtNodeSet`
 
 These are statement nodes that represent try-catch control flow statements.
 
-* C<if_else_stmts> - C<IfElseStmtNodeSet>
+* `if_else_stmts` - `IfElseStmtNodeSet`
 
 These are statement nodes that represent if-else control flow statements.
 
-* C<given_when_def_stmts> - C<GivenWhenDefStmtNodeSet>
+* `given_when_def_stmts` - `GivenWhenDefStmtNodeSet`
 
 These are statement nodes that represent given-when-default control flow
 statements.
 
-* C<iterate_stmts> - C<IterateStmtNodeSet>
+* `iterate_stmts` - `IterateStmtNodeSet`
 
 These are statement nodes that represent abnormal block restart statements.
 
-* C<loop_stmts> - C<LoopStmtNodeSet>
+* `loop_stmts` - `LoopStmtNodeSet`
 
 These are statement nodes that represent generic looping block statements.
 
-There is a distributed primary key over the C<name> attributes of all of a
-C<StmtNodeSet>'s attributes.  Its default value is empty.
+There is a distributed primary key over the `name` attributes of all of a
+`StmtNodeSet`'s attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.LeaveStmtNodeSet
 
-A C<LeaveStmtNodeSet> is a C<DHRelation> that specifies a set of
+A `LeaveStmtNodeSet` is a `DHRelation` that specifies a set of
 statement leaf nodes where each node represents an instruction to
 abnormally exit the block defined by a parent statement node (a normal exit
 is to simply execute to the end of the block).  If the parent node in
@@ -2551,56 +2551,56 @@ always has the empty string as its name.  If the parent node in question is
 an iterating or looping statement, then any remaining iterations it might
 have had are skipped, especially useful if it was an infinite loop.
 
-A C<LeaveStmtNodeSet> has these 3 attributes:
+A `LeaveStmtNodeSet` has these 3 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the statement leaf node.
 
-* C<leave> - C<Name>
+* `leave` - `Name`
 
 This is the name of the parent statement node we wish to abnormally exit;
 note that this reference does not count as making the other node a child of
 the current one, so this reference does not contribute to a cycle.
 
-A C<LeaveStmtNodeSet> has a unary primary key on the C<name> attribute,
-plus a unary (unique) key on the C<leave> attribute.  Its default value is
+A `LeaveStmtNodeSet` has a unary primary key on the `name` attribute,
+plus a unary (unique) key on the `leave` attribute.  Its default value is
 empty.
 
 ## sys.std.Core.Type.Cat.CompoundStmtNodeSet
 
-A C<CompoundStmtNodeSet> is a C<DHRelation> that specifies a set of
+A `CompoundStmtNodeSet` is a `DHRelation` that specifies a set of
 statement nodes where each node is a compound statement composed of a
 sequence of 0..N other statements that conceptually are executed in
 order and at distinct points in time.
 
-A C<CompoundStmtNodeSet> has these 3 attributes:
+A `CompoundStmtNodeSet` has these 3 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<stmts> - C<array_of.Name>
+* `stmts` - `array_of.Name`
 
 This is a sequence of names of 0..N other local statement nodes; the
 current compound statement consists of having those other statements
 execute in this given sequence.
 
-A C<CompoundStmtNodeSet> has a unary primary key on the C<name>
+A `CompoundStmtNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.MultiUpdStmtNodeSet
 
-A C<MultiUpdStmtNodeSet> is a C<DHRelation> that specifies a set of
+A `MultiUpdStmtNodeSet` is a `DHRelation` that specifies a set of
 statement nodes where each node is a multi-update statement, which is a
 compound statement composed of a set of 0..N procedure statements that
 conceptually are executed all as one and collectively at a single point in
@@ -2611,215 +2611,215 @@ multi-update statements, either directly, or indirectly by way of recipe
 invocations, as each recipe body is itself composed entirely of 1
 multi-update statement (plus supporting value expressions).
 
-A C<MultiUpdStmtNodeSet> has these 3 attributes:
+A `MultiUpdStmtNodeSet` has these 3 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<stmts> - C<set_of.Name>
+* `stmts` - `set_of.Name`
 
 This is a set of names of 0..N other local statement nodes; the current
 multi-update statement consists of having those other statements execute
 all as one.  Each of the other statements composed into a multi-update
-statement may only be either a C<proc_invo_stmt> node that invokes a
+statement may only be either a `proc_invo_stmt` node that invokes a
 recipe or an assignment; it may not be any non-deterministic statement.
 
-A C<MultiUpdStmtNodeSet> has a unary primary key on the C<name> attribute.
+A `MultiUpdStmtNodeSet` has a unary primary key on the `name` attribute.
 Its default value is empty.
 
 ## sys.std.Core.Type.Cat.ProcInvoStmtNodeSet
 
-A C<ProcInvoStmtNodeSet> is a C<DHRelation> that specifies a set of
+A `ProcInvoStmtNodeSet` is a `DHRelation` that specifies a set of
 statement nodes where each node is an invocation of a named procedure
 with specific arguments.
 
-A C<ProcInvoStmtNodeSet> has these 5 attributes:
+A `ProcInvoStmtNodeSet` has these 5 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<procedure> - C<MaterialNC>
+* `procedure` - `MaterialNC`
 
 This is the name of the procedure being invoked.
 
-* C<upd_args> - C<NameExprMap>
+* `upd_args` - `NameExprMap`
 
 These are the 0..N subject-to-update arguments to the procedure invocation,
-as-per C<ro_args>; but iff the routine being invoked is an updater, then
+as-per `ro_args`; but iff the routine being invoked is an updater, then
 there must instead be 1..N subject-to-update arguments, because an updater
 must take at least 1 subject-to-update argument.  But since each expression
-tree in C<upd_args> is binding to a subject-to-update regular/global
+tree in `upd_args` is binding to a subject-to-update regular/global
 parameter or lexical variable, the expression tree actually is defining a
 pseudo-variable / virtual-variable over 1..N parameters/variables; in the
 most trivial (and common) case, the parameter/variable is referenced
 directly.
 
-* C<ro_args> - C<NameExprMap>
+* `ro_args` - `NameExprMap`
 
 These are the 0..N read-only arguments for the procedure invocation.  Each
-element defines one argument value, with the element C<name> matching the
-invoked procedure's parameter name, and the element C<expr> naming another
+element defines one argument value, with the element `name` matching the
+invoked procedure's parameter name, and the element `expr` naming another
 local expression node (or regular/global parameter or variable) which
 defines the value.
 
-A C<ProcInvoStmtNodeSet> has a unary primary key on the C<name>
+A `ProcInvoStmtNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.  There is a distributed primary
-key over the C<name> attributes of C<upd_args> and C<ro_args>.
+key over the `name` attributes of `upd_args` and `ro_args`.
 
 ## sys.std.Core.Type.Cat.TryCatchStmtNodeSet
 
-A C<TryCatchStmtNodeSet> is a C<DHRelation> that specifies a set of
+A `TryCatchStmtNodeSet` is a `DHRelation` that specifies a set of
 statement nodes where each node represents a try-catch control flow
 statement.  A try-catch-stmt node is conceptually a wrapper over a pair
-of C<ProcInvoStmtNodeSet> named I<try> and I<catch>, where I<try> is
-unconditionally invoked first and then iff I<try> throws an exception then
-it will be caught and I<catch> will be invoked immediately after to handle
-it; if I<catch> also throws an exception then it will not be caught.  Each
+of `ProcInvoStmtNodeSet` named *try* and *catch*, where *try* is
+unconditionally invoked first and then iff *try* throws an exception then
+it will be caught and *catch* will be invoked immediately after to handle
+it; if *catch* also throws an exception then it will not be caught.  Each
 of the invoked procedures can be either user-defined or system-defined.
 
-A C<TryCatchStmtNodeSet> has these 4 attributes:
+A `TryCatchStmtNodeSet` has these 4 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<try> - C<Name>
+* `try` - `Name`
 
 This is the name of a local routine invocation statement node that will
 be invoked first unconditionally; any thrown exception will be caught.
 
-* C<catch> - C<maybe_of.Name>
+* `catch` - `maybe_of.Name`
 
-Iff C<catch> is a C<Just>, it is the name of a local routine invocation
-statement node that will be invoked second iff the C<try> routine throws
+Iff `catch` is a `Just`, it is the name of a local routine invocation
+statement node that will be invoked second iff the `try` routine throws
 an exception, and it will receive that exception for handling via its
-single mandatory parameter C<topic> (which is C<Exception>-typed); iff
-C<catch> is C<Nothing>, then there is no second routine invocation,
-meaning any exception thrown by C<try> is ignored; any exception thrown by
-C<catch> will not be caught.
+single mandatory parameter `topic` (which is `Exception`-typed); iff
+`catch` is `Nothing`, then there is no second routine invocation,
+meaning any exception thrown by `try` is ignored; any exception thrown by
+`catch` will not be caught.
 
-A C<TryCatchStmtNodeSet> has a unary primary key on the C<name>
+A `TryCatchStmtNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.IfElseStmtNodeSet
 
-An C<IfElseStmtNodeSet> is a C<DHRelation> that specifies a set of
+An `IfElseStmtNodeSet` is a `DHRelation` that specifies a set of
 statement nodes where each node represents a ternary if-then-else control
-flow statement.  An C<IfElseStmtNodeSet> is essentially the procedural
-version of the functional C<IfElseExprNodeSet>.  An if-then-else node has 1
+flow statement.  An `IfElseStmtNodeSet` is essentially the procedural
+version of the functional `IfElseExprNodeSet`.  An if-then-else node has 1
 child expression node (which may just be named references to expressions or
-parameters or variables) here designated C<if>, and 2 child statement nodes
-here designated C<then> and C<else>; the C<if> node is the condition to
-evaluate and must result in a C<Bool>; iff the result of that condition is
-C<Bool:True> then the C<else> node is invoked; otherwise, the C<then> node
+parameters or variables) here designated `if`, and 2 child statement nodes
+here designated `then` and `else`; the `if` node is the condition to
+evaluate and must result in a `Bool`; iff the result of that condition is
+`Bool:True` then the `else` node is invoked; otherwise, the `then` node
 is invoked.
 
-An C<IfElseStmtNodeSet> has these 5 attributes:
+An `IfElseStmtNodeSet` has these 5 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<if> - C<Name>
+* `if` - `Name`
 
-This is the name of the local C<Bool>-resulting conditional expression node
+This is the name of the local `Bool`-resulting conditional expression node
 that is unconditionally evaluated first.
 
-* C<then> - C<Name>
+* `then` - `Name`
 
-This is the name of the local statement node that is invoked iff C<if> is
-C<Bool:True>.
+This is the name of the local statement node that is invoked iff `if` is
+`Bool:True`.
 
-* C<else> - C<maybe_of.Name>
+* `else` - `maybe_of.Name`
 
-Iff C<if> is C<Bool:False>, then the statement
-represented by the local statement node named by C<else> will be invoked
-iff C<else> is a C<Just>; if under the first circumstance C<else> is
-C<Nothing>, then the whole if-else will have been a no-op.
+Iff `if` is `Bool:False`, then the statement
+represented by the local statement node named by `else` will be invoked
+iff `else` is a `Just`; if under the first circumstance `else` is
+`Nothing`, then the whole if-else will have been a no-op.
 
-An C<IfElseStmtNodeSet> has a unary primary key on the C<name>
+An `IfElseStmtNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.GivenWhenDefStmtNodeSet
 
-A C<GivenWhenDefStmtNodeSet> is a C<DHRelation> that specifies a set of
+A `GivenWhenDefStmtNodeSet` is a `DHRelation` that specifies a set of
 statement nodes where each node represents an N-way given-when-then-default
 switch control flow statement that dispatches based on matching a single
-value with several options.  A C<GivenWhenDefStmtNodeSet> is essentially
-the procedural version of the functional C<GivenWhenDefExprNodeSet>.
+value with several options.  A `GivenWhenDefStmtNodeSet` is essentially
+the procedural version of the functional `GivenWhenDefExprNodeSet`.
 
-A C<GivenWhenDefStmtNodeSet> has these 5 attributes:
+A `GivenWhenDefStmtNodeSet` has these 5 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<given> - C<Name>
+* `given` - `Name`
 
 This is name of the local expression node that supplies the single
 operand value that is common to all the conditions; it is the control value
 for the statement.
 
-* C<when_then> - C<WhenThenExprStmtMap>
+* `when_then` - `WhenThenExprStmtMap`
 
 This is a set of distinct condition operand values, each of which has an
 associated statement.  If a condition operand matches the value of
-C<given>, its associated statement will be invoked; no statements will be
+`given`, its associated statement will be invoked; no statements will be
 invoked except the one with the matching conditional operand.
 
-* C<default> - C<maybe_of.Name>
+* `default` - `maybe_of.Name`
 
-Iff none of the condition operand values in C<when_then> matches the value
-of C<given> (or as a trivial case, if C<when_then> has no tuples), then the
-statement represented by the local statement node named by C<default> will
-be invoked iff C<default> is a C<Just>; if under the first circumstance
-C<default> is C<Nothing>, then the whole given-when-default will have
+Iff none of the condition operand values in `when_then` matches the value
+of `given` (or as a trivial case, if `when_then` has no tuples), then the
+statement represented by the local statement node named by `default` will
+be invoked iff `default` is a `Just`; if under the first circumstance
+`default` is `Nothing`, then the whole given-when-default will have
 been a no-op.
 
-A C<GivenWhenDefStmtNodeSet> has a unary primary key on the C<name>
+A `GivenWhenDefStmtNodeSet` has a unary primary key on the `name`
 attribute.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.WhenThenExprStmtMap
 
-A C<WhenThenExprStmtMap> is a C<DHRelation>.  It defines a set of dispatch
-options for a given-when-default statement.  A C<WhenThenExprStmtMap> has 2
-attributes, C<when> (a C<Name>) and C<then> (a C<Name>); C<when> has
-the name of a local expression node (or parameter), and C<then> has the
-name of a statement node.  The C<when> node is the not-common / distinct
-operand for each condition.  If a C<when> value is matched, then the
-C<then> statement node is invoked; otherwise, C<then> is not invoked.  Its
+A `WhenThenExprStmtMap` is a `DHRelation`.  It defines a set of dispatch
+options for a given-when-default statement.  A `WhenThenExprStmtMap` has 2
+attributes, `when` (a `Name`) and `then` (a `Name`); `when` has
+the name of a local expression node (or parameter), and `then` has the
+name of a statement node.  The `when` node is the not-common / distinct
+operand for each condition.  If a `when` value is matched, then the
+`then` statement node is invoked; otherwise, `then` is not invoked.  Its
 default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.IterateStmtNodeSet
 
-An C<IterateStmtNodeSet> is a C<DHRelation> that specifies a set of
+An `IterateStmtNodeSet` is a `DHRelation` that specifies a set of
 statement leaf nodes where each node represents an instruction to
 abnormally end the current iteration of a looping block defined by a parent
 statement node, and then start at the beginning of the next iteration of
@@ -2829,57 +2829,57 @@ for the beginning of the next loop as if the current block iteration had
 executed to the end before repeating.  In fact, a looping block isn't even
 required; an iterate node can also be used to "redo" any parent statement.
 
-An C<IterateStmtNodeSet> has these 3 attributes:
+An `IterateStmtNodeSet` has these 3 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the statement leaf node.
 
-* C<iterate> - C<Name>
+* `iterate` - `Name`
 
 This is the name of the parent statement node we wish to abnormally exit
 and restart; note that this reference does not count as making the other
 node a child of the current one, so this reference does not contribute to a
 cycle.
 
-An C<IterateStmtNodeSet> has a unary primary key on the C<name>
-attribute, plus a unary (unique) key on the C<iterate> attribute.  Its
+An `IterateStmtNodeSet` has a unary primary key on the `name`
+attribute, plus a unary (unique) key on the `iterate` attribute.  Its
 default value is empty.
 
 ## sys.std.Core.Type.Cat.LoopStmtNodeSet
 
-A C<LoopStmtNodeSet> is a C<DHRelation> that specifies a set of statement
+A `LoopStmtNodeSet` is a `DHRelation` that specifies a set of statement
 nodes where each node represents a generic looping statement block which
 iterates until a child "leave" statement executes.
 
-A C<LoopStmtNodeSet> has these 3 attributes:
+A `LoopStmtNodeSet` has these 3 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the statement node.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about either the statement node or
 the statement node (sub-)tree it is the root of.
 
-* C<loop> - C<Name>
+* `loop` - `Name`
 
 This is the name of the local statement node that will get executed for
 each iteration of the loop; typically it has a sub-tree of statement nodes.
 
-A C<LoopStmtNodeSet> has a unary primary key on the C<name> attribute.
+A `LoopStmtNodeSet` has a unary primary key on the `name` attribute.
 Its default value is empty.
 
 # TYPES FOR DEFINING DATA TYPES
 
 ## sys.std.Core.Type.Cat.ScalarType
 
-A C<ScalarType> is a C<DHTuple>.  It defines either a new
+A `ScalarType` is a `DHTuple`.  It defines either a new
 scalar root type with at least 1 possrep, or it defines a subtype
 of some other scalar type which also adds at least one possrep to
 the other type.  Either way, every possrep defines a candidate
@@ -2890,62 +2890,62 @@ a declared type is scalar or dh-scalar depends only on the declared
 types of the attributes its possreps compose, whether any are
 non-deeply-homogeneous
 or none are.  You can not declare a scalar root type at all except
-by using a C<ScalarType>, and you can not define a scalar type
+by using a `ScalarType`, and you can not define a scalar type
 with an incompletely defined attribute list at all.
 
-A C<ScalarType> has these 7 attributes:
+A `ScalarType` has these 7 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the scalar
 [|sub]type as a whole.
 
-* C<composed_mixins> - C<ComposedMixinSet>
+* `composed_mixins` - `ComposedMixinSet`
 
 These are the names of the 0..N mixin types, if any, that the new scalar
 type composes, and therefore the new type is a subtype of all of them.
 
-* C<base_type> - C<maybe_of.RPTypeNC>
+* `base_type` - `maybe_of.RPTypeNC`
 
 Iff the type being defined is a scalar root type, then
-C<base_type> is not applicable and is C<Nothing>.  Iff the type being
-defined is a subtype of some other scalar type, then C<base_type>
-is a C<Just> whose sole element is the name of that other type.  Note
-that any type named by C<base_type> must itself be a scalar root
+`base_type` is not applicable and is `Nothing`.  Iff the type being
+defined is a subtype of some other scalar type, then `base_type`
+is a `Just` whose sole element is the name of that other type.  Note
+that any type named by `base_type` must itself be a scalar root
 type or a subtype of one.
 
-* C<subtype_constraint> - C<maybe_of.RPFunctionNC>
+* `subtype_constraint` - `maybe_of.RPFunctionNC`
 
 Iff the type being defined is a scalar root type, or it is a
-non-proper subtype of some other type, then C<subtype_constraint> is not
-applicable and is C<Nothing>.  Iff the type being defined is a proper
-subtype of some other scalar type, then C<subtype_constraint> is a
-C<Just> whose sole element matches the invocation name of a
-C<type-constraint> function that determines what base type values are part
+non-proper subtype of some other type, then `subtype_constraint` is not
+applicable and is `Nothing`.  Iff the type being defined is a proper
+subtype of some other scalar type, then `subtype_constraint` is a
+`Just` whose sole element matches the invocation name of a
+`type-constraint` function that determines what base type values are part
 of the subtype.  The function that this names must have a
-single C<topic> parameter whose declared type is that named by
-C<base_type>, and whose argument is the value to test; the function's
-result type must be C<Bool>.  This constraint function may only
+single `topic` parameter whose declared type is that named by
+`base_type`, and whose argument is the value to test; the function's
+result type must be `Bool`.  This constraint function may only
 reference possreps of the base type, and may not reference possreps of the
-type being defined.  Note that, strictly speaking, C<subtype_constraint>
+type being defined.  Note that, strictly speaking, `subtype_constraint`
 may actually be less restrictive than the total constraint of the subtype
-as a whole, because the total constraint is defined by I<and>-ing the
-constraints of the base types and the C<subtype_constraint> and the
+as a whole, because the total constraint is defined by *and*-ing the
+constraints of the base types and the `subtype_constraint` and the
 constraints of all the possreps of the subtype; therefore, mainly the
-C<subtype_constraint> needs to be just restricting enough so that the
+`subtype_constraint` needs to be just restricting enough so that the
 inter-possrep mapping functions can handle the base type values that it
 accepts, so it is possible to apply the new possreps' constraints.  Now if
-C<subtype_constraint> were otherwise so simple as to unconditinally result
-in C<Bool:True>, then simply making it C<Nothing> has the same effect.
+`subtype_constraint` were otherwise so simple as to unconditinally result
+in `Bool:True`, then simply making it `Nothing` has the same effect.
 
-* C<possreps> - C<PossrepSet>
+* `possreps` - `PossrepSet`
 
 These are the 1..N possrep definitions that comprise this type such that
 each one fully defines a set of attributes plus restrictions on their
 collective values whereby it defines a representation of all values of this
 type.  Note that if multiple scalar types are related to each
 other such that more than one declares possreps for at least one common
-value, then the C<name> attribute of the C<possreps> attributes of all of
+value, then the `name` attribute of the `possreps` attributes of all of
 those types' definitions have a distributed primary key over them.  Note
 that, to keep things simple and deterministic under the possibility of
 diamond subtype/supertype relationships (such that the generic
@@ -2956,67 +2956,67 @@ subtypes have values in common; this can be enforced at
 type-definition-in-catalog time since all types that can interact are in
 the same package.
 
-* C<possrep_maps> - C<PossrepMapSet>
+* `possrep_maps` - `PossrepMapSet`
 
 When this type has more than one possrep applicable to all of its values,
 these are the definitions of mapping functions for deriving the
 representation of a value in one possrep directly from the representation
 in another possrep, and also directly in the reverse.  Every one of this
 type's possreps must be mapped bidirectionally to every other one of its
-possreps, either directly or indirectly.  So for C<P> total possreps, the
-total number of bidirectional maps C<M> is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
+possreps, either directly or indirectly.  So for `P` total possreps, the
+total number of bidirectional maps `M` is in C<(P-1) ≤ M ≤ ((P-1)*P/2)>.
 When a subtype is adding possreps to an other base type, all of the mapping
 functions are defined with the subtype.
 
-* C<default> - C<maybe_of.RPFunctionNC>
+* `default` - `maybe_of.RPFunctionNC`
 
-Iff it is a C<Just>, then C<default>
-matches the invocation name of a C<named-value> function that
+Iff it is a `Just`, then `default`
+matches the invocation name of a `named-value` function that
 results in the default scalar value of the [|sub]type; it has
 zero parameters and its result type is the same as the scalar type
-being defined.  Iff C<default> is C<Nothing> and
-C<base_type> is C<Nothing>, then semantics are as if it were a defined name
+being defined.  Iff `default` is `Nothing` and
+`base_type` is `Nothing`, then semantics are as if it were a defined name
 that resulted in a value of the type being defined where all of the possrep
 attr values were the default values of their declared types; but if the
 type being defined has multiple possreps and going the by-attr-defaults
 route with all of the possreps doesn't produce the same value of the type
-being defined, then a C<default> of C<Nothing> is invalid and it must be a
-C<Just>.  Iff C<default> is C<Nothing> and C<base_type> is a C<Just>,
+being defined, then a `default` of `Nothing` is invalid and it must be a
+`Just`.  Iff `default` is `Nothing` and `base_type` is a `Just`,
 then the subtype will use the same default value as its base type; but if
-the subtype's value set excludes said value, then a C<default> of
-C<Nothing> is invalid and C<default> must be a C<Just>.
-Overriding the above, C<default> must be C<Nothing> if the type being
-defined is an alias for C<Empty>.
+the subtype's value set excludes said value, then a `default` of
+`Nothing` is invalid and `default` must be a `Just`.
+Overriding the above, `default` must be `Nothing` if the type being
+defined is an alias for `Empty`.
 
-The default value of C<ScalarType> defines a scalar root type with
+The default value of `ScalarType` defines a scalar root type with
 a single possrep whose name is the empty string and that has no attributes;
 it is a singleton type, whose default value is its only value.
 
 ## sys.std.Core.Type.Cat.PossrepSet
 
-A C<PossrepSet> is a C<DHRelation> that specifies a set of possreps that
+A `PossrepSet` is a `DHRelation` that specifies a set of possreps that
 a scalar [|sub]type might consist primarily of.
 
-A C<PossrepSet> has these 5 attributes:
+A `PossrepSet` has these 5 attributes:
 
-* C<name> - C<Name>
+* `name` - `Name`
 
 This is the declared name of the possrep.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the possrep as a whole.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this possrep's declaration relative to all of
 the other possreps of this scalar type declaration.
 
-* C<tuple_type> - C<RPTypeNC>
+* `tuple_type` - `RPTypeNC`
 
 This is the name of the tuple type from which the possrep being defined
-composes its list of attributes (C<attrs>) and the basic constraints on
-those as a collection (C<constraints>).  Said tuple type will most likely,
+composes its list of attributes (`attrs`) and the basic constraints on
+those as a collection (`constraints`).  Said tuple type will most likely,
 but isn't constrained to, not include any of the more complicated
 specifications that typically are just used by tuples of relations or
 tuples that are databases, such as virtual attribute maps or subset
@@ -3025,184 +3025,184 @@ constraint defined as part of (the tuple type defining) a possrep (where
 there are multiple possreps) may actually be less restrictive than the
 total constraint of the possreps' host
 scalar [|sub]type as a whole, because the total constraint is
-defined by I<and>-ing the constraints of all the possreps of the
+defined by *and*-ing the constraints of all the possreps of the
 [|sub]type (and, in the case of defining a subtype, with the
-C<subtype_constraint> of the subtype and all base type constraints);
+`subtype_constraint` of the subtype and all base type constraints);
 therefore, mainly any given possrep's constraints need to be just
 restricting enough so that the inter-possrep mapping functions can handle
 the arguments that it accepts, so it is possible to apply the other
 possreps' constraints.
-If this tuple type declares an alias for C<Empty> (because it has an
-attribute whose declared type is C<Empty> or an alias, or because it has a
-type constraint that unconditionally results in C<Bool:False>), then the
+If this tuple type declares an alias for `Empty` (because it has an
+attribute whose declared type is `Empty` or an alias, or because it has a
+type constraint that unconditionally results in `Bool:False`), then the
 scalar type being defined over it can have no member values, so is an alias
-of C<Empty>, since this scalar possrep of it can't represent any values.
+of `Empty`, since this scalar possrep of it can't represent any values.
 
-* C<is_base> - C<Bool>
+* `is_base` - `Bool`
 
 This is an optimization hint for Muldis D implementations that are not
 intelligent enough to decide on a best physical representation for the
 [|sub]type.  At most one of the type's possreps is singled out by having a
-C<Bool:True> value here, so an implementation doesn't have to think and can
+`Bool:True` value here, so an implementation doesn't have to think and can
 just use that as the basis for the physical representation.  To keep things
-simple, only a possrep of a root type may be marked C<Bool:True>, so it can
+simple, only a possrep of a root type may be marked `Bool:True`, so it can
 apply consistently to all subtypes as well.  More intelligent
-implementations are free to ignore C<is_base>, or just use it as a
+implementations are free to ignore `is_base`, or just use it as a
 tie-breaker if applicable.
 
-A C<PossrepSet> has a unary primary key on the C<name> attribute.  Its
-default value is empty.  The default value of a tuple of C<PossrepSet>
-has a C<name> that is the empty string and its C<tuple_type> is C<D0>; and
+A `PossrepSet` has a unary primary key on the `name` attribute.  Its
+default value is empty.  The default value of a tuple of `PossrepSet`
+has a `name` that is the empty string and its `tuple_type` is `D0`; and
 so the default is suitable for declaring a singleton scalar type.
 
 ## sys.std.Core.Type.Cat.PossrepMapSet
 
-A C<PossrepMapSet> is a C<DHRelation> such that each tuple in it
+A `PossrepMapSet` is a `DHRelation` such that each tuple in it
 specifies a pair of mapping functions to bidirectionally derive a value of
 a type between 2 of its possreps.
 
-A C<PossrepMapSet> has these 5 attributes:
+A `PossrepMapSet` has these 5 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this bidirectional mapping.
 
-* C<p1> - C<Name>
+* `p1` - `Name`
 
 This is the declared name of one possrep.
 
-* C<p2> - C<Name>
+* `p2` - `Name`
 
-This is the declared name of a second possrep.  The value of C<p2> must be
-distinct from that of C<p1>, and moreover, the 2 values must be mutually
-ordered so that the value of C<p1> is before the value of C<p2>; the latter
-constraint defines a C<PossrepMapSet>'s canonical form.
+This is the declared name of a second possrep.  The value of `p2` must be
+distinct from that of `p1`, and moreover, the 2 values must be mutually
+ordered so that the value of `p1` is before the value of `p2`; the latter
+constraint defines a `PossrepMapSet`'s canonical form.
 
-* C<p2_from_p1> - C<RPFunctionNC>
+* `p2_from_p1` - `RPFunctionNC`
 
-This matches the invocation name of a C<possrep-map> function that
-derives the representation of the possrep named by C<p2> from that of the
-possrep named by C<p1>.  The function that this names must have a single
-C<topic> parameter whose declared type is the tuple type named by the
-C<tuple_type> attribute of the possrep named by C<p1>; the function's
-declared result type must be the tuple type named by the C<tuple_type>
-attribute of the possrep named by C<p2>.  Note that every distinct
+This matches the invocation name of a `possrep-map` function that
+derives the representation of the possrep named by `p2` from that of the
+possrep named by `p1`.  The function that this names must have a single
+`topic` parameter whose declared type is the tuple type named by the
+`tuple_type` attribute of the possrep named by `p1`; the function's
+declared result type must be the tuple type named by the `tuple_type`
+attribute of the possrep named by `p2`.  Note that every distinct
 argument (domain) value of this function must have a distinct result
 (range) value.
 
-* C<p1_from_p2> - C<RPFunctionNC>
+* `p1_from_p2` - `RPFunctionNC`
 
-This matches the invocation name of an inverse C<possrep-map> function
-to that of C<p2_from_p1>.  I<Note that it would often be feasible for a
+This matches the invocation name of an inverse `possrep-map` function
+to that of `p2_from_p1`.  *Note that it would often be feasible for a
 Muldis D implementation to automatically infer a reverse function, but for
 now we still require it to be explicitly stated; the explicitly stated
 inverse function could be generated though.  This design is subject to
-change.>
+change.*
 
-A C<PossrepMapSet> has a binary primary key on the C<p1> plus C<p2>
+A `PossrepMapSet` has a binary primary key on the `p1` plus `p2`
 attributes.  Its default value is empty.
 
 ## sys.std.Core.Type.Cat.TupleType
 
-A C<TupleType> is a C<DHTuple>.  It defines either a new tuple heading
+A `TupleType` is a `DHTuple`.  It defines either a new tuple heading
 (set of attributes) with associated constraints for a tuple type having
 that heading, or it defines a subtype of some other tuple type.  Note that
-you also declare a database type using C<TupleType>, by declaring a tuple
+you also declare a database type using `TupleType`, by declaring a tuple
 type whose attributes are all relation or database typed.  Note that you
-can not use a C<TupleType> to declare or subtype an incomplete type, as it
+can not use a `TupleType` to declare or subtype an incomplete type, as it
 (or its supertype) must specify a complete set of attributes.  Note that a
-C<TupleType> also typically doubles for defining a relation type (but it
-doesn't have to), because a C<RelationType> requires one in terms of which
+`TupleType` also typically doubles for defining a relation type (but it
+doesn't have to), because a `RelationType` requires one in terms of which
 it is partly defined; each tuple of a value of the latter type is a value
 of the former type.
 
-A C<TupleType> has these 7 attributes:
+A `TupleType` has these 7 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the tuple
 [|sub]type as a whole.
 
-* C<composed_mixins> - C<ComposedMixinSet>
+* `composed_mixins` - `ComposedMixinSet`
 
 These are the names of the 0..N mixin types, if any, that the new tuple
 type composes, and therefore the new type is a subtype of all of them.
 
-* C<base_type> - C<maybe_of.RPTypeNC>
+* `base_type` - `maybe_of.RPTypeNC`
 
-Iff the type being defined is a tuple root type, then C<base_type> is
-not applicable and is C<Nothing>.  Iff the type being defined is a
-subtype of some other tuple type, then C<base_type> is a C<Just>
+Iff the type being defined is a tuple root type, then `base_type` is
+not applicable and is `Nothing`.  Iff the type being defined is a
+subtype of some other tuple type, then `base_type` is a `Just`
 whose sole element is the name of that other type.
 
-* C<attrs> - C<NameTypeMap>
+* `attrs` - `NameTypeMap`
 
-Iff the type being defined is a tuple root type, then C<attrs> defines
+Iff the type being defined is a tuple root type, then `attrs` defines
 the 0..N attributes of the type.  Iff the type being defined is a subtype
 of some other type, then the parent type's attribute list is used by
-default, but C<attrs> of the current type may be used to apply additional
+default, but `attrs` of the current type may be used to apply additional
 constraints by overriding the declared types of a subset of the parent's
 attributes with types that are subtypes of the originals; an override is
-done using matching C<name> attribute values of C<attrs>.  It is indeed
+done using matching `name` attribute values of `attrs`.  It is indeed
 valid for a tuple type to have zero attributes (which is then just a
 dh-tuple type by definition); in this case, a tuple type consists of
 exactly one value, and any relation type defined over it consists of
 exactly two values.  The declared type of an attribute may be any type at
-all; if that declared type is C<Empty> or an alias thereof, then the tuple
-type being defined can have no member values, so is an alias of C<Empty>.
+all; if that declared type is `Empty` or an alias thereof, then the tuple
+type being defined can have no member values, so is an alias of `Empty`.
 
-* C<virtual_attr_maps> - C<VirtualAttrMapSet>
+* `virtual_attr_maps` - `VirtualAttrMapSet`
 
 This defines the proper subset of this type's attributes that are virtual,
 and how they are defined in terms of the rest of this type's attributes.
 Note that the special functional dependencies between attributes defined
 herein mean that some kinds of tuple constraints would be redundant.
 
-* C<constraints> - C<set_of.RelPathMaterialNC>
+* `constraints` - `set_of.RelPathMaterialNC`
 
-This, I<tuple constraints>,
+This, *tuple constraints*,
 matches the invocation names of 0..N tuple-constraint-defining materials
-that (when I<and>-ed together) determine what combinations of tuple
+that (when *and*-ed together) determine what combinations of tuple
 attribute values denote values of the [|sub]type, besides the restrictions
 imposed by the declared types of the attributes individually; they are
 tuple type constraints that together validate a tuple as a whole.
 Each tuple-constraint-defining material is one of these 4 material kinds:
-C<value-constraint>, C<distrib-key-constraint>, C<subset-constraint>,
-C<distrib-subset-constraint>.
+`value-constraint`, `distrib-key-constraint`, `subset-constraint`,
+`distrib-subset-constraint`.
 
-A C<value-constraint> is a generalized type constraint function that must
-have a single C<topic> parameter whose declared type is a tuple whose
-attributes match those declared by C<attrs> and whose argument denotes the
-value to test; the function's result type must be C<Bool>.  If the function
-unconditionally results in C<Bool:True>, then all possible combinations of
+A `value-constraint` is a generalized type constraint function that must
+have a single `topic` parameter whose declared type is a tuple whose
+attributes match those declared by `attrs` and whose argument denotes the
+value to test; the function's result type must be `Bool`.  If the function
+unconditionally results in `Bool:True`, then all possible combinations of
 attribute-allowable values are collectively allowed.  The function is
 invoked either once to test a tuple value of the type being defined, or
 multiple times to individually test every tuple in a relation value of a
 type defined over the first type.
 
-A C<distrib-key-constraint> is a
+A `distrib-key-constraint` is a
 simple distributed (unique) key constraint that is
 applicable to tuple/database values of the type being defined, that range
 over specified relation-typed attributes of it.  At most one of a type's
-C<distrib-key-constraint> may be privileged as the I<primary key>.
-Note that a C<distrib-key-constraint>
+`distrib-key-constraint` may be privileged as the *primary key*.
+Note that a `distrib-key-constraint`
 is logically an abstraction syntax (the canonical simplest
-form) for a particular kind of C<value-constraint> of the type being
+form) for a particular kind of `value-constraint` of the type being
 defined, one that compares the cardinality of the union of the projection
 of distributed key attributes of all key-participating relation-valued
 attributes, with the sum of cardinalities of the source relation-valued
 attributes; the attribute values comprise a distributed key if the
 cardinalities are equal.
 
-A C<subset-constraint> is a simple (non-distributed) subset constraint
+A `subset-constraint` is a simple (non-distributed) subset constraint
 (foreign key) that is applicable to tuple/database values of the type
 being defined, that range over and relate tuples of specified
 relation-typed attributes of it; they are a kind of referential constraint.
 Each tuple of a child attribute must have a corresponding tuple in a
 specific single parent attribute, where they correspond on the attributes
 of the parent attribute that comprise a (unique) key of the latter.  Note
-that a C<subset-constraint> is logically an abstraction syntax (the
-canonical simplest form) for a particular kind of C<value-constraint> of
+that a `subset-constraint` is logically an abstraction syntax (the
+canonical simplest form) for a particular kind of `value-constraint` of
 the type being defined, one that tests if the relational difference, where
 a projection of the parent relation is subtracted from a corresponding
 projection of the child relation (with attribute renaming if necessary), is
@@ -3210,7 +3210,7 @@ an empty relation; if the difference is an empty relation, then the subset
 constraint is satisfied; otherwise, any difference tuples are from child
 tuples that violate the subset constraint.
 
-A C<distrib-subset-constraint> is a simple distributed subset constraint
+A `distrib-subset-constraint` is a simple distributed subset constraint
 (foreign key) that is applicable to tuple/database values of the type being
 defined, that range over and relate tuples of specified relation-typed
 attributes of it; they are a kind of referential constraint.  Each tuple of
@@ -3218,97 +3218,97 @@ a child attribute must have a corresponding tuple in one member of a
 specific set of parent-alternative attributes (that have a distributed key
 ranging over them), where they correspond on the attributes of the
 parent-alternative attribute that comprise a distributed key on the latter.
-Note that a C<distrib-subset-constraint> is logically an abstraction syntax
-(the canonical simplest form) for a particular kind of C<value-constraint>
-of the type being defined; it is as per C<subset-constraint> except that
+Note that a `distrib-subset-constraint` is logically an abstraction syntax
+(the canonical simplest form) for a particular kind of `value-constraint`
+of the type being defined; it is as per `subset-constraint` except that
 the parent relation is the result of unioning appropriately renamed
 projections of the member relations of the distributed key.
 
-* C<default> - C<maybe_of.RPFunctionNC>
+* `default` - `maybe_of.RPFunctionNC`
 
-Iff it is a C<Just>, then C<default>
-matches the invocation name of a C<named-value> function that
+Iff it is a `Just`, then `default`
+matches the invocation name of a `named-value` function that
 results in the default tuple value of the [|sub]type; it has zero
 parameters and its result type is the same as the tuple type
-being defined.  Iff C<default> is C<Nothing> and
-C<base_type> is C<Nothing>, then semantics are as if C<default> were
+being defined.  Iff `default` is `Nothing` and
+`base_type` is `Nothing`, then semantics are as if `default` were
 a defined name that resulted in a value of the type being defined where all
 of the attr values were the default values of their declared types.  Iff
-C<default> is C<Nothing> and C<base_type> is a C<Just>, then the
+`default` is `Nothing` and `base_type` is a `Just`, then the
 subtype will use the same default tuple value as its base type; but if the
-subtype's value set excludes said value, then a C<default> of
-C<Nothing> is invalid and C<default> must be a C<Just>.
-Overriding the above, C<default> must be C<Nothing> if the type being
-defined is an alias for C<Empty>.
+subtype's value set excludes said value, then a `default` of
+`Nothing` is invalid and `default` must be a `Just`.
+Overriding the above, `default` must be `Nothing` if the type being
+defined is an alias for `Empty`.
 
-The default value of C<TupleType> defines a singleton tuple type that has
+The default value of `TupleType` defines a singleton tuple type that has
 zero attributes and whose default value is its only value.
 
 ## sys.std.Core.Type.Cat.RelationType
 
-A C<RelationType> is a C<DHTuple>.  It defines either a new relation
+A `RelationType` is a `DHTuple`.  It defines either a new relation
 heading (set of attributes) with associated constraints for a relation type
 having that heading, or it defines a subtype of some other relation type.
-Note that you can not use a C<RelationType> to declare or subtype an
+Note that you can not use a `RelationType` to declare or subtype an
 incomplete type, as it (or its supertype) must specify a complete set of
-attributes.  Note that in order to define a C<RelationType> there must
-first exist a separate C<TupleType> in terms of which it is partly defined
+attributes.  Note that in order to define a `RelationType` there must
+first exist a separate `TupleType` in terms of which it is partly defined
 (the reverse isn't true); each tuple of a value of the former type is a
 value of the latter type.  Note that a single tuple type definition may be
 shared by multiple relation type definitions, or it may be system-defined.
 
-A C<RelationType> has these 6 attributes:
+A `RelationType` has these 6 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the relation
 [|sub]type as a whole.
 
-* C<composed_mixins> - C<ComposedMixinSet>
+* `composed_mixins` - `ComposedMixinSet`
 
 These are the names of the 0..N mixin types, if any, that the new relation
 type composes, and therefore the new type is a subtype of all of them.
 
-* C<base_type> - C<maybe_of.RPTypeNC>
+* `base_type` - `maybe_of.RPTypeNC`
 
-Iff the type being defined is a relation root type, then C<base_type> is
-not applicable and is C<Nothing>.  Iff the type being defined is a
-subtype of some other relation type, then C<base_type> is a C<Just>
+Iff the type being defined is a relation root type, then `base_type` is
+not applicable and is `Nothing`.  Iff the type being defined is a
+subtype of some other relation type, then `base_type` is a `Just`
 whose sole element is the name of that other type.
 
-* C<tuple_type> - C<RPTypeNC>
+* `tuple_type` - `RPTypeNC`
 
 This is the name of the tuple type from which the relation type being
 defined composes its list of attributes and most of its other details.
-If this tuple type declares an alias for C<Empty> (because it has an
-attribute whose declared type is C<Empty> or an alias, or because it has a
-type constraint that unconditionally results in C<Bool:False>), then the
+If this tuple type declares an alias for `Empty` (because it has an
+attribute whose declared type is `Empty` or an alias, or because it has a
+type constraint that unconditionally results in `Bool:False`), then the
 relation type being defined over it has exactly 1 member value, which is
 the only relation value having the same heading plus an empty body, unless
-C<base_type> defines a type that is C<Empty> or an alias.
-Note that any other relation type referenced by C<base_type> must compose a
-C<tuple_type> that has a common tuple supertype with the tuple type
-referenced by the C<tuple_type> of the type being defined; that is, there
-must be a diamond relationship (but both C<tuple_type> may reference
+`base_type` defines a type that is `Empty` or an alias.
+Note that any other relation type referenced by `base_type` must compose a
+`tuple_type` that has a common tuple supertype with the tuple type
+referenced by the `tuple_type` of the type being defined; that is, there
+must be a diamond relationship (but both `tuple_type` may reference
 exactly the same tuple type).
 
-* C<constraints> - C<set_of.RelPathMaterialNC>
+* `constraints` - `set_of.RelPathMaterialNC`
 
-This, I<relation constraints>, matches the invocation names of 0..N
-relation-constraint-defining materials that (when I<and>-ed together)
-determine what sets of tuples of the type of C<tuple_type> comprise the
+This, *relation constraints*, matches the invocation names of 0..N
+relation-constraint-defining materials that (when *and*-ed together)
+determine what sets of tuples of the type of `tuple_type` comprise the
 bodies of values of the relation [|sub]type; they are relation type
 constraints that together validate a relation as a whole.  Each
 relation-constraint-defining material is one of these 2 material kinds:
-C<value-constraint>, C<key-constraint>.
+`value-constraint`, `key-constraint`.
 
-A C<value-constraint> for a relation type is like
-the C<value-constraint> of a
-C<TupleType> but that each function's parameter is
+A `value-constraint` for a relation type is like
+the `value-constraint` of a
+`TupleType` but that each function's parameter is
 relation-typed rather than tuple-typed; it is a generalized type
 constraint that validates a relation as a whole.
 
-A C<key-constraint> is an
+A `key-constraint` is an
 explicit (unique) key constraint that is applicable to relation
 values of the type being defined; it applies either as a candidate key or
 as a unique key constraint, depending on context.  If there are no explicit
@@ -3322,44 +3322,44 @@ key's attributes; if 2 such candidates appear, just use the one that has
 the subset.  It is valid for a key to consist of zero attributes; in this
 case, that key is the only key of the type, and values of the type may each
 consist of no more than one tuple.  At most one one of a type's
-C<key-constraint> may be privileged
-as the I<primary key>.  Note that a C<key-constraint> is logically an
+`key-constraint` may be privileged
+as the *primary key*.  Note that a `key-constraint` is logically an
 abstraction syntax (the canonical simplest form) for a particular kind of
-C<value-constraint> of the type being defined, one that compares the
+`value-constraint` of the type being defined, one that compares the
 cardinality of a projection of a relation on its key attributes with the
 cardinality of the original relation; the attribute values comprise a key
 if the cardinalities are equal.
 
-* C<default> - C<maybe_of.RPFunctionNC>
+* `default` - `maybe_of.RPFunctionNC`
 
-Iff it is a C<Just>, then C<default>
-matches the invocation name of a C<named-value> function that
+Iff it is a `Just`, then `default`
+matches the invocation name of a `named-value` function that
 results in the default relation value of the [|sub]type; it has
 zero parameters and its result type is the same as the relation
-type being defined.  Iff C<default> is
-C<Nothing> and C<base_type> is C<Nothing>, then semantics are as if
-C<default> were a defined name that resulted in a value of the
-type being defined that had zero tuples.  Iff C<default> is
-C<Nothing> and C<base_type> is a C<Just>, then the subtype will use the
+type being defined.  Iff `default` is
+`Nothing` and `base_type` is `Nothing`, then semantics are as if
+`default` were a defined name that resulted in a value of the
+type being defined that had zero tuples.  Iff `default` is
+`Nothing` and `base_type` is a `Just`, then the subtype will use the
 same default relation value as its base type; but if the subtype's value
-set excludes said value, then a C<default> of C<Nothing> is
-invalid and C<default> must be a C<Just>.
-Overriding the above, C<default> must be C<Nothing> if the type being
-defined is an alias for C<Empty>.
+set excludes said value, then a `default` of `Nothing` is
+invalid and `default` must be a `Just`.
+Overriding the above, `default` must be `Nothing` if the type being
+defined is an alias for `Empty`.
 
-The default value of C<RelationType> defines a relation type that has
+The default value of `RelationType` defines a relation type that has
 zero attributes and whose default value is the one with zero tuples.
 
 ## sys.std.Core.Type.Cat.VirtualAttrMapSet
 
-A C<VirtualAttrMapSet> is a C<DHRelation> that defines special functional
+A `VirtualAttrMapSet` is a `DHRelation` that defines special functional
 dependencies between attributes of a nonscalar data type, such
 that, on a per-tuple basis, some attributes can be generated purely from
 other attributes, and hence the former attributes may be virtual.  Each
-tuple of a C<VirtualAttrMapSet> specifies 2 disjoint subsets of the
-nonscalar's attributes, which are I<determinant> and I<dependent>
+tuple of a `VirtualAttrMapSet` specifies 2 disjoint subsets of the
+nonscalar's attributes, which are *determinant* and *dependent*
 attributes respectively, where the values of the second set are generated
-from the first using a C<virtual-attr-map> function.  Whether I<dependent>
+from the first using a `virtual-attr-map` function.  Whether *dependent*
 attributes are computed when needed or pre-computed and stored (a trade-off
 of storage space for speed) is implementation dependent, though users may
 give hints to govern that performance decision.
@@ -3395,8 +3395,8 @@ matching can be done against the same.
 
 All permissable operations on virtual [|pseudo-]variables are such that the
 semantics of updating them is the same as for updating base
-[|pseudo-]variables, with respect to I<The Assignment Principle>: Following
-assignment of a value C<v> to a variable C<V>, the comparison C<v = V>
+[|pseudo-]variables, with respect to *The Assignment Principle*: Following
+assignment of a value `v` to a variable `V`, the comparison C<v = V>
 evaluates to TRUE.  Just as an update to determinant variables will have
 the cascade effect of updating their dependent variables such that the
 functional dependency between them continues to hold, the reverse also must
@@ -3418,16 +3418,16 @@ Because Muldis D requires a strong degree of determinism in the whole
 system, sometimes users have to provide explicit details on how to
 accomplish a reverse mapping, even if it is possible to automatically
 generate such, because there may be multiple ways to do a reverse map that
-satisfy I<The Assignment Principle>, so the explicitness would be to pick
+satisfy *The Assignment Principle*, so the explicitness would be to pick
 exactly one of those, so that how determinants are updated is predictable
 in an implementation-portable manner.  For example, if a virtual relvar
-C<V> is defined as the simple relational union of 2 other relvars C<R1> and
-C<R2>, then a tuple insertion into C<V> could be rewritten at least 3
-ways, which are an insertion into just C<R1>, or into just C<R2>, or into
-both C<R1> and C<R2>; so for predictability's sake, the map should specify
+`V` is defined as the simple relational union of 2 other relvars `R1` and
+`R2`, then a tuple insertion into `V` could be rewritten at least 3
+ways, which are an insertion into just `R1`, or into just `R2`, or into
+both `R1` and `R2`; so for predictability's sake, the map should specify
 which option to do (which can vary on a case-by-case basis).
 
-I<This all being said, for the moment the C<VirtualAttrMapSet> type does
+I<This all being said, for the moment the `VirtualAttrMapSet` type does
 not give a way to manually specify a reverse function, so for now all the
 virtuals are either read-only or updatable due to an automatically
 generated reverse function, which might vary by implementation.  Fixing
@@ -3435,69 +3435,69 @@ this matter is TODO.  Note that the reverse functions might have to be
 defined as per-tuple operations, separately for
 insert/substitute/delete.>
 
-A C<VirtualAttrMapSet> has these 6 attributes:
+A `VirtualAttrMapSet` has these 6 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about this virtual attribute map.
 
-* C<scm_vis_ord> - C<NNInt>
+* `scm_vis_ord` - `NNInt`
 
 This is the visible order of this declaration relative to all of
 the other declarations beneath this tuple type declaration.
 
-* C<determinant_attrs> - C<NameNCMap>
+* `determinant_attrs` - `NameNCMap`
 
 These are the names of the determinant attributes.  Each name is given in 2
-forms, called C<name> and C<nc>; C<nc> is the actual name of the
+forms, called `name` and `nc`; `nc` is the actual name of the
 attribute as existing in the host type, and it may actually be a component
-attribute of a host type attribute to any recursive depth (a single C<nc>
-element means it is the actual host type element); C<name> is an alias by
-which the attribute will be known in the C<virtual-attr-map> function; this
+attribute of a host type attribute to any recursive depth (a single `nc`
+element means it is the actual host type element); `name` is an alias by
+which the attribute will be known in the `virtual-attr-map` function; this
 mapping exists so to make the determinant attributes look like direct
 sibling attributes whereas in reality they can be further-away relatives,
 just common components somewhere under the host type.
 
-* C<dependent_attrs> - C<NameNCMap>
+* `dependent_attrs` - `NameNCMap`
 
 These are the names of the dependent attributes; the structure of
-C<dependent_attrs> is as per C<determinant_attrs>; none of these may be the
+`dependent_attrs` is as per `determinant_attrs`; none of these may be the
 same as the names of the determinant attributes, since a virtual attribute
 can't be defined in terms of itself.
 
-* C<virtual_attr_map> - C<RPFunctionNC>
+* `virtual_attr_map` - `RPFunctionNC`
 
-This matches the invocation name of a C<virtual-attr-map> function
+This matches the invocation name of a `virtual-attr-map` function
 that derives a tuple of dependent attribute values from a tuple of
 determinant attribute values.  The function that this names must
-have a single C<topic> parameter whose declared type is a tuple whose
-attributes match those of C<determinant_attrs>; the function's
+have a single `topic` parameter whose declared type is a tuple whose
+attributes match those of `determinant_attrs`; the function's
 result type must be a tuple whose attributes match those of
-C<dependent_attrs>.  Note that the range of this function is typically
+`dependent_attrs`.  Note that the range of this function is typically
 smaller than its domain, though it might not be.
 
-* C<is_updateable> - C<Bool>
+* `is_updateable` - `Bool`
 
-This is C<Bool:True> if all of the dependent attributes should be treated
+This is `Bool:True` if all of the dependent attributes should be treated
 as updateable, because they have enough information to map any kinds of
 updates (all of tuple insert/substitute/delete) back to their determinant
 attributes, and the system should try to support updates against them.
-This is C<Bool:False> if all of the dependent attributes should not be
+This is `Bool:False` if all of the dependent attributes should not be
 considered updateable, either because it is known they don't have enough
 information, or because we expect users will never try to update them, so
 don't go to the trouble of supporting updates.
 
-A C<VirtualAttrMapSet> has a binary primary key on the C<determinant_attrs>
-plus C<dependent_attrs> attributes; it also has a distributed primary key
-over the C<dependent_attrs> attribute of all tuples.  Its default value is
+A `VirtualAttrMapSet` has a binary primary key on the `determinant_attrs`
+plus `dependent_attrs` attributes; it also has a distributed primary key
+over the `dependent_attrs` attribute of all tuples.  Its default value is
 empty.
 
 ## sys.std.Core.Type.Cat.DomainType
 
-A C<DomainType> is a C<DHTuple>.  It defines a new data type whose
+A `DomainType` is a `DHTuple`.  It defines a new data type whose
 values are all drawn from a list of specified other types (which can be
 any types at all), and that generally speaking it is an
-arbitrary subset of C<Universal> (and it has its own default value).  The
+arbitrary subset of `Universal` (and it has its own default value).  The
 value set of the new data type is determined by taking a set of source
 types' values and subtracting from it a set of filter types' values (and
 then optionally applying 0..N type constraint functions to the values
@@ -3511,80 +3511,80 @@ defined in this way is typically not considered to exist when the system
 wants to determine the MST (most specific type) of one of its values.  Note
 that if you want to define a possrep-adding scalar subtype whose base is
 a union/intersection/etc of other types (eg, to define a "Square" when you
-have "Rectangle", "Rhombus"), you have to first define a C<DomainType>,
-and then use that as the base type of a C<ScalarType>.
+have "Rectangle", "Rhombus"), you have to first define a `DomainType`,
+and then use that as the base type of a `ScalarType`.
 
-A C<DomainType> has these 8 attributes:
+A `DomainType` has these 8 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the domain type as a whole.
 
-* C<composed_mixins> - C<ComposedMixinSet>
+* `composed_mixins` - `ComposedMixinSet`
 
 These are the names of the 0..N mixin types, if any, that the new domain
 type composes, and therefore the new type is a subtype of all of them.
 
-* C<sources> - C<set_of.RPTypeNC>
+* `sources` - `set_of.RPTypeNC`
 
 These are the names of the 0..N other types that all the
 values of the new data type are drawn from; the complete set of source
 values is determined by either unioning (the default) or intersecting the
 values of these types.
 
-* C<is_source_intersection> - C<Bool>
+* `is_source_intersection` - `Bool`
 
-Iff this is C<Bool:True> then the set of source data types will be
+Iff this is `Bool:True` then the set of source data types will be
 intersected to determine the complete set of source values, and if
-C<sources> has no elements then the source set is just C<Universal>; iff
-this is C<Bool:False> then the set of source data types will be unioned to
-determine the complete set of source values, and if C<sources> has no
-elements then the source set is just C<Empty>.
+`sources` has no elements then the source set is just `Universal`; iff
+this is `Bool:False` then the set of source data types will be unioned to
+determine the complete set of source values, and if `sources` has no
+elements then the source set is just `Empty`.
 
-* C<filters> - C<set_of.RPTypeNC>
+* `filters` - `set_of.RPTypeNC`
 
 These are the names of the 0..N other types (which are generally subtypes
-of those of C<sources>) that determine values which the new data type will
-I<not> contain; the complete set of filter values is determined by either
+of those of `sources`) that determine values which the new data type will
+*not* contain; the complete set of filter values is determined by either
 unioning (the default) or intersecting the values of these types.
 
-* C<is_filter_intersection> - C<Bool>
+* `is_filter_intersection` - `Bool`
 
-Iff this is C<Bool:True> then the set of filter data types will be
+Iff this is `Bool:True` then the set of filter data types will be
 intersected to determine the complete set of filter values, and if
-C<filters> has no elements then the filter set is just C<Universal>; iff
-this is C<Bool:False> then the set of filter data types will be unioned to
-determine the complete set of filter values, and if C<filters> has no
-elements then the filter set is just C<Empty>.
+`filters` has no elements then the filter set is just `Universal`; iff
+this is `Bool:False` then the set of filter data types will be unioned to
+determine the complete set of filter values, and if `filters` has no
+elements then the filter set is just `Empty`.
 
-* C<constraints> - C<set_of.RPFunctionNC>
+* `constraints` - `set_of.RPFunctionNC`
 
-This matches the invocation names of 0..N C<type-constraint> functions
-that (when I<and>-ed together) determine what filter-type-passing
+This matches the invocation names of 0..N `type-constraint` functions
+that (when *and*-ed together) determine what filter-type-passing
 source-type values are part of the domain type.  The function
-that each of these names must have a single C<topic> parameter whose
-declared type is C<Universal>, unless there is exactly 1 C<sources> element
+that each of these names must have a single `topic` parameter whose
+declared type is `Universal`, unless there is exactly 1 `sources` element
 whereupon the declared type is the same as the source type, and whose
 argument is the value to test; the function's result type must be
-C<Bool>.  If the functions unconditionally result in C<Bool:True>, then all
+`Bool`.  If the functions unconditionally result in `Bool:True`, then all
 filter-type-passing values are allowed.
 
-* C<default> - C<maybe_of.RPFunctionNC>
+* `default` - `maybe_of.RPFunctionNC`
 
-Iff it is a C<Just>, then C<default>
-matches the invocation name of a C<named-value> function that results
+Iff it is a `Just`, then `default`
+matches the invocation name of a `named-value` function that results
 in the default value of the domain type; it has zero parameters and its
 result type is the same as the domain type being defined.
-In contrast, C<default> must be C<Nothing> if the type being
-defined is C<Empty> or an alias of that.
+In contrast, `default` must be `Nothing` if the type being
+defined is `Empty` or an alias of that.
 
-The default value of C<DomainType> defines the C<Empty> type; it has
-zero source and filter types, both type lists are unioned, C<constraints>
-is empty (unconditionally C<Bool:True>), and there is no default value.
+The default value of `DomainType` defines the `Empty` type; it has
+zero source and filter types, both type lists are unioned, `constraints`
+is empty (unconditionally `Bool:True`), and there is no default value.
 
 ## sys.std.Core.Type.Cat.SubsetType
 
-A C<SubsetType> is a C<DHTuple>.  It provides a relatively terse
+A `SubsetType` is a `DHTuple`.  It provides a relatively terse
 method to define a simple subset-defined subtype of a single other
 type (which can be any type at all), which is a common kind of
 type to have.  The new type is either a proper or non-proper subset of the
@@ -3598,80 +3598,80 @@ working with its values, instead simply using those of its declared parent
 type.  A data type defined in this way is typically not considered to exist
 when the system wants to determine the MST (most specific type) of one of
 its values.  You can only declare a nonscalar type with an incompletely
-defined attribute list using a C<SubsetType> (or a C<DomainType>).
+defined attribute list using a `SubsetType` (or a `DomainType`).
 
-A C<SubsetType> has these 5 attributes:
+A `SubsetType` has these 5 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the subset type as a whole.
 
-* C<composed_mixins> - C<ComposedMixinSet>
+* `composed_mixins` - `ComposedMixinSet`
 
 These are the names of the 0..N mixin types, if any, that the new subset
 type composes, and therefore the new type is a subtype of all of them.
 
-* C<base_type> - C<RPTypeNC>
+* `base_type` - `RPTypeNC`
 
 This is the name of the other type that all the values of the
 new data type are drawn from; the new type is being declared as a subtype
-of that named by C<base_type>.
+of that named by `base_type`.
 
-* C<constraints> - C<set_of.RPFunctionNC>
+* `constraints` - `set_of.RPFunctionNC`
 
-This matches the invocation names of 0..N C<type-constraint> functions
-that (when I<and>-ed together) determine what base type values are part of
+This matches the invocation names of 0..N `type-constraint` functions
+that (when *and*-ed together) determine what base type values are part of
 the subset type.  The function that each of these names
-must have a single C<topic> parameter whose declared type is that named
-by C<base_type>, and whose argument is the value to test; the function's
-result type must be C<Bool>.  If the functions unconditionally result in
-C<Bool:True>, then the new type is a non-proper subtype of the base type.
+must have a single `topic` parameter whose declared type is that named
+by `base_type`, and whose argument is the value to test; the function's
+result type must be `Bool`.  If the functions unconditionally result in
+`Bool:True`, then the new type is a non-proper subtype of the base type.
 
-* C<default> - C<maybe_of.RPFunctionNC>
+* `default` - `maybe_of.RPFunctionNC`
 
-Iff it is a C<Just>, then C<default>
-matches the invocation name of a C<named-value> function that
+Iff it is a `Just`, then `default`
+matches the invocation name of a `named-value` function that
 results in the default value of the subset type; it has zero
 parameters and its result type is the same as the subset type
-being defined.  Iff C<default> is C<Nothing>, then the
+being defined.  Iff `default` is `Nothing`, then the
 subset type will use the same default value as its base type; but if
-the subset type's value set excludes said value, then a C<default> of
-C<Nothing> is invalid and C<default> must be a C<Just>.
-Overriding the above, C<default> must be C<Nothing> if the type being
-defined is an alias for C<Empty>.
+the subset type's value set excludes said value, then a `default` of
+`Nothing` is invalid and `default` must be a `Just`.
+Overriding the above, `default` must be `Nothing` if the type being
+defined is an alias for `Empty`.
 
-The default value of C<SubsetType> defines an alias for C<Universal>,
-with the same default value; it has the base type C<Universal> and
-C<constraints> is empty (unconditionally C<Bool:True>).
+The default value of `SubsetType` defines an alias for `Universal`,
+with the same default value; it has the base type `Universal` and
+`constraints` is empty (unconditionally `Bool:True`).
 
 ## sys.std.Core.Type.Cat.MixinType
 
-A C<MixinType> is a C<DHTuple>.  It defines a new data type whose values
+A `MixinType` is a `DHTuple`.  It defines a new data type whose values
 are a union of those from the zero or more other types that
 specify themselves to be part of that union.  For all practical purposes, a
-C<MixinType> declares a I<mixin> or I<interface> or I<role> (the last as
+`MixinType` declares a *mixin* or *interface* or *role* (the last as
 Raku uses the term) which is meant to be composed into other types, such
 that said other types are then at least labelled as being useable in
 particular common ways, and optionally the mixin type may define attributes
 or code that can be reused by the types that compose it.  For example,
-C<Numeric> is a mixin type, and any types composing it such as C<Int> or
-C<Rat> are thereby declaring themselves to support common numeric operators
+`Numeric` is a mixin type, and any types composing it such as `Int` or
+`Rat` are thereby declaring themselves to support common numeric operators
 such as addition and multiplication.  A union type declared by a
-C<MixinType> is unlike one declared by a C<DomainType> in that the former
-is I<open> and the latter is I<closed>; any user-defined type can add
+`MixinType` is unlike one declared by a `DomainType` in that the former
+is *open* and the latter is *closed*; any user-defined type can add
 itself to the domain of even a system-defined mixin-type (such as
-C<Numeric>), whereas no type can add itself to the domain of a
-system-defined domain-type (such as C<Bool>).  A data type defined by a
-C<MixinType> is typically not considered to exist when the system wants to
+`Numeric`), whereas no type can add itself to the domain of a
+system-defined domain-type (such as `Bool`).  A data type defined by a
+`MixinType` is typically not considered to exist when the system wants to
 determine the MST (most specific type) of one of its values.
 
-A C<MixinType> has these 2 attributes:
+A `MixinType` has these 2 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the mixin type as a whole.
 
-* C<composed_mixins> - C<ComposedMixinSet>
+* `composed_mixins` - `ComposedMixinSet`
 
 These are the names of the 0..N other mixin types, if any, that the new
 mixin type composes.  Any other type that explicitly composes the new mixin
@@ -3679,17 +3679,17 @@ type will also implicitly compose all of the other mixin types that the new
 mixin type composes, recursively; note that a mixin type is forbidden from
 composing itself, directly or indirectly.
 
-The default value of C<MixinType> defines a mixin type has no comment and
+The default value of `MixinType` defines a mixin type has no comment and
 composes no other mixins and that in isolation has no default value.
 
 ## sys.std.Core.Type.Cat.ComposedMixinSet
 
-A C<ComposedMixinSet> is a C<DHRelation>.  It defines a set of names of
+A `ComposedMixinSet` is a `DHRelation`.  It defines a set of names of
 declared mixin data types which are being composed by another type, and for
 each it indicates whether the composing type is asserting that it will
-provide the default value of the mixin type.  A C<ComposedMixinSet> has 4
-attributes, C<type> (a C<RPTypeNC>), C<provides_its_default> (a C<Bool>),
-C<scm_comment> (a C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<type>
+provide the default value of the mixin type.  A `ComposedMixinSet` has 4
+attributes, `type` (a `RPTypeNC`), `provides_its_default` (a `Bool`),
+`scm_comment` (a `Comment`), and `scm_vis_ord` (a `NNInt`); the `type`
 is the declared name of the mixin type being composed, and comprises a
 unary key.  Its default value has zero tuples.
 
@@ -3698,9 +3698,9 @@ mixin's default; they can't be different; if you want different, declare a
 subtype of the value provider to be what composes the mixin.  No more than
 one visible type may declare provision of the default value for a mixin.
 If a system-defined type claims to provide a default for a mixin, no
-user-defined type ever can (see C<Ordered>, C<Ordinal>, C<Numeric>,
-C<Stringy>).  If a system-defined mixin exists that no system-defined type
-composes (see C<Instant>, C<Duration>) then exactly one user-defined type
+user-defined type ever can (see `Ordered`, `Ordinal`, `Numeric`,
+`Stringy`).  If a system-defined mixin exists that no system-defined type
+composes (see `Instant`, `Duration`) then exactly one user-defined type
 in a mounted depot may claim to provide its default, and that only affects
 code in that depot which asks for the default value of said types.  A
 user-defined mixin type can only be composed by user-defined types in the
@@ -3711,26 +3711,26 @@ explicitly claim to.
 
 ## sys.std.Core.Type.Cat.KeyConstr
 
-A C<KeyConstr> is a C<DHTuple>.  It specifies a candidate key or
+A `KeyConstr` is a `DHTuple`.  It specifies a candidate key or
 unique key constraint for a relation type.
 
-A C<KeyConstr> has these 3 attributes:
+A `KeyConstr` has these 3 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the key as a whole.
 
-* C<attrs> - C<set_of.Name>
+* `attrs` - `set_of.Name`
 
 This defines the 0..N host relation attributes comprising the key.  If
 this set is empty, then we have a nullary key which restricts the host
 relation to have a maximum of 1 tuple.
 
-* C<is_primary> - C<Bool>
+* `is_primary` - `Bool`
 
-This is C<Bool:True> if this key has been designated the I<primary key> of
+This is `Bool:True` if this key has been designated the *primary key* of
 the relation (a relation may have at most one, or none, of those); it
-is C<Bool:False> otherwise.  A primary key is privileged over candidate
+is `Bool:False` otherwise.  A primary key is privileged over candidate
 keys in general, in that all of the attributes comprising the primary key
 are likely to be treated as immutable in practice for the relation's
 tuples, and hence are the best candidates for identifying tuples within
@@ -3754,22 +3754,22 @@ implementations may require that any relation having an RVA must also
 have an explicit primary key, so it is easier for them to choose the key to
 automatically relate a split relation on.
 
-The default value of C<KeyConstr> defines a nullary key.
+The default value of `KeyConstr` defines a nullary key.
 
 ## sys.std.Core.Type.Cat.DistribKeyConstr
 
-A C<DistribKeyConstr> is a C<DHTuple>.  It specifies a candidate
+A `DistribKeyConstr` is a `DHTuple`.  It specifies a candidate
 distributed (unique) key constraint over relation-valued attributes of a
 tuple/database.
 
-A C<DistribKeyConstr> has these 4 attributes:
+A `DistribKeyConstr` has these 4 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the distributed (unique) key
 as a whole.
 
-* C<attrs> - C<set_of.Name>
+* `attrs` - `set_of.Name`
 
 This declares the 0..N attributes comprising the distributed (unique) key.
 If this set is empty, then we have a nullary key which restricts all of the
@@ -3777,25 +3777,25 @@ relations participating in the distributed key to have a maximum of 1
 tuple between them.  Note that the distributed key attribute names don't
 have to match the names of any participating relation attributes.
 
-* C<relations> - C<DKMemRelAttrMap>
+* `relations` - `DKMemRelAttrMap`
 
 This names the 0..N relation-valued attributes of the host
 tuple/database type that are participating in the distributed key, and
 says which of each of their attributes maps to the attributes of the
 distributed key itself.  If this set is empty, then the distributed key has
-no effect.  The unary projection of every tuple of the C<key_attr>
-attribute of C<relations> must be identical to C<attrs>.
+no effect.  The unary projection of every tuple of the `key_attr`
+attribute of `relations` must be identical to `attrs`.
 
-* C<is_primary> - C<Bool>
+* `is_primary` - `Bool`
 
-This has the same meaning as C<is_primary> of C<KeyConstr> but for being
+This has the same meaning as `is_primary` of `KeyConstr` but for being
 distributed as if the relations distributed over were one relation.
 
-The default value of C<DistribKeyConstr> has all-empty attributes.
+The default value of `DistribKeyConstr` has all-empty attributes.
 
 ## sys.std.Core.Type.Cat.SubsetConstr
 
-A C<SubsetConstr> is a C<DHTuple>.  It specifies a (non-distributed) subset
+A `SubsetConstr` is a `DHTuple`.  It specifies a (non-distributed) subset
 constraint (foreign key constraint) over relation-valued
 attributes of a tuple/database; a subset constraint
 is a kind of referential constraint, that relates tuples of such
@@ -3806,47 +3806,47 @@ latter.  Note that it is valid to define a subset constraint involving zero
 attributes, in which case the constraint is that the parent relation must
 have exactly one tuple when the child relation has at least one tuple.
 
-A C<SubsetConstr> has these 5 attributes:
+A `SubsetConstr` has these 5 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the subset constraint as a
 whole.
 
-* C<parent> - C<NameChain>
+* `parent` - `NameChain`
 
 This is the name of the relation-valued attribute that is the parent in the
 (non-distributed) subset constraint relationship.  But the attribute named
-by C<parent> is only a direct attribute of the host type if C<parent> has 1
+by `parent` is only a direct attribute of the host type if `parent` has 1
 chain element; if it has more, then the host type attribute is a
-tuple/database and any further elements serve to make C<parent> actually
+tuple/database and any further elements serve to make `parent` actually
 address a component of said.
 
-* C<parent_key> - C<RelPathMaterialNC>
+* `parent_key` - `RelPathMaterialNC`
 
 This matches the invocation name of the candidate key or unique key
-constraint of C<parent>, explicitly declared as a C<key-constraint>
-material, which defines the attributes of C<parent> that are
+constraint of `parent`, explicitly declared as a `key-constraint`
+material, which defines the attributes of `parent` that are
 being matched on in the subset constraint.
 
-* C<child> - C<NameChain>
+* `child` - `NameChain`
 
 This is the name of the relation-valued attribute that is the child in the
 (non-distributed) subset constraint relationship; its structure is as per
-C<parent>.  Note that C<child> and C<parent> are allowed to be one and the
+`parent`.  Note that `child` and `parent` are allowed to be one and the
 same.
 
-* C<attr_map> - C<SCChildAttrParentAttrMap>
+* `attr_map` - `SCChildAttrParentAttrMap`
 
 This maps 0..N attributes of the child relation with the same number of
 attributes of the parent relation; the mapped attribute names may or may
 not be the same.
 
-The default value of C<SubsetConstr> has all-empty attributes.
+The default value of `SubsetConstr` has all-empty attributes.
 
 ## sys.std.Core.Type.Cat.DistribSubsetConstr
 
-A C<DistribSubsetConstr> is a C<DHTuple>.  It specifies a distributed
+A `DistribSubsetConstr` is a `DHTuple`.  It specifies a distributed
 subset constraint (foreign key constraint) over relation-valued
 attributes of a tuple/database; a distributed subset constraint
 is a kind of referential constraint, that relates tuples of such
@@ -3859,228 +3859,228 @@ constraint involving zero attributes, in which case the constraint is that
 exactly one of the parent relations must have exactly one tuple when the
 child relation has at least one tuple.
 
-A C<DistribSubsetConstr> has these 4 attributes:
+A `DistribSubsetConstr` has these 4 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the subset constraint as a
 whole.
 
-* C<parent_distrib_key> - C<RelPathMaterialNC>
+* `parent_distrib_key` - `RelPathMaterialNC`
 
 This matches the invocation name of the distributed (unique) key,
-explicitly declared as a C<distrib-key-constraint> material, that
+explicitly declared as a `distrib-key-constraint` material, that
 is the parent in the distributed subset constraint relationship; it defines
 by proxy the attributes that are being matched on in the subset constraint.
-But the distributed key named by C<parent_distrib_key> may not be directly
+But the distributed key named by `parent_distrib_key` may not be directly
 declared by the host type of this subset constraint; it might be declared
 by the type of an attribute of the host type, if said attribute is a
-tuple/database; so the only or last C<parent_distrib_key> chain element is
+tuple/database; so the only or last `parent_distrib_key` chain element is
 a key name, and any preceeding names are attribute names.
 
-* C<child> - C<NameChain>
+* `child` - `NameChain`
 
 This is the name of the relation-valued attribute that is the child in the
 distributed subset constraint relationship.  But the attribute named by
-C<child> is only a direct attribute of the host type if C<child> has 1
+`child` is only a direct attribute of the host type if `child` has 1
 chain element; if it has more, then the host type attribute is a
-tuple/database and any further elements serve to make C<child> actually
+tuple/database and any further elements serve to make `child` actually
 address a component of said.
 
-* C<attr_map> - C<SCChildAttrParentAttrMap>
+* `attr_map` - `SCChildAttrParentAttrMap`
 
 This maps 0..N attributes of the child relation with the same number of
 attributes of the parent distributed key; the mapped attribute names may or
 may not be the same.
 
-The default value of C<DistribSubsetConstr> has all-empty attributes.
+The default value of `DistribSubsetConstr` has all-empty attributes.
 
 ## sys.std.Core.Type.Cat.DKMemRelAttrMap
 
-A C<DKMemRelAttrMap> is a C<DHRelation> that names the 0..N relation-valued
+A `DKMemRelAttrMap` is a `DHRelation` that names the 0..N relation-valued
 attributes of a host tuple/database type that are participating in a
 distributed key, and says which of each of their attributes maps to the
 attributes of the distributed key itself.
 
-A C<DKMemRelAttrMap> has these 3 attributes:
+A `DKMemRelAttrMap` has these 3 attributes:
 
-* C<rel_name> - C<NameChain>
+* `rel_name` - `NameChain`
 
 This is the name of the relation-valued attribute that is participating
-in the distributed key.  But the attribute named by C<rel_name> is only a
-direct attribute of the host type if C<rel_name> has 1 chain element; if it
+in the distributed key.  But the attribute named by `rel_name` is only a
+direct attribute of the host type if `rel_name` has 1 chain element; if it
 has more, then the host type attribute is a tuple/database and any
-further elements serve to make C<rel_name> actually address a component of
+further elements serve to make `rel_name` actually address a component of
 said.
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the participation.
 
-* C<attr_map> - C<DKRelAttrKeyAttrMap>
+* `attr_map` - `DKRelAttrKeyAttrMap`
 
 This maps 0..N attributes of the relation with the same number of
-attributes of the distributed key.  Every tuple of C<attr_map> must have an
-identical value for the unary projection on its C<key_attr> attribute; in
+attributes of the distributed key.  Every tuple of `attr_map` must have an
+identical value for the unary projection on its `key_attr` attribute; in
 other words, they must all map with the same distributed key attributes.
 
-A C<DKMemRelAttrMap> has a unary primary key on the C<rel_name> attribute.
+A `DKMemRelAttrMap` has a unary primary key on the `rel_name` attribute.
 Its default value is empty.
 
 ## sys.std.Core.Type.Cat.DKRelAttrKeyAttrMap
 
-A C<DKRelAttrKeyAttrMap> is a C<DHRelation>.  It maps 0..N attributes of a
+A `DKRelAttrKeyAttrMap` is a `DHRelation`.  It maps 0..N attributes of a
 relation-valued attribute of a host tuple/database type participating
 in a distributed key, to the same number of attributes of the distributed
-key itself.  A C<DKRelAttrKeyAttrMap> has 2 attributes, C<rel_attr> and
-C<key_attr>, each of those being a C<Name>, and each of those being a unary
+key itself.  A `DKRelAttrKeyAttrMap` has 2 attributes, `rel_attr` and
+`key_attr`, each of those being a `Name`, and each of those being a unary
 key.  Its default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.SCChildAttrParentAttrMap
 
-A C<SCChildAttrParentAttrMap> is a C<DHRelation>.  It maps 0..N attributes
+A `SCChildAttrParentAttrMap` is a `DHRelation`.  It maps 0..N attributes
 of a child relation-valued attribute of a host tuple/database type
 participating in a non-distributed or distributed subset constraint
 (foreign key), to the same number of attributes of a parent such attribute
-or a distributed key of the host.  A C<SCChildAttrParentAttrMap> has 2
-attributes, C<child_attr> and C<parent_attr>, each of those being a
-C<Name>, and each of those being a unary key.  Its default value has zero
+or a distributed key of the host.  A `SCChildAttrParentAttrMap` has 2
+attributes, `child_attr` and `parent_attr`, each of those being a
+`Name`, and each of those being a unary key.  Its default value has zero
 tuples.
 
 # TYPES FOR DEFINING STIMULUS-RESPONSE RULES
 
 ## sys.std.Core.Type.Cat.StimRespRule
 
-A C<StimRespRule> is a C<DHTuple>.  It defines a new stimulus-response rule
+A `StimRespRule` is a `DHTuple`.  It defines a new stimulus-response rule
 which invokes a procedure automatically in response to some
 stimulus; for now just the act of a depot being mounted is supported.
 
-A C<StimRespRule> has these 3 attributes:
+A `StimRespRule` has these 3 attributes:
 
-* C<scm_comment> - C<Comment>
+* `scm_comment` - `Comment`
 
 This is an optional programmer comment about the rule as a whole.
 
-* C<stimulus> - C<Name>
+* `stimulus` - `Name`
 
-This is always the value C<after-mount> for now.
+This is always the value `after-mount` for now.
 
-* C<response> - C<MaterialNC>
+* `response` - `MaterialNC`
 
 This is the name of the procedure being invoked.
 
-The default value of C<StimRespRule> defines a stimulus-response rule whose
-stimulus is C<after-mount> and whose response is an invocation of the
-procedure C<sys.std.Core.Cat.fail>.
+The default value of `StimRespRule` defines a stimulus-response rule whose
+stimulus is `after-mount` and whose response is an invocation of the
+procedure `sys.std.Core.Cat.fail`.
 
 # SIMPLE GENERIC NONSCALAR TYPES
 
 ## sys.std.Core.Type.Cat.D0
 
-A C<D0> is a C<Database>.  It has exactly zero attributes; it is a
-singleton type whose only value is also known as C<Tuple:D0>.  This exists
+A `D0` is a `Database`.  It has exactly zero attributes; it is a
+singleton type whose only value is also known as `Tuple:D0`.  This exists
 as a data type as a convenience for the definition of scalar singleton
 types, which would typically use this as the tuple type which their possrep
 is defined partially in terms of.
 
 ## sys.std.Core.Type.Cat.NameTypeMap
 
-A C<NameTypeMap> is a C<DHRelation>.  It defines a basic component list,
+A `NameTypeMap` is a `DHRelation`.  It defines a basic component list,
 meaning a set of names, with a declared data type name for each.  It forms
 the foundation for most componentized type definitions, including all
-tuple and relation types (for which it is named I<heading>), and it is
+tuple and relation types (for which it is named *heading*), and it is
 used also for the components list of a scalar possrep.  It is also used
-to define parameter lists for routines.  A C<NameTypeMap> has 4 attributes,
-C<name> (a C<Name>), C<type> (a C<RPTypeNC>), C<scm_comment> (a
-C<Comment>), and C<scm_vis_ord> (a C<NNInt>); the C<name> is the
+to define parameter lists for routines.  A `NameTypeMap` has 4 attributes,
+`name` (a `Name`), `type` (a `RPTypeNC`), `scm_comment` (a
+`Comment`), and `scm_vis_ord` (a `NNInt`); the `name` is the
 declared name of the attribute or parameter, and comprises a unary key; the
-C<type> is the declared data type of the attribute or parameter.  Its
+`type` is the declared data type of the attribute or parameter.  Its
 default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.NameExprMap
 
-A C<NameExprMap> is a C<DHRelation>.  It defines a basic component-values
+A `NameExprMap` is a `DHRelation`.  It defines a basic component-values
 list, meaning a set of names, with a declared local expression node (or
 parameter) name for each.  It is used to define collection literals; one
-C<NameExprMap> defines a whole C<Tuple> value.  It is also used to define
+`NameExprMap` defines a whole `Tuple` value.  It is also used to define
 argument lists for routine invocations.
-A C<NameExprMap> has 3 attributes, C<name> and C<expr>, each of those being
-a C<Name>, and C<scm_vis_ord> (a C<NNInt>); the C<name> is the name of the
+A `NameExprMap` has 3 attributes, `name` and `expr`, each of those being
+a `Name`, and `scm_vis_ord` (a `NNInt`); the `name` is the name of the
 tuple/etc attribute or routine argument, and comprises a unary key; the
-C<expr> is the declared lexical name of the expression node (or parameter
+`expr` is the declared lexical name of the expression node (or parameter
 or variable) which defines the value for the attribute or argument.  Its
 default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.NameNCMap
 
-A C<NameNCMap> is a C<DHRelation>.  It defines an association of a short
+A `NameNCMap` is a `DHRelation`.  It defines an association of a short
 name with a name chain, to be used for aliasing the latter with the former
-in a particular context.  A C<NameNCMap> has 3 attributes, C<name> (a
-C<Name>), C<nc> (a C<NameChain>), and C<scm_vis_ord> (a C<NNInt>); each of
+in a particular context.  A `NameNCMap` has 3 attributes, `name` (a
+`Name`), `nc` (a `NameChain`), and `scm_vis_ord` (a `NNInt`); each of
 those is a unary key.  Its default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.AttrRenameMap
 
-An C<AttrRenameMap> is a C<DHRelation>.  It is used as a specification for
-how to rename attributes of some collection.  An C<AttrRenameMap> has 3
-attributes, C<after> and C<before>, each of those being a C<Name>, and each
-of those being a unary key; the 3rd attribute is C<scm_vis_ord> (a
-C<NNInt>).  Its default value has zero tuples.
+An `AttrRenameMap` is a `DHRelation`.  It is used as a specification for
+how to rename attributes of some collection.  An `AttrRenameMap` has 3
+attributes, `after` and `before`, each of those being a `Name`, and each
+of those being a unary key; the 3rd attribute is `scm_vis_ord` (a
+`NNInt`).  Its default value has zero tuples.
 
 ## sys.std.Core.Type.Cat.OrderByName
 
-An C<OrderByName> is a C<DHTuple>.  It defines an element of an order-by
+An `OrderByName` is a `DHTuple`.  It defines an element of an order-by
 sequential expression, which is a specification for how to order tuples of
 a relation in terms of a list of their attributes to order on.  An
-C<OrderByName> has 2 attributes, C<name> (a C<Name>) and
-C<is_reverse_order> (a C<Bool>).  Its default value has the default value
-of the C<Name> and C<Bool> types for their respective attributes.  I<Maybe
-TODO:  Make C<name> a C<PNSQNameChain> instead to drill into TVAs or SVAs.>
+`OrderByName` has 2 attributes, `name` (a `Name`) and
+`is_reverse_order` (a `Bool`).  Its default value has the default value
+of the `Name` and `Bool` types for their respective attributes.  I<Maybe
+TODO:  Make `name` a `PNSQNameChain` instead to drill into TVAs or SVAs.>
 
 # TYPES FOR POSSIBLY PRIMED HIGHER-ORDER FUNCTIONS
 
 ## sys.std.Core.Type.Cat.PrimedFuncNC
 
-A C<PrimedFuncNC> is a (not necessarily deeply homogeneous) C<Tuple>.  It
-is conceptually a I<primed higher-order function>, that is, an
-C<APFunctionNC> referencing a function plus a set of zero or more arguments
+A `PrimedFuncNC` is a (not necessarily deeply homogeneous) `Tuple`.  It
+is conceptually a *primed higher-order function*, that is, an
+`APFunctionNC` referencing a function plus a set of zero or more arguments
 to pre-bind to a same-degree subset of that function's read-only
 parameters, such that the effective higher-order-function which this
 references has appropriately fewer parameters remaining to bind to when it
-is actually invoked.  A C<PrimedFuncNC> has 2 attributes, C<function> (an
-C<APFunctionNC>) and C<args> (a C<Tuple>); C<function> names the actual
-function to invoke, and C<args> names any arguments to pre-bind to its
-parameters.  Whether or not its C<args> has any attributes that are not
-deeply homogeneous is the sole determinant of whether a C<PrimedFuncNC> is
-a C<DHTuple> rather than just a C<Tuple>.  Its default value is a reference
-to the C<sys.std.Core.Universal.is_same> function with no pre-bound
+is actually invoked.  A `PrimedFuncNC` has 2 attributes, `function` (an
+`APFunctionNC`) and `args` (a `Tuple`); `function` names the actual
+function to invoke, and `args` names any arguments to pre-bind to its
+parameters.  Whether or not its `args` has any attributes that are not
+deeply homogeneous is the sole determinant of whether a `PrimedFuncNC` is
+a `DHTuple` rather than just a `Tuple`.  Its default value is a reference
+to the `sys.std.Core.Universal.is_same` function with no pre-bound
 parameters.
 
 ## sys.std.Core.Type.Cat.ValMapPFuncNC
 
-C<ValMapPFuncNC> is a non-proper subtype of C<PrimedFuncNC> that is
-conceptually a reference to a C<value-map> function.  Its default value is
-a reference to the C<sys.std.Core.Cat.map_to_topic> function.
+`ValMapPFuncNC` is a non-proper subtype of `PrimedFuncNC` that is
+conceptually a reference to a `value-map` function.  Its default value is
+a reference to the `sys.std.Core.Cat.map_to_topic` function.
 
 ## sys.std.Core.Type.Cat.ValFiltPFuncNC
 
-C<ValFiltPFuncNC> is a non-proper subtype of C<ValMapPFuncNC> that is
-conceptually a reference to a C<value-filter> function.  Its default value
-is a reference to the C<sys.std.Core.Cat.pass_topic> function.
+`ValFiltPFuncNC` is a non-proper subtype of `ValMapPFuncNC` that is
+conceptually a reference to a `value-filter` function.  Its default value
+is a reference to the `sys.std.Core.Cat.pass_topic` function.
 
 ## sys.std.Core.Type.Cat.ValRedPFuncNC
 
-C<ValRedPFuncNC> is a non-proper subtype of C<PrimedFuncNC> that is
-conceptually a reference to a C<value-reduction> function.  Its default
-value is a reference to the C<sys.std.Core.Cat.reduce_to_v1> function.
+`ValRedPFuncNC` is a non-proper subtype of `PrimedFuncNC` that is
+conceptually a reference to a `value-reduction` function.  Its default
+value is a reference to the `sys.std.Core.Cat.reduce_to_v1` function.
 
 ## sys.std.Core.Type.Cat.OrdDetPFuncNC
 
-C<OrdDetPFuncNC> is a non-proper subtype of C<PrimedFuncNC> that is
-conceptually a reference to an C<order-determination> function.  Its
-default value is a reference to the C<sys.std.Core.Ordered.order> function.
+`OrdDetPFuncNC` is a non-proper subtype of `PrimedFuncNC` that is
+conceptually a reference to an `order-determination` function.  Its
+default value is a reference to the `sys.std.Core.Ordered.order` function.
 This type is conceptually intended for use as the declared type of a
-routine parameter that would take the name of an C<order-determination>
+routine parameter that would take the name of an `order-determination`
 function, but that parameter is optional and should default to the
 system-defined scalar ordering function when no argument is given to it.
 
@@ -4088,12 +4088,12 @@ system-defined scalar ordering function when no argument is given to it.
 
 ## sys.std.Core.Type.Cat.Exception
 
-C<Exception> is a singleton scalar type whose only value represents a
+`Exception` is a singleton scalar type whose only value represents a
 generic thrown exception.  This type doesn't provide any means for a
-I<catch> routine to introspect details about the exception, such as what
+*catch* routine to introspect details about the exception, such as what
 kind of exception it was, but rather simply says that something happened
 which resulted in a Muldis D routine abnormally exiting.  Therefore, the
-C<Exception> type is subject to be rewritten so it can carry the various
+`Exception` type is subject to be rewritten so it can carry the various
 metadata that exceptions of typical programming languages can.  But in the
 meantime, this singleton type affords Muldis D with completely functional
 basic exception handling in that exceptions can be thrown and can be
@@ -4102,7 +4102,7 @@ immediate attention to problems can be supported now.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

@@ -28,9 +28,9 @@ developers were negligent in updating it before this one.
 
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
-C<Muldis_D:"https://muldis.com":0.148.1>.  It is the official/original (not
+`Muldis_D:"https://muldis.com":0.148.1`.  It is the official/original (not
 embraced and extended) Muldis D language specification by the authority
-Muldis Data Systems (C<https://muldis.com>), version C<0.148.1> (this number
+Muldis Data Systems (`https://muldis.com`), version `0.148.1` (this number
 matches the VERSION pod in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
 versions of it will exist over time, some of those under the original
@@ -55,12 +55,12 @@ Muldis D quality because such a quality belongs to an implementation alone;
 however, the language should lend itself to making fast implementations.)
 
 Muldis D is intended to qualify as a "B<D>" language as defined by
-"I<Databases, Types, and The Relational Model: The Third Manifesto>"
-(I<TTM>), a formal proposal for a solid foundation for data and database
+"*Databases, Types, and The Relational Model: The Third Manifesto*"
+(*TTM*), a formal proposal for a solid foundation for data and database
 management systems, written by Chris Date (C.J. Date) and Hugh Darwen; see
 <http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>
-for a publishers link to the book that formally publishes I<TTM>.  See
-<http://www.thethirdmanifesto.com/> for some references to what I<TTM> is,
+for a publishers link to the book that formally publishes *TTM*.  See
+<http://www.thethirdmanifesto.com/> for some references to what *TTM* is,
 and also copies of some documents that were used in writing Muldis D.
 
 It should be noted that Muldis D, being quite new, may omit some features
@@ -135,7 +135,7 @@ dependent on the language variant itself, but it should be kept as simple
 to write and use as is possible for the medium of that variant.
 
 Generally speaking, every Muldis D variant belongs to one of just 2
-groups, which are I<non-hosted plain-text> and I<hosted data>.
+groups, which are *non-hosted plain-text* and *hosted data*.
 
 With all non-hosted plain-text variants, the Muldis D code is represented
 by an (ordered) string/sequence of characters like with most normal
@@ -158,7 +158,7 @@ D code is written here by way of writing code in the host language.
 ## Base Name
 
 The first element of the Muldis D language name is simply the character
-string C<Muldis_D>.  Any language which wants to claim to be a variant of
+string `Muldis_D`.  Any language which wants to claim to be a variant of
 Muldis D should have this exact first element; only have some other value
 if you don't want to claim a connection to Muldis D at all, and in that
 case feel free to just ignore everything else in this multi-document.
@@ -179,14 +179,14 @@ follow the formats that are valid as authority strings for the long names
 of Raku packages, such as a CPAN identifier or an http url.
 
 For the official/original Muldis D language spec by Muldis Data Systems,
-Inc., that string is always C<https://muldis.com> during the foreseeable
+Inc., that string is always `https://muldis.com` during the foreseeable
 future.
 
-If someone else wants to I<embrace and extend> Muldis D, then they must use
-their own (not C<https://muldis.com>) base authority identifier, to prevent
+If someone else wants to *embrace and extend* Muldis D, then they must use
+their own (not `https://muldis.com`) base authority identifier, to prevent
 ambiguity, assist quality control, and give due credit.
 
-In this context, I<embrace and extend> means for someone to do any of the
+In this context, *embrace and extend* means for someone to do any of the
 following:
 
 * Releasing a modified version of this current multi-document where the
@@ -199,12 +199,12 @@ following a change of who is the official maintainer.
 * Releasing a delta document for a version of this current multi-document
 where the referenced original is released by someone else, and where the
 delta either makes incompatible changes or adds DBMS entities in the
-C<sys.std> top-level namespace (as opposed to in C<sys.imp>).
+`sys.std` top-level namespace (as opposed to in `sys.imp`).
 
 ## Base Version Number
 
 The third element of the Muldis D language name, at the very least when the
-base authority is C<https://muldis.com>, is a multi-part base version
+base authority is `https://muldis.com`, is a multi-part base version
 number, which identifies the base language spec version between all those
 by the same authority, typically indicating the relative ages of the
 versions, the relative sizes of their deltas, and perhaps which development
@@ -219,7 +219,7 @@ corresponding to the spec containing that file.
 ## Dialect
 
 The fourth element of the Muldis D language name, at the very least when
-the base authority is C<https://muldis.com>, uniquely identifies which
+the base authority is `https://muldis.com`, uniquely identifies which
 Muldis D language primary dialect the Muldis D code (that this
 fully-qualified language name is metadata for) is formatted in; for
 example this may be one of several non-hosted plain-text variants, or one

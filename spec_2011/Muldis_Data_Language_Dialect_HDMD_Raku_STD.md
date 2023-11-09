@@ -14,12 +14,12 @@ before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document outlines the grammar of the I<Hosted Data Muldis D> standard
-dialect named C<HDMD_Raku_STD>.  The fully-qualified name of this Muldis D
-standard dialect is C<[ 'Muldis_D', 'https://muldis.com', '0.148.1',
-'HDMD_Raku_STD' ]>.
+This document outlines the grammar of the *Hosted Data Muldis D* standard
+dialect named `HDMD_Raku_STD`.  The fully-qualified name of this Muldis D
+standard dialect is `[ 'Muldis_D', 'https://muldis.com', '0.148.1',
+'HDMD_Raku_STD' ]`.
 
-The C<HDMD_Raku_STD> dialect is defined to be hosted in Raku, and is
+The `HDMD_Raku_STD` dialect is defined to be hosted in Raku, and is
 composed of just|mainly core Raku types.  This dialect is optimized for
 Raku specifically, and doesn't try to match the version for Perl; you
 *will* have to reformat any Perl Hosted Data Muldis D when migrating
@@ -33,29 +33,29 @@ exists as a convenience to Raku programmers that want to generate or
 introspect Muldis D code by saving them the difficulty and overhead of
 escaping and stitching plain text code; it is expected that a Muldis D
 implementation written in Raku will natively accept input in both the
-C<PTMD_STD> and C<HDMD_Raku_STD> dialects.  Furthermore, the
-C<HDMD_Raku_STD> dialect provides additional Muldis D syntax options to
-Raku programmers besides what C<PTMD_STD> would canonically parse into,
+`PTMD_STD` and `HDMD_Raku_STD` dialects.  Furthermore, the
+`HDMD_Raku_STD` dialect provides additional Muldis D syntax options to
+Raku programmers besides what `PTMD_STD` would canonically parse into,
 such as the direct use of some Raku-only features.
 
 B<Note that most of the details that the 2 dialects have in common are
-described just in the C<PTMD_STD> file, for both dialects; this current
+described just in the `PTMD_STD` file, for both dialects; this current
 file will mainly focus on the differences; you should read the
 [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
 a context for better understanding it.>
 
 # GENERAL STRUCTURE
 
-A C<HDMD_Raku_STD> Muldis D code file is actually a Raku code file that
+A `HDMD_Raku_STD` Muldis D code file is actually a Raku code file that
 defines particular multi-dimensional Raku data structures which resemble
-possible concrete syntax trees (CSTs) from parsing C<PTMD_STD> Muldis D
-code.  Each component of a CST is called a I<node> or node element, and
-roughly corresponds to a capture by the C<PTMD_STD> parser.  A node is
+possible concrete syntax trees (CSTs) from parsing `PTMD_STD` Muldis D
+code.  Each component of a CST is called a *node* or node element, and
+roughly corresponds to a capture by the `PTMD_STD` parser.  A node is
 typically represened as a Raku Seq|Array, but could alternately be a Raku
-scalar or something else, and so C<HDMD_Raku_STD> Muldis D code is
-typically a tree of Raku structures, called I<node trees>, with Raku
+scalar or something else, and so `HDMD_Raku_STD` Muldis D code is
+typically a tree of Raku structures, called *node trees*, with Raku
 Seq|Array as the central nodes and Raku scalars as the leaf nodes.  Often
-C<HDMD_Raku_STD> code is embedded or constructed in one or more files of
+`HDMD_Raku_STD` code is embedded or constructed in one or more files of
 a larger Raku program that does more than define this code, such as
 various non-database-related tasks.  A node tree is just composed using
 basic Raku data types, and there are no Muldis D node-specific Raku classes
@@ -68,19 +68,19 @@ undef will result in an error.  The few exceptions to this rule are
 explicitly stated.
 
 The grammar in this file is informal and consists just of written
-descriptions of how each kind of I<node> must be composed and how to
+descriptions of how each kind of *node* must be composed and how to
 interpret such Raku data structures as Muldis D code.  Every named grammar
 node is a Raku Seq|Array unless otherwise stated, and every grammar element
 is a Seq|Array element; the first node element is the Seq|Array element at
 index zero, and so on.
 
-The root grammar node for the entire dialect is C<Muldis_D>.
+The root grammar node for the entire dialect is `Muldis_D`.
 
 # START
 
-A C<Muldis_D> node has 2 ordered elements where the first element is a
-C<language_name> node and the second element is either a C<value> node or a
-C<depot> node.
+A `Muldis_D` node has 2 ordered elements where the first element is a
+`language_name` node and the second element is either a `value` node or a
+`depot` node.
 
 See the pod sections in this file named **LANGUAGE NAME**, **VALUE
 LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
@@ -89,63 +89,63 @@ about the aforementioned tokens/nodes.
 When Muldis D is being compiled and invoked piecemeal, such as because the
 Muldis D implementing virtual machine (VM) is attached to an interactive
 user terminal, or the VM is embedded in a host language where code in the
-host language invokes Muldis D code at various times, many C<value> may be
+host language invokes Muldis D code at various times, many `value` may be
 fed to the VM directly for inter-language exchange, and not every one
-would then have its own C<language_name>.  Usually a C<language_name> would
+would then have its own `language_name`.  Usually a `language_name` would
 be supplied to the Muldis D VM just once as a VM configuration step, which
 provides a context for further interaction with the VM that just involves
-Muldis D code that isn't itself qualified with a C<language_name>.
+Muldis D code that isn't itself qualified with a `language_name`.
 
 # LANGUAGE NAME
 
 As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
-written in.  The C<HDMD_Raku_STD> dialect formats this name as a
-C<language_name> node having 5 ordered elements:
+written in.  The `HDMD_Raku_STD` dialect formats this name as a
+`language_name` node having 5 ordered elements:
 
-* C<ln_base_name>
+* `ln_base_name`
 
-This is the Muldis D language base name; it is simply the Raku C<Str> value
-C<Muldis_D>.
+This is the Muldis D language base name; it is simply the Raku `Str` value
+`Muldis_D`.
 
-* C<ln_base_authority>
+* `ln_base_authority`
 
-This is the base authority; it is a Raku C<Str> formatted as per a
-specific-context C<Name> value literal, except that must be nonempty and it
+This is the base authority; it is a Raku `Str` formatted as per a
+specific-context `Name` value literal, except that must be nonempty and it
 is expressly limited to using non-control characters in the ASCII
-repertoire; it is typically the Raku C<Str> value C<https://muldis.com>.
+repertoire; it is typically the Raku `Str` value `https://muldis.com`.
 
-* C<ln_base_version_number>
+* `ln_base_version_number`
 
-This is the base version number; it is a Raku C<Str> formatted as per
-C<ln_base_authority>; it is typically a Raku C<Str> value like C<0.148.1>.
+This is the base version number; it is a Raku `Str` formatted as per
+`ln_base_authority`; it is typically a Raku `Str` value like `0.148.1`.
 
-* C<ln_dialect>
+* `ln_dialect`
 
-This is the dialect name; it is simply the Raku C<Str> value
-C<HDMD_Raku_STD>.
+This is the dialect name; it is simply the Raku `Str` value
+`HDMD_Raku_STD`.
 
-* C<ln_extensions>
+* `ln_extensions`
 
 This is a set of chosen pragma/parser-config options, which is formatted
-similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
-C<catalog_abstraction_level> (see the **CATALOG ABSTRACTION LEVELS** pod
-section) and C<op_char_repertoire> (see **OPERATOR CHARACTER REPERTOIRE**).
-The only optional pragma is C<standard_syntax_extensions> (see the
+similarly to a `Tuple` SCVL.  The only 2 mandatory pragmas are
+`catalog_abstraction_level` (see the **CATALOG ABSTRACTION LEVELS** pod
+section) and `op_char_repertoire` (see **OPERATOR CHARACTER REPERTOIRE**).
+The only optional pragma is `standard_syntax_extensions` (see the
 **STANDARD SYNTAX EXTENSIONS** pod section).  Other pragmas may be added
 later, which would likely be optional.
 
-The value associated with the C<ln_extensions> attribute named
-C<catalog_abstraction_level> must be one of these 4 Raku C<Str> values:
-C<the_floor>, C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.
+The value associated with the `ln_extensions` attribute named
+`catalog_abstraction_level` must be one of these 4 Raku `Str` values:
+`the_floor`, `code_as_data`, `plain_rtn_inv`, `rtn_inv_alt_syn`.
 
-The value associated with the C<ln_extensions> attribute named
-C<op_char_repertoire> must be one of these 2 Raku character strings:
-C<basic>, C<extended>.
+The value associated with the `ln_extensions` attribute named
+`op_char_repertoire` must be one of these 2 Raku character strings:
+`basic`, `extended`.
 
-The value associated with the C<ln_extensions> attribute named
-C<standard_syntax_extensions> must be formatted similarly to a C<Set> SCVL;
-each of the value's elements must be one of these 0 Raku C<Str> values.
+The value associated with the `ln_extensions` attribute named
+`standard_syntax_extensions` must be formatted similarly to a `Set` SCVL;
+each of the value's elements must be one of these 0 Raku `Str` values.
 
 Examples:
 
@@ -162,7 +162,7 @@ Examples:
 
 # CATALOG ABSTRACTION LEVELS
 
-The C<catalog_abstraction_level> pragma determines with a broad granularity
+The `catalog_abstraction_level` pragma determines with a broad granularity
 how large the effective Muldis D grammar is that a programmer may employ
 with their Muldis D code.
 
@@ -175,11 +175,11 @@ complicated the Muldis D grammar is and the more like
 general-purpose-language typical code it is.
 
 There are currently 4 specified catalog abstraction levels, which when
-arranged from lowest to highest amount of abstraction, are: C<the_floor>,
-C<code_as_data>, C<plain_rtn_inv>, C<rtn_inv_alt_syn>.  Every abstraction
+arranged from lowest to highest amount of abstraction, are: `the_floor`,
+`code_as_data`, `plain_rtn_inv`, `rtn_inv_alt_syn`.  Every abstraction
 level has a proper superset of the grammar of every other abstraction level
 that is lower than itself, so for example any code that is valid
-C<code_as_data> is also valid C<plain_rtn_inv>, and so on.
+`code_as_data` is also valid `plain_rtn_inv`, and so on.
 
 ## the_floor
 
@@ -242,7 +242,7 @@ Examples:
 This abstraction level is the best one for when you want to write code in
 exactly the same form as it would take in the system catalog.
 
-Code written to the C<code_as_data> level can employ all of the language
+Code written to the `code_as_data` level can employ all of the language
 grammar constructs described in these main pod sections: **VALUE LITERALS
 AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 
@@ -299,8 +299,8 @@ Examples:
 This abstraction level is the lowest one that can be recommended for
 general use.
 
-Code written to the C<plain_rtn_inv> level can employ all of the language
-grammar constructs that C<code_as_data> can, plus all of those
+Code written to the `plain_rtn_inv` level can employ all of the language
+grammar constructs that `code_as_data` can, plus all of those
 described in these main pod sections: **MATERIAL SPECIFICATION**,
 **GENERIC VALUE EXPRESSIONS**, **GENERIC PROCEDURE STATEMENTS**.
 
@@ -321,18 +321,18 @@ Examples:
 
 ## DEPRECATED - rtn_inv_alt_syn
 
-B<The C<rtn_inv_alt_syn> catalog abstraction level as it currently exists
+B<The `rtn_inv_alt_syn` catalog abstraction level as it currently exists
 is deprecated and will disappear in the near future.  Other pending
 enhancements to the language in both the system catalog itself and in the
-C<plain_rtn_inv> level will make the latter more capable and suitable by
+`plain_rtn_inv` level will make the latter more capable and suitable by
 itself for normal use.  A new highest level or 3 will probably appear in
-place of C<rtn_inv_alt_syn> later for their still-unique useful features.>
+place of `rtn_inv_alt_syn` later for their still-unique useful features.>
 
 This abstraction level is the highest one and is the most recommended one
 for general use.
 
-Code written to the C<rtn_inv_alt_syn> level can employ all of the language
-grammar constructs that C<plain_rtn_inv> can, plus all of those described
+Code written to the `rtn_inv_alt_syn` level can employ all of the language
+grammar constructs that `plain_rtn_inv` can, plus all of those described
 in these main pod sections: **DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
 EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**.
 
@@ -352,23 +352,23 @@ Examples:
 
 # OPERATOR CHARACTER REPERTOIRE
 
-The C<op_char_repertoire> pragma determines primarily whether or not the
-various routine invocation alternate syntaxes, herein called I<operators>,
+The `op_char_repertoire` pragma determines primarily whether or not the
+various routine invocation alternate syntaxes, herein called *operators*,
 may be composed of only ASCII characters or also other Unicode characters,
 and this pragma determines secondarily whether or not a few special value
 literals (effectively nullary operators) composed of non-ASCII Unicode
 characters may exist.
 
-There are currently 2 specified operator character repertoires: C<basic>,
-C<extended>.  The latter is a proper superset of the former.
+There are currently 2 specified operator character repertoires: `basic`,
+`extended`.  The latter is a proper superset of the former.
 
-Specifying the C<op_char_repertoire> pragma in a C<language_name> node is
+Specifying the `op_char_repertoire` pragma in a `language_name` node is
 mandatory, since there is no obviously best setting to use implicitly when
 one isn't specified.
 
 ## basic
 
-The C<basic> operator character repertoire is the smallest one, and it only
+The `basic` operator character repertoire is the smallest one, and it only
 supports writing the proper subset of defined operator invocations and
 special value literals that are composed of just 7-bit ASCII characters.
 This repertoire can be recommended for general use, especially since code
@@ -378,7 +378,7 @@ Muldis D implementations and older text editors.
 
 ## extended
 
-The C<extended> operator character repertoire is the largest one, and it
+The `extended` operator character repertoire is the largest one, and it
 supports the entire set of defined operator invocations and special value
 literals, many of which are composed of Unicode characters outside the
 7-bit ASCII repertoire.  This is the most recommended repertoire for
@@ -387,100 +387,100 @@ text editors you want to use support it.
 
 # STANDARD SYNTAX EXTENSIONS
 
-The C<standard_syntax_extensions> pragma declares which optional portions
+The `standard_syntax_extensions` pragma declares which optional portions
 of the Muldis D grammar a programmer may employ with their Muldis D code.
 
 There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
-While each I<standard syntax extension> is closely related to a I<Muldis D
-language extension>, you can use the latter's types and routines without
-declaring the former; you only declare you are using a I<standard syntax
-extension> if you want the Muldis D parser to recognize special syntax
+While each *standard syntax extension* is closely related to a *Muldis D
+language extension*, you can use the latter's types and routines without
+declaring the former; you only declare you are using a *standard syntax
+extension* if you want the Muldis D parser to recognize special syntax
 specific to those types and routines, and otherwise you just use them using
 the generic syntax provided for all types and routines.
 
-The C<standard_syntax_extensions> pragma is generally orthogonal to the
-C<catalog_abstraction_level> pragma, so you can combine any value of the
+The `standard_syntax_extensions` pragma is generally orthogonal to the
+`catalog_abstraction_level` pragma, so you can combine any value of the
 latter with any value-list of the former.  However, in practice all
 standard syntax extensions will have no effect when the catalog abstraction
-level is C<the_floor>, and some of their features may only take effect when
-the catalog abstraction level is C<rtn_inv_alt_syn>, as is appropriate.
+level is `the_floor`, and some of their features may only take effect when
+the catalog abstraction level is `rtn_inv_alt_syn`, as is appropriate.
 
-Specifying the C<standard_syntax_extensions> pragma in a C<language_name>
+Specifying the `standard_syntax_extensions` pragma in a `language_name`
 node is optional, and when omitted it defaults to the empty set, meaning no
 extensions may be used.
 
 # VALUE LITERALS AND SELECTORS
 
-A C<value> node is a Muldis D value literal, which is a common special case
+A `value` node is a Muldis D value literal, which is a common special case
 of a Muldis D value selector.
 
-There are 23 main varieties of C<value> node, each of which is a named node
-kind of its own:  C<Singleton>, C<Bool>, C<Order>, C<RoundMeth>, C<Int>,
-C<Rat>, C<Blob>, C<Text>, C<Name>, C<NameChain>, C<PNSQNameChain>,
-C<RatRoundRule>, C<Scalar>, C<Tuple>, C<Database>, C<Relation>,
-C<Set>, C<Maybe>, C<Array>, C<Bag>, C<[S|M]PInterval>, C<List>.
+There are 23 main varieties of `value` node, each of which is a named node
+kind of its own:  `Singleton`, `Bool`, `Order`, `RoundMeth`, `Int`,
+`Rat`, `Blob`, `Text`, `Name`, `NameChain`, `PNSQNameChain`,
+`RatRoundRule`, `Scalar`, `Tuple`, `Database`, `Relation`,
+`Set`, `Maybe`, `Array`, `Bag`, `[S|M]PInterval`, `List`.
 
 Fundamentally, the various Muldis D scalar and collection types are
 represented by their equivalent Raku native scalar and collection types.
 But since Muldis D is more strongly typed, or at least differently typed,
-than Raku, each C<value> node is represented by a Raku Seq|Array, whose
+than Raku, each `value` node is represented by a Raku Seq|Array, whose
 elements include both the payload Raku literal plus explicit metadata for
 how to interpret that Raku literal for mapping to Muldis D.
 
 ## Value Literal Common Elements
 
-Every C<value> node is either a GCVL (generic context value literal) or a
+Every `value` node is either a GCVL (generic context value literal) or a
 SCVL (specific context value literal).
 
 Every GCVL has 1-3 ordered elements:
 
-* C<value_kind>
+* `value_kind`
 
-This is a Raku C<Str> value of the format
+This is a Raku `Str` value of the format
 `<[A..Z]> <[ a..z A..Z ]>+ | '$'|'%'|'@'`;
 it identifies the data type of the value literal in broad terms and is the
-only external metadata of C<value_payload> generally necessary to
-interpret the latter; what grammars are valid for C<value_payload> depend
-just on C<value_kind>.
+only external metadata of `value_payload` generally necessary to
+interpret the latter; what grammars are valid for `value_payload` depend
+just on `value_kind`.
 
-Between the various kinds of C<value> node, these 42 values are allowed for
-C<value_kind>:  C<Singleton>, C<Bool>, C<Order>, C<RoundMeth>,
-C<[|NN|P]Int>, C<[|NN|P]Rat>, C<[|Octet]Blob>, C<Text>, C<Name>,
-C<[|PNSQ]NameChain>, C<RatRoundRule>, C<[|DH]Scalar|$>,
-C<[|DH]Tuple|%>, C<Database>, C<[|DH]Relation|@>, C<[|DH]Set>,
-C<[|DH][Maybe|Just]>, C<[|DH]Array>, C<[|DH]Bag>, C<[|DH][S|M]PInterval>,
-C<List>.
+Between the various kinds of `value` node, these 42 values are allowed for
+`value_kind`:  `Singleton`, `Bool`, `Order`, `RoundMeth`,
+`[|NN|P]Int`, `[|NN|P]Rat`, `[|Octet]Blob`, `Text`, `Name`,
+`[|PNSQ]NameChain`, `RatRoundRule`, `[|DH]Scalar|$`,
+`[|DH]Tuple|%`, `Database`, `[|DH]Relation|@`, `[|DH]Set`,
+`[|DH][Maybe|Just]`, `[|DH]Array`, `[|DH]Bag`, `[|DH][S|M]PInterval`,
+`List`.
 
-For just some data types, the C<value_kind> may be omitted; see below.
+For just some data types, the `value_kind` may be omitted; see below.
 
-* C<type_name>
+* `type_name`
 
-Only when the C<value> node has 3 elements:  This is a Muldis D data type
-name, for example C<sys.std.Core.Type.Int>; it identifies a specific
-subtype of the generic type denoted by C<value_kind>, and serves as an
-assertion that the Muldis D value denoted by C<value_payload> is a member
-of the named subtype.  Its format is a C<PNSQNameChain_payload> node.  Iff
-C<value_kind> is C<[|DH]Scalar> then C<type_name> is mandatory; otherwise,
-C<type_name> is optional for all C<value>, except that C<type_name> must be
-omitted when C<value_kind> is one of the 3 [C<Singleton>, C<Bool>,
-C<Order>]; this isn't because those 3 types can't be subtyped, but because
+Only when the `value` node has 3 elements:  This is a Muldis D data type
+name, for example `sys.std.Core.Type.Int`; it identifies a specific
+subtype of the generic type denoted by `value_kind`, and serves as an
+assertion that the Muldis D value denoted by `value_payload` is a member
+of the named subtype.  Its format is a `PNSQNameChain_payload` node.  Iff
+`value_kind` is `[|DH]Scalar` then `type_name` is mandatory; otherwise,
+`type_name` is optional for all `value`, except that `type_name` must be
+omitted when `value_kind` is one of the 3 [`Singleton`, `Bool`,
+`Order`]; this isn't because those 3 types can't be subtyped, but because
 in practice doing so isn't useful.
 
-* C<value_payload>
+* `value_payload`
 
-This is mandatory for all C<value>.  Format varies with C<value_kind>.
+This is mandatory for all `value`.  Format varies with `value_kind`.
 
 A Raku Pair may alternately be used to represent a GCVL iff that node has
-exactly 2 elements (C<value_kind> and C<value_payload>); in that case, the
-C<value_kind> is stored in that Pair's key, and the C<value_payload> is
+exactly 2 elements (`value_kind` and `value_payload`); in that case, the
+`value_kind` is stored in that Pair's key, and the `value_payload` is
 stored in the Pair's value.
 
 For some data types, a GCVL may alternately be just its payload for the
 sake of brevity.  If any Raku value of one of the following types is
 encountered where a GCVL node is expected, then it is interpreted as a full
-C<value> node as follows:
+`value` node as follows:
 
     Muldis D   <- Raku
     ----------------------------
@@ -505,9 +505,9 @@ For GCVL and SCVL examples, see the subsequent documentation sections.
 
 ## Singleton Literals
 
-A C<Singleton> node represents a value of any of the singleton scalar types
-that C<sys.std.Core.Type.Cat.Singleton> is a union over.  The payload must
-be one of these 2 special named Raku values: C<-Inf>, C<Inf|+Inf>.
+A `Singleton` node represents a value of any of the singleton scalar types
+that `sys.std.Core.Type.Cat.Singleton` is a union over.  The payload must
+be one of these 2 special named Raku values: `-Inf`, `Inf|+Inf`.
 
 Examples:
 
@@ -517,9 +517,9 @@ Examples:
 
 ## Boolean Literals
 
-A C<Bool> node represents a logical boolean value.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Bool> value as follows:  The payload must be a
-Raku C<Bool>, and so C<Bool::False> and C<Bool::True> are mapped directly.
+A `Bool` node represents a logical boolean value.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Bool` value as follows:  The payload must be a
+Raku `Bool`, and so `Bool::False` and `Bool::True` are mapped directly.
 
 Examples:
 
@@ -529,10 +529,10 @@ Examples:
 
 ## Order-Determination Literals
 
-An C<Order> node represents an order-determination.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Cat.Order> value as follows:  The payload must
-be a Raku C<Order>, and so C<Order::Less> and C<Order::Same> and
-C<Order::More> are mapped directly.
+An `Order` node represents an order-determination.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Cat.Order` value as follows:  The payload must
+be a Raku `Order`, and so `Order::Less` and `Order::Same` and
+`Order::More` are mapped directly.
 
 Examples:
 
@@ -542,11 +542,11 @@ Examples:
 
 ## Rounding Method Literals
 
-A C<RoundMeth> node represents a rounding method.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.RoundMeth> value by
-directly mapping the payload.  The payload must be a Raku C<Str>
-having one of the 9 values C<Down>, C<Up>, C<ToZero>, C<ToInf>,
-C<HalfDown>, C<HalfUp>, C<HalfToZero>, C<HalfToInf>, C<HalfEven>.
+A `RoundMeth` node represents a rounding method.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Cat.RoundMeth` value by
+directly mapping the payload.  The payload must be a Raku `Str`
+having one of the 9 values `Down`, `Up`, `ToZero`, `ToInf`,
+`HalfDown`, `HalfUp`, `HalfToZero`, `HalfToInf`, `HalfEven`.
 
 Examples:
 
@@ -556,9 +556,9 @@ Examples:
 
 ## General Purpose Integer Numeric Literals
 
-An C<Int> node represents an integer numeric value.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Int> value as follows:  The payload must be a
-Raku C<Int>, which is mapped directly.
+An `Int` node represents an integer numeric value.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Int` value as follows:  The payload must be a
+Raku `Int`, which is mapped directly.
 
 Examples:
 
@@ -582,9 +582,9 @@ Examples:
 
 ## General Purpose Rational Numeric Literals
 
-A C<Rat> node represents a rational numeric value.  It is interpreted as a
-Muldis D C<sys.std.Core.Type.Rat> value as follows:  The payload must
-be a Raku C<FatRat|Rat|Num|Int>, which is mapped directly.
+A `Rat` node represents a rational numeric value.  It is interpreted as a
+Muldis D `sys.std.Core.Type.Rat` value as follows:  The payload must
+be a Raku `FatRat|Rat|Num|Int`, which is mapped directly.
 
 Examples:
 
@@ -614,9 +614,9 @@ Examples:
 
 ## General Purpose Binary String Literals
 
-A C<Blob> node represents a general purpose bit string.  It is interpreted
-as a Muldis D C<sys.std.Core.Type.Blob> value as follows:  The payload must
-be a Raku C<Blob>, which is mapped directly.
+A `Blob` node represents a general purpose bit string.  It is interpreted
+as a Muldis D `sys.std.Core.Type.Blob` value as follows:  The payload must
+be a Raku `Blob`, which is mapped directly.
 
 Examples:
 
@@ -630,9 +630,9 @@ Examples:
 
 ## General Purpose Character String Literals
 
-A C<Text> node represents a general purpose character string.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Text> value by directly
-mapping the payload.  The payload must be a Raku C<Str>.
+A `Text` node represents a general purpose character string.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Text` value by directly
+mapping the payload.  The payload must be a Raku `Str`.
 
 Examples:
 
@@ -648,43 +648,43 @@ Examples:
 
 ## DBMS Entity Name Literals
 
-A C<Name> node represents a canonical short name for any kind of DBMS
+A `Name` node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
-from C<Text>.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Cat.Name> value by directly mapping the payload.  The
-payload must be a Raku C<Str>.
+from `Text`.  It is interpreted as a Muldis D
+`sys.std.Core.Type.Cat.Name` value by directly mapping the payload.  The
+payload must be a Raku `Str`.
 
-A C<NameChain> node represents a canonical long name for invoking a DBMS
+A `NameChain` node represents a canonical long name for invoking a DBMS
 entity in some contexts; it is conceptually a sequence of entity short
-names.  Its payload is a Raku C<Seq|Array> value or C<Str> value.  This
-node is interpreted as a Muldis D C<sys.std.Core.Type.Cat.NameChain> value
+names.  Its payload is a Raku `Seq|Array` value or `Str` value.  This
+node is interpreted as a Muldis D `sys.std.Core.Type.Cat.NameChain` value
 as follows:
 
-* If the payload is a C<Seq|Array>, then
-every element must be a valid payload for a C<Name> node (that
+* If the payload is a `Seq|Array`, then
+every element must be a valid payload for a `Name` node (that
 is, any Raku character string).  Each element of the payload, in order,
-defines an element of the C<array> possrep's attribute of a C<NameChain>.
+defines an element of the `array` possrep's attribute of a `NameChain`.
 
-* If the payload is a C<Str>, then it must be formatted as a catenation
-(using period (C<.>) separators) of at least 1 part, where each part can
-not have any literal period (C<.>) characters (if you want literal periods
-then you can only use the C<Seq|Array> payload format to express it).  The
-C<Str> format of payload is interpreted by splitting it on the separators
-into the C<Seq|Array> format, then processed as per the latter.  A zero
-part chain can only be expressed with the C<Seq|Array> payload format; an
-empty string C<Str> format will be interpreted as having a single element
+* If the payload is a `Str`, then it must be formatted as a catenation
+(using period (`.`) separators) of at least 1 part, where each part can
+not have any literal period (`.`) characters (if you want literal periods
+then you can only use the `Seq|Array` payload format to express it).  The
+`Str` format of payload is interpreted by splitting it on the separators
+into the `Seq|Array` format, then processed as per the latter.  A zero
+part chain can only be expressed with the `Seq|Array` payload format; an
+empty string `Str` format will be interpreted as having a single element
 that is the empty string.
 
-Fundamentally a C<PNSQNameChain> node is exactly the same as a C<NameChain>
+Fundamentally a `PNSQNameChain` node is exactly the same as a `NameChain`
 node in format and interpretation, with the primary difference being that
-it may only define C<NameChain> values that are also values of the proper
-subtype C<sys.std.Core.Type.Cat.PNSQNameChain>, all of which are nonempty
+it may only define `NameChain` values that are also values of the proper
+subtype `sys.std.Core.Type.Cat.PNSQNameChain`, all of which are nonempty
 chains.  Now that distinction alone wouldn't be enough rationale to have
 these 2 distinct node kinds, and so the secondary difference between the 2
-provides that rationale; the C<PNSQNameChain> node supports a number of
-chain value shorthands while the C<NameChain> node supports none.
+provides that rationale; the `PNSQNameChain` node supports a number of
+chain value shorthands while the `NameChain` node supports none.
 
-A C<PNSQNameChain> node is interpreted the same as a C<NameChain> node
+A `PNSQNameChain` node is interpreted the same as a `NameChain` node
 except for the extra restrictions and shorthands.
 
 Examples:
@@ -705,14 +705,14 @@ Examples:
 
 ## Rational Rounding Rule Literals
 
-A C<RatRoundRule> node represents a rational rounding rule.  It is
-interpreted as a Muldis D C<sys.std.Core.Type.Cat.RatRoundRule> value whose
-attributes are defined by the C<RatRoundRule_payload>.  A
-C<RatRoundRule_payload> must be a Raku C<Seq|Array> with 3 elements, which
-correspond in order to the 3 attributes: C<radix> (a C<PInt2_N>),
-C<min_exp> (an C<Int>), and C<round_meth> (a C<RoundMeth>).  Each of
-C<radix> and C<min_exp> must qualify as a valid C<Int_payload>, and
-C<round_meth> must qualify as a valid C<RoundMeth_payload>.
+A `RatRoundRule` node represents a rational rounding rule.  It is
+interpreted as a Muldis D `sys.std.Core.Type.Cat.RatRoundRule` value whose
+attributes are defined by the `RatRoundRule_payload`.  A
+`RatRoundRule_payload` must be a Raku `Seq|Array` with 3 elements, which
+correspond in order to the 3 attributes: `radix` (a `PInt2_N`),
+`min_exp` (an `Int`), and `round_meth` (a `RoundMeth`).  Each of
+`radix` and `min_exp` must qualify as a valid `Int_payload`, and
+`round_meth` must qualify as a valid `RoundMeth_payload`.
 
 Examples:
 
@@ -724,28 +724,28 @@ Examples:
 
 Note that, with each of the main value selector nodes documented in this
 main POD section, any occurrences
-of child C<expr> nodes should be read as being C<value> nodes instead in
+of child `expr` nodes should be read as being `value` nodes instead in
 contexts where instances of the main nodes are being composed beneath
-C<value> nodes.  That is, any C<expr> node options beyond what C<value>
-options exist are only valid within a C<depot> node.
+`value` nodes.  That is, any `expr` node options beyond what `value`
+options exist are only valid within a `depot` node.
 
 ## Scalar Selectors
 
-A C<Scalar> node represents a literal or selector invocation for a
-not-C<Int|String> scalar subtype value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Scalar> subtype value whose declared type is specified
-by the node's (mandatory for C<Scalar>) C<type_name> element and whose
-attributes are defined by the payload.  If the payload is a Raku C<Pair>,
-then its key and value, respectively, are designated I<possrep name> and
-I<possrep attrs>; if the payload is not a Raku C<Pair>, then it is
-interpreted as if it was just the I<possrep attrs>, and the I<possrep name>
+A `Scalar` node represents a literal or selector invocation for a
+not-`Int|String` scalar subtype value.  It is interpreted as a Muldis D
+`sys.std.Core.Type.Scalar` subtype value whose declared type is specified
+by the node's (mandatory for `Scalar`) `type_name` element and whose
+attributes are defined by the payload.  If the payload is a Raku `Pair`,
+then its key and value, respectively, are designated *possrep name* and
+*possrep attrs*; if the payload is not a Raku `Pair`, then it is
+interpreted as if it was just the *possrep attrs*, and the *possrep name*
 was the empty string.  The possrep name and possrep attrs must be as per
-the payload of a C<Name> and C<Tuple> node, respectively.  The I<possrep
-attrs> is interpreted specifically as attributes of the declared type's
-possrep which is specified by the I<possrep name>.  Each key+value pair of
-the I<possrep attrs> defines a named possrep attribute of the new scalar;
-the pair's key and value are, respectively, a Raku C<Str> that specifies
-the possrep attribute name, and an C<expr> node that specifies the possrep
+the payload of a `Name` and `Tuple` node, respectively.  The *possrep
+attrs* is interpreted specifically as attributes of the declared type's
+possrep which is specified by the *possrep name*.  Each key+value pair of
+the *possrep attrs* defines a named possrep attribute of the new scalar;
+the pair's key and value are, respectively, a Raku `Str` that specifies
+the possrep attribute name, and an `expr` node that specifies the possrep
 attribute value.
 
 Examples:
@@ -777,13 +777,13 @@ Examples:
 
 ## Tuple Selectors
 
-A C<Tuple> node represents a literal or selector invocation for a
+A `Tuple` node represents a literal or selector invocation for a
 tuple value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Tuple> value whose attributes are defined by the
-payload.  The payload must be a Raku C<Mapping|Hash>.  Each key+value pair
+`sys.std.Core.Type.Tuple` value whose attributes are defined by the
+payload.  The payload must be a Raku `Mapping|Hash`.  Each key+value pair
 of the payload defines a named attribute of the new tuple; the pair's key
-and value are, respectively, a Raku C<Str> that specifies the attribute
-name, and an C<expr> node that specifies the attribute value.
+and value are, respectively, a Raku `Str` that specifies the attribute
+name, and an `expr` node that specifies the attribute value.
 
 Examples:
 
@@ -802,42 +802,42 @@ Examples:
 
 ## Database Selectors
 
-A C<Database> node represents a literal or selector invocation for a
+A `Database` node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Database> value whose attributes are defined by the
-payload.  The payload must be a Raku C<Mapping|Hash>.  Each key+value pair
+`sys.std.Core.Type.Database` value whose attributes are defined by the
+payload.  The payload must be a Raku `Mapping|Hash`.  Each key+value pair
 of the payload defines a named attribute of the new 'database'; the pair's
-key and value are, respectively, a Raku C<Str> that specifies the attribute
-name, and an C<expr> node that specifies the attribute value, which must be
+key and value are, respectively, a Raku `Str` that specifies the attribute
+name, and an `expr` node that specifies the attribute value, which must be
 represent a relation value.
 
 ## Relation Selectors
 
-A C<Relation> node represents a literal or selector invocation for a
+A `Relation` node represents a literal or selector invocation for a
 relation value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Relation> value whose attributes and tuples are
+`sys.std.Core.Type.Relation` value whose attributes and tuples are
 defined by the payload, which is interpreted as follows:
 
-* Iff the payload is a Raku C<Set|KeySet> with zero elements, then it
+* Iff the payload is a Raku `Set|KeySet` with zero elements, then it
 defines the only relation value having zero attributes and zero tuples.
 
-* Iff the payload is a Raku C<Set|KeySet> with at least one element, and
-every element is a Raku C<Str> (as per a valid payload for a C<Name> node),
+* Iff the payload is a Raku `Set|KeySet` with at least one element, and
+every element is a Raku `Str` (as per a valid payload for a `Name` node),
 then it defines the attribute names of a relation having zero tuples.
 
-* Iff the payload is a Raku C<Set|KeySet> with at least one element, and
-every element is a Raku C<Mapping|Hash> (as per a valid payload for a
-C<Tuple> node), then each element of the payload defines a tuple of
+* Iff the payload is a Raku `Set|KeySet` with at least one element, and
+every element is a Raku `Mapping|Hash` (as per a valid payload for a
+`Tuple` node), then each element of the payload defines a tuple of
 the new relation; every tuple-defining element of the payload must be of
 the same degree and have the same attribute names as its sibling elements;
 these are the degree and attribute names of the relation as a whole, which
 is its heading for the current purposes.
 
-* Iff the payload is a Raku C<Pair>, then:  The new relation value's
+* Iff the payload is a Raku `Pair`, then:  The new relation value's
 attribute names are defined by the payload's key, which is a Raku
-C<Seq|Array> of C<Str> (each as per a C<Name> node payload), and the
+`Seq|Array` of `Str` (each as per a `Name` node payload), and the
 relation body's tuples' attribute values are defined by the payload's
-value, which is a Raku C<Set|KeySet> of C<Seq|Array> of tuple attribute
+value, which is a Raku `Set|KeySet` of `Seq|Array` of tuple attribute
 value defining  nodes.  This format is meant to be the most compact of
 the generic relation payload formats, as the attribute names only appear
 once for the relation rather than repeating for each tuple.  As a
@@ -846,7 +846,7 @@ appear in the same order as their corresponding attribute names appear in
 the payload key, as the names and values in the relation literal are
 matched up by ordinal position here.
 
-Examples I<TODO: What is the actual syntax for the P6 Set type?>:
+Examples *What is the actual syntax for the P6 Set type?*:
 
     :Relation( Set.new() )  # zero attrs + zero tuples #
 
@@ -868,14 +868,14 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 ## Set Selectors
 
-A C<Set> node represents a literal or selector invocation for a set
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Set> value
+A `Set` node represents a literal or selector invocation for a set
+value.  It is interpreted as a Muldis D `sys.std.Core.Type.Set` value
 whose elements are defined by the payload.  The payload must be a Raku
-C<Set|KeySet>.  Each element of the payload defines a unary tuple of
-the new set; each element is an C<expr> node that defines the C<value>
+`Set|KeySet`.  Each element of the payload defines a unary tuple of
+the new set; each element is an `expr` node that defines the `value`
 attribute of the tuple.
 
-Examples I<TODO: What is the actual syntax for the P6 Set type?>:
+Examples *What is the actual syntax for the P6 Set type?*:
 
     [ 'Set', 'fed.lib.the_db.account.Country_Names', Set.new(
         'Canada',
@@ -892,14 +892,14 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 ## Maybe Selectors
 
-A C<Maybe> node represents a literal or selector invocation for a
+A `Maybe` node represents a literal or selector invocation for a
 maybe value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Maybe> value.  If the node payload is missing or
+`sys.std.Core.Type.Maybe` value.  If the node payload is missing or
 undefined, then the node is interpreted as the special value
-C<Maybe:Nothing>, aka C<Nothing>, which is the only C<Maybe> value with
+`Maybe:Nothing`, aka `Nothing`, which is the only `Maybe` value with
 zero elements.  If the node payload is defined then the node is interpreted
-as a C<Just> whose element is defined by the payload.  The payload is an
-C<expr> node that defines the C<value> attribute of the single tuple
+as a `Just` whose element is defined by the payload.  The payload is an
+`expr` node that defines the `value` attribute of the single tuple
 of the new 'single'.
 
 Examples:
@@ -910,13 +910,13 @@ Examples:
 
 ## Array Selectors
 
-An C<Array> node represents a literal or selector invocation for an
+An `Array` node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.Array> value whose elements are defined by the
-payload.  The payload must be a Raku C<Seq|Array>.  Each element of the
+`sys.std.Core.Type.Array` value whose elements are defined by the
+payload.  The payload must be a Raku `Seq|Array`.  Each element of the
 payload defines a binary tuple of the new sequence; the element value
-is an C<expr> node that defines the C<value> attribute of the tuple,
-and the element index is used as the C<index> attribute of the tuple.
+is an `expr` node that defines the `value` attribute of the tuple,
+and the element index is used as the `index` attribute of the tuple.
 
 Examples:
 
@@ -935,16 +935,16 @@ Examples:
 
 ## Bag Selectors
 
-A C<Bag> node represents a literal or selector invocation for a bag
-value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Bag> value
+A `Bag` node represents a literal or selector invocation for a bag
+value.  It is interpreted as a Muldis D `sys.std.Core.Type.Bag` value
 whose elements are defined by the payload.  The payload must be a Raku
-C<Bag|KeyBag|Set|KeySet> value; the payload element keys are C<expr> nodes
-corresponding to the C<value> attribute of the new bag's
+`Bag|KeyBag|Set|KeySet` value; the payload element keys are `expr` nodes
+corresponding to the `value` attribute of the new bag's
 tuples, and the payload element values are positive integers (or
-C<Bool::True>, which counts as the number 1) corresponding to the C<count>
+`Bool::True`, which counts as the number 1) corresponding to the `count`
 attribute; the payload element mapping is as you should expect.
 
-Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
+Examples *What is the actual syntax for the P6 Bag type?*:
 
     [ 'Bag', 'fed.lib.the_db.inventory.Fruit', Bag.new(
         'Apple'  => 500,
@@ -963,34 +963,34 @@ Examples I<TODO: What is the actual syntax for the P6 Bag type?>:
 
 ## Interval Selectors
 
-An C<SPInterval> node represents a literal or selector invocation for a
+An `SPInterval` node represents a literal or selector invocation for a
 single-piece interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.SPInterval> value whose attributes are defined by the
-payload.  The node payload must be a Raku C<Range>, which is mapped
-directly.  Each of the C<min> and C<max> attributes/method-return-values of
-the C<Range> is an C<expr> node that defines the C<min> and C<max>
+`sys.std.Core.Type.SPInterval` value whose attributes are defined by the
+payload.  The node payload must be a Raku `Range`, which is mapped
+directly.  Each of the `min` and `max` attributes/method-return-values of
+the `Range` is an `expr` node that defines the `min` and `max`
 attribute value, respectively, of the new single-piece interval.  Each of
-the C<excludes_min> and C<excludes_max> of the C<Range> maps directly with
+the `excludes_min` and `excludes_max` of the `Range` maps directly with
 the single-piece interval.
 
-A special shorthand for an C<SPInterval> payload also exists, which is to
+A special shorthand for an `SPInterval` payload also exists, which is to
 help with the possibly common situation where an interval is a singleton,
 meaning the interval has exactly 1 value; the shorthand empowers that value
-to be specified just once rather than twice.  Iff the payload is I<not> a
-Raku C<Range>, then the payload is treated as if it was instead the usual
-Raku C<Range>, whose C<min> and C<max> are both identical to the actual
-payload and whose C<excludes_min> and C<excludes_max> are both
-C<Bool::False>.  For example, the payload C<6> is shorthand for C<6..6>.
+to be specified just once rather than twice.  Iff the payload is *not* a
+Raku `Range`, then the payload is treated as if it was instead the usual
+Raku `Range`, whose `min` and `max` are both identical to the actual
+payload and whose `excludes_min` and `excludes_max` are both
+`Bool::False`.  For example, the payload `6` is shorthand for `6..6`.
 
-An C<MPInterval> node represents a literal or selector invocation for a
+An `MPInterval` node represents a literal or selector invocation for a
 multi-piece interval value.  It is interpreted as a Muldis D
-C<sys.std.Core.Type.MPInterval> value whose elements are defined by the
-payload.  The payload must be a Raku C<Set|KeySet>.  Each element of the
-payload must be a valid payload for an C<SPInterval> node (that is, a Raku
-C<Range>).  Each element of the payload defines a 4-ary tuple, representing
+`sys.std.Core.Type.MPInterval` value whose elements are defined by the
+payload.  The payload must be a Raku `Set|KeySet`.  Each element of the
+payload must be a valid payload for an `SPInterval` node (that is, a Raku
+`Range`).  Each element of the payload defines a 4-ary tuple, representing
 a single-piece interval, of the new multi-piece interval.
 
-Examples I<TODO: What is the actual syntax for the P6 Set type?>:
+Examples *What is the actual syntax for the P6 Set type?*:
 
     :SPInterval(1..10)
 
@@ -1013,10 +1013,10 @@ Examples I<TODO: What is the actual syntax for the P6 Set type?>:
 
 ## Low Level List Selectors
 
-A C<List> node represents a literal or selector invocation for a low-level
-list value.  It is interpreted as a Muldis D C<sys.std.Core.Type.Cat.List>
+A `List` node represents a literal or selector invocation for a low-level
+list value.  It is interpreted as a Muldis D `sys.std.Core.Type.Cat.List`
 value whose elements are defined by the payload.  The payload must be just
-a Raku C<Seq|Array>.  Each element of the payload defines an element of the
+a Raku `Seq|Array`.  Each element of the payload defines an element of the
 new list, where the elements keep the same order.
 
 Examples:
@@ -1070,31 +1070,31 @@ Examples:
 
 # DEPOT SPECIFICATION
 
-A C<depot> node has 2-3 ordered elements such that 3 elements means the
+A `depot` node has 2-3 ordered elements such that 3 elements means the
 depot has a normal-user-data database and 2 elements means it has just a
 (possibly empty) system catalog database:  The first element is the Raku
-C<Str> value C<depot>.  Iff the C<depot> has 3 elements then the third
-element specifies the normal-user-data database; it is a Raku C<Pair> whose
-key is the Raku C<Str> value C<depot-data> and whose value is a C<Database>
+`Str` value `depot`.  Iff the `depot` has 3 elements then the third
+element specifies the normal-user-data database; it is a Raku `Pair` whose
+key is the Raku `Str` value `depot-data` and whose value is a `Database`
 node.  The second element specifies the system catalog database; it is a
-Raku C<Pair> whose key is the Raku C<Str> value C<depot-catalog> and whose
-value is either a C<Database> node or a Raku C<Seq|Array> which is
-hereafter referred to as C<depot_catalog_payload>.  A
-C<depot_catalog_payload> either has zero elements, designating an empty
-catalog, or all of its elements are Raku C<Seq|Array> (in particular, none
-of its elements is the Raku C<Str> value 'Database'), each of which is one
-of the following kinds of nodes: C<subdepot>, C<named_material>,
-C<self_local_dbvar_type>.
+Raku `Pair` whose key is the Raku `Str` value `depot-catalog` and whose
+value is either a `Database` node or a Raku `Seq|Array` which is
+hereafter referred to as `depot_catalog_payload`.  A
+`depot_catalog_payload` either has zero elements, designating an empty
+catalog, or all of its elements are Raku `Seq|Array` (in particular, none
+of its elements is the Raku `Str` value 'Database'), each of which is one
+of the following kinds of nodes: `subdepot`, `named_material`,
+`self_local_dbvar_type`.
 
-A C<subdepot> node has 3 ordered elements:  The first element is the Raku
-C<Str> value C<subdepot>.  The second element is a C<Name_payload>,
+A `subdepot` node has 3 ordered elements:  The first element is the Raku
+`Str` value `subdepot`.  The second element is a `Name_payload`,
 which is the declared name of the subdepot within the namespace defined by
 its parent subdepot (or depot).  The third element is a
-C<depot_catalog_payload>.
+`depot_catalog_payload`.
 
-A C<self_local_dbvar_type> node has 2 ordered elements:  The first element
-is the Raku C<Str> value C<self-local-dbvar-type>.  The second element
-is a C<PNSQNameChain_payload>, which specifies what the normal-user-data
+A `self_local_dbvar_type` node has 2 ordered elements:  The first element
+is the Raku `Str` value `self-local-dbvar-type`.  The second element
+is a `PNSQNameChain_payload`, which specifies what the normal-user-data
 database has as its declared data type.
 
 Examples:
@@ -1119,81 +1119,81 @@ Examples:
 
 # MATERIAL SPECIFICATION
 
-A C<material> node specifies a new material (routine or type) that lives in
+A `material` node specifies a new material (routine or type) that lives in
 a depot or subdepot.
 
-There are 13 main varieties of C<material> node, each of which is a named
-node kind of its own:  C<function>, C<procedure>,
-C<scalar_type>, C<tuple_type>, C<relation_type>, C<domain_type>,
-C<subset_type>, C<mixin_type>, C<key_constr>, C<distrib_key_constr>,
-C<subset_constr>, C<distrib_subset_constr>, C<stim_resp_rule>.
+There are 13 main varieties of `material` node, each of which is a named
+node kind of its own:  `function`, `procedure`,
+`scalar_type`, `tuple_type`, `relation_type`, `domain_type`,
+`subset_type`, `mixin_type`, `key_constr`, `distrib_key_constr`,
+`subset_constr`, `distrib_subset_constr`, `stim_resp_rule`.
 
 ## Material Specification Common Elements
 
-A C<material> node has 2-3 ordered elements, such that a material that has
-2 elements is an C<anon_material> and a material with 3 elements is a
-C<named_material>:  The first element is C<material_kind>.  The last
-element is C<material_payload>.  Iff there are 3 elements then the
-middle element is C<material_declared_name>.
+A `material` node has 2-3 ordered elements, such that a material that has
+2 elements is an `anon_material` and a material with 3 elements is a
+`named_material`:  The first element is `material_kind`.  The last
+element is `material_payload`.  Iff there are 3 elements then the
+middle element is `material_declared_name`.
 
-* C<material_kind>
+* `material_kind`
 
-This is a Raku C<Str> value of the format `[<[ a..z ]>+] ** '-'`; it
+This is a Raku `Str` value of the format `[<[ a..z ]>+] ** '-'`; it
 identifies the kind of the material and is the only external metadata of
-C<material_payload> generally necessary to interpret the latter; what
-grammars are valid for C<material_payload> depend just on C<material_kind>.
+`material_payload` generally necessary to interpret the latter; what
+grammars are valid for `material_payload` depend just on `material_kind`.
 
-* C<material_declared_name>
+* `material_declared_name`
 
 This is the declared name of the material within the namespace defined by
-its subdepot (or depot).  It is explicitly specified iff the C<material> is
-a C<named_material>
+its subdepot (or depot).  It is explicitly specified iff the `material` is
+a `named_material`
 
-* C<material_payload>
+* `material_payload`
 
-This is mandatory for all C<material>.  It specifies the entire material
-sans its name.  Format varies with C<material_kind>.
+This is mandatory for all `material`.  It specifies the entire material
+sans its name.  Format varies with `material_kind`.
 
 For material examples, see the subsequent documentation sections.
 
 Note that, for simplicity, the subsequent sections assume for now that
-C<named_material> is the only valid option, and so the
-C<material_declared_name> isn't optional, and the only way to embed a
-material in another is using a C<with_clause>.
+`named_material` is the only valid option, and so the
+`material_declared_name` isn't optional, and the only way to embed a
+material in another is using a `with_clause`.
 
 ## Function Specification
 
-A C<function> node specifies a new function that lives in a depot or
-subdepot.  A C<function> node has 3 ordered elements:  The first element
-is one of these 8 Raku C<Str> values: C<function>, C<named-value>,
-C<value-map>, C<value-map-unary>, C<value-filter>, C<value-constraint>,
-C<value-reduction>, C<order-determination>.  The
-second element is a C<Name_payload>, which is the function's declared name.
-The third element is a C<function_payload>.  A C<function_payload> is a
-Raku C<Pair> whose key and value are designated, in order,
-C<function_heading> and C<function_body>.
+A `function` node specifies a new function that lives in a depot or
+subdepot.  A `function` node has 3 ordered elements:  The first element
+is one of these 8 Raku `Str` values: `function`, `named-value`,
+`value-map`, `value-map-unary`, `value-filter`, `value-constraint`,
+`value-reduction`, `order-determination`.  The
+second element is a `Name_payload`, which is the function's declared name.
+The third element is a `function_payload`.  A `function_payload` is a
+Raku `Pair` whose key and value are designated, in order,
+`function_heading` and `function_body`.
 
-A C<function_heading> is a Raku C<Seq|Array> with 2-3 ordered elements.
-The first element is designated C<result_type> and is mandatory.  The
-second element is designated C<func_params> and is mandatory.  The third
-element is designated C<implements> and is optional.
+A `function_heading` is a Raku `Seq|Array` with 2-3 ordered elements.
+The first element is designated `result_type` and is mandatory.  The
+second element is designated `func_params` and is mandatory.  The third
+element is designated `implements` and is optional.
 
-A C<result_type> is a C<type_name> which is a C<PNSQNameChain_payload>.
+A `result_type` is a `type_name` which is a `PNSQNameChain_payload`.
 
-A C<func_params> is structurally a proper subset of an C<proc_params>;
-every valid C<proc_params> is also a structurally valid C<func_params>
-except for any C<procedure_payload> that has either a C<::=> element or a
-C<&> element; in other words, a function has neither global nor
+A `func_params` is structurally a proper subset of an `proc_params`;
+every valid `proc_params` is also a structurally valid `func_params`
+except for any `procedure_payload` that has either a `::=` element or a
+`&` element; in other words, a function has neither global nor
 subject-to-update parameters; it just has regular read-only parameters.
 
-A C<function_body> must be either the Raku character string C<...>, in
-which case it is an C<empty_routine_body>, or it must be a Raku
-C<Seq|Array>, having at least one element which is an C<expr>, and each
-other element of said Raku C<Seq|Array> must be either a C<with_clause> or
-a C<named_expr>.
+A `function_body` must be either the Raku character string `...`, in
+which case it is an `empty_routine_body`, or it must be a Raku
+`Seq|Array`, having at least one element which is an `expr`, and each
+other element of said Raku `Seq|Array` must be either a `with_clause` or
+a `named_expr`.
 
-Each of C<implements> and C<with_clause> of a C<function_payload> is
-structurally identical to one of a C<procedure_payload>.
+Each of `implements` and `with_clause` of a `function_payload` is
+structurally identical to one of a `procedure_payload`.
 
 Examples:
 
@@ -1203,82 +1203,82 @@ Examples:
 
 ## Procedure Specification
 
-A C<procedure> node specifies a new procedure that lives in a depot or
-subdepot.  A C<procedure> node has 3 ordered elements:  The first element
-is one of these 5 Raku C<Str> values: C<procedure>, C<system-service>,
-C<transaction>, C<recipe>, C<updater>.
-The second element is a C<Name_payload>, which is the
-procedure's declared name.  The third element is a C<procedure_payload>.  A
-C<procedure_payload> is a Raku C<Pair> whose key and value are
-designated, in order, C<procedure_heading> and C<procedure_body>.
+A `procedure` node specifies a new procedure that lives in a depot or
+subdepot.  A `procedure` node has 3 ordered elements:  The first element
+is one of these 5 Raku `Str` values: `procedure`, `system-service`,
+`transaction`, `recipe`, `updater`.
+The second element is a `Name_payload`, which is the
+procedure's declared name.  The third element is a `procedure_payload`.  A
+`procedure_payload` is a Raku `Pair` whose key and value are
+designated, in order, `procedure_heading` and `procedure_body`.
 
-Iff the C<procedure_heading> is a Raku C<Seq|Array>, then it has 1-2
-ordered elements.  The first element is designated C<proc_params> and is
-mandatory.  The second element is designated C<implements> and is optional.
-Iff the C<procedure_heading> is a Raku C<Mapping|Hash>, then it is
-designated C<proc_params> and there is no C<implements>.
+Iff the `procedure_heading` is a Raku `Seq|Array`, then it has 1-2
+ordered elements.  The first element is designated `proc_params` and is
+mandatory.  The second element is designated `implements` and is optional.
+Iff the `procedure_heading` is a Raku `Mapping|Hash`, then it is
+designated `proc_params` and there is no `implements`.
 
-A C<proc_params> is a Raku C<Mapping|Hash>; it must have at least one
+A `proc_params` is a Raku `Mapping|Hash`; it must have at least one
 element, meaning the procedure has one or more parameters; each hash
 element specifies one parameter, and for each hash element, the hash
-element's key and value, respectively, are designated C<param_name> and
-C<param_details>.  Iff C<param_details> is a Raku C<Seq|Array> with at
-least two elements, and its first element is not a non-empty Raku C<Str>
+element's key and value, respectively, are designated `param_name` and
+`param_details`.  Iff `param_details` is a Raku `Seq|Array` with at
+least two elements, and its first element is not a non-empty Raku `Str`
 value consisting of just the characters <[ a..z A..Z 0..9 _ - ]>, then the
-C<param_details> is a C<param_multi_meta>; otherwise, C<param_details> is a
-C<param_single_meta>.
+`param_details` is a `param_multi_meta`; otherwise, `param_details` is a
+`param_single_meta`.
 
-Iff a parameter's C<param_details> is a C<param_single_meta>, then the
-latter must be either a C<PNSQNameChain_payload> or a single-element array
+Iff a parameter's `param_details` is a `param_single_meta`, then the
+latter must be either a `PNSQNameChain_payload` or a single-element array
 whose sole element is one of those; then the parameter is a
-C<ro_reg_param>, its C<param_details> is designated C<type_name>, and it
-has no C<param_flag>.
+`ro_reg_param`, its `param_details` is designated `type_name`, and it
+has no `param_flag`.
 
-Iff a parameter's C<param_details> is a C<param_multi_meta>, then the
-latter's last element must be a C<PNSQNameChain_payload>, and each of the
-C<param_details>' other elements must be a distinct one of these 4 Raku
-C<Str> values: C<&>, C<?>, C<@>, C<::=>.  A C<param_multi_meta> must
+Iff a parameter's `param_details` is a `param_multi_meta`, then the
+latter's last element must be a `PNSQNameChain_payload`, and each of the
+`param_details`' other elements must be a distinct one of these 4 Raku
+`Str` values: `&`, `?`, `@`, `::=`.  A `param_multi_meta` must
 have at least 1 of those 4 and at most 2 of them, and furthermore only
-certain permutations are allowed.  A C<&> may be used either alone or in
+certain permutations are allowed.  A `&` may be used either alone or in
 combination with exactly one of the other 3; its presence means that the
 parameter is subject-to-update; its absence means the parameter is
-read-only; iff a C<&> is used then it must be the first C<param_details>
-element.  The 3 of C<?>, C<@>, C<::=> are mutually exclusive so a
-C<param_details> may have at most one of them, either alone or with a C<&>.
+read-only; iff a `&` is used then it must be the first `param_details`
+element.  The 3 of `?`, `@`, `::=` are mutually exclusive so a
+`param_details` may have at most one of them, either alone or with a `&`.
 
-Iff a parameter's C<param_details> is a C<param_multi_meta> and it does not
-have a C<::=> element, then the parameter is a regular parameter.  A
-regular parameter's last (C<PNSQNameChain_payload>) element is designated
-C<type_name>.  Iff a regular parameter has a C<&> element then the
-parameter is an C<upd_reg_param>; otherwise it is a C<ro_reg_param>.  Iff a
-regular parameter has a C<?> then the parameter has an C<opt_param_flag>.
-Iff a regular parameter has a C<@> then the parameter has a
-C<dispatch_param_flag>.
+Iff a parameter's `param_details` is a `param_multi_meta` and it does not
+have a `::=` element, then the parameter is a regular parameter.  A
+regular parameter's last (`PNSQNameChain_payload`) element is designated
+`type_name`.  Iff a regular parameter has a `&` element then the
+parameter is an `upd_reg_param`; otherwise it is a `ro_reg_param`.  Iff a
+regular parameter has a `?` then the parameter has an `opt_param_flag`.
+Iff a regular parameter has a `@` then the parameter has a
+`dispatch_param_flag`.
 
-Iff a parameter's C<param_details> is a C<param_multi_meta> and it does
-have a C<::=> element, then the parameter is a global parameter.  A global
-parameter's last (C<PNSQNameChain_payload>) element is designated
-C<global_var_name>.  Iff a global parameter has a C<&> element then the
-parameter is an C<upd_global_param>; otherwise it is a C<ro_global_param>.
+Iff a parameter's `param_details` is a `param_multi_meta` and it does
+have a `::=` element, then the parameter is a global parameter.  A global
+parameter's last (`PNSQNameChain_payload`) element is designated
+`global_var_name`.  Iff a global parameter has a `&` element then the
+parameter is an `upd_global_param`; otherwise it is a `ro_global_param`.
 
-An C<implements> must be either a C<PNSQNameChain_payload> or a Raku
-C<Seq|Array> having zero or more elements where every element is a
-C<PNSQNameChain_payload>; each C<PNSQNameChain_payload> names a virtual
+An `implements` must be either a `PNSQNameChain_payload` or a Raku
+`Seq|Array` having zero or more elements where every element is a
+`PNSQNameChain_payload`; each `PNSQNameChain_payload` names a virtual
 procedure which the current procedure is declaring that it implements.
 
-A C<procedure_body> must be either the Raku C<Str> value C<...>, in which
-case it is an C<empty_routine_body>, or it must be a Raku C<Seq|Array>
+A `procedure_body` must be either the Raku `Str` value `...`, in which
+case it is an `empty_routine_body`, or it must be a Raku `Seq|Array`
 having zero or more elements where each element must be either a
-C<with_clause> or a C<proc_var> or a
-C<named_expr> or a C<proc_stmt>; zero elements means that
+`with_clause` or a `proc_var` or a
+`named_expr` or a `proc_stmt`; zero elements means that
 the procedure is an unconditional no-op.
 
-A C<with_clause> is a Raku C<Pair> whose key is the Raku C<Str> value
-C<with> and whose value is a C<material> node.
+A `with_clause` is a Raku `Pair` whose key is the Raku `Str` value
+`with` and whose value is a `material` node.
 
-A C<proc_var> is a 3-element Raku C<Seq|Array> whose first element is the
-Raku C<Str> value C<var>, whose second element is a C<Name_payload>, and
-whose third element is a C<type_name> which is a C<PNSQNameChain_payload>.
+A `proc_var` is a 3-element Raku `Seq|Array` whose first element is the
+Raku `Str` value `var`, whose second element is a `Name_payload`, and
+whose third element is a `type_name` which is a `PNSQNameChain_payload`.
 
 Examples:
 
@@ -1330,25 +1330,25 @@ Examples:
 
 ## Scalar Type Specification
 
-A C<scalar_type> node specifies a new scalar type that lives in a depot
-or subdepot.  A C<scalar_type> node has 3 ordered elements:  The first
-element is the Raku C<Str> value C<scalar-type>.  The second element
-is a C<Name_payload>, which is the scalar type's declared name.  The
-third element is a C<scalar_type_payload>.
+A `scalar_type` node specifies a new scalar type that lives in a depot
+or subdepot.  A `scalar_type` node has 3 ordered elements:  The first
+element is the Raku `Str` value `scalar-type`.  The second element
+is a `Name_payload`, which is the scalar type's declared name.  The
+third element is a `scalar_type_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Tuple Type Specification
 
-A C<tuple_type> node specifies a new tuple type that lives in a depot or
-subdepot.  A C<tuple_type> node has 3 ordered elements:  The first element
-is one of these 2 Raku C<Str> values: C<tuple-type>, C<database-type>.
-The second element is a C<Name_payload>, which is the tuple type's declared
-name.  The third element is a C<tuple_type_payload>.
+A `tuple_type` node specifies a new tuple type that lives in a depot or
+subdepot.  A `tuple_type` node has 3 ordered elements:  The first element
+is one of these 2 Raku `Str` values: `tuple-type`, `database-type`.
+The second element is a `Name_payload`, which is the tuple type's declared
+name.  The third element is a `tuple_type_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
 Examples:
 
@@ -1410,13 +1410,13 @@ Examples:
 
 ## Relation Type Specification
 
-A C<relation_type> node specifies a new relation type that lives in a depot
-or subdepot.  A C<relation_type> node has 3 ordered elements:  The first
-element is the Raku C<Str> value C<relation-type>.  The second element
-is a C<Name_payload>, which is the relation type's declared name.  The
-third element is a C<relation_type_payload>.
+A `relation_type` node specifies a new relation type that lives in a depot
+or subdepot.  A `relation_type` node has 3 ordered elements:  The first
+element is the Raku `Str` value `relation-type`.  The second element
+is a `Name_payload`, which is the relation type's declared name.  The
+third element is a `relation_type_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
 Examples:
 
@@ -1447,52 +1447,52 @@ Examples:
 
 ## Domain Type Specification
 
-A C<domain_type> node specifies a new domain type that lives in a depot
-or subdepot.  A C<domain_type> node has 3 ordered elements:  The first
-element is the Raku C<Str> value C<domain-type>.  The second element
-is a C<Name_payload>, which is the domain type's declared name.  The
-third element is a C<domain_type_payload>.
+A `domain_type` node specifies a new domain type that lives in a depot
+or subdepot.  A `domain_type` node has 3 ordered elements:  The first
+element is the Raku `Str` value `domain-type`.  The second element
+is a `Name_payload`, which is the domain type's declared name.  The
+third element is a `domain_type_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Subset Type Specification
 
-A C<subset_type> node specifies a new subset type that lives in a depot
-or subdepot.  A C<subset_type> node has 3 ordered elements:  The first
-element is the Raku C<Str> value C<subset-type>.  The second element
-is a C<Name_payload>, which is the subset type's declared name.  The
-third element is a C<subset_type_payload>.
+A `subset_type` node specifies a new subset type that lives in a depot
+or subdepot.  A `subset_type` node has 3 ordered elements:  The first
+element is the Raku `Str` value `subset-type`.  The second element
+is a `Name_payload`, which is the subset type's declared name.  The
+third element is a `subset_type_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Mixin Type Specification
 
-A C<mixin_type> node specifies a new mixin type that lives in a depot
-or subdepot.  A C<mixin_type> node has 3 ordered elements:  The first
-element is the Raku C<Str> value C<mixin-type>.  The second element
-is a C<Name_payload>, which is the mixin type's declared name.  The
-third element is a C<mixin_type_payload>.
+A `mixin_type` node specifies a new mixin type that lives in a depot
+or subdepot.  A `mixin_type` node has 3 ordered elements:  The first
+element is the Raku `Str` value `mixin-type`.  The second element
+is a `Name_payload`, which is the mixin type's declared name.  The
+third element is a `mixin_type_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
-I<TODO: Examples.>
+*Examples.*
 
 ## Key Constraint Specification
 
-A C<key_constr> node specifies a new unique key constraint or candidate
+A `key_constr` node specifies a new unique key constraint or candidate
 key, for a relation type, that lives in a depot or subdepot.  A
-C<key_constr> node has 3 ordered elements:  The first element is one of
-these 2 Raku C<Str> values: C<key-constraint>, C<primary-key>.  The
-second element is a C<Name_payload>, which is the constraint's declared
-name.  The third element is a C<key_constr_payload>, which is just a Raku
-C<Set|KeySet> of 0..N elements where each of said elements is a
-C<Name_payload>, which is the name of an attribute that the key ranges
-over; alternately, a C<key_constr_payload> may be just a C<Name_payload>,
-which is equivalent to the C<Set|KeySet> format with 1 element.
+`key_constr` node has 3 ordered elements:  The first element is one of
+these 2 Raku `Str` values: `key-constraint`, `primary-key`.  The
+second element is a `Name_payload`, which is the constraint's declared
+name.  The third element is a `key_constr_payload`, which is just a Raku
+`Set|KeySet` of 0..N elements where each of said elements is a
+`Name_payload`, which is the name of an attribute that the key ranges
+over; alternately, a `key_constr_payload` may be just a `Name_payload`,
+which is equivalent to the `Set|KeySet` format with 1 element.
 
 Examples:
 
@@ -1507,18 +1507,18 @@ Examples:
 
 ## Distributed Key Constraint Specification
 
-I<TODO.>
+*TODO.*
 
 ## Subset Constraint Specification
 
-A C<subset_constr> node specifies a (non-distributed) subset constraint
+A `subset_constr` node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
-that lives in a depot or subdepot.  A C<subset_constr> node has 3 ordered
-elements:  The first element is the Raku C<Str> value C<subset-constraint>.
-The second element is a C<Name_payload>, which is the constraint's declared
-name.  The third element is a C<subset_constr_payload>.
+that lives in a depot or subdepot.  A `subset_constr` node has 3 ordered
+elements:  The first element is the Raku `Str` value `subset-constraint`.
+The second element is a `Name_payload`, which is the constraint's declared
+name.  The third element is a `subset_constr_payload`.
 
-I<TODO: The remaining description.>
+*The remaining description.*
 
 Examples:
 
@@ -1539,20 +1539,20 @@ Examples:
 
 ## Distributed Subset Constraint Specification
 
-I<TODO.>
+*TODO.*
 
 ## Stimulus-Response Rule Specification
 
-A C<stim_resp_rule> node specifies a new stimulus-response rule that lives
-in a depot or subdepot.  A C<stim_resp_rule> node has 3 ordered elements:
-The first element is the Raku C<Str> value C<stimulus-response-rule>.
-The second element is a C<Name_payload>, which is the stimulus-response
-rule's declared name.  The third element is a C<stim_resp_rule_payload>.
+A `stim_resp_rule` node specifies a new stimulus-response rule that lives
+in a depot or subdepot.  A `stim_resp_rule` node has 3 ordered elements:
+The first element is the Raku `Str` value `stimulus-response-rule`.
+The second element is a `Name_payload`, which is the stimulus-response
+rule's declared name.  The third element is a `stim_resp_rule_payload`.
 
-A C<stim_resp_rule_payload> is a Raku C<Pair> whose key and value
-are designated, in order, C<stimulus> and C<response>; C<stimulus> is the
-Raku C<Str> value C<after-mount> (the kind of stimulus), and
-C<response> is a C<PNSQNameChain_payload> (the name of the recipe or
+A `stim_resp_rule_payload` is a Raku `Pair` whose key and value
+are designated, in order, `stimulus` and `response`; `stimulus` is the
+Raku `Str` value `after-mount` (the kind of stimulus), and
+`response` is a `PNSQNameChain_payload` (the name of the recipe or
 procedure being invoked in response).
 
 Examples:
@@ -1561,16 +1561,16 @@ Examples:
 
 # GENERIC VALUE EXPRESSIONS
 
-An C<expr_name> node has 2 ordered elements:  The first element is the Raku
-C<Str> value C<d> ("data").  The second element is a C<Name_payload>.
+An `expr_name` node has 2 ordered elements:  The first element is the Raku
+`Str` value `d` ("data").  The second element is a `Name_payload`.
 
-An C<expr_name> node may alternately be formatted as a Raku Pair whose key
+An `expr_name` node may alternately be formatted as a Raku Pair whose key
 and value are what would otherwise be the first and second node elements,
 respectively.
 
-A C<named_expr> node has 3 ordered elements:  The first element is either
-of the 2 Raku C<Str> values [C<::=>, C<let>].  The second element is
-a C<Name_payload> and the third element is an C<expr> node; the second
+A `named_expr` node has 3 ordered elements:  The first element is either
+of the 2 Raku `Str` values [`::=`, `let`].  The second element is
+a `Name_payload` and the third element is an `expr` node; the second
 element declares an explicit expression node name for the third element.
 
 Examples:
@@ -1583,14 +1583,14 @@ Examples:
 
 ## Generic Expression Attribute Accessors
 
-An C<accessor> node has 2-3 ordered elements, such that 2 elements makes it
-an C<acc_via_named> and 3 elements makes it an C<acc_via_anon>:  The first
-element is the Raku C<Str> value C<acc>.  The last element of an
-C<acc_via_named> is a C<NameChain_payload>, which is by itself the
-C<target> of the accessor (naming both the other node plus its attribute to
-alias).  The second element of an C<acc_via_anon> is an C<expr> node which
+An `accessor` node has 2-3 ordered elements, such that 2 elements makes it
+an `acc_via_named` and 3 elements makes it an `acc_via_anon`:  The first
+element is the Raku `Str` value `acc`.  The last element of an
+`acc_via_named` is a `NameChain_payload`, which is by itself the
+`target` of the accessor (naming both the other node plus its attribute to
+alias).  The second element of an `acc_via_anon` is an `expr` node which
 is the other node whose attribute is being aliased.  The last element of an
-C<acc_via_anon> is a nonempty C<NameChain_payload> and names the attribute.
+`acc_via_anon` is a nonempty `NameChain_payload` and names the attribute.
 
 Examples:
 
@@ -1602,15 +1602,15 @@ Examples:
 
 ## Generic Function Invocation Expressions
 
-A C<func_invo> node has 2-4 ordered elements:  The first element is the
-Raku C<Str> value C<func-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the function to invoke.  The last 1-2
+A `func_invo` node has 2-4 ordered elements:  The first element is the
+Raku `Str` value `func-invo`.  The second element is a
+`PNSQNameChain_payload`, which names the function to invoke.  The last 1-2
 elements provide arguments to the function invocation; either or both or
-none of an C<Array_payload> element and a C<Tuple_payload> element may be
-given.  The C<Array_payload> 3rd/4th element is for any anonymous (and
-ordered if multiple exist) arguments, and the C<Tuple_payload> 3rd/4th
-element is for any named arguments; each C<Array_payload> element or
-C<Tuple_payload> element value is an C<expr> node which is the argument
+none of an `Array_payload` element and a `Tuple_payload` element may be
+given.  The `Array_payload` 3rd/4th element is for any anonymous (and
+ordered if multiple exist) arguments, and the `Tuple_payload` 3rd/4th
+element is for any named arguments; each `Array_payload` element or
+`Tuple_payload` element value is an `expr` node which is the argument
 value.
 
 Examples:
@@ -1643,11 +1643,11 @@ Examples:
 
 ## Generic If-Else Expressions
 
-An C<if_else_expr> node has 4 ordered elements:  The first element is
-either of the 2 Raku C<Str> values C<if-else-expr> and C<??!!>.  The
-second element is the I<if> condition expression; the third and fourth
-elements are the I<then> and I<else> result expressions, respectively;
-every one of the last 3 elements is an C<expr> node.
+An `if_else_expr` node has 4 ordered elements:  The first element is
+either of the 2 Raku `Str` values `if-else-expr` and `??!!`.  The
+second element is the *if* condition expression; the third and fourth
+elements are the *then* and *else* result expressions, respectively;
+every one of the last 3 elements is an `expr` node.
 
 Examples:
 
@@ -1663,15 +1663,15 @@ Examples:
 
 ## Generic Given-When-Default Expressions
 
-A C<given_when_def_expr> node has 3-4 ordered elements:  The first element
-is the Raku C<Str> value C<given-when-def-expr>.  The second element is an
-C<expr> node which is the I<given> common comparand.  The optional third
-element is I<when_then>, a Raku C<Seq|Array> with 0..N elements, each of
-those being a 2-element Raku C<Seq|Array> or a Raku Pair, where each
-element is an C<expr> node; the first element / key is a I<when> comparand,
-and the second element / value is the associated I<then> result expression.
-The 4th/last element of a C<given_when_def_expr> node is I<default> result
-expression, which is an C<expr> node.
+A `given_when_def_expr` node has 3-4 ordered elements:  The first element
+is the Raku `Str` value `given-when-def-expr`.  The second element is an
+`expr` node which is the *given* common comparand.  The optional third
+element is *when_then*, a Raku `Seq|Array` with 0..N elements, each of
+those being a 2-element Raku `Seq|Array` or a Raku Pair, where each
+element is an `expr` node; the first element / key is a *when* comparand,
+and the second element / value is the associated *then* result expression.
+The 4th/last element of a `given_when_def_expr` node is *default* result
+expression, which is an `expr` node.
 
 Examples:
 
@@ -1686,17 +1686,17 @@ Examples:
 
 ## Material Reference Selector Expressions
 
-A C<material_ref> node has 2 ordered elements:  The first element
-is the Raku C<Str> value C<material-ref>.  The second element is a
-C<PNSQNameChain_payload>, which names the routine or type to reference.
+A `material_ref` node has 2 ordered elements:  The first element
+is the Raku `Str` value `material-ref`.  The second element is a
+`PNSQNameChain_payload`, which names the routine or type to reference.
 
-A C<primed_func> node has 2-4 ordered elements:  The first element is the
-Raku C<Str> value C<primed-func>.  The second element is a
-C<PNSQNameChain_payload>, which names the function to reference.  The last
+A `primed_func` node has 2-4 ordered elements:  The first element is the
+Raku `Str` value `primed-func`.  The second element is a
+`PNSQNameChain_payload`, which names the function to reference.  The last
 1-2 elements provide arguments for the function as per the last 1-2
-elements of a C<func_invo> node.
+elements of a `func_invo` node.
 
-A C<material_ref> node, or a C<primed_func> node with zero primed
+A `material_ref` node, or a `primed_func` node with zero primed
 arguments, may alternately be formatted as
 a Raku Pair whose key and value are what would otherwise be the first and
 second node elements, respectively.
@@ -1715,16 +1715,16 @@ Examples:
 
 # GENERIC PROCEDURE STATEMENTS
 
-A C<stmt_name> node has 2 ordered elements:  The first element is the Raku
-C<Str> value C<s>.  The second element is a C<Name_payload>.
+A `stmt_name` node has 2 ordered elements:  The first element is the Raku
+`Str` value `s`.  The second element is a `Name_payload`.
 
-A C<stmt_name> node may alternately be formatted as a Raku Pair whose key
+A `stmt_name` node may alternately be formatted as a Raku Pair whose key
 and value are what would otherwise be the first and second node elements,
 respectively.
 
-A C<named_stmt> node has 3 ordered elements:  The first element is either
-of the 2 Raku C<Str> values [C<::=>, C<let>].  The second element is
-a C<Name_payload> and the third element is a C<proc_stmt> node; the second
+A `named_stmt` node has 3 ordered elements:  The first element is either
+of the 2 Raku `Str` values [`::=`, `let`].  The second element is
+a `Name_payload` and the third element is a `proc_stmt` node; the second
 element declares an explicit statement node name for the third element.
 
 Examples:
@@ -1738,10 +1738,10 @@ Examples:
 
 ## Generic Compound Statements
 
-A C<compound_stmt> node has 2 ordered elements:  The first element is the
-Raku C<Str> value C<compound-stmt>.  The second element is a Raku
-C<Seq|Array> having zero or more elements where each element must be either
-a C<with_clause> or a C<proc_var> or a C<named_expr> or a C<proc_stmt>;
+A `compound_stmt` node has 2 ordered elements:  The first element is the
+Raku `Str` value `compound-stmt`.  The second element is a Raku
+`Seq|Array` having zero or more elements where each element must be either
+a `with_clause` or a `proc_var` or a `named_expr` or a `proc_stmt`;
 it is interpreted as
 per a nonempty procedure body, which has exactly the same format.
 
@@ -1755,9 +1755,9 @@ Examples:
 
 ## Multi-Update Statements
 
-A C<multi_upd_stmt> node has 2 ordered elements:  The first element is the
-Raku C<Str> value C<multi-upd-stmt>.  The second element is a Raku
-C<Seq|Array>; it is interpreted as per a nonempty recipe body, which has
+A `multi_upd_stmt` node has 2 ordered elements:  The first element is the
+Raku `Str` value `multi-upd-stmt`.  The second element is a Raku
+`Seq|Array`; it is interpreted as per a nonempty recipe body, which has
 exactly the same format.
 
 Examples:
@@ -1787,21 +1787,21 @@ Examples:
 
 ## Generic Procedure Invocation Statements
 
-A C<proc_invo> node has 2-4 ordered elements:  The first element is
-the Raku C<Str> value C<proc-invo>.  The second element is a
-C<PNSQNameChain_payload>, which names the procedure to invoke.
+A `proc_invo` node has 2-4 ordered elements:  The first element is
+the Raku `Str` value `proc-invo`.  The second element is a
+`PNSQNameChain_payload`, which names the procedure to invoke.
 The last 1-2 elements provide arguments to the procedure
-invocation; either or both or none of an C<Array_payload> element and a
-C<Tuple_payload> element may be given.  The C<Array_payload> 3rd/4th
+invocation; either or both or none of an `Array_payload` element and a
+`Tuple_payload` element may be given.  The `Array_payload` 3rd/4th
 element is for any anonymous (and ordered if multiple exist) arguments, and
-the C<Tuple_payload> 3rd/4th element is for any named arguments; each
-C<Array_payload> element or C<Tuple_payload> element value is the
-I<possibly tagged argument value> (PTAV).  For each PTAV, if the argument
-is for a read-only parameter, then the PTAV is just an C<expr> node
+the `Tuple_payload` 3rd/4th element is for any named arguments; each
+`Array_payload` element or `Tuple_payload` element value is the
+*possibly tagged argument value* (PTAV).  For each PTAV, if the argument
+is for a read-only parameter, then the PTAV is just an `expr` node
 which is the argument value; if the argument is for a subject-to-update
-parameter, then the PTAV is a Raku C<Seq|Array> with exactly 2 elements,
-where the first element is the Raku C<Str> value C<&>, and the second
-element is the same C<expr> node that the PTAV would have been were this
+parameter, then the PTAV is a Raku `Seq|Array` with exactly 2 elements,
+where the first element is the Raku `Str` value `&`, and the second
+element is the same `expr` node that the PTAV would have been were this
 for a read-only parameter.
 
 Examples:
@@ -1829,11 +1829,11 @@ Examples:
 
 ## Generic Try-Catch Statements
 
-A C<try_catch_stmt> node has 2-3 ordered elements:  The first element is
-the Raku C<Str> value C<try-catch>.  The second element is a
-C<proc_stmt> node having the I<try> routine to unconditionally invoke
-first.  The optional third element is a C<proc_stmt> node having the
-I<catch> routine to execute iff I<try> throws an exception.
+A `try_catch_stmt` node has 2-3 ordered elements:  The first element is
+the Raku `Str` value `try-catch`.  The second element is a
+`proc_stmt` node having the *try* routine to unconditionally invoke
+first.  The optional third element is a `proc_stmt` node having the
+*catch* routine to execute iff *try* throws an exception.
 
 Examples:
 
@@ -1844,11 +1844,11 @@ Examples:
 
 ## Generic If-Else Statements
 
-An C<if_else_stmt> node has 3-4 ordered elements:  The first element is the
-Raku C<Str> value C<if-else-stmt>.  The second element is the I<if>
-condition expression (an C<expr> node).  The third element is the I<then>
-statement (a C<proc_stmt> node).  The optional fourth/last element is the
-I<else> statement (a C<proc_stmt> node).
+An `if_else_stmt` node has 3-4 ordered elements:  The first element is the
+Raku `Str` value `if-else-stmt`.  The second element is the *if*
+condition expression (an `expr` node).  The third element is the *then*
+statement (a `proc_stmt` node).  The optional fourth/last element is the
+*else* statement (a `proc_stmt` node).
 
 Examples:
 
@@ -1860,15 +1860,15 @@ Examples:
 
 ## Generic Given-When-Default Statements
 
-A C<given_when_def_stmt> node has 3-4 ordered elements:  The first element
-is the Raku C<Str> value C<given-when-def-stmt>.  The second element is
-an C<expr> node which is the I<given> common comparand.  The optional
-third element is I<proc_when_then>, a Raku C<Seq|Array> with 0..N elements,
-each of those being a 2-element Raku C<Seq|Array> or a Raku Pair; the first
-element / key is a I<when> comparand (an C<expr> node), and the second
-element / value is the associated I<then> result statement (a C<proc_stmt>
-node).  The optional 4th/last element of a C<given_when_def_stmt> node is
-I<default_stmt> statement, which is a C<proc_stmt> node.
+A `given_when_def_stmt` node has 3-4 ordered elements:  The first element
+is the Raku `Str` value `given-when-def-stmt`.  The second element is
+an `expr` node which is the *given* common comparand.  The optional
+third element is *proc_when_then*, a Raku `Seq|Array` with 0..N elements,
+each of those being a 2-element Raku `Seq|Array` or a Raku Pair; the first
+element / key is a *when* comparand (an `expr` node), and the second
+element / value is the associated *then* result statement (a `proc_stmt`
+node).  The optional 4th/last element of a `given_when_def_stmt` node is
+*default_stmt* statement, which is a `proc_stmt` node.
 
 Examples:
 
@@ -1884,18 +1884,18 @@ Examples:
 
 ## Procedure Leave, Iterate, and Loop Statements
 
-A C<leave_stmt> node has 1-2 ordered elements:  The first element is the
-Raku C<Str> value C<leave>.  The optional second element is a
-C<Name_payload> which names the parent statement node to abort; it defaults
+A `leave_stmt` node has 1-2 ordered elements:  The first element is the
+Raku `Str` value `leave`.  The optional second element is a
+`Name_payload` which names the parent statement node to abort; it defaults
 to the empty string if not specified.
 
-An C<iterate_stmt> node has 1-2 ordered elements:  The first element is the
-Raku C<Str> value C<iterate>.  The optional second element is a
-C<Name_payload> which names the parent statement node to redo; it defaults
+An `iterate_stmt` node has 1-2 ordered elements:  The first element is the
+Raku `Str` value `iterate`.  The optional second element is a
+`Name_payload` which names the parent statement node to redo; it defaults
 to the empty string if not specified.
 
-A C<loop_stmt> node has 2 ordered elements:  The first element is the Raku
-C<Str> value C<loop>.  The second element is a C<proc_stmt> node having
+A `loop_stmt` node has 2 ordered elements:  The first element is the Raku
+`Str` value `loop`.  The second element is a `proc_stmt` node having
 the statement to repeatedly execute.
 
 Examples:
@@ -1919,27 +1919,27 @@ Examples:
 
 # DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX EXPRESSIONS
 
-A C<func_invo_alt_syntax> node has 3-4 ordered elements:  The first element
-is one of the 3 Raku C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
+A `func_invo_alt_syntax` node has 3-4 ordered elements:  The first element
+is one of the 3 Raku `Str` values [`i-op`, `pre-op`, `post-op`],
 depending on whether it represents infix, prefix, or postfix syntax,
-respectively.  The second element is a Raku C<Str> value,
-hereafter referred to as I<op> or I<keyword>, which determines the function
-to invoke.  The third element is (usually) a Raku C<Seq|Array>, hereafter
-referred to as I<main op args>, which is an ordered list of 1-N mandatory
+respectively.  The second element is a Raku `Str` value,
+hereafter referred to as *op* or *keyword*, which determines the function
+to invoke.  The third element is (usually) a Raku `Seq|Array`, hereafter
+referred to as *main op args*, which is an ordered list of 1-N mandatory
 inputs to the function invocation.  The (optional) fourth element is a Raku
-C<Mapping|Hash>, hereafter referred to as I<extra op args>, which is a
+`Mapping|Hash`, hereafter referred to as *extra op args*, which is a
 named list of optional function inputs.  The number and format of elements
-of either I<main op args> or I<extra op args> varies depending on I<op>.
-Note that, when a I<main op args> would just contain a single element, such
+of either *main op args* or *extra op args* varies depending on *op*.
+Note that, when a *main op args* would just contain a single element, such
 as when it is for a monadic operator, it may alternately be formatted as
 what is otherwise just its sole (node) element iff that node is not
-formatted as a Raku C<Seq|Array>.
+formatted as a Raku `Seq|Array`.
 
 ## Simple Commutative N-adic Infix Reduction Operators
 
-A C<comm_infix_reduce_op_invo> node has 2-N main op args, each of which is
-an C<expr> node.  Note that the I<main op args> may alternately be given as
-a Raku C<Bag|KeyBag|Set|KeySet> rather than a Raku C<Seq|Array>.
+A `comm_infix_reduce_op_invo` node has 2-N main op args, each of which is
+an `expr` node.  Note that the *main op args* may alternately be given as
+a Raku `Bag|KeyBag|Set|KeySet` rather than a Raku `Seq|Array`.
 
 Examples:
 
@@ -1969,8 +1969,8 @@ Examples:
 
 ## Simple Non-commutative N-adic Infix Reduction Operators
 
-A C<noncomm_infix_reduce_op_invo> node has 2-N main op args, each of which
-is an C<expr> node.
+A `noncomm_infix_reduce_op_invo` node has 2-N main op args, each of which
+is an `expr` node.
 
 Examples:
 
@@ -1986,8 +1986,8 @@ Examples:
 
 ## Simple Symmetric Dyadic Infix Operators
 
-A C<sym_dyadic_infix_op_invo> node has exactly 2 main op args, each of
-which is an C<expr> node; which function arguments get which main op args
+A `sym_dyadic_infix_op_invo` node has exactly 2 main op args, each of
+which is an `expr` node; which function arguments get which main op args
 isn't significant.
 
 Examples:
@@ -2004,9 +2004,9 @@ Examples:
 
 ## Simple Non-symmetric Dyadic Infix Operators
 
-A C<nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each of
-which is an C<expr> node; the first and second main op args are C<lhs> and
-C<rhs>, respectively.
+A `nonsym_dyadic_infix_op_invo` node has exactly 2 main op args, each of
+which is an `expr` node; the first and second main op args are `lhs` and
+`rhs`, respectively.
 
 Examples:
 
@@ -2049,8 +2049,8 @@ Examples:
 
 ## Simple Monadic Prefix Operators
 
-A C<monadic_prefix_op_invo> node has exactly 1 main op arg, which is an
-C<expr> node.
+A `monadic_prefix_op_invo` node has exactly 1 main op arg, which is an
+`expr` node.
 
 Examples:
 
@@ -2068,8 +2068,8 @@ Examples:
 
 ## Simple Monadic Postfix Operators
 
-A C<monadic_postfix_op_invo> node has exactly 1 main op arg, which is an
-C<expr> node.
+A `monadic_postfix_op_invo` node has exactly 1 main op arg, which is an
+`expr` node.
 
 Examples:
 
@@ -2081,14 +2081,14 @@ Examples:
 
 ## Simple Postcircumfix Operators
 
-A C<postcircumfix_op_invo> node has exactly 2-3 main op args, where the
-first is an C<expr> node that defines the primary input value for the
+A `postcircumfix_op_invo` node has exactly 2-3 main op args, where the
+first is an `expr` node that defines the primary input value for the
 operator and the other 1-2 provide attribute names that customize the
 operation.
 
-Note that for the C<[]> op, the C<min_index>, C<interval_boundary_kind>,
-C<max_index> are collectively the 2nd main op arg which is an C<SPInterval>
-node payload that defines an C<sp_interval_of.NNInt>.
+Note that for the `[]` op, the `min_index`, `interval_boundary_kind`,
+`max_index` are collectively the 2nd main op arg which is an `SPInterval`
+node payload that defines an `sp_interval_of.NNInt`.
 
 Examples:
 
@@ -2145,11 +2145,11 @@ Examples:
 
 ## Numeric Operators That Do Rounding
 
-A C<num_op_invo_with_round> node has exactly 2-3 main op args, each of
-which is an C<expr> node that defines an input value for the operator.
-When there are 2 main op args, the first and second args are C<expr> and
-C<round_rule>, respectively.  When there are 3 main op args, the first,
-second and third args are C<lhs>, C<rhs> and C<round_rule>, respectively.
+A `num_op_invo_with_round` node has exactly 2-3 main op args, each of
+which is an `expr` node that defines an input value for the operator.
+When there are 2 main op args, the first and second args are `expr` and
+`round_rule`, respectively.  When there are 3 main op args, the first,
+second and third args are `lhs`, `rhs` and `round_rule`, respectively.
 
 Examples:
 
@@ -2169,9 +2169,9 @@ Examples:
 
 ## Order Comparison Operators
 
-An C<ord_compare_op_invo> node has exactly 2 main op args,
-each of which is an C<expr> node.  The first and second args are C<lhs> and
-C<rhs>, respectively.  I<Details on the extra op args are pending.>
+An `ord_compare_op_invo` node has exactly 2 main op args,
+each of which is an `expr` node.  The first and second args are `lhs` and
+`rhs`, respectively.  *Details on the extra op args are pending.*
 
 Examples:
 
@@ -2179,26 +2179,26 @@ Examples:
 
 # DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS
 
-A C<proc_invo_alt_syntax> node has 3-4 ordered elements:  The first element
-is one of the 3 Raku C<Str> values [C<i-op>, C<pre-op>, C<post-op>],
+A `proc_invo_alt_syntax` node has 3-4 ordered elements:  The first element
+is one of the 3 Raku `Str` values [`i-op`, `pre-op`, `post-op`],
 depending on whether it represents infix, prefix, or postfix syntax,
-respectively.  The second element is a Raku C<Str> value,
-hereafter referred to as I<op> or I<keyword>, which determines the
+respectively.  The second element is a Raku `Str` value,
+hereafter referred to as *op* or *keyword*, which determines the
 procedure to invoke.  The third element is (usually) a Raku
-C<Seq|Array>, hereafter referred to as I<main op args>, which is an ordered
+`Seq|Array`, hereafter referred to as *main op args*, which is an ordered
 list of 1-N mandatory inputs to the procedure invocation.  The
-(optional) fourth element is a Raku C<Mapping|Hash>, hereafter referred to
-as I<extra op args>, which is a named list of optional procedure
-inputs.  The number and format of elements of either I<main op args> or
-I<extra op args> varies depending on I<op>.  Note that, when a I<main op
-args> would just contain a single element, such as when it is for a monadic
+(optional) fourth element is a Raku `Mapping|Hash`, hereafter referred to
+as *extra op args*, which is a named list of optional procedure
+inputs.  The number and format of elements of either *main op args* or
+*extra op args* varies depending on *op*.  Note that, when a *main op
+args* would just contain a single element, such as when it is for a monadic
 operator, it may alternately be formatted as what is otherwise just its
-sole (node) element iff that node is not formatted as a Raku C<Seq|Array>.
+sole (node) element iff that node is not formatted as a Raku `Seq|Array`.
 
 ## Procedure Simple Monadic Postfix Operators
 
-An C<proc_monadic_postfix_op_invo> node has exactly 1 main op arg, which is
-an C<expr> node.
+An `proc_monadic_postfix_op_invo` node has exactly 1 main op arg, which is
+an `expr` node.
 
 Examples:
 
@@ -2208,9 +2208,9 @@ Examples:
 
 ## Procedure Simple Non-symmetric Dyadic Infix Operators
 
-A C<proc_nonsym_dyadic_infix_op_invo> node has exactly 2 main op args, each
-of which is an C<expr> node; the first and second main op args are C<lhs>
-and C<rhs>, respectively.
+A `proc_nonsym_dyadic_infix_op_invo` node has exactly 2 main op args, each
+of which is an `expr` node; the first and second main op args are `lhs`
+and `rhs`, respectively.
 
 Examples:
 
@@ -2226,7 +2226,7 @@ Examples:
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

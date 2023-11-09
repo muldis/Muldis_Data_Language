@@ -27,7 +27,7 @@ sub|supertype relationships.  Since there are a number of types with
 multiple parents, those types may appear multiple times in the graph;
 moreover, the graph is displayed in multiple slices, some of which are
 different views of the same type relationships.  As a notable exception,
-C<sys.std.Core.Type.Empty> is a proper subtype of I<all> of the other types
+`sys.std.Core.Type.Empty` is a proper subtype of *all* of the other types
 in this graph, but it is only shown once.
 
 This graph slice shows all of the top-level types as is relevant from the
@@ -51,11 +51,11 @@ user's point of view:
 
 This arrangement is user-significant for 2 main reasons.  The first reason
 is that general semantics and intended interpretations of values and types
-fall into 4 main lines, represented by C<Scalar|Tuple|Relation|External>.
+fall into 4 main lines, represented by `Scalar|Tuple|Relation|External`.
 The second reason is that only values of the 3 deeply-homogeneous types
-shown above (C<DH[Scalar|Tuple|Relation]>) may be used in a database; all
+shown above (`DH[Scalar|Tuple|Relation]`) may be used in a database; all
 values not of those types may only be used transiently.  The fact that
-C<Int> is atomic while the other scalar types aren't is not relevant to
+`Int` is atomic while the other scalar types aren't is not relevant to
 users in the general case.
 
 This graph slice shows all of those same top-level types, plus a few more,
@@ -81,12 +81,12 @@ as is relevant from the implementer's point of view:
             sys.std.Core.Type.Cat.Nonstructure
 
 This arrangement is implementer-significant because it best illustrates the
-conceptual implementation of the types; C<Int> and C<List> are the only 2
+conceptual implementation of the types; `Int` and `List` are the only 2
 types that actually introduce values into the type system, and all other
-types are subset and/or union types composing their values; so, I<every>
-Muldis D value either I<is> an C<Int> or I<is> a C<List>.  The fact that
-C<Scalar> composes both C<Int> and C<List> values while
-C<Tuple|Relation|External> compose only C<List> values is less important.
+types are subset and/or union types composing their values; so, *every*
+Muldis D value either *is* an `Int` or *is* a `List`.  The fact that
+`Scalar` composes both `Int` and `List` values while
+`Tuple|Relation|External` compose only `List` values is less important.
 
 This graph slice shows all of the general-purpose system-defined scalar
 types:
@@ -116,11 +116,11 @@ types:
                             sys.std.Core.Type.Text.ASCII
                             sys.std.Core.Type.Text.Latin1
 
-To be clear, C<ScalarWP> is the intersection type of C<List> and C<Scalar>,
-and C<DHScalarWP> is the intersection type of C<ScalarWP> and C<DHScalar>;
-or, C<Scalar> is the union type of just C<Int>, C<String> and C<ScalarWP>,
-and C<DHScalar> is the union type of just C<Int>, C<String> and
-C<DHScalarWP>.
+To be clear, `ScalarWP` is the intersection type of `List` and `Scalar`,
+and `DHScalarWP` is the intersection type of `ScalarWP` and `DHScalar`;
+or, `Scalar` is the union type of just `Int`, `String` and `ScalarWP`,
+and `DHScalar` is the union type of just `Int`, `String` and
+`DHScalarWP`.
 
 This graph slice shows all of the general-purpose system-defined nonscalar
 type factories:
@@ -190,8 +190,8 @@ view of their relationships:
                     sys.std.Core.Type.Bag
                     sys.std.Core.Type.MPInterval
 
-To be clear, all of the nonscalar C<DH>-prefixed types except for
-C<DH[Tuple|Relation]> are intersection types of one of the latter two plus
+To be clear, all of the nonscalar `DH`-prefixed types except for
+`DH[Tuple|Relation]` are intersection types of one of the latter two plus
 the same-named types sans the prefix.
 
 This graph slice shows all of the general-purpose system-defined types that
@@ -241,74 +241,74 @@ compose:
 # MAXIMAL AND MINIMAL DATA TYPES
 
 These core data types are special and are the only Muldis D types (except
-for C<sys.std.Core.Type.Cat.[List|Structure]>) that are neither just scalar
+for `sys.std.Core.Type.Cat.[List|Structure]`) that are neither just scalar
 nor nonscalar nor external nor nonstructure types.  They are all
 system-defined and it is impossible for users to define more types of this
 nature.
 
 ## sys.std.Core.Type.Universal
 
-The C<Universal> type is the maximal
+The `Universal` type is the maximal
 type of the entire Muldis D type system, and contains every value that can
 possibly exist.  Every other (non-aliased) type is implicitly a proper
-subtype of C<Universal>, and C<Universal> is implicitly a union type over
-all other types.  Its default value is C<Bool:False>.  The cardinality of
-this type is infinity.  C<Universal> is the nullary-domain-intersection
-type.  Considering the low-level type system, C<Universal> is the
-domain-union type of just the 2 types C<Int> and C<List>.
+subtype of `Universal`, and `Universal` is implicitly a union type over
+all other types.  Its default value is `Bool:False`.  The cardinality of
+this type is infinity.  `Universal` is the nullary-domain-intersection
+type.  Considering the low-level type system, `Universal` is the
+domain-union type of just the 2 types `Int` and `List`.
 
 ## sys.std.Core.Type.Empty
 
-The C<Empty> type is the minimal type of
+The `Empty` type is the minimal type of
 the entire Muldis D type system, and is the only type that contains exactly
 zero values.  Every other (non-aliased) type is implicitly a proper
-supertype of C<Empty> and C<Empty> is implicitly an intersection type over
+supertype of `Empty` and `Empty` is implicitly an intersection type over
 all other types.  It has no default value.  The cardinality of this type is
-zero.  C<Empty> is the nullary-domain-union type.  Considering the
-low-level type system, C<Empty> is the domain-intersection type of just the
-2 types C<Int> and C<List>.
+zero.  `Empty` is the nullary-domain-union type.  Considering the
+low-level type system, `Empty` is the domain-intersection type of just the
+2 types `Int` and `List`.
 
 # GENERIC MIXIN DATA TYPES
 
 ## sys.std.Core.Type.Ordered
 
-The C<Ordered> type is a mixin (union) type that is intended to be
-explicitly composed by all other types that are considered I<ordered>.  An
+The `Ordered` type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered *ordered*.  An
 ordered type is a type for which one can take all of its values and place
-them on a line such that each value is definatively considered I<before>
-all of the values one one side and I<after> all of the values on the other
+them on a line such that each value is definatively considered *before*
+all of the values one one side and *after* all of the values on the other
 side.  A typical ordered type is a scalar type, but not-scalar types can
 also be ordered.  Almost all system-defined scalar types are also ordered
-types, including: C<Bool>, C<Int>, C<Rat>, C<Blob>, C<Text>.  The
-cardinality of C<Ordered> is infinity.  The default value of C<Ordered> is
-C<Bool:False>.  The minimum and maximum values of C<Ordered> are C<-Inf>
-and C<Inf>, respectively; these 2 values are special singleton scalar types
+types, including: `Bool`, `Int`, `Rat`, `Blob`, `Text`.  The
+cardinality of `Ordered` is infinity.  The default value of `Ordered` is
+`Bool:False`.  The minimum and maximum values of `Ordered` are `-Inf`
+and `Inf`, respectively; these 2 values are special singleton scalar types
 that are canonically considered to be before and after, respectively,
-I<every> other value of the Muldis D type system, regardless of whether
+*every* other value of the Muldis D type system, regardless of whether
 those values are composed into an ordered type.
 
 ## sys.std.Core.Type.Ordinal
 
-The C<Ordinal> type is a mixin (union) type that is intended to be
-explicitly composed by all other types that are considered I<ordinal>.  An
+The `Ordinal` type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered *ordinal*.  An
 ordinal type is an ordered type for which one can take any one of its
 values and derive a definitive predecessor or successor value, iff the
 initial value isn't the first or last value on the line.  Similarly, one
 can take any two values of an ordinal type and produce an ordered list of
 all of that value's types which are on the line between those two values.
-The C<Ordinal> type explicitly composes the C<Ordered> mixin type, and so
-every type which explicitly composes C<Ordinal> also implicitly composes
-C<Ordered>.  Just a few system-defined ordered types are also ordinal
-types, including: C<Bool>, C<Int>.  A primary quality of a type that is
+The `Ordinal` type explicitly composes the `Ordered` mixin type, and so
+every type which explicitly composes `Ordinal` also implicitly composes
+`Ordered`.  Just a few system-defined ordered types are also ordinal
+types, including: `Bool`, `Int`.  A primary quality of a type that is
 ordered but not ordinal is that you can take any two values of that type
 and then find a third value of that type which lies between the first two
 on the line; by definition for an ordinal type, there is no third value
 between one of its values and that value's predecessor or successor value.
-The cardinality of C<Ordinal> is infinity; its default and minimum and
-maximum values are the same as those of C<Ordered>.
+The cardinality of `Ordinal` is infinity; its default and minimum and
+maximum values are the same as those of `Ordered`.
 
-For some ordinal types, there is the concept of a I<quantum> or I<step
-size>, where every consecutive pair of values on that type's value line are
+For some ordinal types, there is the concept of a *quantum* or *step
+size*, where every consecutive pair of values on that type's value line are
 conceptually spaced apart at equal distances; this distance would be the
 quantum, and all steps along the value line are at exact multiples of that
 quantum.  However, ordinal types in general don't need to be like this, and
@@ -317,65 +317,65 @@ values; an ordinal type is just required to know where all the values are.
 
 ## sys.std.Core.Type.Numeric
 
-The C<Numeric> type is a mixin (union) type that is intended to be
-explicitly composed by all other types that are considered I<numeric>.  A
+The `Numeric` type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered *numeric*.  A
 numeric type is a type with whose values it would be reasonable to apply
-all of the common mathematical operators like C<+>, C<->, C<*>, C</>.  Just
-a few primary system-defined types are numeric types, including C<Int> and
-C<Rat>.  The cardinality of C<Numeric> is infinity.  The default value of
-C<Numeric> is the C<Int> value zero.  The C<Numeric> type is not itself
+all of the common mathematical operators like `+`, `-`, `*`, `/`.  Just
+a few primary system-defined types are numeric types, including `Int` and
+`Rat`.  The cardinality of `Numeric` is infinity.  The default value of
+`Numeric` is the `Int` value zero.  The `Numeric` type is not itself
 ordered, but often a type which is numeric is also ordered.  Muldis D does
 not currently have any system-defined complex number types, but if it did,
-they conceivably would also compose C<Numeric>; but in that case, it may
-prove useful to split the C<Numeric> mixin into itself and a C<Real> mixin.
+they conceivably would also compose `Numeric`; but in that case, it may
+prove useful to split the `Numeric` mixin into itself and a `Real` mixin.
 
 ## sys.std.Core.Type.Stringy
 
-The C<Stringy> type is a mixin (union) type that is intended to be
-explicitly composed by all other types that are considered I<stringy>,
+The `Stringy` type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered *stringy*,
 which for the moment also includes any types whose values are an ordered
 collection of elements, such as arrays.  A stringy type is a type with
 whose values it would be reasonable to apply all of the common string or
-array operators like C<~> or C<~#>.  Just a few primary system-defined
-types are stringy types, including C<Blob>, C<Text>, and C<Array>.  The
-cardinality of C<Stringy> is infinity.  The default value of C<Stringy> is
-the C<Text> value empty string.  The C<Stringy> type is not itself
+array operators like `~` or `~#`.  Just a few primary system-defined
+types are stringy types, including `Blob`, `Text`, and `Array`.  The
+cardinality of `Stringy` is infinity.  The default value of `Stringy` is
+the `Text` value empty string.  The `Stringy` type is not itself
 ordered, but often a type which is stringy is also ordered.
 
 ## sys.std.Core.Type.Textual
 
-The C<Textual> type is a mixin (union) type that is intended to be
-explicitly composed by all other types that are considered I<textual>, that
-is those types whose values are strings of characters.  The C<Textual> type
-explicitly composes the C<Stringy> mixin type, and so every type which
-explicitly composes C<Textual> also implicitly composes C<Stringy>.  Most
+The `Textual` type is a mixin (union) type that is intended to be
+explicitly composed by all other types that are considered *textual*, that
+is those types whose values are strings of characters.  The `Textual` type
+explicitly composes the `Stringy` mixin type, and so every type which
+explicitly composes `Textual` also implicitly composes `Stringy`.  Most
 existing or likely system-defined stringy types are also textual types,
-including C<Text>.  The cardinality of C<Textual> is infinity.  The default
-value of C<Textual> is the C<Text> value empty string.  The C<Textual> type
+including `Text`.  The cardinality of `Textual` is infinity.  The default
+value of `Textual` is the `Text` value empty string.  The `Textual` type
 is not itself ordered, but often a type which is textual is also ordered.
 
 ## sys.std.Core.Type.Attributive
 
-The C<Attributive> type is a mixin (union) type that is intended to be
+The `Attributive` type is a mixin (union) type that is intended to be
 explicitly composed by other types that are considered to be collections of
 named attributes, such as generic tuples and relations.  Just a few primary
-system-defined types are attributive types, namely C<Tuple> and
-C<Relation>.  The cardinality of C<Attributive> is infinity.  The default
-value of C<Attributive> is C<Tuple:D0>.  I<The C<ScalarWP> type could
-conceivably compose C<Attributive> as well, but for now it doesn't, because
-it still differs from C<Tuple> and C<Relation> in several ways such that
-virtual routines composed for C<Tuple> and C<Relation> would be impractical
-to compose for C<ScalarWP> in general, but that might change later.>
+system-defined types are attributive types, namely `Tuple` and
+`Relation`.  The cardinality of `Attributive` is infinity.  The default
+value of `Attributive` is `Tuple:D0`.  I<The `ScalarWP` type could
+conceivably compose `Attributive` as well, but for now it doesn't, because
+it still differs from `Tuple` and `Relation` in several ways such that
+virtual routines composed for `Tuple` and `Relation` would be impractical
+to compose for `ScalarWP` in general, but that might change later.>
 
 ## sys.std.Core.Type.Collective
 
-The C<Collective> type is a mixin (union) type that is intended to be
+The `Collective` type is a mixin (union) type that is intended to be
 explicitly composed by other types that are effectively simple homogeneous
 collections of values, and something more specific than relations in
 general.  Just a few primary system-defined types are collective types,
-including C<Set>, C<Array>, C<Bag>, C<SPInterval>, and C<MPInterval>.  The
-cardinality of C<Collective> is infinity.  The default value of
-C<Collective> is C<Nothing>.
+including `Set`, `Array`, `Bag`, `SPInterval`, and `MPInterval`.  The
+cardinality of `Collective` is infinity.  The default value of
+`Collective` is `Nothing`.
 
 # GENERIC SCALAR DATA TYPES
 
@@ -391,304 +391,304 @@ character strings, but tagged with extra metadata if the host language is
 more weakly typed or lacks one-to-one type correspondence; see
 [Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md) or
 [Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md) for a Raku|Perl-based example.  These
-types, except for C<Scalar> and C<DHScalar>, are all ordered.
+types, except for `Scalar` and `DHScalar`, are all ordered.
 
 ## sys.std.Core.Type.Scalar
 
-The C<Scalar> type is the maximal type of all Muldis D scalar types, and
+The `Scalar` type is the maximal type of all Muldis D scalar types, and
 contains every scalar value that can possibly exist.  Every other
-(non-aliased) scalar type is implicitly a proper subtype of C<Scalar>, and
-C<Scalar> is implicitly a union type over all other scalar types.  Its
-default value is C<Bool:False>.  The cardinality of this type is infinity.
-Considering the low-level type system, C<Scalar> is just the union type of
-these 3 types: C<Int>, C<String>, C<ScalarWP>.
+(non-aliased) scalar type is implicitly a proper subtype of `Scalar`, and
+`Scalar` is implicitly a union type over all other scalar types.  Its
+default value is `Bool:False`.  The cardinality of this type is infinity.
+Considering the low-level type system, `Scalar` is just the union type of
+these 3 types: `Int`, `String`, `ScalarWP`.
 
 ## sys.std.Core.Type.DHScalar
 
-C<DHScalar> is a proper subtype of
-C<Scalar> where every one of its possreps' attributes is restricted to be
+`DHScalar` is a proper subtype of
+`Scalar` where every one of its possreps' attributes is restricted to be
 of just certain categories of data types, rather than allowing any data
 types at all; related to this restriction, any dh-scalar value is allowed
 to be stored in a global/persisting relational database but any other
-scalar value may only be used for transient data.  The C<DHScalar> type is
+scalar value may only be used for transient data.  The `DHScalar` type is
 the maximal type of all Muldis D dh-scalar types, and contains every
 dh-scalar value that can possibly exist.  Every other (non-aliased)
-dh-scalar type is implicitly a proper subtype of C<DHScalar>, and
-C<DHScalar> is implicitly a union type over all other dh-scalar types.  Its
-default value is C<Bool:False>.  The cardinality of this type is infinity.
-Considering the low-level type system, C<Scalar> is just the union type of
-these 3 types: C<Int>, C<String>, C<DHScalarWP>.
+dh-scalar type is implicitly a proper subtype of `DHScalar`, and
+`DHScalar` is implicitly a union type over all other dh-scalar types.  Its
+default value is `Bool:False`.  The cardinality of this type is infinity.
+Considering the low-level type system, `Scalar` is just the union type of
+these 3 types: `Int`, `String`, `DHScalarWP`.
 
 ## sys.std.Core.Type.Bool
 
-The C<Bool> type is explicitly defined
+The `Bool` type is explicitly defined
 as a union type over just these 2 singleton types having
-C<sys.std.Core.Type.Bool.*>-format names:
-C<False> and C<True>.  A C<Bool> represents a truth value, and is the
-result type of any C<is_same> or C<is_not_same> routine; it is
+`sys.std.Core.Type.Bool.*`-format names:
+`False` and `True`.  A `Bool` represents a truth value, and is the
+result type of any `is_same` or `is_not_same` routine; it is
 the only essential general-purpose scalar data type of a generic B<D>
 language, although not the only essential one in Muldis D.
-The default and minimum value of C<Bool> is
-C<False>; its maximum value is C<True>.  The cardinality of this type is 2.
-The C<Bool> type explicitly composes the C<Ordinal> mixin type, and by
-extension also implicitly composes the C<Ordered> mixin type.
-The C<Bool> type has a default ordering algorithm that corresponds directly
-to the sequence in which its values are documented here; C<False> is
-ordered before C<True>.
+The default and minimum value of `Bool` is
+`False`; its maximum value is `True`.  The cardinality of this type is 2.
+The `Bool` type explicitly composes the `Ordinal` mixin type, and by
+extension also implicitly composes the `Ordered` mixin type.
+The `Bool` type has a default ordering algorithm that corresponds directly
+to the sequence in which its values are documented here; `False` is
+ordered before `True`.
 
-The value C<Bool:False> is also known as C<False> and I<contradiction> and
-C<⊥>.  The value C<Bool:True> is also known as C<True> and I<tautology> and
-C<⊤>.
+The value `Bool:False` is also known as `False` and *contradiction* and
+`⊥`.  The value `Bool:True` is also known as `True` and *tautology* and
+`⊤`.
 
 ## sys.std.Core.Type.Bool.*
 
-There are exactly 2 types having C<sys.std.Core.Type.Bool.*>-format names;
+There are exactly 2 types having `sys.std.Core.Type.Bool.*`-format names;
 for the rest of this description,
-the type name C<Bool.Value> will be used as a proxy for each and every one
-of them.  A C<Bool.Value> has 1 system-defined possrep whose name is the
+the type name `Bool.Value` will be used as a proxy for each and every one
+of them.  A `Bool.Value` has 1 system-defined possrep whose name is the
 empty string and which has zero attributes.  The cardinality of this type
 is 1, and its only value is its default and minimum and maximum value.
 
 ## sys.std.Core.Type.Int
 
-An C<Int> is a single exact integral number
-of any magnitude.  The C<Int> type explicitly composes the C<Numeric> mixin
+An `Int` is a single exact integral number
+of any magnitude.  The `Int` type explicitly composes the `Numeric` mixin
 type.  Its default value is zero; its minimum and maximum
-values are conceptually infinities and practically impossible.  C<Int> is
-one of just two scalar root types (the other is C<String>) that do I<not>
-have any possreps.  C<Int> is also
+values are conceptually infinities and practically impossible.  `Int` is
+one of just two scalar root types (the other is `String`) that do *not*
+have any possreps.  `Int` is also
 the only atomic type in the Muldis D type system.  The cardinality of
-this type is infinity; to define a most-generalized finite C<Int> subtype,
+this type is infinity; to define a most-generalized finite `Int` subtype,
 you must specify the 2 integer end-points of the inclusive range that all
-its values are in.  The C<Int> type explicitly composes the C<Ordinal>
-mixin type, and by extension also implicitly composes the C<Ordered> mixin
-type.  The C<Int> type has a default ordering algorithm; for 2
-distinct C<Int> values, the value closer to negative infinity is ordered
+its values are in.  The `Int` type explicitly composes the `Ordinal`
+mixin type, and by extension also implicitly composes the `Ordered` mixin
+type.  The `Int` type has a default ordering algorithm; for 2
+distinct `Int` values, the value closer to negative infinity is ordered
 before the value closer to positive infinity.
 
 ## sys.std.Core.Type.NNInt
 
-C<NNInt> (non-negative integer) is a
-proper subtype of C<Int> where all member values are greater than or equal
+`NNInt` (non-negative integer) is a
+proper subtype of `Int` where all member values are greater than or equal
 to zero.  Its minimum value is zero.
 
 ## sys.std.Core.Type.PInt
 
-C<PInt> (positive integer) is a proper
-subtype of C<NNInt> where all member values are greater than zero.  Its
+`PInt` (positive integer) is a proper
+subtype of `NNInt` where all member values are greater than zero.  Its
 default and minimum value is 1.
 
 ## sys.std.Core.Type.PInt2_N
 
-C<PInt2_N> is a proper subtype of
-C<PInt> where all member values are greater than 1.  Its default and
+`PInt2_N` is a proper subtype of
+`PInt` where all member values are greater than 1.  Its default and
 minimum value is 2.
 
 ## sys.std.Core.Type.Rat
 
-A C<Rat> (scalar) is a single exact
-rational number of any magnitude and precision.  The C<Rat> type explicitly
-composes the C<Numeric> mixin type.  It is conceptually a
-composite type with 2 main system-defined possreps, called C<ratio> and
-C<float>, both of which are defined over several C<Int>.
+A `Rat` (scalar) is a single exact
+rational number of any magnitude and precision.  The `Rat` type explicitly
+composes the `Numeric` mixin type.  It is conceptually a
+composite type with 2 main system-defined possreps, called `ratio` and
+`float`, both of which are defined over several `Int`.
 
-The C<ratio> possrep consists of 2 attributes: C<numerator> (an C<Int>),
-C<denominator> (a C<PInt>); the conceptual value of a C<Rat> is the result
-of rational-dividing its C<numerator> by its C<denominator>.  Because in
-the general case there are an infinite set of [C<numerator>,C<denominator>]
-integer pairs that denote the same rational value, the C<ratio> possrep
-carries the normalization constraint that C<numerator> and C<denominator>
+The `ratio` possrep consists of 2 attributes: `numerator` (an `Int`),
+`denominator` (a `PInt`); the conceptual value of a `Rat` is the result
+of rational-dividing its `numerator` by its `denominator`.  Because in
+the general case there are an infinite set of [`numerator`,`denominator`]
+integer pairs that denote the same rational value, the `ratio` possrep
+carries the normalization constraint that `numerator` and `denominator`
 must be coprime, that is, they have no common integer factors other than 1.
 
-The C<float> possrep consists of 3 attributes: C<mantissa> (an C<Int>),
-C<radix> (a C<PInt2_N>), C<exponent> (an C<Int>); the conceptual value
-of a C<Rat> is the result of multiplying its C<mantissa> by the result of
-taking its C<radix> to the power of its C<exponent>.  The C<float> possrep
+The `float` possrep consists of 3 attributes: `mantissa` (an `Int`),
+`radix` (a `PInt2_N`), `exponent` (an `Int`); the conceptual value
+of a `Rat` is the result of multiplying its `mantissa` by the result of
+taking its `radix` to the power of its `exponent`.  The `float` possrep
 carries the normalization constraint that among all the
-[C<mantissa>,C<radix>,C<exponent>] triples which would denote the same
-rational value, the only allowed triple is the one having both the C<radix>
+[`mantissa`,`radix`,`exponent`] triples which would denote the same
+rational value, the only allowed triple is the one having both the `radix`
 with the lowest value (that is closest to or equal to 2) and the
-C<exponent> with the highest value (that is closest to positive infinity).
-I<Note: this constraint could stand to be rephrased for simplification or
+`exponent` with the highest value (that is closest to positive infinity).
+*Note: this constraint could stand to be rephrased for simplification or
 correction, eg if somehow the sets of candidate triples sharing the lowest
-radix and sharing the highest exponent have an empty intersection.>
+radix and sharing the highest exponent have an empty intersection.*
 
-The default value of C<Rat> is zero; its minimum and maximum values are
+The default value of `Rat` is zero; its minimum and maximum values are
 conceptually infinities and practically impossible.  The cardinality of
-this type is infinity; to define a most-generalized finite C<Rat> subtype,
+this type is infinity; to define a most-generalized finite `Rat` subtype,
 you must specify the greatest magnitude value denominator, plus the 2
 integer end-points of the inclusive range of the value numerator; or
 alternately you must specify the greatest magnitude value mantissa (the
-I<maximum precision> of the number), and specify the greatest magnitude
+*maximum precision* of the number), and specify the greatest magnitude
 value radix, plus the 2 integer end-points of the inclusive range of
-the value exponent (the I<maximum scale> of the number).  Common subtypes
+the value exponent (the *maximum scale* of the number).  Common subtypes
 specify that the normalized radixes of all their values are either 2 or 10;
 types such as these will easily map exactly to common human or physical
 numeric representations, so they tend to perform better.
 
-The C<Rat> type explicitly composes the C<Ordered> mixin type.
-The C<Rat> type has a default ordering algorithm which is conceptually the
-same as for C<Int>; for 2 distinct C<Rat> values, the value closer to
+The `Rat` type explicitly composes the `Ordered` mixin type.
+The `Rat` type has a default ordering algorithm which is conceptually the
+same as for `Int`; for 2 distinct `Rat` values, the value closer to
 negative infinity is ordered before the value closer to positive infinity.
 
-The C<Rat> type has an implementation hint for less intelligent Muldis D
-implementations, that suggests using the C<float> possrep as the basis for
+The `Rat` type has an implementation hint for less intelligent Muldis D
+implementations, that suggests using the `float` possrep as the basis for
 the physical representation.
 
 ## sys.std.Core.Type.NNRat
 
-C<NNRat> (non-negative rational) is a
-proper subtype of C<Rat> where all member values are greater than or equal
-to zero (that is, the C<numerator>|C<mantissa> is greater than or equal to
+`NNRat` (non-negative rational) is a
+proper subtype of `Rat` where all member values are greater than or equal
+to zero (that is, the `numerator`|`mantissa` is greater than or equal to
 zero).  Its minimum value is zero.
 
 ## sys.std.Core.Type.PRat
 
-C<PRat> (positive rational) is a
-proper subtype of C<NNRat> where all member values are greater than zero
-(that is, the C<numerator>|C<mantissa> is greater than zero).  Its default
+`PRat` (positive rational) is a
+proper subtype of `NNRat` where all member values are greater than zero
+(that is, the `numerator`|`mantissa` is greater than zero).  Its default
 and minimum value is 1.
 
 ## sys.std.Core.Type.Blob
 
-A C<Blob> is an undifferentiated string of
-bits.  The C<Blob> type explicitly composes the C<Stringy> mixin
-type.  A C<Blob> has 1 system-defined possrep named C<bits> which consists
-of 1 C<BString>-typed attribute whose name is the empty string; each
-element of C<bits> is either C<0> to represent a low bit or C<1> to
-represent a high bit.  The C<Blob> type explicitly composes the C<Ordered>
-mixin type.  A C<Blob> is a simple wrapper for a C<BString> and
+A `Blob` is an undifferentiated string of
+bits.  The `Blob` type explicitly composes the `Stringy` mixin
+type.  A `Blob` has 1 system-defined possrep named `bits` which consists
+of 1 `BString`-typed attribute whose name is the empty string; each
+element of `bits` is either `0` to represent a low bit or `1` to
+represent a high bit.  The `Blob` type explicitly composes the `Ordered`
+mixin type.  A `Blob` is a simple wrapper for a `BString` and
 all of its other details such as default and minimum and maximum values and
 cardinality and default ordering algorithm all correspond directly.  But
-C<Blob> is explicitly disjoint from C<BString> due to having a different
+`Blob` is explicitly disjoint from `BString` due to having a different
 intended interpretation.
 
 ## sys.std.Core.Type.OctetBlob
 
-C<OctetBlob> is a proper subtype of
-C<Blob> where all member values have a length in bits that is an even
-multiple of 8 (or is zero).  C<OctetBlob> adds 1 system-defined possrep
-named C<octets> which consists of 1 C<OString>-typed attribute whose name
-is the empty string.  The C<octets> and C<bits> possreps correspond as you
-might expect, such that each element of the sole attribute of C<octets>
-maps to 8 consecutive elements of the sole attribute of C<bits>; with each
+`OctetBlob` is a proper subtype of
+`Blob` where all member values have a length in bits that is an even
+multiple of 8 (or is zero).  `OctetBlob` adds 1 system-defined possrep
+named `octets` which consists of 1 `OString`-typed attribute whose name
+is the empty string.  The `octets` and `bits` possreps correspond as you
+might expect, such that each element of the sole attribute of `octets`
+maps to 8 consecutive elements of the sole attribute of `bits`; with each
 8 bits corresponding to an octet, the lowest-element-indexed bit
 corresponds to the highest bit of the octet when the latter is encoded as a
 standard two's complement binary unsigned integer, and the
 highest-element-indeed bit corresponds to the lowest bit of the octet.  The
-reason the C<OctetBlob> type is system-defined as distinct from C<Blob> is
-for convenience of users since it is likely the vast majority of C<Blob>
+reason the `OctetBlob` type is system-defined as distinct from `Blob` is
+for convenience of users since it is likely the vast majority of `Blob`
 values consist of whole octets and users would want to work with them in
 those terms.
 
 ## sys.std.Core.Type.Text
 
-A C<Text> is a string of abstract characters.  The C<Text> type explicitly
-composes the C<Textual> mixin type, and by extension also implicitly
-composes the C<Stringy> mixin type.  A C<Text> has 1 system-defined possrep
-named C<maximal_chars> which consists of 1 C<String>-typed attribute whose
-name is the empty string; each element of C<maximal_chars> is an integer
+A `Text` is a string of abstract characters.  The `Text` type explicitly
+composes the `Textual` mixin type, and by extension also implicitly
+composes the `Stringy` mixin type.  A `Text` has 1 system-defined possrep
+named `maximal_chars` which consists of 1 `String`-typed attribute whose
+name is the empty string; each element of `maximal_chars` is an integer
 representing an abstract character code point of an infinite-size
 proprietary abstract character repertoire, with each unique integer
-corresponding to a unique character.  The C<Text> type explicitly composes
-the C<Ordered> mixin type.  A C<Text> is a simple wrapper for a C<String>
+corresponding to a unique character.  The `Text` type explicitly composes
+the `Ordered` mixin type.  A `Text` is a simple wrapper for a `String`
 and all of its other details such as default and minimum and maximum values
 and cardinality and default ordering algorithm (matching and sorting is
-numeric by code point integer) all correspond directly.  But C<Text> is
-explicitly disjoint from C<String> due to having a different intended
-interpretation.  The formal definition of the C<Text> type does not define
+numeric by code point integer) all correspond directly.  But `Text` is
+explicitly disjoint from `String` due to having a different intended
+interpretation.  The formal definition of the `Text` type does not define
 any abstract characters itself.  Rather, the actual abstract characters in
-C<Text>'s repertoire are all defined by the proper subtypes of C<Text> that
+`Text`'s repertoire are all defined by the proper subtypes of `Text` that
 each formally declare a character set, and the union of these is the
-repertoire of C<Text>; how such a said proper subtype declares a character
+repertoire of `Text`; how such a said proper subtype declares a character
 set is by adding at least one possrep capable of representing strings of
-characters of that set.  The set of such subtypes of C<Text> would
+characters of that set.  The set of such subtypes of `Text` would
 collectively define mappings between their own possreps and
-C<maximal_chars>, either directly or indirectly.  The C<Text> type is
+`maximal_chars`, either directly or indirectly.  The `Text` type is
 officially compatible with the Unicode standard version 6.2.0, and so all
-proper subtypes of C<Text> may only define character sets whose common
+proper subtypes of `Text` may only define character sets whose common
 characters with Unicode would cleanly map bidirectionally with the latter;
 most well known character sets do this, but for any others, they would be
-defined as some C<Textual>-composing type that is disjoint from C<Text>.
-I<TODO: Investigate on what side of the fence Unicode alternatives such as
-ISO/IEC 2022 or Mojikyo or HKSCS would fall.>
-Officially the actual integer strings used by C<maximal_chars> for abstract
+defined as some `Textual`-composing type that is disjoint from `Text`.
+*TODO: Investigate on what side of the fence Unicode alternatives such as
+ISO/IEC 2022 or Mojikyo or HKSCS would fall.*
+Officially the actual integer strings used by `maximal_chars` for abstract
 characters is both implementation-defined and unstable, so user code should
 typically never reference this possrep directly; similarly, the natural
-ordering of C<Text> is officially implementation-defined and unstable.  The
+ordering of `Text` is officially implementation-defined and unstable.  The
 official way to have character string types that naturally sort in a way
 that is correct for some particular nationality is by having a disjoint
-C<Textual>-composing type with a C<Text>-typed possrep attribute and the
+`Textual`-composing type with a `Text`-typed possrep attribute and the
 wrapper type would define the desired ordering algorithm itself.
 Similarly, any concept of nationality-specific graphemes is best expressed
-in a wrapper.  C<Text> is more agnostic and generic in these matters.
-It is likely each implementation will make C<maximal_chars> resemble the
+in a wrapper.  `Text` is more agnostic and generic in these matters.
+It is likely each implementation will make `maximal_chars` resemble the
 largest well known character set that it knows about, typically Unicode.
-I<TODO: Consider making C<maximal_chars> formally identical to Unicode for
+I<TODO: Consider making `maximal_chars` formally identical to Unicode for
 all element integers in 0..2^21, and to ASCII for all in 0..127, and then
 the subtypes could be defined in a normal and independent/portable way.
 Maybe we need to formally define what higher ranges HKSCS/etc map to.>
 
 ## sys.std.Core.Type.Text.Unicode
 
-C<Text.Unicode> is a proper subtype of C<Text> where all member values have
+`Text.Unicode` is a proper subtype of `Text` where all member values have
 just the abstract characters in the character repertoire of the Unicode
 standard version 6.2.0; the integer code point space that Unicode reserves
 for itself is 0..0x10FFFF, of which it currently has about 10% allocated.
-C<Text.Unicode> adds the 1 system-defined possrep named C<unicode_codes>
-which consists of 1 C<String>-typed attribute whose name is the empty
-string; each element of C<unicode_codes> represents a Unicode standard
-version 6.2.0 character abstract code point number.  C<Text.Unicode> values
+`Text.Unicode` adds the 1 system-defined possrep named `unicode_codes`
+which consists of 1 `String`-typed attribute whose name is the empty
+string; each element of `unicode_codes` represents a Unicode standard
+version 6.2.0 character abstract code point number.  `Text.Unicode` values
 in general do not conform to any Unicode normal form, so the same string
 can contain graphemes in both composed and decomposed formats, and two
 strings with the same graphemes in different such formats will compare as
-unequal.  C<Text.Unicode> also adds the 1 system-defined possrep named
-C<unicode_utf8_octets> which consists of 1 C<OString>-typed attribute whose
-name is the empty string; C<unicode_utf8_octets> represents each code point
+unequal.  `Text.Unicode` also adds the 1 system-defined possrep named
+`unicode_utf8_octets` which consists of 1 `OString`-typed attribute whose
+name is the empty string; `unicode_utf8_octets` represents each code point
 as a sequence of 1..4 octets in the UTF-8 encoding; the number of octets
 used varies by code point as follows: 1 for 0x0..0x7F, 2 for 0x80..0x7FF,
 3 for 0x800..0xFFFF, 4 for 0x10000..0x10FFFF.
 
 ## sys.std.Core.Type.Text.Unicode.Canon
 
-C<Text.Unicode.Canon> is a proper subtype of C<Text.Unicode> where all
+`Text.Unicode.Canon` is a proper subtype of `Text.Unicode` where all
 member values are semantically in canonical decomposed normal form (NFD)
-and whose C<Text.Unicode>-defined possreps are properly formatted NFD.
-Two C<Text.Unicode.Canon> will generally match at the grapheme abstraction
+and whose `Text.Unicode`-defined possreps are properly formatted NFD.
+Two `Text.Unicode.Canon` will generally match at the grapheme abstraction
 level.  Of course, a Muldis D implementation doesn't actually have to store
 character data in NFD; but default matching semantics need to be as if it
 did, and NFD is what the aforementioned possreps would format it in.
 
 ## sys.std.Core.Type.Text.Unicode.Compat
 
-C<Text.Unicode.Compat> is a proper subtype of C<Text.Unicode.Canon> where
+`Text.Unicode.Compat` is a proper subtype of `Text.Unicode.Canon` where
 all member values are semantically in compatibility decomposed normal form
-(NFKD) and whose C<Text.Unicode>-defined possreps are properly formatted
-NFKD.  While typical applications would likely prefer C<Canon>, more
-security-conscious applications may likely prefer C<Compat>.
+(NFKD) and whose `Text.Unicode`-defined possreps are properly formatted
+NFKD.  While typical applications would likely prefer `Canon`, more
+security-conscious applications may likely prefer `Compat`.
 
 ## sys.std.Core.Type.Text.ASCII
 
-C<Text.ASCII> is a proper subtype of C<Text.Unicode> (and of
-C<Text.Unicode.Compat>) where all member values have just the abstract
+`Text.ASCII` is a proper subtype of `Text.Unicode` (and of
+`Text.Unicode.Compat`) where all member values have just the abstract
 characters in the 128-character repertoire of 7-bit ASCII.  For these
-values, the C<unicode_codes> and C<unicode_utf8_octets> possreps have
-identical (C<OString>) attribute values, each element in which is in the
-range 0..127 inclusive.  C<Text.ASCII> adds 1 system-defined possrep named
-C<ascii_chars> which consists of 1 C<OString>-typed attribute whose name is
+values, the `unicode_codes` and `unicode_utf8_octets` possreps have
+identical (`OString`) attribute values, each element in which is in the
+range 0..127 inclusive.  `Text.ASCII` adds 1 system-defined possrep named
+`ascii_chars` which consists of 1 `OString`-typed attribute whose name is
 the empty string and whose value is identical to said other two possrep
 attribute values.
 
 ## sys.std.Core.Type.Text.Latin1
 
-C<Text.Latin1> is a proper subtype of C<Text.Unicode> (and a proper
-supertype of C<Text.ASCII>) where all member values have just the abstract
+`Text.Latin1` is a proper subtype of `Text.Unicode` (and a proper
+supertype of `Text.ASCII`) where all member values have just the abstract
 characters in the 256-character repertoire of 8-bit ISO Latin 1 /
-ISO-8859-1.  C<Text.Latin1> adds 1 system-defined possrep named
-C<latin1_chars> which consists of 1 C<OString>-typed attribute whose name
+ISO-8859-1.  `Text.Latin1` adds 1 system-defined possrep named
+`latin1_chars` which consists of 1 `OString`-typed attribute whose name
 is the empty string and each of whose elements is a code point in the range
 0..255 inclusive, and also doubles as the octet format of said code point in
-the Latin 1 encoding.  The C<latin1_chars> and C<unicode_codes> possreps
+the Latin 1 encoding.  The `latin1_chars` and `unicode_codes` possreps
 correspond as you might expect, such that both represent the same abstract
 characters using the appropriate code points of their repertoires.
 
@@ -701,275 +701,275 @@ data types they are composed of.
 
 ## sys.std.Core.Type.Tuple
 
-The C<Tuple> type is the maximal type of
+The `Tuple` type is the maximal type of
 all Muldis D tuple (nonscalar) types, and contains every
-tuple value that could possibly exist.  The C<Tuple> type explicitly
-composes the C<Attributive> mixin type.  A C<Tuple> is an unordered
+tuple value that could possibly exist.  The `Tuple` type explicitly
+composes the `Attributive` mixin type.  A `Tuple` is an unordered
 heterogeneous collection of 0..N named attributes (the count of attributes
-being its I<degree>), where all attribute names are mutually distinct, and
+being its *degree*), where all attribute names are mutually distinct, and
 each attribute may be of distinct types; the mapping of a tuple's
 attribute names and their declared data types is called the tuple's
-I<heading>.  Its default value is the sole tuple value
-that has zero attributes.  The cardinality of a I<complete> C<Tuple>
+*heading*.  Its default value is the sole tuple value
+that has zero attributes.  The cardinality of a *complete* `Tuple`
 type (if it has no type constraints other than those of its constituent
 attribute types) is equal to the product of the N-adic multiplication where
 there is an input to that multiplication for each attribute of the
 tuple and the value of the input is the cardinality of the declared
-type of the attribute; for a C<Tuple> subtype to be finite, all of its
-attribute types must be.  Considering the low-level type system, C<Tuple>
-is just a proper subtype of C<Structure> consisting of
-every C<Structure> value whose first element is the C<Int> value C<2>.
+type of the attribute; for a `Tuple` subtype to be finite, all of its
+attribute types must be.  Considering the low-level type system, `Tuple`
+is just a proper subtype of `Structure` consisting of
+every `Structure` value whose first element is the `Int` value `2`.
 
 ## sys.std.Core.Type.DHTuple
 
-C<DHTuple> is a proper subtype of
-C<Tuple> where every one of its attributes is restricted to be of just
+`DHTuple` is a proper subtype of
+`Tuple` where every one of its attributes is restricted to be of just
 certain categories of data types, rather than allowing any data types at
 all; related to this restriction, any dh-tuple value is allowed to be
 stored in a global/persisting relational database but any other tuple value
-may only be used for transient data.  The C<DHTuple> type is the maximal
+may only be used for transient data.  The `DHTuple` type is the maximal
 type of all Muldis D dh-tuple (dh-nonscalar) types, and contains every
 dh-tuple value that could possibly exist.  Its default value is the same as
-that of C<Tuple> and matters of its cardinality are determined likewise.
+that of `Tuple` and matters of its cardinality are determined likewise.
 
-The only member value of C<DHTuple> that has exactly zero attributes is
-also known by the special name C<Tuple:D0> aka C<D0>, which serves as the
-default value of the 3 types C<[|DH]Tuple> and C<Database>.
+The only member value of `DHTuple` that has exactly zero attributes is
+also known by the special name `Tuple:D0` aka `D0`, which serves as the
+default value of the 3 types `[|DH]Tuple` and `Database`.
 
 ## sys.std.Core.Type.Database
 
-C<Database> is a proper subtype of
-C<DHTuple> where all of its attributes are each of dh-relation types or of
+`Database` is a proper subtype of
+`DHTuple` where all of its attributes are each of dh-relation types or of
 database types (the leaves of this recursion are all dh-relation types); it
 is otherwise the same.  The 2 system-defined user-data variables named
-C<[fed|nlx].data> are all of "just" the C<Database> type, or are of
+`[fed|nlx].data` are all of "just" the `Database` type, or are of
 its proper subtypes.
 
 ## sys.std.Core.Type.Set.T
 
-C<Set.T> is a proper subtype of
-C<Tuple>, and it exists in order for the relation type
-C<Set> (and C<Maybe> and C<Just>) to be defined partly in terms of it.  A
-C<Set.T> has 1 attribute, C<value> (a C<Universal>).  Its default value a
-C<value> of C<Bool:False>.
+`Set.T` is a proper subtype of
+`Tuple`, and it exists in order for the relation type
+`Set` (and `Maybe` and `Just`) to be defined partly in terms of it.  A
+`Set.T` has 1 attribute, `value` (a `Universal`).  Its default value a
+`value` of `Bool:False`.
 
 ## sys.std.Core.Type.DHSet.T
 
-C<DHSet.T> is the intersection type of
-C<Set.T> and C<DHTuple>, and it exists in order for the dh-relation type
-C<DHSet> (and C<DHMaybe>, C<DHJust>) to be defined partly in terms of it.
+`DHSet.T` is the intersection type of
+`Set.T` and `DHTuple`, and it exists in order for the dh-relation type
+`DHSet` (and `DHMaybe`, `DHJust`) to be defined partly in terms of it.
 
 ## sys.std.Core.Type.Array.T
 
-C<Array.T> is a proper subtype of
-C<Tuple>, and it exists in order for the relation type
-C<Array> to be defined partly in terms of it.  An C<Array.T>
-has 2 attributes, C<index> (a C<NNInt>) and C<value> (a C<Universal>).  Its
-default value has an C<index> of zero and a C<value> of C<Bool:False>.
+`Array.T` is a proper subtype of
+`Tuple`, and it exists in order for the relation type
+`Array` to be defined partly in terms of it.  An `Array.T`
+has 2 attributes, `index` (a `NNInt`) and `value` (a `Universal`).  Its
+default value has an `index` of zero and a `value` of `Bool:False`.
 
 ## sys.std.Core.Type.DHArray.T
 
-C<DHArray.T> is the intersection type of
-C<Array.T> and C<DHTuple>, and it exists in order for the dh-relation type
-C<DHArray> to be defined partly in terms of it.
+`DHArray.T` is the intersection type of
+`Array.T` and `DHTuple`, and it exists in order for the dh-relation type
+`DHArray` to be defined partly in terms of it.
 
 ## sys.std.Core.Type.Bag.T
 
-C<Bag.T> is a proper subtype of
-C<Tuple>, and it exists in order for the relation type
-C<Bag> to be defined partly in terms of it.  A C<Bag.T>
-has 2 attributes, C<value> (a C<Universal>) and C<count> (a C<PInt>).  Its
-default value has a C<value> of C<Bool:False> and a C<count> of 1.
+`Bag.T` is a proper subtype of
+`Tuple`, and it exists in order for the relation type
+`Bag` to be defined partly in terms of it.  A `Bag.T`
+has 2 attributes, `value` (a `Universal`) and `count` (a `PInt`).  Its
+default value has a `value` of `Bool:False` and a `count` of 1.
 
 ## sys.std.Core.Type.DHBag.T
 
-C<DHBag.T> is the intersection type of
-C<Bag.T> and C<DHTuple>, and it exists in order for the dh-relation type
-C<DHBag> to be defined partly in terms of it.
+`DHBag.T` is the intersection type of
+`Bag.T` and `DHTuple`, and it exists in order for the dh-relation type
+`DHBag` to be defined partly in terms of it.
 
 ## sys.std.Core.Type.SPInterval
 
-An C<SPInterval> (single-piece interval) is a C<Tuple>.  The C<SPInterval>
-type explicitly composes the C<Collective> mixin type.  It typically
-defines a single I<bounded interval>/I<finite interval> in terms of 2
-I<endpoint> values plus an indicator of whether either, both, or none of
+An `SPInterval` (single-piece interval) is a `Tuple`.  The `SPInterval`
+type explicitly composes the `Collective` mixin type.  It typically
+defines a single *bounded interval*/*finite interval* in terms of 2
+*endpoint* values plus an indicator of whether either, both, or none of
 the endpoint values are included in the interval.  It can also define an
-I<unbounded interval>/I<infinite interval>, which is accomplished by
+*unbounded interval*/*infinite interval*, which is accomplished by
 using an infinity for either or both endpoint values.
 
-An C<SPInterval> has these 4 attributes:
+An `SPInterval` has these 4 attributes:
 
-* C<min|max> - C<Universal>
+* `min|max` - `Universal`
 
-These are the interval endpoint values; C<min> defines the
-I<left|start|from> endpoint and C<max> defines the I<right|end|to>
+These are the interval endpoint values; `min` defines the
+I<left|start|from> endpoint and `max` defines the I<right|end|to>
 endpoint.  The endpoint values conceptually must be of the same,
-totally-ordered type (typically one of C<Int>, C<Rat>, C<Text>,
-C<TAIInstant>, etc), although strictly speaking they may be of any types at
+totally-ordered type (typically one of `Int`, `Rat`, `Text`,
+`TAIInstant`, etc), although strictly speaking they may be of any types at
 all; in the latter case, to actually make practical use of such intervals,
-an C<order-determination> function must explicitly be employed.
+an `order-determination` function must explicitly be employed.
 
-* C<excludes_[min|max]> - C<Bool>
+* `excludes_[min|max]` - `Bool`
 
-If C<excludes_min> or C<excludes_max> are C<Bool:True>, then C<min> or
-C<max> I<is not> considered to be included within the interval,
-respectively; otherwise, it I<is> considered to be included within the
+If `excludes_min` or `excludes_max` are `Bool:True`, then `min` or
+`max` *is not* considered to be included within the interval,
+respectively; otherwise, it *is* considered to be included within the
 interval.  If both endpoints are within the interval (the use case which
-Muldis D optimizes its syntax for), the interval is I<closed>; otherwise if
-both endpoints are not in the interval, the interval is I<open>.
+Muldis D optimizes its syntax for), the interval is *closed*; otherwise if
+both endpoints are not in the interval, the interval is *open*.
 
-The C<SPInterval> type supports empty intervals (which include no values at
+The `SPInterval` type supports empty intervals (which include no values at
 all) at least as a matter of simplicity in that it doesn't place any
-restrictions on the combination of attribute values an C<SPInterval> value
-may have, such as that C<max> can't be before C<min>.  This liberal design
+restrictions on the combination of attribute values an `SPInterval` value
+may have, such as that `max` can't be before `min`.  This liberal design
 is also necessary to support the general case where the relative order of
-the C<min> and C<max> values is situation-dependent on what
-C<order-determination> function is used with the interval; that function
+the `min` and `max` values is situation-dependent on what
+`order-determination` function is used with the interval; that function
 also determines what type's concept of order is being applied, and so it
 also determines whether or not a given interval is considered empty or not.
-With respect to each compatible C<order-determination> function, an
-C<SPInterval> is considered empty iff at least one of the following is
-true:  1. Its C<min> is greater than its C<max>.  2. Its C<min> is equal to
-its C<max> I<and> at least one of C<excludes_min> or C<excludes_max> is
-true.  3. Both C<excludes_min> and C<excludes_max> are true I<and> C<min>
-and C<max> are consecutive values.  And so, there are many distinct
-C<SPInterval> values that are conceptually empty intervals, and the
-C<is_same> function should not be used to test an C<SPInterval> for
+With respect to each compatible `order-determination` function, an
+`SPInterval` is considered empty iff at least one of the following is
+true:  1. Its `min` is greater than its `max`.  2. Its `min` is equal to
+its `max` *and* at least one of `excludes_min` or `excludes_max` is
+true.  3. Both `excludes_min` and `excludes_max` are true *and* `min`
+and `max` are consecutive values.  And so, there are many distinct
+`SPInterval` values that are conceptually empty intervals, and the
+`is_same` function should not be used to test an `SPInterval` for
 being empty or not.
 
-The C<SPInterval> type supports I<unbounded>/I<infinite> or I<half-bounded>
+The `SPInterval` type supports *unbounded*/*infinite* or *half-bounded*
 intervals that are orthogonal to data type.  This feature is implemented
-using the 2 special singleton types C<-Inf> and C<Inf>.  Iff C<min> is
-C<-Inf> then the interval is left-unbounded; iff C<max> is C<Inf> then the
+using the 2 special singleton types `-Inf` and `Inf`.  Iff `min` is
+`-Inf` then the interval is left-unbounded; iff `max` is `Inf` then the
 interval is right-unbounded.  An interval that is unbounded on both ends is
 the maximal interval, in that all Muldis D values are members of it, at
-least in the general context lacking any C<order-determination> function.
+least in the general context lacking any `order-determination` function.
 
-The default value of C<SPInterval> represents an empty interval where its
-C<min> and C<max> attributes are C<Inf> and C<-Inf>, respectively, and its
-other 2 attributes are C<Bool:False>.
+The default value of `SPInterval` represents an empty interval where its
+`min` and `max` attributes are `Inf` and `-Inf`, respectively, and its
+other 2 attributes are `Bool:False`.
 
-See also the C<sys.std.Core.Type.MPInterval> type, which is the
+See also the `sys.std.Core.Type.MPInterval` type, which is the
 canonical means that Muldis D provides of representing the result of
-set-unioning 2 C<SPInterval> where the latter do not touch or overlap,
-and provides the single I<canonical> empty interval value.
+set-unioning 2 `SPInterval` where the latter do not touch or overlap,
+and provides the single *canonical* empty interval value.
 
 ## sys.std.Core.Type.DHSPInterval
 
-C<DHSPInterval> is a proper subtype of
-C<SPInterval> where every one of its values is also a C<DHTuple>.  In
-general practice, all C<SPInterval> values are C<DHSPInterval> values,
-because their endpoints would all be C<DHScalar> values.  The default value
-of C<DHSPInterval> is the same as that of C<SPInterval>.
+`DHSPInterval` is a proper subtype of
+`SPInterval` where every one of its values is also a `DHTuple`.  In
+general practice, all `SPInterval` values are `DHSPInterval` values,
+because their endpoints would all be `DHScalar` values.  The default value
+of `DHSPInterval` is the same as that of `SPInterval`.
 
 ## sys.std.Core.Type.Relation
 
-The C<Relation> type is the maximal type
+The `Relation` type is the maximal type
 of all Muldis D relation (nonscalar) types, and contains every
-relation value that could possibly exist.  The C<Relation> type explicitly
-composes the C<Attributive> mixin type.  A C<Relation> is
+relation value that could possibly exist.  The `Relation` type explicitly
+composes the `Attributive` mixin type.  A `Relation` is
 analogous to a set of 0..N tuples where all tuples have the
 same heading (the degrees match and all attribute names, and typically
-corresponding declared data types, match), but that a C<Relation> data
+corresponding declared data types, match), but that a `Relation` data
 type still has its own corresponding heading (attribute names and declared
 data types) even when it consists of zero tuples.  Its default value
 is the sole relation value that has zero tuples and zero
-attributes.  The cardinality of a I<complete> C<Relation> type (if it has
+attributes.  The cardinality of a *complete* `Relation` type (if it has
 no type constraints other than those of its constituent attribute types) is
-equal to 2 raised to the power of the cardinality of the I<complete>
-C<Tuple> type with the same heading.  A relation data type can also
+equal to 2 raised to the power of the cardinality of the *complete*
+`Tuple` type with the same heading.  A relation data type can also
 have (unique) keys each defined over a subset of its attributes, which
 constrain its set of values relative to there being no explicit keys, but
 having the keys won't turn an infinite relation type into a finite one.
-Considering the low-level type system, C<Relation> is just a proper subtype
-of C<Structure> consisting of every C<Structure> value whose first element
-is the C<Int> value C<3>.
+Considering the low-level type system, `Relation` is just a proper subtype
+of `Structure` consisting of every `Structure` value whose first element
+is the `Int` value `3`.
 
 ## sys.std.Core.Type.DHRelation
 
-C<DHRelation> is a proper subtype of
-C<Relation> where every one of its attributes is restricted to be of just
+`DHRelation` is a proper subtype of
+`Relation` where every one of its attributes is restricted to be of just
 certain categories of data types, rather than allowing any data types at
 all; related to this restriction, any dh-relation value is allowed to be
 stored in a global/persisting relational database but any other relation
 value may only be used for transient data.  The main difference from its
 supertype is that a dh-relation's dh-tuples' headings all have matching
 declared data types for corresponding attributes, while with relations they
-don't have to.  The C<DHRelation> type is the maximal type of all Muldis D
+don't have to.  The `DHRelation` type is the maximal type of all Muldis D
 dh-relation (dh-nonscalar) types, and contains every dh-relation value that
-could possibly exist.  Its default value is the same as that of C<Relation>
+could possibly exist.  Its default value is the same as that of `Relation`
 and matters of its cardinality are determined likewise.
 
-The only member value of C<DHRelation> that has exactly zero attributes and
-exactly zero tuples is also known by the special name C<Relation:D0C0> aka
-C<D0C0>, which serves as the default value of the 2 types C<[|DH]Relation>.
-The only member value of C<DHRelation> that has exactly zero attributes and
-exactly one tuple is also known by the special name C<Relation:D0C1> aka
-C<D0C1>.  Note that I<The Third Manifesto> also refers to these 2 values by
-the special shorthand names I<TABLE_DUM> and I<TABLE_DEE>, respectively.
+The only member value of `DHRelation` that has exactly zero attributes and
+exactly zero tuples is also known by the special name `Relation:D0C0` aka
+`D0C0`, which serves as the default value of the 2 types `[|DH]Relation`.
+The only member value of `DHRelation` that has exactly zero attributes and
+exactly one tuple is also known by the special name `Relation:D0C1` aka
+`D0C1`.  Note that *The Third Manifesto* also refers to these 2 values by
+the special shorthand names *TABLE_DUM* and *TABLE_DEE*, respectively.
 
 ## sys.std.Core.Type.Set
 
-C<Set> is a proper subtype of
-C<Relation> that has 1 attribute, and its name is C<value>; it can be of
-any declared type.  The C<Set> type explicitly composes the C<Collective>
-mixin type.  A C<Set> subtype is normally used by any
+`Set` is a proper subtype of
+`Relation` that has 1 attribute, and its name is `value`; it can be of
+any declared type.  The `Set` type explicitly composes the `Collective`
+mixin type.  A `Set` subtype is normally used by any
 system-defined N-adic operators where the order of their argument elements
 or result is not significant, and that duplicate values are not
 significant.  Its default value has zero tuples.  Note that, for any
-given C<Set> subtype, C<Foo>, where its C<value> attribute has a declared
-type of C<Bar>, the type C<Foo> can be considered the I<power set> of the
-type C<Bar>.
+given `Set` subtype, `Foo`, where its `value` attribute has a declared
+type of `Bar`, the type `Foo` can be considered the *power set* of the
+type `Bar`.
 
 ## sys.std.Core.Type.DHSet
 
-C<DHSet> is the intersection type of
-C<Set> and C<DHRelation>.  The cardinality of this type is infinite.
+`DHSet` is the intersection type of
+`Set` and `DHRelation`.  The cardinality of this type is infinite.
 
 ## sys.std.Core.Type.Maybe
 
-C<Maybe> is a proper subtype of C<Set>
+`Maybe` is a proper subtype of `Set`
 where all member values may have at most one element; that is, it is a
-unary C<Relation> with a nullary key.  Operators that work specifically
-with C<Maybe> subtypes can provide a syntactic shorthand for working with
+unary `Relation` with a nullary key.  Operators that work specifically
+with `Maybe` subtypes can provide a syntactic shorthand for working with
 sparse data; so Muldis D has something which is conceptually close to SQL's
 nullable types without actually having 3-valued logic; it would probably be
 convenient for code that round-trips SQL by way of Muldis D to use the
-C<Maybe> type.  Its default value has zero tuples.
+`Maybe` type.  Its default value has zero tuples.
 
 ## sys.std.Core.Type.DHMaybe
 
-C<DHMaybe> is the intersection type of
-C<Maybe> and C<DHSet>.  The cardinality of this type is infinite.
+`DHMaybe` is the intersection type of
+`Maybe` and `DHSet`.  The cardinality of this type is infinite.
 
-The only member value of C<DHMaybe> that has exactly zero elements is also
-known by the special name C<Maybe:Nothing>, aka C<Nothing>,
-aka I<empty set>, aka C<∅>, which serves as
-the default value of the 4 types C<[|DH]Maybe> and C<[|DH]Set>.  The single
-C<Nothing> value, which is a relation with zero tuples and a single
-attribute named C<value>, is Muldis D's answer to the SQL NULL and is
+The only member value of `DHMaybe` that has exactly zero elements is also
+known by the special name `Maybe:Nothing`, aka `Nothing`,
+aka *empty set*, aka `∅`, which serves as
+the default value of the 4 types `[|DH]Maybe` and `[|DH]Set`.  The single
+`Nothing` value, which is a relation with zero tuples and a single
+attribute named `value`, is Muldis D's answer to the SQL NULL and is
 intended to be used for the same purposes; that is, a special marker for
 missing or inapplicable information, that does not typically equal any
-normal/scalar value; however, in Muldis D, C<Nothing> I<is a value>, and it
-I<is> equal to itself.  To be more specific, the SQL NULL is very limited
+normal/scalar value; however, in Muldis D, `Nothing` *is a value*, and it
+*is* equal to itself.  To be more specific, the SQL NULL is very limited
 in what it actually can do, and can not be used to say anything other than
 "this isn't a normal value", similar to what Perl's "undef" says; if you
 want to actually indicate a reason why we don't have a normal value when
 more than one reason could possibly apply in the context, then using simply
-C<Nothing> or SQL's NULL can't do it, and instead you'll have to use other
+`Nothing` or SQL's NULL can't do it, and instead you'll have to use other
 normal values such as status flags to keep the appropriate metadata.
 
 ## sys.std.Core.Type.Just
 
-C<Just> is a proper subtype of
-C<Maybe> where all member values have exactly 1 element.  Its default
-value's only tuple's only attribute has the value C<Bool:False>.  The
-C<Just> type consists of all of C<Maybe>'s values except C<Nothing>.
+`Just` is a proper subtype of
+`Maybe` where all member values have exactly 1 element.  Its default
+value's only tuple's only attribute has the value `Bool:False`.  The
+`Just` type consists of all of `Maybe`'s values except `Nothing`.
 
 ## sys.std.Core.Type.DHJust
 
-C<DHJust> is the intersection type of
-C<Just> and C<DHMaybe>.  Subtypes of C<DHJust> are also used to
+`DHJust` is the intersection type of
+`Just` and `DHMaybe`.  Subtypes of `DHJust` are also used to
 implement data-carrying database objects that are conceptually scalars
 rather than relations; for example, the current state of a sequence
 generator might typically be one.  The cardinality of this type is
@@ -977,81 +977,81 @@ infinite.
 
 ## sys.std.Core.Type.Array
 
-C<Array> is a proper subtype of
-C<Relation> that has 2 attributes, and their names are C<index> and
-C<value>, where C<index> is a unary primary key and its declared type is a
-C<NNInt> subtype (C<value> can be non-unique and of any declared type).
-The C<Array> type explicitly composes the C<Collective> mixin type.  An
-C<Array> is considered dense, and all C<index> values in one are numbered
+`Array` is a proper subtype of
+`Relation` that has 2 attributes, and their names are `index` and
+`value`, where `index` is a unary primary key and its declared type is a
+`NNInt` subtype (`value` can be non-unique and of any declared type).
+The `Array` type explicitly composes the `Collective` mixin type.  An
+`Array` is considered dense, and all `index` values in one are numbered
 consecutively from 0 to 1 less than the count of tuples, like array
-indices in typical programming languages.  An C<Array> subtype is normally
+indices in typical programming languages.  An `Array` subtype is normally
 used by any system-defined N-adic operators where the order of their
 argument elements or result is significant (and duplicate values are
-significant); specifically, C<index> defines an explicit ordering for
-C<value>.  Its default value has zero tuples.  The C<Array> type explicitly
-composes the C<Stringy> mixin type.
+significant); specifically, `index` defines an explicit ordering for
+`value`.  Its default value has zero tuples.  The `Array` type explicitly
+composes the `Stringy` mixin type.
 
 ## sys.std.Core.Type.DHArray
 
-C<DHArray> is the intersection type of
-C<Array> and C<DHRelation>.  The cardinality of this type is infinite.
+`DHArray` is the intersection type of
+`Array` and `DHRelation`.  The cardinality of this type is infinite.
 
 ## sys.std.Core.Type.Bag
 
-C<Bag> (or I<multiset>) is a
-proper subtype of C<Relation> that has 2 attributes, and their names are
-C<value> and C<count>, where C<value> is a unary primary key (that can have
-any declared type) and C<count> is a C<PInt> subtype.  The C<Bag> type
-explicitly composes the C<Collective> mixin type.  A C<Bag> subtype is
+`Bag` (or *multiset*) is a
+proper subtype of `Relation` that has 2 attributes, and their names are
+`value` and `count`, where `value` is a unary primary key (that can have
+any declared type) and `count` is a `PInt` subtype.  The `Bag` type
+explicitly composes the `Collective` mixin type.  A `Bag` subtype is
 normally used by any system-defined N-adic operators where the order of
 their argument elements or result is not significant, but that duplicate
-values are significant; specifically, C<count> defines an explicit count of
-occurrences for C<value>, also known as that value's I<multiplicity>.  Its
+values are significant; specifically, `count` defines an explicit count of
+occurrences for `value`, also known as that value's *multiplicity*.  Its
 default value has zero tuples.
 
 ## sys.std.Core.Type.DHBag
 
-C<DHBag> is the intersection type of
-C<Bag> and C<DHRelation>.  The cardinality of this type is infinite.
+`DHBag` is the intersection type of
+`Bag` and `DHRelation`.  The cardinality of this type is infinite.
 
 ## sys.std.Core.Type.MPInterval
 
-C<MPInterval> (multi-piece interval) is a proper subtype of
-C<Relation> that is defined directly partly in terms of the tuple type
-C<SPInterval>, thereby sharing its I<heading>, but defines no further
-constraints of its own.  The C<MPInterval> type explicitly composes the
-C<Collective> mixin type.  It defines a single I<multi-piece interval>,
+`MPInterval` (multi-piece interval) is a proper subtype of
+`Relation` that is defined directly partly in terms of the tuple type
+`SPInterval`, thereby sharing its *heading*, but defines no further
+constraints of its own.  The `MPInterval` type explicitly composes the
+`Collective` mixin type.  It defines a single *multi-piece interval*,
 which is conceptually either a set of 0..N intervals or a single larger
-interval that had 0..N sub-intervals sliced out.  An C<MPInterval> is the
+interval that had 0..N sub-intervals sliced out.  An `MPInterval` is the
 canonical means that Muldis D provides of representing the result of
-set-unioning 2 C<SPInterval> where the latter do not touch or overlap.
-Moreover, an C<MPInterval> also empowers Muldis D to have a single
-I<canonical> empty interval value, which is the only C<MPInterval> with
-zero tuples; this value is also the default value of C<MPInterval>.  The
+set-unioning 2 `SPInterval` where the latter do not touch or overlap.
+Moreover, an `MPInterval` also empowers Muldis D to have a single
+*canonical* empty interval value, which is the only `MPInterval` with
+zero tuples; this value is also the default value of `MPInterval`.  The
 cardinality of this type is infinite.
 
 ## sys.std.Core.Type.DHMPInterval
 
-C<DHMPInterval> is the intersection type of C<MPInterval> and
-C<DHRelation>.  The cardinality of this type is infinite.
+`DHMPInterval` is the intersection type of `MPInterval` and
+`DHRelation`.  The cardinality of this type is infinite.
 
 # GENERIC EXTERNAL DATA TYPES
 
 ## sys.std.Core.Type.External
 
-An C<External> is a reference within the
+An `External` is a reference within the
 Muldis D virtual machine to a value managed not by the Muldis D
 implementation but rather by a peer or host language in the wider program
-that includes the VM.  All C<External> values are treated as black boxes by
+that includes the VM.  All `External` values are treated as black boxes by
 Muldis D itself.  The cardinality of this type is
 infinity.  The default value of this type is implementation-defined.
-Considering the low-level type system, C<External> is just a proper subtype
-of C<Structure> consisting of every C<Structure> value whose first element
-is the C<Int> value C<5>.
+Considering the low-level type system, `External` is just a proper subtype
+of `Structure` consisting of every `Structure` value whose first element
+is the `Int` value `5`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

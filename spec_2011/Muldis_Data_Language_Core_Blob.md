@@ -17,10 +17,10 @@ document, as that forms its own tree beneath a root document branch.
 # DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
-are specific to the core data type C<Blob>, essentially all the generic
+are specific to the core data type `Blob`, essentially all the generic
 ones that a typical programming language should have.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
 
@@ -30,8 +30,8 @@ I<This documentation is pending.>
 other : Blob, misc_args? : Tuple, is_reverse_order? : Bool)
 implements sys.std.Core.Ordered.order {...}`
 
-This is a (total) C<order-determination> function specific to C<Blob>.  Its
-only valid C<misc_args> argument is C<Tuple:D0>.
+This is a (total) `order-determination` function specific to `Blob`.  Its
+only valid `misc_args` argument is `Tuple:D0`.
 
 # FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
 
@@ -43,8 +43,8 @@ topic? : array_of.Blob) implements sys.std.Core.Stringy.catenation {...}`
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
 consecutive pair of input values and catenates (which is associative) them
-together until just one is left, which is the result.  If C<topic> has zero
-values, then C<catenation> results in the empty string value, which is the
+together until just one is left, which is the result.  If `topic` has zero
+values, then `catenation` results in the empty string value, which is the
 identity value for catenation.
 
 ## sys.std.Core.Blob.replication
@@ -52,7 +52,7 @@ identity value for catenation.
 `function replication (Blob <-- topic : Blob,
 count : NNInt) implements sys.std.Core.Stringy.replication {...}`
 
-This function results in the catenation of C<count> instances of C<topic>.
+This function results in the catenation of `count` instances of `topic`.
 
 # GENERIC FUNCTIONS FOR BLOBS
 
@@ -75,14 +75,14 @@ This function results in the length of its argument in octets.
 `function has_substr_bits (Bool <-- look_in : Blob,
 look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
-This function results in C<Bool:True> iff its C<look_for> argument is a
-substring of its C<look_in> argument as per the optional C<fixed_start> and
-C<fixed_end> constraints, and C<Bool:False> otherwise.  If C<fixed_start>
-or C<fixed_end> are C<Bool:True>, then C<look_for> must occur right at the
-start or end, respectively, of C<look_in> in order for C<contains> to
-results in C<Bool:True>; if either flag is C<Bool:False>, its additional
-constraint doesn't apply.  Each of the C<fixed_[start|end]> parameters is
-optional and defaults to C<Bool:False> if no explicit argument is given to
+This function results in `Bool:True` iff its `look_for` argument is a
+substring of its `look_in` argument as per the optional `fixed_start` and
+`fixed_end` constraints, and `Bool:False` otherwise.  If `fixed_start`
+or `fixed_end` are `Bool:True`, then `look_for` must occur right at the
+start or end, respectively, of `look_in` in order for `contains` to
+results in `Bool:True`; if either flag is `Bool:False`, its additional
+constraint doesn't apply.  Each of the `fixed_[start|end]` parameters is
+optional and defaults to `Bool:False` if no explicit argument is given to
 it.
 
 ## sys.std.Core.Blob.has_not_substr_bits
@@ -90,7 +90,7 @@ it.
 `function has_not_substr_bits (Bool <-- look_in : Blob,
 look_for : Blob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
-This function is exactly the same as C<sys.std.Core.Blob.has_substr_bits>
+This function is exactly the same as `sys.std.Core.Blob.has_substr_bits`
 except that it results in the opposite boolean value when given the same
 arguments.
 
@@ -99,61 +99,61 @@ arguments.
 `function has_substr_octets (Bool <-- look_in : OctetBlob,
 look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
-This function is exactly the same as C<sys.std.Core.Blob.has_substr_bits>
-except that its main arguments are C<OctetBlob> and it only looks for
-substring matches on whole-octet boundaries of the C<look_in> bit string.
+This function is exactly the same as `sys.std.Core.Blob.has_substr_bits`
+except that its main arguments are `OctetBlob` and it only looks for
+substring matches on whole-octet boundaries of the `look_in` bit string.
 
 ## sys.std.Core.Blob.has_not_substr_octets
 
 `function has_not_substr_octets (Bool <-- look_in : OctetBlob,
 look_for : OctetBlob, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
-This function is to C<has_substr_octets> as C<has_not_substr_bits> is to
-C<has_substr_bits>.
+This function is to `has_substr_octets` as `has_not_substr_bits` is to
+`has_substr_bits`.
 
 ## sys.std.Core.Blob.not
 
 `function not (Blob <-- topic : Blob) {...}`
 
-This function results in the bitwise I<not> of its argument.
+This function results in the bitwise *not* of its argument.
 
 ## sys.std.Core.Blob.and
 
 `function and (Blob <-- topic : set_of.Blob) {...}`
 
 This function is a reduction operator that recursively takes each pair of
-its N input element values and does a bitwise I<and> (which is commutative,
+its N input element values and does a bitwise *and* (which is commutative,
 associative, and idempotent) on them until just one is left, which is the
 function's result.  This function's argument values must all be of the same
 length in bits, that length being part of the argument's declared type
-(that is, C<Blob> subtype) definition, and that is also the length in bits
-of the function's result.  If C<topic> has zero values, then this function
-will fail.  Note that, conceptually C<and> I<does> have an identity value
-which could be this function's result when C<topic> has zero values, which
+(that is, `Blob` subtype) definition, and that is also the length in bits
+of the function's result.  If `topic` has zero values, then this function
+will fail.  Note that, conceptually `and` *does* have an identity value
+which could be this function's result when `topic` has zero values, which
 is an appropriate-length string of identity/1 valued bits; however, since a
-C<topic> with zero values wouldn't know the length in question, it seems
+`topic` with zero values wouldn't know the length in question, it seems
 the best alternative is to require invoking code to work around the
 limitation somehow, which might mean it will supply the identity value
-explicitly as an extra C<topic> element.
+explicitly as an extra `topic` element.
 
 ## sys.std.Core.Blob.or
 
 `function or (Blob <-- topic : set_of.Blob) {...}`
 
-This function is the same as C<sys.std.Core.Blob.and> but that it
-recursively does a bitwise inclusive-or rather than a bitwise I<and>, and
+This function is the same as `sys.std.Core.Blob.and` but that it
+recursively does a bitwise inclusive-or rather than a bitwise *and*, and
 its conceptual identity value is composed of zero valued bits.
 
 ## sys.std.Core.Blob.xor
 
 `function xor (Blob <-- topic : bag_of.Blob) {...}`
 
-This function is the same as C<sys.std.Core.Blob.or> but that it
+This function is the same as `sys.std.Core.Blob.or` but that it
 recursively does a bitwise exclusive-or rather than a bitwise inclusive-or.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

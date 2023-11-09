@@ -19,7 +19,7 @@ document, as that forms its own tree beneath a root document branch.
 This document defines all of the core Muldis D routines that provide
 basic command-line user input/output.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # GENERIC SYSTEM-SERVICES FOR STANDARD I/O
 
@@ -38,11 +38,11 @@ C<system-service end_of_line_Text (&target : Text)
 [...]>
 
 This system-service routine will update the variable supplied as its
-C<target> argument so that it holds the same implementation-defined
-end-of-line character or character sequence that C<write_Text_line> appends
-to its output, and that C<read_Text_line> looks out for to terminate its
+`target` argument so that it holds the same implementation-defined
+end-of-line character or character sequence that `write_Text_line` appends
+to its output, and that `read_Text_line` looks out for to terminate its
 input.  The purpose of this routine is to support users that want to
-catenate Text within Muldis D for output with a single C<write_Text> that
+catenate Text within Muldis D for output with a single `write_Text` that
 is intended to display over multiple implementation-defined lines.
 
 ## sys.std.Core.STDIO.read_Text
@@ -50,10 +50,10 @@ is intended to display over multiple implementation-defined lines.
 C<system-service read_Text (&target : Text,
 len_in_graphs : NNInt) [...]>
 
-This system-service routine will attempt to read C<len_in_graphs>
-characters from standard input as a single C<Text> value, blocking the
+This system-service routine will attempt to read `len_in_graphs`
+characters from standard input as a single `Text` value, blocking the
 current in-DBMS process until it finishes, and then update the variable
-supplied as its C<target> argument so that it holds the read value.  The
+supplied as its `target` argument so that it holds the read value.  The
 routine will only fetch fewer than the requested number of characters if
 the input stream is closed first.  This routine will throw an exception if
 any system errors occur.
@@ -63,13 +63,13 @@ any system errors occur.
 C<system-service read_Text_line (&target : Text,
 ignore_empty_lines? : Bool) [...]>
 
-This system-service routine is the same as C<sys.std.Core.STDIO.read_Text>
+This system-service routine is the same as `sys.std.Core.STDIO.read_Text`
 except that it will read from standard input until an
 implementation-defined end-of-line character is read, rather than reading a
 fixed number of characters; this end-of-line character will not be included
-in the read C<Text> value.  If the C<ignore_empty_lines> argument is
-C<Bool:True>, then this routine will keep reading lines from standard input
-until it reads a non-empty line, and then C<target> is only updated to hold
+in the read `Text` value.  If the `ignore_empty_lines` argument is
+`Bool:True`, then this routine will keep reading lines from standard input
+until it reads a non-empty line, and then `target` is only updated to hold
 that last non-empty line; otherwise, this routine will end as soon as one
 line is read, even if it is empty.
 
@@ -78,7 +78,7 @@ line is read, even if it is empty.
 C<system-service write_Text (v : Text) [...]>
 
 This system-service routine will attempt to write the characters of its
-C<v> argument to standard output, blocking the current in-DBMS process
+`v` argument to standard output, blocking the current in-DBMS process
 until it finishes.  This routine will throw an exception if any system
 errors occur.
 
@@ -86,9 +86,9 @@ errors occur.
 
 C<system-service write_Text_line (v? : Text) [...]>
 
-This system-service routine is the same as C<sys.std.Core.STDIO.write_Text>
+This system-service routine is the same as `sys.std.Core.STDIO.write_Text`
 except that it will additionally write an implementation-defined
-end-of-line character after writing C<v>.  If the C<v> argument is omitted,
+end-of-line character after writing `v`.  If the `v` argument is omitted,
 then this routine simply writes the end-of-line.
 
 ## sys.std.Core.STDIO.prompt_Text_line
@@ -97,16 +97,16 @@ C<system-service prompt_Text_line (&target : Text,
 prompt : Text, ignore_empty_lines? : Bool ) [...]>
 
 This system-service routine is a wrapper over first invoking
-C<sys.std.Core.STDIO.write_Text> with its C<prompt> argument and then
-invoking C<sys.std.Core.STDIO.read_Text_line> with its C<target> argument.
-A true C<ignore_empty_lines> argument will result in I<both> of the wrapped
-routines being invoked repeatedly, not just C<read_text_line>.
+`sys.std.Core.STDIO.write_Text` with its `prompt` argument and then
+invoking `sys.std.Core.STDIO.read_Text_line` with its `target` argument.
+A true `ignore_empty_lines` argument will result in *both* of the wrapped
+routines being invoked repeatedly, not just `read_text_line`.
 
 ## sys.std.Core.STDIO.error_Text
 
 C<system-service error_Text (v : Text) [...]>
 
-This system-service routine is the same as C<sys.std.Core.STDIO.write_Text>
+This system-service routine is the same as `sys.std.Core.STDIO.write_Text`
 except that it will write to standard error rather than standard output.
 
 ## sys.std.Core.STDIO.error_Text_line
@@ -114,12 +114,12 @@ except that it will write to standard error rather than standard output.
 C<system-service error_Text_line (v? : Text) [...]>
 
 This system-service routine is the same as
-C<sys.std.Core.STDIO.write_Text_line> except that it will write to standard
+`sys.std.Core.STDIO.write_Text_line` except that it will write to standard
 error rather than standard output.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

@@ -20,7 +20,7 @@ This document describes essentially all of the core Muldis D generic
 operators that simple homogeneous collection types, that are more specific
 than relations in general, would have.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # VIRTUAL FUNCTIONS FOR THE COLLECTIVE MIXIN TYPE
 
@@ -29,46 +29,46 @@ I<This documentation is pending.>
 `function has_member (Bool <--
 coll@ : Collective, value : Universal) {...}`
 
-This function results in C<Bool:True> iff its C<value> argument matches a
-member of the simple homogeneous collection value that is its C<coll>
-argument, and C<Bool:False> otherwise.  Note that this operation is also
-known as C<∋> or C<has>.
+This function results in `Bool:True` iff its `value` argument matches a
+member of the simple homogeneous collection value that is its `coll`
+argument, and `Bool:False` otherwise.  Note that this operation is also
+known as `∋` or `has`.
 
 ## sys.std.Core.Collective.has_not_member
 
 `function has_not_member (Bool <--
 coll@ : Collective, value : Universal) {...}`
 
-This function is exactly the same as C<sys.std.Core.Collective.has_member>
+This function is exactly the same as `sys.std.Core.Collective.has_member`
 except that it results in the opposite boolean value when given the same
-arguments.  Note that this operation is also known as C<∌> or C<!has> or
-C<not-has>.
+arguments.  Note that this operation is also known as `∌` or `!has` or
+`not-has`.
 
 ## sys.std.Core.Collective.value_is_member
 
 `function value_is_member (Bool <--
 value : Universal, coll@ : Collective) {...}`
 
-This function is an alias for C<sys.std.Core.Collective.has_member>.  This
-function results in C<Bool:True> iff its C<value> argument matches a member
-of the simple homogeneous collection value that is its C<coll> argument,
-and C<Bool:False> otherwise.  Note that this operation is also known as
-C<∈> or C<in>.
+This function is an alias for `sys.std.Core.Collective.has_member`.  This
+function results in `Bool:True` iff its `value` argument matches a member
+of the simple homogeneous collection value that is its `coll` argument,
+and `Bool:False` otherwise.  Note that this operation is also known as
+`∈` or `in`.
 
 ## sys.std.Core.Collective.value_is_not_member
 
 `function value_is_not_member (Bool <--
 value : Universal, coll@ : Collective) {...}`
 
-This function is an alias for C<sys.std.Core.Collective.has_not_member>.
+This function is an alias for `sys.std.Core.Collective.has_not_member`.
 This function is exactly the same as
-C<sys.std.Core.Collective.value_is_member> except that it results in the
+`sys.std.Core.Collective.value_is_member` except that it results in the
 opposite boolean value when given the same arguments.  Note that this
-operation is also known as C<∉> or C<!in> or C<not-in>.
+operation is also known as `∉` or `!in` or `not-in`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

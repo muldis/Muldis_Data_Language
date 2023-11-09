@@ -15,24 +15,24 @@ before you read this one, which provides subservient details.
 # DESCRIPTION
 
 Muldis D has a mandatory core set of system-defined (eternally available)
-entities, which is referred to as the I<Muldis D core> or the I<core>; they
+entities, which is referred to as the *Muldis D core* or the *core*; they
 are the minimal entities that all Muldis D implementations need to provide;
 they are mutually self-describing and are either used to bootstrap the
 language or they constitute a reasonable minimum level of functionality for
-a practically useable industrial-strength (and fully I<TTM>-conforming)
-programming language; any entities outside the core, called I<Muldis D
-extensions>, are non-mandatory and are defined in terms of the core or each
+a practically useable industrial-strength (and fully *TTM*-conforming)
+programming language; any entities outside the core, called *Muldis D
+extensions*, are non-mandatory and are defined in terms of the core or each
 other, but the reverse isn't true.
 
-This current C<Spatial> document describes the system-defined I<Muldis D
-Spatial Extension>, which consists of spatial and/or geometric data types
+This current `Spatial` document describes the system-defined *Muldis D
+Spatial Extension*, which consists of spatial and/or geometric data types
 and operators.
 
 This current document does not describe the polymorphic operators that all
 types, or some types including core types, have defined over them; said
 operators are defined once for all types in [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md).
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # TYPE SUMMARY
 
@@ -61,77 +61,77 @@ type graph according to their proper sub|supertype relationships:
                         sys.std.Spatial.Type.MultiSurface
                             sys.std.Spatial.Type.MultiPolygon
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # DATA TYPES FOR SPATIAL ARTIFACTS
 
 These non-core scalar data types describe common kinds of spatial or
-geometric figures.  I<Of course, dealing with these types in general isn't
-a perfect science; they stand to be revised or rewritten.>
+geometric figures.  *Of course, dealing with these types in general isn't
+a perfect science; they stand to be revised or rewritten.*
 
 ## sys.std.Spatial.Type.Geometry
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.Point
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.Curve
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.LineString
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.CircularString
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.CompoundCurve
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.Surface
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.CurvePolygon
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.Polygon
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.GeometryCollection
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.MultiPoint
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.MultiCurve
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.MultiLineString
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.MultiSurface
 
-I<TODO.>
+*TODO.*
 
 ## sys.std.Spatial.Type.MultiPolygon
 
-I<TODO.>
+*TODO.*
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

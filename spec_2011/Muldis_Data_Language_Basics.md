@@ -28,39 +28,39 @@ confusion given what meaning is often attributed to them.
 
 * type / data type
 
-The term I<type> as a noun always refers to a I<data type>; the term is not
-used to indicate classifications of other things; eg, I<kind> or other
+The term *type* as a noun always refers to a *data type*; the term is not
+used to indicate classifications of other things; eg, *kind* or other
 terms will be used for such instead, to avoid confusion.  The terms
-I<class> and I<domain> are not used in this documentation to mean I<type>.
+*class* and *domain* are not used in this documentation to mean *type*.
 
 * value, variable, constant
 
-A I<value> is unique, eternal, immutable, and is not fixed in time or space
-(it has no address).  A I<variable> is fixed in time and space (it does
+A *value* is unique, eternal, immutable, and is not fixed in time or space
+(it has no address).  A *variable* is fixed in time and space (it does
 have an address); it holds an appearance of a value; it is neither unique
-nor eternal nor immutable in the general case.  A I<constant> is a variable
+nor eternal nor immutable in the general case.  A *constant* is a variable
 which is defined to not mutate after initially being set, or alternately is
 a niladic function (that always results in the same value).  Terms like
-I<object> are not used in this documentation for any aspects of Muldis D
+*object* are not used in this documentation for any aspects of Muldis D
 since their meaning in practice is both ambiguous and wide-reaching, and
 could refer to both values and variables depending on usage context.
 
 * universal
 
-The term I<universal> refers to the common superset of all allowable sets,
+The term *universal* refers to the common superset of all allowable sets,
 and is specifically non-recursive.  While philosophy in general might allow
 it (or might not due to certain paradoxes that might result), Muldis D
 specifically does not allow any set to be a member of itself.  No Muldis D
 data type may be defined in terms of itself, either directly or indirectly;
 any data type must be completely defined in isolation before some other
-type may be defined in terms of it.  Therefore, I<universal> in this
+type may be defined in terms of it.  Therefore, *universal* in this
 documentation only refers to values or types whose definitions follow those
 non-recursion rules.
 
 * text, character
 
-A I<text> is a string composed of Unicode abstract I<characters> which is
-formatted as a sequence of Unicode abstract I<code points> in canonical
+A *text* is a string composed of Unicode abstract *characters* which is
+formatted as a sequence of Unicode abstract *code points* in canonical
 decomposed normal form (NFD).  Two character strings will generally match
 at the grapheme abstraction level.  Of course, a Muldis D implementation
 doesn't actually have to store character data in NFD; but default matching
@@ -68,59 +68,59 @@ semantics need to be as if it did.
 
 * tuple
 
-A I<tuple> is an unordered heterogeneous collection of 0..N elements that
+A *tuple* is an unordered heterogeneous collection of 0..N elements that
 are keyed by the element's name; each element is a name-value pair, and all
-names in the tuple are distinct.  While I<tuple> legitimately refers to the
-same thing as the Muldis D term I<sequence> in other contexts, it does
-not in this documentation.  Terms like I<record> or I<row> are not used in
+names in the tuple are distinct.  While *tuple* legitimately refers to the
+same thing as the Muldis D term *sequence* in other contexts, it does
+not in this documentation.  Terms like *record* or *row* are not used in
 this documentation, the latter in particular because it implies ordered.
 
 * relation, relvar, relcon
 
-A I<relation> is like an unordered homogeneous set of I<tuple> where all
+A *relation* is like an unordered homogeneous set of *tuple* where all
 member tuples have identical degree and name-sets, but that a relation data
 type knows what its allowed names are even if it has no tuples.  Like with
-I<tuple>, the term I<relation> legitimately refers to a set or "ordered
+*tuple*, the term *relation* legitimately refers to a set or "ordered
 tuple" in other contexts, but it does not in this documentation.  Terms
-like I<record set> or I<row set> or I<table> are not used in this
+like *record set* or *row set* or *table* are not used in this
 documentation, the last 2 in particular because they imply a significance
 to the order of tuples, where there is none in a relation.  Moreover, the
-term I<domain> does not mean the same thing as I<relation>, and neither
-does the term I<function>; those terms have distinct meanings here.  Note
-that the term I<relvar> is short hand for I<relation-typed variable>, and
-I<relcon> is short hand for I<relation-typed constant>.  Note also that a
-I<relational database> is called that I<because> it is composed of
-relations, and I<not> just because its relations can be joined or be
+term *domain* does not mean the same thing as *relation*, and neither
+does the term *function*; those terms have distinct meanings here.  Note
+that the term *relvar* is short hand for *relation-typed variable*, and
+*relcon* is short hand for *relation-typed constant*.  Note also that a
+*relational database* is called that *because* it is composed of
+relations, and *not* just because its relations can be joined or be
 associated through subset (foreign key) constraints.
 
 * function
 
-A I<function> is a routine whose invocation is used as a value expression,
+A *function* is a routine whose invocation is used as a value expression,
 and it conceptually serves as a map between the domains of its parameters
-and its result value.  A I<function> is not the same as a I<relation>,
+and its result value.  A *function* is not the same as a *relation*,
 though both can be used as maps between values.  Besides their conceptual
-difference in Muldis D as a routine vs a value, a selected I<relation>
+difference in Muldis D as a routine vs a value, a selected *relation*
 value in Muldis D is always finite, and hence so is the cardinality of
 the map it can provide; whereas, a function can have an infinite map size.
 
 * database / relational database, dbvar, dbcon
 
-Within this documentation, the actually more generic term I<database> will
-be used to refer exclusively to a I<relational database>, so you should
-read the former as if it were the latter.  A I<database> is a tuple, all of
+Within this documentation, the actually more generic term *database* will
+be used to refer exclusively to a *relational database*, so you should
+read the former as if it were the latter.  A *database* is a tuple, all of
 whose (distinctly named) attributes are each relation-typed or
 database-typed (a recursion whose leaves are all relations); one holds all
 user data that is being maintained as an interconnected unit.  A
-database-typed variable, aka a I<dbvar>, is managed by a DBMS/RDBMS, and
+database-typed variable, aka a *dbvar*, is managed by a DBMS/RDBMS, and
 such is what is more informally referred to outside this documentation as a
 "database".  Whenever a user is "using a database", they are reading or
 updating a dbvar.  Examples of databases are genealogy records, financial
-records, and a CMS' data.  A I<database> is I<not> a program.  A
-database-typed constant is a I<dbcon>.
+records, and a CMS' data.  A *database* is *not* a program.  A
+database-typed constant is a *dbcon*.
 
 * catalog
 
-A I<catalog> is a special kind of dbvar or dbcon whose relations hold
+A *catalog* is a special kind of dbvar or dbcon whose relations hold
 metadata about the normal databases that hold user data (and about
 themselves too); updating a catalog dbvar has the side-effect of changing
 the structure of the associated normal database.  This metadata describes
@@ -129,7 +129,7 @@ stored with and used with the database.
 
 * depot / repository
 
-A I<depot> or I<repository> is a local abstraction of a typically external
+A *depot* or *repository* is a local abstraction of a typically external
 storage system which holds 1 database variable and 1 associated catalog,
 plus perhaps other details that assist the mapping of the abstraction to
 the actuality.  All user-defined non-lexical code and data lives in one or
@@ -138,12 +138,12 @@ code, in which case it is essentially a dynamically loaded library.
 
 * DBMS / RDBMS
 
-Within this documentation, the actually more generic term I<DBMS> will be
-used to refer exclusively to a I<RDBMS> (Relational Database Management
+Within this documentation, the actually more generic term *DBMS* will be
+used to refer exclusively to a *RDBMS* (Relational Database Management
 System), so you should read the former as if it were the latter.  A
-I<RDBMS> is a computer program that manages relational database variables,
+*RDBMS* is a computer program that manages relational database variables,
 associated catalogs, and depots in general.  Muldis D aspires to or does
-define one, and likewise are various other I<TTM>-inspired programs like
+define one, and likewise are various other *TTM*-inspired programs like
 Rel and Duro; most other DBMS-like programs are technically non-relational,
 including all SQL DBMSs such as Oracle, PostgreSQL and SQLite, though they
 usually give lip-service to the relational data model and approximate a
@@ -151,61 +151,61 @@ RDBMS to varying degrees.
 
 * module
 
-A I<module> is an analogy of a I<depot> that is for system-defined DBMS
+A *module* is an analogy of a *depot* that is for system-defined DBMS
 entities rather than user-defined ones.  The two are similar in that they
 both define a library of materials organized in a public namespace
-hierarchy.  The two differ in that a I<depot> is defined entirely in pure
-Muldis D, such as a DBMS user can do, while a I<module> is defined at least
+hierarchy.  The two differ in that a *depot* is defined entirely in pure
+Muldis D, such as a DBMS user can do, while a *module* is defined at least
 partially in some other language, such as that of the DBMS' own source
-code.  Alternately, they differ in that all I<depot> are visible in the
+code.  Alternately, they differ in that all *depot* are visible in the
 DBMS under the public namespace for user-defined entities while all
-I<module> are treated specially by the DBMS and are visible under the
+*module* are treated specially by the DBMS and are visible under the
 public namespace for system-defined entities.
 
 * package
 
-A I<package> is the common generalization of a I<module> and a I<depot>;
-within this documentation, the term I<package> is typically used as a
-shorthand where it would otherwise say I<module or depot>.
+A *package* is the common generalization of a *module* and a *depot*;
+within this documentation, the term *package* is typically used as a
+shorthand where it would otherwise say *module or depot*.
 
 * sequence / array, sequence generator
 
-Within this documentation, a I<sequence> or I<array> generically refers to
-an ordered collection of 0..N elements.  While I<array> legitimately has
+Within this documentation, a *sequence* or *array* generically refers to
+an ordered collection of 0..N elements.  While *array* legitimately has
 more broad meanings in other contexts, and includes both matrices plus
 unordered but indexed collections of name-value pairs, it does not in this
 documentation.  Note that a sequence may be used simply to maintain a
 simple collection in order, though the actual order of its elements may not
-always be significant.  Sometimes I<sequence> or I<array> also refer
-specifically to the C<Array> data type, which is a particular binary
-relation.  The term I<sequence> by itself never refers to the concept of a
-I<sequence generator>; in this documentation, the latter concept is only
-referred to by the longer term I<sequence generator>.
+always be significant.  Sometimes *sequence* or *array* also refer
+specifically to the `Array` data type, which is a particular binary
+relation.  The term *sequence* by itself never refers to the concept of a
+*sequence generator*; in this documentation, the latter concept is only
+referred to by the longer term *sequence generator*.
 
 * selector
 
-A I<selector> is a routine that captures an appearance of a value for use
-in a variable or expression.  A I<value literal> is also a common special
-case of a selector.  The term I<constructor> is not used in this
+A *selector* is a routine that captures an appearance of a value for use
+in a variable or expression.  A *value literal* is also a common special
+case of a selector.  The term *constructor* is not used in this
 documentation because all values in Muldis D are conceptually eternal and
 immutable, so it does not make sense to say that we are "building" one; we
 are "selecting" one.
 
 * fail
 
-Within this documentation, if a routine is said to I<fail> under some
+Within this documentation, if a routine is said to *fail* under some
 circumstance, such as with certain arguments, that can mean either or both
 of the routine throwing an exception at runtime, or failing to compile in
 the first place (which is a thrown exception at compile time); the latter
 is more likely to happen if the compiler can detect that certain arguments
 will always be unacceptable, and the former usually happens just if a
 problem can likely not be caught at compile time.  Other terms like
-I<requires> or I<must> may be used as well to indicate that a failure would
-occur if they aren't satisfied.  A I<fail> is a fatal error.
+*requires* or *must* may be used as well to indicate that a failure would
+occur if they aren't satisfied.  A *fail* is a fatal error.
 
 * warn
 
-Within this documentation, if a routine is said to I<warn> under some
+Within this documentation, if a routine is said to *warn* under some
 circumstance, such as with certain arguments, that means that the system
 doesn't recognize any fatal problem, but it detects that the programmer may
 have done something they didn't intend, such as an equality test between
@@ -214,9 +214,9 @@ would always have a false result.
 
 * atomic
 
-Within this documentation, an I<atomic> DBMS operation is an operation that
-is completely indivisible from the perspective of I<every> DBMS user,
-I<including> the user performing that operation.  From every user's
+Within this documentation, an *atomic* DBMS operation is an operation that
+is completely indivisible from the perspective of *every* DBMS user,
+*including* the user performing that operation.  From every user's
 perspective, the database/dbvar-federation transitions directly from the
 consistent state before the operation had an effect to the consistent state
 where the operation's effect is complete, and there does not exist any
@@ -226,14 +226,14 @@ to the before-state, the operation then being a no-op.
 
 * transaction, nested/child transaction
 
-Within this documentation, a I<transaction> generally I<is> divisible from
-the perspective of I<just> the user performing that transaction, where they
-see it as a sequence of distinct I<atomic> operations with distinct
+Within this documentation, a *transaction* generally *is* divisible from
+the perspective of *just* the user performing that transaction, where they
+see it as a sequence of distinct *atomic* operations with distinct
 intermediate consistent database states between them, where one or more of
 the latest operations in the sequence may optionally be undone / rolled
-back, and the remainder committed to end the transaction.  A I<transaction>
+back, and the remainder committed to end the transaction.  A *transaction*
 is indivisible from the perspective of every DBMS user besides the one
-performing the transaction.  A I<nested/child transaction> is a
+performing the transaction.  A *nested/child transaction* is a
 sub-sequence of the atomic operations comprising its parent transaction
 that has been identified for greater ease of managing the parent or
 outermost transaction.
@@ -384,11 +384,11 @@ rejected in favor of some other alternatives for now:
     ⨯   | 0x2A2F | VECTOR OR CROSS PRODUCT | some fon no rend, alt exists
 
 Note regarding font rendering.  Under Mac OS X 10.9.2 Mavericks, every
-application tried will properly display C<JOIN> except for Mozilla
-applications (Firefox and Thunderbird).  Examples that I<do> work include:
+application tried will properly display `JOIN` except for Mozilla
+applications (Firefox and Thunderbird).  Examples that *do* work include:
 Safari, Chrome, BBEdit, Terminal, MS Word 2011, Adium.
 Some other user with Thunderbird didn't have the randering problem though.
-UPDATE:  Under Mac OS X 10.9.5, C<JOIN> I<was> displayed correctly by
+UPDATE:  Under Mac OS X 10.9.5, `JOIN` *was* displayed correctly by
 Firefox (46.0.1) and Thunderbird (31.7.0).
 
 Note that only various concrete Muldis D syntaxes use trans-ASCII
@@ -400,18 +400,18 @@ distill to uses only ASCII characters for all system-defined entities.
 The relational model of data is based on predicate logic and set theory.
 
 The model assumes that all data is represented as mathematical N-ary
-I<relations>, an N-ary relation being a subset of the cartesian product of
-N I<data types>.  Reasoning about such data is done in two-valued predicate
+*relations*, an N-ary relation being a subset of the cartesian product of
+N *data types*.  Reasoning about such data is done in two-valued predicate
 logic, meaning there are 2 possible evaluations for each proposition,
-either I<true> or I<false>.
+either *true* or *false*.
 
 The basic relational building block is the data type, which can consist of
-either scalar values or values of more complex types.  A I<tuple> is an
-unordered set of I<attributes>, each of which has a name and a declared
+either scalar values or values of more complex types.  A *tuple* is an
+unordered set of *attributes*, each of which has a name and a declared
 data type; an attribute value is a specific valid value for the type of the
 attribute.  An N-relation is defined as an unordered set of N-tuples, and
-the tuples comprise the I<body> of the relation; the relation has a
-I<heading>, which is a set of attribute definitions (their names and
+the tuples comprise the *body* of the relation; the relation has a
+*heading*, which is a set of attribute definitions (their names and
 types); this heading is also the heading of each of its tuples.
 
 A heading represents a predicate, and there is a one-to-one correspondence
@@ -424,7 +424,7 @@ of its free variables.  When a tuple appears in a relation body, the
 proposition it represents is deemed to be true.  Contrariwise, for every
 tuple whose heading is the same as the relation's but does not appear in
 the relation body, its proposition is deemed to be false.  This assumption
-is known as the I<closed world assumption>.
+is known as the *closed world assumption*.
 
 The relational model specifies that data is operated on by means of a
 relational calculus or a relational algebra.  These 2 are logically
@@ -447,10 +447,10 @@ Herein, we shall conceptualize a relation as a long boolean expression,
 consisting of a string of basic boolean-valued expressions that are
 selectively anded or ored together.  A basic boolean-valued expression,
 `<attr>`, takes the form `attribute <name> is <value>`.  Each tuple
-body, `<tuple>`, in the relation takes the form of a chained C<and>
+body, `<tuple>`, in the relation takes the form of a chained `and`
 that connects N `<attr>`, one per each attribute in the relation, and
 each having a distinct `<name>`.  The relation body takes the form of
-a chained C<or> that connects N `<tuple>`, one per each tuple in the
+a chained `or` that connects N `<tuple>`, one per each tuple in the
 relation, and each `<tuple>` has the same set of `<name>` as the
 others, but the set of `<value>` that each `<tuple>` has is
 distinct.
@@ -498,7 +498,7 @@ operations, that are projection, join, union.
 A projection of a relation derives a relation that has a subset of the
 original's attributes, and all of its tuples.  Continuing the boolean
 expression analogy, the projected relation contains fewer `and <attr>`
-than the original.  For example, lets take the projection of the C<food>
+than the original.  For example, lets take the projection of the `food`
 column from the shipments relation, to get, initially:
 
        food is Kiwis
@@ -526,8 +526,8 @@ attributes, and its set of tuples is fundamentally the cartesian product of
 those of the originals.  Following our boolean analogy, we start off by
 pairwise connecting instances of every `<tuple>` of the first relation
 with instances of every `<tuple>` of the second one, with the members
-of each pair then being chained together with C<and> to form a single,
-longer chain of C<and>.  Note that join is commutative, so it doesn't
+of each pair then being chained together with `and` to form a single,
+longer chain of `and`.  Note that join is commutative, so it doesn't
 matter which of the source relations is first or second, the result is the
 same, as much as C<foo and bar> is the same as C<bar and foo>.  For
 example, lets do a join of our 2 simplest relations:
@@ -542,16 +542,16 @@ example, lets do a join of our 2 simplest relations:
 Now, when multiple relations are connected into one such as with a join,
 the relational model assumes that if either of the sources have attributes
 with the same names as each other, then they are both describing the same
-things.  In this case, the references to attribute C<y> from both relations
-are talking about the same C<y>.  And so, any result tuples that contradict
-themselves, saying that C<y> equals both one value and equals a different
-one, can't ever be true and are eliminated; only the tuples where the C<y>
+things.  In this case, the references to attribute `y` from both relations
+are talking about the same `y`.  And so, any result tuples that contradict
+themselves, saying that `y` equals both one value and equals a different
+one, can't ever be true and are eliminated; only the tuples where the `y`
 value is identical are kept:
 
        x is 3 and y is 2 and y is 2 and z is 1
     or x is 3 and y is 2 and y is 2 and z is 4
 
-Moreover, this expression can be simplified by removing the redundant C<y>
+Moreover, this expression can be simplified by removing the redundant `y`
 attribute:
 
        x is 3 and y is 2 and z is 1
@@ -572,12 +572,12 @@ A union of 2 relations, which requires that the 2 relations have the same
 headings, derives another relation with the same heading, and a union of
 the two's set of tuples as its body, with any duplicates eliminated.  In
 terms of our boolean analogy, a union is simply chaining together the
-entirety of each relation's boolean expression with an C<or>, and then
+entirety of each relation's boolean expression with an `or`, and then
 eliminating redundancies from the result.
 
 A full list of all the relational operators having more formal (but Muldis
 D specific) descriptions occurs in the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md)
-document; that list does I<not> use the aforementioned boolean analogies.
+document; that list does *not* use the aforementioned boolean analogies.
 
 # MULDIS D
 
@@ -651,7 +651,7 @@ types don't always exist, or use a database lacking a user-defined schema.
 ## Representation
 
 Muldis D has multiple official representation formats, each of which is
-referred to by this multi-part document as a I<dialect>.  Each official
+referred to by this multi-part document as a *dialect*.  Each official
 Muldis D dialect has its own syntax rules, but all of them are capable of
 representing the same code; that is, they can all represent code that has
 the same behaviour, and Muldis D code can be translated between any 2 of
@@ -672,9 +672,9 @@ syntaxes; round-tripping code between these is guaranteed to result in
 everything that was started with, non-criticals included.
 
 Generally speaking, every Muldis D dialect belongs to one of just 2 groups,
-which are I<non-hosted plain-text> and I<hosted data>; any Muldis D dialect
-will go by the abstract names I<Plain Text Muldis D> (I<PTMD>), and
-I<Hosted Data Muldis D> (I<HDMD>), respectively.  With all Plain Text
+which are *non-hosted plain-text* and *hosted data*; any Muldis D dialect
+will go by the abstract names *Plain Text Muldis D* (*PTMD*), and
+*Hosted Data Muldis D* (*HDMD*), respectively.  With all Plain Text
 dialects, the Muldis D code is represented by an (ordered) string/sequence
 of characters like with most normal programming languages.  With all Hosted
 Data dialects, the Muldis D code is represented by collection-typed values
@@ -702,18 +702,18 @@ support for non-critical Muldis D code metadata.
 The Muldis D type system is a formal type system, at least in intent, and
 works conceptually in the following manner.
 
-There is a single universal value set/domain, named C<Universal>, whose
-members are all the values that can possibly exist; C<Universal> is the
+There is a single universal value set/domain, named `Universal`, whose
+members are all the values that can possibly exist; `Universal` is the
 maximal data type of the entire type system.  Also there is a single
-nullary value set/domain, named C<Empty>, which has zero members; C<Empty>
+nullary value set/domain, named `Empty`, which has zero members; `Empty`
 is the minimal data type.
 
 All Muldis D data values as individuals are eternal and immutable.  All
 values are logically distinct, and each value occurs exactly once, and is
 not fixed within time or space (so doesn't have an "address").  It does not
 make sense to say that you are creating or destroying or copying or
-mutating a I<value>.  However, an eternal immutable value can make an
-I<appearance> within a I<variable>, as a variable I<is> a named/addressable
+mutating a *value*.  However, an eternal immutable value can make an
+*appearance* within a *variable*, as a variable *is* a named/addressable
 container that is fixed within time and space, and it can be created,
 destroyed, mutated, and multiple variables can hold appearances of the same
 value.  So when one appears to be testing 2 values for equality, they are
@@ -726,38 +726,38 @@ analogous to the task that a "constructor" routine does in a typical
 object-oriented language, but that the former is conceptually "selecting"
 an eternally existing value rather than conceptually "creating" a new one.
 
-In the Muldis D type system, a I<data type> is a set of values, and as with
+In the Muldis D type system, a *data type* is a set of values, and as with
 individual values, a data type is eternal and immutable.  Each data type
 can also have type-specific metadata where what metadata is possible
 depends on how the type is defined; an example of metadata is a default
 value ordering algorithm.  Ignoring for a moment the existence of type
 aliases, every data type is distinct from all other data types in that no 2
 data types encompass exactly the same set of values.  Still ignoring type
-aliases, every data type other than C<Universal> and C<Empty> has at least
+aliases, every data type other than `Universal` and `Empty` has at least
 1 member value, and at most 1 less value than the universal set.  If 2 data
-types have no values in common, they are said to be I<disjoint>.
+types have no values in common, they are said to be *disjoint*.
 
-Given 2 arbitrary data types, I<T1> and I<T2>, I<T1> is called a
-I<supertype> of I<T2> if its value set is a superset of that of I<T2>, and
-in that situation, I<T2> is a I<subtype> of I<T1>, as its value set is a
-subset of that of I<T1>.  Note that every type includes itself as its own
-supertype and subtype, in which case, the I<T1> and I<T2> of the previous
-example are the same type.  By contrast, if I<T1> and I<T2> are explicitly
-different types but otherwise have that relationship, then I<T1> has at
-least 1 value that I<T2> doesn't have, in which case I<T1> is also called a
-I<proper supertype> of I<T2>, and I<T2> is also called a I<proper subtype>
-of I<T1>.  Given those last examples, I<T1> is a I<more general> type, and
-I<T2> is a I<more specific> type.  In this way, the system-defined
-C<Universal> type is a proper supertype of all other types, and the
-system-defined C<Empty> type is a proper subtype of all other types.  Now,
-if no data type, I<T3> exists which is both a proper subtype of I<T1> and a
-proper supertype of I<T2>, then I<T1> is an I<immediate supertype> of
-I<T2>, and I<T2> is an I<immediate subtype> of I<T1>.  Note that the
+Given 2 arbitrary data types, *T1* and *T2*, *T1* is called a
+*supertype* of *T2* if its value set is a superset of that of *T2*, and
+in that situation, *T2* is a *subtype* of *T1*, as its value set is a
+subset of that of *T1*.  Note that every type includes itself as its own
+supertype and subtype, in which case, the *T1* and *T2* of the previous
+example are the same type.  By contrast, if *T1* and *T2* are explicitly
+different types but otherwise have that relationship, then *T1* has at
+least 1 value that *T2* doesn't have, in which case *T1* is also called a
+*proper supertype* of *T2*, and *T2* is also called a *proper subtype*
+of *T1*.  Given those last examples, *T1* is a *more general* type, and
+*T2* is a *more specific* type.  In this way, the system-defined
+`Universal` type is a proper supertype of all other types, and the
+system-defined `Empty` type is a proper subtype of all other types.  Now,
+if no data type, *T3* exists which is both a proper subtype of *T1* and a
+proper supertype of *T2*, then *T1* is an *immediate supertype* of
+*T2*, and *T2* is an *immediate subtype* of *T1*.  Note that the
 Muldis D type system supports multiple inheritance, so types can form a
 lattice rather than a tree.
 
 Subtyping in Muldis D, as in any B<D> language, takes the form of
-I<specialization by constraint>, not I<specialization by extension>.  So
+*specialization by constraint*, not *specialization by extension*.  So
 conceptually speaking, a "circle" value is an "ellipse" value, but a
 "coloured circle" is neither a "circle" value nor a "colour" value; the
 type "circle" is a subtype of "ellipse", and "coloured circle" is neither a
@@ -765,21 +765,21 @@ subtype of "circle" nor of "colour".  Rather, for example, a "coloured
 circle" is a multi-component type which has components of type "circle" and
 "colour", but composition like this does not a subtype make.
 
-However, Muldis D's I<mixin types> feature allows one to fake
-I<specialization by extension>; it aids in code reuse between disjoint
+However, Muldis D's *mixin types* feature allows one to fake
+*specialization by extension*; it aids in code reuse between disjoint
 types having common components, such as is a main benefit of
-I<specialization by extension>; any 2 types that independently compose the
+*specialization by extension*; any 2 types that independently compose the
 same mixin would not have values in common due to that common mixin.
-I<Actually, the mixin types feature is only partially developed and doesn't
-yet include attribute definitions; TODO: complete it so that it does.>
+*Actually, the mixin types feature is only partially developed and doesn't
+yet include attribute definitions; TODO: complete it so that it does.*
 
-Every value conceptually has exactly one I<most specific type> (or I<MST>),
+Every value conceptually has exactly one *most specific type* (or *MST*),
 which is cited as the general answer to the question "what is this value's
 type".  The MST of a value is the data type containing that value which has
 no proper subtypes that also contain that value.  A value will conceptually
 always implicitly assume the most specific type that exists which contains
 it, even if a selector for a less specific type was explicitly used to
-select it (although some use of explicit C<treated> may be required in code
+select it (although some use of explicit `treated` may be required in code
 to assist its compilation).  With a generic B<D> language, to enforce the
 "exactly one" requirement, which keeps answering the question a simple
 affair, it would be mandatory that when any 2 data types have values in
@@ -792,25 +792,25 @@ requirement would place a gratuitous large and error-prone burden on users,
 if mandated universally.  Instead, Muldis D only enforces single MSTs in
 the limited contexts where that is actually necessary, if any.
 
-A I<union type> is a data type that has at least 2 immediate subtypes, and
+A *union type* is a data type that has at least 2 immediate subtypes, and
 every one of its values is also a value of an immediate subtype; that is,
-the MST of every value in a union type is not that type.  An I<intersection
-type> is a data type that has at least 2 immediate supertypes.  In this
-way, C<Universal> is a union type of all other types, and C<Empty> is an
+the MST of every value in a union type is not that type.  An *intersection
+type* is a data type that has at least 2 immediate supertypes.  In this
+way, `Universal` is a union type of all other types, and `Empty` is an
 intersection type of all other types.
 
-A I<difference type> is a data type that has exactly 1 immediate supertype,
+A *difference type* is a data type that has exactly 1 immediate supertype,
 and that supertype is a union type such that the difference type and
 another peer subtype of that union type are complementary with respect to
 the union type; every union type value is in either the difference type or
-its complement, but not both.  An I<exclusion type> is like a I<union> type
+its complement, but not both.  An *exclusion type* is like a *union* type
 except that it only consists of the values that are members of exactly an
-odd number of its immediate subtypes.  A I<negation type> is a type that
+odd number of its immediate subtypes.  A *negation type* is a type that
 consists of only the values that aren't members of a single other type; it
-is like a difference type where the common supertype is C<Universal>.
+is like a difference type where the common supertype is `Universal`.
 
 Every data type is one of these 2 main kinds, depending on how the type is
-defined: I<declaration type>, I<enumeration type>.  A declaration type
+defined: *declaration type*, *enumeration type*.  A declaration type
 definition will just introduce new values into the type system while an
 enumeration type will just reuse values that the type system already has.
 Every declaration type is disjoint from every other declaration type, and
@@ -830,13 +830,13 @@ the values of the nonatomic data type to be a subset of the permutations of
 possible element values.  An enumeration type is defined in terms of a
 union or subset of the values of one or more other data types.  In the case
 of a scalar subset enumeration type, typically it will define extra scalar
-possreps or selectors.  There are just 2 declaration types: C<Int> and
-C<List>; only C<Int> is an atomic type and only C<List> is a nonatomic
+possreps or selectors.  There are just 2 declaration types: `Int` and
+`List`; only `Int` is an atomic type and only `List` is a nonatomic
 type.  All other system-defined types, and all user-defined types, are
 enumeration types.  Some of the more significant system-defined enumeration
-types are: C<Universal>, C<Empty>, C<Structure>, C<String>, C<Scalar>,
-C<Tuple>, C<Relation>, C<External>, C<Bool>, C<Rat>, C<Text>, C<Blob>,
-C<Set>, C<Maybe>, C<Array>, C<Bag>.
+types are: `Universal`, `Empty`, `Structure`, `String`, `Scalar`,
+`Tuple`, `Relation`, `External`, `Bool`, `Rat`, `Text`, `Blob`,
+`Set`, `Maybe`, `Array`, `Bag`.
 
 The fundamental reason for this design, where all values are introduced
 into the type system by just system-defined types, is so that Muldis D can
@@ -861,26 +861,26 @@ used in production should exploit user-defined types and constraints.  Also
 user-defined types are very useful as metadata to explain the intended
 interpretation of particular data and code working with it.
 
-One might say that Muldis D is using I<progressive nominal typing>, where
+One might say that Muldis D is using *progressive nominal typing*, where
 values in databases move between structural and nominal typing as
 user-defined types whose names match their declared types come in and out
 of existence or mutate.
 
 B<TODO: REWRITE THIS SINGLE PARAGRAPH:>  A data type that is an atomic or
-structure or external type is also called a I<root type>; a data type that
-is an enumeration is also called a I<nonroot type>.  A I<leaf type> is a
-data type that has no proper subtypes save for C<Empty>.
+structure or external type is also called a *root type*; a data type that
+is an enumeration is also called a *nonroot type*.  A *leaf type* is a
+data type that has no proper subtypes save for `Empty`.
 
 Muldis D provides 2 generic polar-opposite methods to define an enumeration
 type in terms of a union, and types defined in the 2 methods can be
-referred to as I<domain types> or I<mixin types>, respectively.  With a
-I<domain type>, it is the union type itself whose definition includes a
+referred to as *domain types* or *mixin types*, respectively.  With a
+*domain type*, it is the union type itself whose definition includes a
 list of all the other types from which it draws its values, and those other
-types generally don't know anything about the domain type.  With a I<mixin
-type>, the union type doesn't know anything about what types it
+types generally don't know anything about the domain type.  With a *mixin
+type*, the union type doesn't know anything about what types it
 draws its values from, and it is instead those other types whose
 definitions explicitly name that their values are all included in the union
-type, which they declare by explicitly I<composing> the mixin type.  Note
+type, which they declare by explicitly *composing* the mixin type.  Note
 that, just as multiple domain types can take values from the same other
 types, the same other type can compose multiple mixin types.  The primary
 determinant for whether you would declare a union type using a domain type
@@ -896,60 +896,60 @@ type by adding new values to it from their own new types, and so your union
 type is flexible to accommodate new uses automatically, at the cost that
 you can't always assume when you ask for a value of that type that you'll
 know in advance all the possible values you might get.  So, for example,
-the system-defined C<Bool> type is a domain type, while the system-defined
-C<Numeric> type is a mixin type.  A particularly important use of mixin
+the system-defined `Bool` type is a domain type, while the system-defined
+`Numeric` type is a mixin type.  A particularly important use of mixin
 types is doing operator overloading between disjoint types,
 which would be considerably more difficult without them.
 
 ## Type Identification
 
 All values in the Muldis D type system are broadly categorized into 5
-complementary sets called I<scalar values>, I<tuple values>, I<relation
-values>, I<external values>, and I<nonstructure values>; tuple and relation
-values are collectively known as I<nonscalar values>.  The type system has
-the system-defined data types named C<Scalar>, C<Tuple>, C<Relation>,
-C<External>, and C<Nonstructure>, which serve as maximal data types for
+complementary sets called *scalar values*, *tuple values*, *relation
+values*, *external values*, and *nonstructure values*; tuple and relation
+values are collectively known as *nonscalar values*.  The type system has
+the system-defined data types named `Scalar`, `Tuple`, `Relation`,
+`External`, and `Nonstructure`, which serve as maximal data types for
 each category, respectively.  The 5 types are all mutually disjoint, and
-C<Universal> is a union type over all of them.
+`Universal` is a union type over all of them.
 
 Most data types each consist exclusively of values from
 exactly one of the above 5 categories, and each such type does not
 include values from several of them.  Therefore, every such data type is
-said to be either a I<scalar type>, a I<tuple type>, a I<relation type>,
-an I<external type>, or a I<nonstructure type>,
+said to be either a *scalar type*, a *tuple type*, a *relation type*,
+an *external type*, or a *nonstructure type*,
 depending which category all of its values come from.  In similar fashion,
-a I<nonscalar type> is frequently any type that is not a scalar type,
+a *nonscalar type* is frequently any type that is not a scalar type,
 meaning it is either a tuple type or a relation type.
 
-A I<remnant type> is any type having at least 2 values, but that lacks at
-least one value of C<Universal>, where at least 2 of
+A *remnant type* is any type having at least 2 values, but that lacks at
+least one value of `Universal`, where at least 2 of
 the values it has are not in the same one of the 5 categories.  The remnant
 category is the complement category to all the others in that every
-possible proper subset of the values of C<Universal> can now be represented
-by a type that fits in one of the 6 categories, save C<Empty> itself.
+possible proper subset of the values of `Universal` can now be represented
+by a type that fits in one of the 6 categories, save `Empty` itself.
 
 The most important values of the Muldis D type system (because those are
-the only ones that can be stored in a I<database>) are broadly categorized
-into 3 complementary sets called I<deeply homogeneous scalar values>,
-I<deeply homogeneous tuple values>, and I<deeply homogeneous relation
-values>; deeply homogeneous tuple and deeply homogeneous relation values
-are collectively known as I<deeply homogeneous nonscalar values>.  The type
-system has the system-defined data types named C<DHScalar>, C<DHTuple>, and
-C<DHRelation>, which serve as maximal data types for each category,
+the only ones that can be stored in a *database*) are broadly categorized
+into 3 complementary sets called *deeply homogeneous scalar values*,
+*deeply homogeneous tuple values*, and *deeply homogeneous relation
+values*; deeply homogeneous tuple and deeply homogeneous relation values
+are collectively known as *deeply homogeneous nonscalar values*.  The type
+system has the system-defined data types named `DHScalar`, `DHTuple`, and
+`DHRelation`, which serve as maximal data types for each category,
 respectively.  Each of these 3 types is a proper subtype of the previously
 mentioned type whose name is the same but for lacking a 'DH' prefix.  The
 most important data types each consist exclusively of values from exactly
 one of the most important 3 categories, and every such data type is said to
-be either a I<deeply homogeneous scalar type>, a I<deeply homogeneous tuple
-type>, or a I<deeply homogeneous relation type>, depending which category
-all of its values come from.  In similar fashion, a I<deeply homogeneous
-nonscalar type> is generally any deeply homogeneous type that is not a
+be either a *deeply homogeneous scalar type*, a *deeply homogeneous tuple
+type*, or a *deeply homogeneous relation type*, depending which category
+all of its values come from.  In similar fashion, a *deeply homogeneous
+nonscalar type* is generally any deeply homogeneous type that is not a
 deeply homogeneous scalar type, if we ignored non-deeply-homogeneous types,
 meaning it is either a deeply homogeneous tuple type or a deeply
 homogeneous relation type.  This said, the definition of a deeply
 homogeneous tuple|relation type is restricted further than just being a set
-of deeply homogeneous tuple|relation values, and so C<DHTuple> and
-C<DHRelation> aren't actually deeply homogeneous types (they are both
+of deeply homogeneous tuple|relation values, and so `DHTuple` and
+`DHRelation` aren't actually deeply homogeneous types (they are both
 non-deeply-homogeneous types); see **Distinction of Non-Homogeneous Types
 from Homogeneous Types** for more details.
 
@@ -964,7 +964,7 @@ definition.  The only way for 2 scalar types to have values in common is
 if one is explicitly defined, directly or indirectly, as a subtype of, or
 as a union type encompassing a subtype of, the other.
 
-Every value of a nonscalar type (either a tuple type I<or> a relation
+Every value of a nonscalar type (either a tuple type *or* a relation
 type, respectively) is conceptually transparent, and its component
 structure is known to all.  The identity of every nonscalar type is
 defined by its component structure alone, and every nonscalar type must
@@ -987,16 +987,16 @@ features to be designed and implemented more easily).
 An external type is a special opaque type.
 A value of an external type can not be stored in a database and
 it only is ever stored in routine lexical variables or arguments.  The
-use purpose is provided by Muldis D's special C<External>
+use purpose is provided by Muldis D's special `External`
 type, the values of which will represent any arbitrary values of any
 arbitrary, often user-defined and mutable, types of a peer or host language
-to Muldis D in the context of a common program.  Each C<External> value is
+to Muldis D in the context of a common program.  Each `External` value is
 a black box to Muldis D code, which other parts of a wider program can give
 to Muldis D routines to manage, such as store in a relation value for
 organization and processing with relational operators.  The mutual identity
-of C<External> values is implementation-defined, and by default each one is
+of `External` values is implementation-defined, and by default each one is
 conceptually a memory address meaningful to the external language.  But
-regardless, C<External> values are disjoint from all native Muldis D
+regardless, `External` values are disjoint from all native Muldis D
 values, so their proprietary identity schemes have no bearing on natives.
 
 ## Scalar Types
@@ -1005,11 +1005,11 @@ Scalar types are the only conceptually (non-external) encapsulated types
 in Muldis D, and are like other languages' concepts of object classes where
 all their attributes are private, and only accessible indirectly.  The
 definition of a scalar type comprises usually one or more named
-I<possreps> or I<possible representations>, and for each of those, at least
-one I<selector> operator and usually at least one I<accessor> or I<the>
+*possreps* or *possible representations*, and for each of those, at least
+one *selector* operator and usually at least one *accessor* or *the*
 operator.
 
-A I<possrep> of a type is an exhaustively complete means for users to
+A *possrep* of a type is an exhaustively complete means for users to
 conceptualize the structure of the type; it is like a "role" or "interface"
 definition.  A possrep has the appearance of a complete collection of (zero
 or more) named object attributes (of any scalar or nonscalar type) that
@@ -1034,16 +1034,16 @@ data type that is a rectangle, one possrep could specify the 4 vertices as
 also specify the rectangle's width and height as numeric values.
 
 A possrep additionally has a defined boolean-valued constraint expression
-(which is simply I<true> in the trivial case), that restricts what values
+(which is simply *true* in the trivial case), that restricts what values
 the possrep components can have within the context of their fellows.
 Taking for example a "medium polygon" data type, there could be a
 constraint that the area of the polygon is between 5 and 10 units.
 
 Generic system-defined selector and possrep attribute accessor operators
 exist that automatically work with all scalar types (that have possreps,
-which all scalar root types except C<Int> and C<String> do), so such do not
+which all scalar root types except `Int` and `String` do), so such do not
 need to be explicitly defined per such type.  They are all in the
-C<sys.std.Core.Scalar.\w+> namespace.  These generic operators take
+`sys.std.Core.Scalar.\w+` namespace.  These generic operators take
 advantage of the fact that each scalar possrep looks like a tuple, and
 they look like basic tuple operators but for taking an extra argument to
 say which possrep we're dealing with, and possibly a second extra attribute
@@ -1055,7 +1055,7 @@ generated from their structure/etc definitions, such as the aforementioned
 implicitly system-defined selectors and accessors (or certain other
 explicitly defined operators whose public interfaces are still implicitly
 system-defined).  All other operators that are used with a data type are
-expressly I<not> built-in to the type (even if they are system-defined);
+expressly *not* built-in to the type (even if they are system-defined);
 the other operators do not have any access to the data type's internals,
 and must be defined (directly or indirectly) in terms of (that is, layered
 on top of) the few that are built-in, though the built-ins from any or all
@@ -1090,7 +1090,7 @@ possrep that just works for a square rather than a rectangle in general
 comprises a center point plus its length.
 
 As a corollary to this, all union types have none of the possreps defined
-by their proper subtypes.  So the system-defined C<Scalar> type has no
+by their proper subtypes.  So the system-defined `Scalar` type has no
 possreps at all, and hence has no selectors or accessors defined for it.
 
 Note that, to keep things simple and deterministic under the possibility of
@@ -1114,27 +1114,27 @@ Tuple types are the fundamental heterogeneous conceptually
 non-encapsulated collection types in Muldis D, and are like the Pascal
 language's concept of a record, or the C language's concept of a struct.
 The definition of a tuple type comprises a set of zero or more named
-I<attributes> of any scalar or nonscalar type.  This set definition is
-called the tuple's I<heading>, and the count of attributes is called the
-tuple's I<degree>.
+*attributes* of any scalar or nonscalar type.  This set definition is
+called the tuple's *heading*, and the count of attributes is called the
+tuple's *degree*.
 
 Relation types are the fundamental homogeneous conceptually
 non-encapsulated collection types in Muldis D, and are like other
 languages' concepts of sets (or arrays where all elements are distinct),
 but restricted in that all elements are tuples (whose degrees and attribute
 names are identical); the count of tuples in a relation is called the
-relation's I<cardinality>.  The definition of a relation type looks exactly
+relation's *cardinality*.  The definition of a relation type looks exactly
 like the definition of a tuple type (such that a relation has attributes
 even if it has no tuples), but that the definition defines every tuple in
 the relation, and also but that relation types can additionally have
-I<keys> defined which indicate that a subset of its attributes' values are
+*keys* defined which indicate that a subset of its attributes' values are
 distinct between all tuples in the relation.
 
 Generic system-defined selector and accessor operators exist that
 automatically work with all tuple and relation types, so they do not
 need to be defined per such type.
 
-The system-defined types C<Tuple> and C<Relation> (and their
+The system-defined types `Tuple` and `Relation` (and their
 system-defined subtypes) are technically generic factory types, such that
 they themselves do not define any attribute sets, and are supertypes of all
 tuple and relation types that do.
@@ -1145,7 +1145,7 @@ sets are of the same degree, the attribute names are identical, and the
 name-wise corresponding attributes in each heading have a valid
 subtype/supertype relationship; each attribute of a tuple or relation
 subtype is a subtype of the same-named attribute of the tuple or relation
-supertype.  I<TODO:  Update this as you can have sub/super in other ways.>
+supertype.  *TODO:  Update this as you can have sub/super in other ways.*
 
 The explicit heading of a tuple or relation value only defines the
 names of its attributes, not their types; the types of tuple or
@@ -1164,22 +1164,22 @@ The MST of a relation value is similarly based on the attribute values in
 its member tuples; for each relation attribute, its MST is the most
 specific common supertype of the MSTs of the tuple values for that
 attribute.  If a relation value has zero tuples, then the MST of every
-one of its attributes is simply C<Empty>, regardless of whether that
+one of its attributes is simply `Empty`, regardless of whether that
 attribute would otherwise be scalar or tuple or relation valued.  A
 consequence of this is that 2 relation values with zero tuples are
 always identical if just their degree and the names of their attributes
 match, and regardless of the declared types of the attributes.  A corollary
 to this is that if the declared type of an attribute of a relation type
-is C<Empty>, then that type can only consist of exactly 1 value, which is
+is `Empty`, then that type can only consist of exactly 1 value, which is
 the zero-tuple relation having those attribute names (and their types are
-all C<Empty>).
+all `Empty`).
 
 Declaring a type in terms of a typed attribute list has different effects
 for scalar and tuple types versus relation types when an attribute of said
-is given the type C<Empty>.  While for a relation type this means that the
+is given the type `Empty`.  While for a relation type this means that the
 type has exactly 1 value, for a scalar or tuple type this means that the
 type has exactly zero values, and so the latter is in fact an alias for
-C<Empty> itself, since no tuple value can lack a value for an attribute and
+`Empty` itself, since no tuple value can lack a value for an attribute and
 no scalar value can lack a value for a possrep attribute.
 
 A consequence of these identity matters is that a Muldis D implementation
@@ -1190,10 +1190,10 @@ important metadata is lost.
 
 ## Distinction of Non-Homogeneous Types from Homogeneous Types
 
-A relation value can have any combination of values of C<Universal> as the
+A relation value can have any combination of values of `Universal` as the
 values of the same attribute across its constituent tuples.  All generic
 relational operators will work with every relation value except for
-C<unwrap> and C<ungroup> (or other operators defined over them), which will
+`unwrap` and `ungroup` (or other operators defined over them), which will
 only work with a subset of relation values.
 
 You can only unwrap a host relation's attribute into an extension of that
@@ -1203,13 +1203,13 @@ attribute names to extend the host with.  Likewise, you can only ungroup a
 host relation's attribute if for every tuple of the host, that attribute is
 a relation with the same degree and attribute names.
 
-A I<deeply homogeneous relation value> is, by definition, any host relation
+A *deeply homogeneous relation value* is, by definition, any host relation
 value for which you can take any of the host's attributes that is not
 deeply homogeneous scalar, and validly either unwrap or ungroup that
 attribute, recursively, until your host relation has just deeply
 homogeneous scalar-valued attributes.
 
-A I<deeply homogeneous tuple value> is, by definition, any tuple value such
+A *deeply homogeneous tuple value* is, by definition, any tuple value such
 that any relation-valued attributes it has, directly or indirectly, are
 also just deeply homogeneous relation-valued.
 
@@ -1217,10 +1217,10 @@ As trivial cases, all 3 of the nonscalar values with zero attributes are
 just deeply homogeneous nonscalar values, and all relation values with zero
 tuples are just deeply homogeneous relation values.  (Hence the
 system-defined nonscalar values with additional special names, which are
-C<D0>, C<D0C[0|1]>, and C<Nothing>, don't each come in 2 flavors.)
+`D0`, `D0C[0|1]`, and `Nothing`, don't each come in 2 flavors.)
 
-A I<deeply homogeneous scalar value> is, by definition, any scalar value
-that either has no possreps (it is an C<Int> or a C<String>) or all of its
+A *deeply homogeneous scalar value* is, by definition, any scalar value
+that either has no possreps (it is an `Int` or a `String`) or all of its
 possreps are
 such that any relation-valued attributes it has, directly or indirectly,
 are also just deeply homogeneous relation-valued.
@@ -1230,25 +1230,25 @@ deeply homogeneous relation or tuple or scalar possrep attribute is a
 scalar or tuple or relation value; in particular, no such attribute is
 allowed to be either an external or a nonstructure value.
 
-A I<deeply homogeneous relation type> is, by definition, any type
+A *deeply homogeneous relation type* is, by definition, any type
 consisting of just deeply homogeneous relation values, such that if the
 declared type of a unary relation attribute was that deeply homogeneous
 relation type, then every value of said unary relation would also be just a
-deeply homogeneous relation.  Likewise, a tuple type is a I<deeply
-homogeneous tuple type> if said unary relation could have said deeply
+deeply homogeneous relation.  Likewise, a tuple type is a *deeply
+homogeneous tuple type* if said unary relation could have said deeply
 homogeneous tuple type as its attribute's declared type and be a deeply
-homogeneous relation type.  A I<deeply homogeneous scalar type> is a
-I<scalar type> whose values are all deeply homogeneous scalar values.
+homogeneous relation type.  A *deeply homogeneous scalar type* is a
+*scalar type* whose values are all deeply homogeneous scalar values.
 
-And so, the 10 system-defined enumeration types [C<DHTuple>, C<Database>,
-C<DHRelation>, C<DHSet>, C<DHMaybe>, C<DHJust>, C<DHArray>, C<DHBag>,
-C<DH[S|M]PInterval>] are
+And so, the 10 system-defined enumeration types [`DHTuple`, `Database`,
+`DHRelation`, `DHSet`, `DHMaybe`, `DHJust`, `DHArray`, `DHBag`,
+`DH[S|M]PInterval`] are
 actually not deeply homogeneous nonscalar types like their namesakes at
 all, but they are all nonscalar types; no deeply homogeneous types could
 use those as declared types of any attributes.
 
 The distinction between deeply homogeneous types and other types is very
-important to make.  Muldis D only permits a I<database> typed variable,
+important to make.  Muldis D only permits a *database* typed variable,
 which are the only kinds of variables that can be global and persist, to
 consist of deeply homogeneous relations and deeply homogeneous tuples and
 deeply homogeneous scalars.
@@ -1280,24 +1280,24 @@ this exception is just an artifact of Muldis D having exclusively named
 parameters plus N-adic by default where possible, and the actual join
 operation is still relational model abiding.
 
-Sometimes this documentation may use the term I<complete type> or
-I<incomplete type> to refer to a nonscalar type; every complete type has
+Sometimes this documentation may use the term *complete type* or
+*incomplete type* to refer to a nonscalar type; every complete type has
 its full list of attributes defined, and every incomplete type (or
-I<parameterized type>) doesn't.  Most system-defined nonscalar types are
+*parameterized type*) doesn't.  Most system-defined nonscalar types are
 complete; the only ones that aren't are the various maximal types
-C<[|DH][Tuple|Relation]> and C<Database>, and none of those define any
+`[|DH][Tuple|Relation]` and `Database`, and none of those define any
 attributes at all.  (All nonscalar values have a full list of attributes
 defined, of course.)
 
 ## Finite Types and Infinite Types
 
-A I<finite type> is a data type whose cardinality (count of member values)
+A *finite type* is a data type whose cardinality (count of member values)
 is known to be finite, and this cardinality can be deterministically
 computed; moreover, every value of a finite type can be represented somehow
 using a finite amount of memory.  This doesn't exclude the possibility that
 either the cardinality or individual values are larger than present-day
 computing hardware can handle, but even if so, they could be handled by
-sufficiently larger but finite resources.  An I<infinite type> is a data
+sufficiently larger but finite resources.  An *infinite type* is a data
 type that is not a finite type; its cardinality is either known to be
 infinity, or it is unknown.
 
@@ -1314,7 +1314,7 @@ length), or their values are length-constrained strings of
 finite-cardinality elements (for example, a character string that is not
 longer than 250 characters), or they are composite scalar or nonscalar
 types whose attributes are all of finite types themselves (for example, a
-type whose attributes are all C<Bool>).
+type whose attributes are all `Bool`).
 
 Generally speaking, all infinite types are defined either as being some
 open-ended natural domain (for example, the type having all integers, or
@@ -1323,30 +1323,30 @@ whether open-ended or not (for example, the type having all real or complex
 numbers between 1 and 100), or they are non-length-constrained strings (for
 example, the set of all possible text strings), or they are composite
 scalar or nonscalar types which have at least one attribute which is
-itself infinite (for example, a type that has an C<Int> attribute).
+itself infinite (for example, a type that has an `Int` attribute).
 
-The system-defined root type C<Bool> is finite (2 values), as is the
-C<Empty> type (zero values), while all of the other important
-system-defined root types (C<Int>, C<Rat>, C<Blob>, C<Text>,
-C<Tuple>, C<Relation>, etc) are infinite, as are
-the C<Universal>, C<Scalar>, C<External> types.
+The system-defined root type `Bool` is finite (2 values), as is the
+`Empty` type (zero values), while all of the other important
+system-defined root types (`Int`, `Rat`, `Blob`, `Text`,
+`Tuple`, `Relation`, etc) are infinite, as are
+the `Universal`, `Scalar`, `External` types.
 
 All proper subtypes of finite types are themselves finite types.  Proper
 subtypes of infinite types can be either finite or infinite depending on
-how they are defined.  For example, a subtype of C<Int> whose numbers are
+how they are defined.  For example, a subtype of `Int` whose numbers are
 all simply greater than 10 is infinite, but a subtype whose numbers are
-additionally all less than 1000 is finite.  I<The documentation for
+additionally all less than 1000 is finite.  *The documentation for
 individual system-defined data types specifies whether each of which is
 finite or infinite, and in the latter case, it states a most generic means
-to specify a finite subtype.>
+to specify a finite subtype.*
 
 Note that, while it is not mandated by the language, some Muldis D
 implementations may legitimately choose to impose restrictions on their
 users such that the declared types of all persisting variables must be of
 finite types only.
 
-For example that all persisting C<Text> types must have a maximum allowed
-length in characters specified, or that all persisting C<Int> types must
+For example that all persisting `Text` types must have a maximum allowed
+length in characters specified, or that all persisting `Int` types must
 have a least and greatest allowed value specified.  This would typically
 happen if the implementation needs to use fixed-size fields internally,
 such as 32-bit integers, and it is not practical to support the possibility
@@ -1355,7 +1355,7 @@ databases implemented in C).
 
 On the other hand, some implementations may natively support unlimited size
 values, such as those written in Perl, and so these can allow persisting
-the plain C<Text> or C<Int> types, which can make things less complicated
+the plain `Text` or `Int` types, which can make things less complicated
 for their users.
 
 Of course, even with implementations that require finite types, this isn't
@@ -1368,10 +1368,10 @@ defining user chose.
 ## Universal Implicit Operators
 
 Muldis D is universally polymorphic to at least a small degree, such that
-every data type without exception has both an C<assign> update operator
+every data type without exception has both an `assign` update operator
 (for assigning a value of that type to a variable of that type) and an
-C<is_same> function for testing that 2 values of that type are identical or
-equal or substitutable (and C<is_not_same>, for the opposite).  Moreover,
+`is_same` function for testing that 2 values of that type are identical or
+equal or substitutable (and `is_not_same`, for the opposite).  Moreover,
 these operators exist implicitly, so when one defines the initial possrep
 of a new type, they get those operators for the type at no extra cost.
 
@@ -1381,7 +1381,7 @@ Muldis D operators have different fully-qualified names from each other, so
 there isn't a case of incompatible operators having the same names, which
 then must be differentiated by their argument types.  So in that respect,
 maybe Muldis D isn't so polymorphic after all, depending on whether the
-latter behaviour would be needed to call a language I<polymorphic>.
+latter behaviour would be needed to call a language *polymorphic*.
 
 ## Numeric Types
 
@@ -1400,11 +1400,11 @@ This numeric type is exact, not approximate, and every figure
 equal as there is never any implicit rounding; there is no tracking of
 significant figures, and there is no fuzzy logic.  Every one of this type's
 member values can be described in terms of 3 integers; the value is the
-result of multiplying a I<mantissa> (any integer) by the result of a
-I<radix> (any integer greater than one) raised to the power of an
-I<exponent> (any integer).  Or alternately, every value can be described
-using 2 integers; the value is the result of dividing a I<numerator> by a
-I<denominator>.  This numeric type is truly radix-independent; although it
+result of multiplying a *mantissa* (any integer) by the result of a
+*radix* (any integer greater than one) raised to the power of an
+*exponent* (any integer).  Or alternately, every value can be described
+using 2 integers; the value is the result of dividing a *numerator* by a
+*denominator*.  This numeric type is truly radix-independent; although it
 is most common for the radix to be 2 or 10, any other radix can be used
 instead, such as to represent the value four-thirds exactly.
 
@@ -1423,18 +1423,18 @@ you can have that as a simple proper subtype of the most-important numeric
 type.
 
 Now, the Muldis D language actually has 2 most-important numeric data types
-which are disjoint, C<Int> and C<Rat>, both of which are in the language
+which are disjoint, `Int` and `Rat`, both of which are in the language
 core.  The second one is equal to the conceptual single numeric type as to
 what numeric values it can represent; the first one by contrast is
 conceptually a proper subtype which just contains all the integers, that is
-the values where the conceptual I<exponent> is zero (or I<denominator> is
-1) and so the I<mantissa> (or I<numerator>) by itself is the value.  The
+the values where the conceptual *exponent* is zero (or *denominator* is
+1) and so the *mantissa* (or *numerator*) by itself is the value.  The
 reason that Muldis D has these 2 types disjoint is to assist ease of use
-and implementation; moreover, C<Int> is conceptually a lot simpler, and
-C<Rat> is conceptually defined in terms of C<Int>.  And C<Rat> isn't needed
+and implementation; moreover, `Int` is conceptually a lot simpler, and
+`Rat` is conceptually defined in terms of `Int`.  And `Rat` isn't needed
 for bootstrapping a minimal Muldis D implementation or the system catalog,
-whereas C<Int> is.  I<Note: The latter, system catalog, will no longer be
-the case if the system catalog definition expands to include time-stamps.>
+whereas `Int` is.  *Note: The latter, system catalog, will no longer be
+the case if the system catalog definition expands to include time-stamps.*
 
 ## Ordered Types
 
@@ -1460,35 +1460,35 @@ set of values, ranking a set of values based on their relative order, or
 sorting a set of values into a sequence that reflects such a ranking.
 
 A system-compatible fundamental order-determination function (fulfilled by
-the routine kind C<order-determination>) must have at least 3 parameters,
-where those 3 are named [C<topic>, C<other>, C<is_reverse_order>], where
-the declared types of the two main parameters C<topic> and C<other> are the
+the routine kind `order-determination`) must have at least 3 parameters,
+where those 3 are named [`topic`, `other`, `is_reverse_order`], where
+the declared types of the two main parameters `topic` and `other` are the
 same as the type whose values the function is to determine the order of,
 and it would be invoked with 2 of those values as its arguments; the result
-type of the function is an C<Order>.  Any additional parameters besides the
+type of the function is an `Order`.  Any additional parameters besides the
 above-named 3 are hereby collectively
-referred to as I<misc params>.  This function by default results in
-C<Order:Same> iff its 2 arguments are exactly the same value, and otherwise
-it results in C<Order:Less> if the value of the C<other> argument is
+referred to as *misc params*.  This function by default results in
+`Order:Same` iff its 2 arguments are exactly the same value, and otherwise
+it results in `Order:Less` if the value of the `other` argument is
 considered to be an increase (as defined by the function's algorithm) over
-the value of the C<topic> argument, and otherwise it results in
-C<Order:More> as the reverse of the last condition would be true.  The
-function's I<misc params> carry
+the value of the `topic` argument, and otherwise it results in
+`Order:More` as the reverse of the last condition would be true.  The
+function's *misc params* carry
 optional customization details for the algorithm; this permits the function
 to implement a choice between multiple (typically similar) ordering
 algorithms rather than just one, which reduces the number of functions
 needed for supporting that choice; if the algorithm is not customizable,
-then there are no I<misc params>.  The function's third
-parameter, C<is_reverse_order>, is C<Bool>-typed; a C<Bool:False> argument
+then there are no *misc params*.  The function's third
+parameter, `is_reverse_order`, is `Bool`-typed; a `Bool:False` argument
 means the function's algorithm operates as normal when given any particular
 other arguments (meaning a sorting operation based on it will place
-elements in ascending order), while a C<Bool:True> argument means the
+elements in ascending order), while a `Bool:True` argument means the
 function's algorithm operates in reverse, so the function results in the
-reverse C<Order> value it would have otherwise when given the same other
+reverse `Order` value it would have otherwise when given the same other
 arguments (meaning a sorting operation based on it will place elements in
-descending order).  The function's C<topic> and C<other> parameters always
-require arguments, the C<is_reverse_order> parameter always doesn't require
-an argument and defaults to C<Bool:False>.
+descending order).  The function's `topic` and `other` parameters always
+require arguments, the `is_reverse_order` parameter always doesn't require
+an argument and defaults to `Bool:False`.
 
 In the general case, any context which wants to use a system-defined
 type-generic order-sensitive operator will specify the fully-qualified name
@@ -1501,7 +1501,7 @@ applied when using values of that type with versions of order-sensitive
 operators that don't have the additional function-name-specifying
 parameter.  All ordered system-defined scalar root types have this
 type-default ordering function defined for them, especially the
-system-defined C<Int> type which is opaque, so you don't
+system-defined `Int` type which is opaque, so you don't
 need to define any yourself for these most-common cases.  Note that a
 nonscalar type can't have a default ordering function, and a subtype of a
 scalar type can't supply or replace one either, with the reasoning for
@@ -1513,7 +1513,7 @@ type-default sorting function is attached to a scalar root type.
 
 Note that, for the present at least, a system-compatible fundamental
 order-determination function may only be totally ordered; that is, no 2
-distinct values of a type it is applied to may compare as C<Same>.  In the
+distinct values of a type it is applied to may compare as `Same`.  In the
 future, Muldis D may have privileged support for partial ordering
 functions, which when applied to sort a set of values would result in a
 sequence of sets of compares-as-same values, rather than a straight
@@ -1523,8 +1523,8 @@ ordered order-determination function, and a relational group if applicable.
 
 ## Type Safety
 
-Muldis D should qualify as a I<type-safe> language by many, if not all,
-definitions of the term I<type-safe>.
+Muldis D should qualify as a *type-safe* language by many, if not all,
+definitions of the term *type-safe*.
 
 The Muldis D type system is used to prevent certain erroneous or
 undesirable program behaviour.  Type errors are usually those that result
@@ -1542,7 +1542,7 @@ There are no implicit type conversions, only explicit type mapping.  For
 example, it is invalid for a numeric value to appear where a character
 string value is expected, or vice-versa, but an expression or function that
 explicitly maps a numeric to a string is valid to use there.  Muldis D
-follows the I<principle of cautious design>.
+follows the *principle of cautious design*.
 
 Muldis D is a hybrid dynamic and static language, and where on the spectrum
 it is varies by implementation.  At the very least, all imminent type
@@ -1560,7 +1560,7 @@ intelligent compilers will be closer to that goal, but in the general case
 it is not possible to go all the way.  In order to increase type error
 detection at compile time, a wider scope needs to be analysed than
 otherwise; in practice, the widest practical scope is to analyse the entire
-I<depot> that would contain the code being compiled.
+*depot* that would contain the code being compiled.
 
 By design, all Muldis D user-defined variables and routines must live in
 the same depot as all the user-defined types (and constraints) they are
@@ -1583,11 +1583,11 @@ depot's system catalog update constitutes recompiling the then-changed code
 in that depot, and so what types and routines and variables exist would
 have changed.  It is valid for a Muldis D procedure to define a new type or
 routine in one statement, and then invoke it in the next; that is how the
-Muldis D analogy of SQL's "prepared statements" works.  I<Note
+Muldis D analogy of SQL's "prepared statements" works.  *Note
 that this whole matter may be subject to revisiting, such that Muldis D
 code can never update the system catalog of its own depot to alter types or
 routines or variables; but other system catalog updates such as affecting
-database user privileges in the same depot may be retained.>
+database user privileges in the same depot may be retained.*
 
 Now, the Muldis D language spec is currently somewhat hazy in respect to
 how declared types are enforced as constraints with respect to generic
@@ -1625,7 +1625,7 @@ coming from.  Rather, only the most specific type of the value itself can
 be known or computable at runtime in order to enforce say the constraint
 from the declared type of a variable it is being assigned to.  However, the
 declared type of a variable used as an argument to a subject-to-update
-parameter I<would> be known at runtime, if it is more specific than the
+parameter *would* be known at runtime, if it is more specific than the
 declared type of the parameter.
 
 The declared type of an operator argument's source generally can not be
@@ -1642,46 +1642,46 @@ At the lowest, most primitive levels of Muldis D, everything is integers or
 sequences of integers; data types in general are just abstractions of this.
 
 The fundamental Muldis D type system has 3 compositional abstraction
-levels, which are, from lowest to highest: I<atomic value>,
-I<nonnamed-element collection>, I<named-element collection>.
+levels, which are, from lowest to highest: *atomic value*,
+*nonnamed-element collection*, *named-element collection*.
 
-An I<atomic value> is named in accordance with the original meaning of
-I<atom>, which is I<indivisible>; an I<atomic value> is not conceptually a
+An *atomic value* is named in accordance with the original meaning of
+*atom*, which is *indivisible*; an *atomic value* is not conceptually a
 collection of any kind, but rather is conceptually opaque.  Muldis D has
-exactly 1 atomic value type, which is C<Int>.  An C<Int> is a single exact
+exactly 1 atomic value type, which is `Int`.  An `Int` is a single exact
 integral number of any magnitude; while it can be unbounded in size, by far
-most of the C<Int> values actually used are quite small, and would fit in a
-single hardware CPU register in their entirety.  Two C<Int> are considered
+most of the `Int` values actually used are quite small, and would fit in a
+single hardware CPU register in their entirety.  Two `Int` are considered
 identical iff they both represent the same integer.
 
-A I<nonnamed-element collection> is conceptually a transparent sequence of
-0..N elements where each element is either an I<atomic value> or a
-I<nonnamed-element collection>.  Muldis D has exactly 1 nonnamed-element
-collection type, which is C<List>.  A C<List> is a transparent dense
+A *nonnamed-element collection* is conceptually a transparent sequence of
+0..N elements where each element is either an *atomic value* or a
+*nonnamed-element collection*.  Muldis D has exactly 1 nonnamed-element
+collection type, which is `List`.  A `List` is a transparent dense
 sequence of 0..N elements where each element is identified by ordinal
 position and the first element has position zero, and where each element is
-either an C<Int> or a C<List>; in the general case, this can be an
+either an `Int` or a `List`; in the general case, this can be an
 arbitrarily complex hierarchical structure of unlimited size, where the
-leaves of this hierarchy are each C<Int>.  C<Int> and C<List> are mutually
-disjoint and complementary proper subtypes of C<Universal>; the latter has
+leaves of this hierarchy are each `Int`.  `Int` and `List` are mutually
+disjoint and complementary proper subtypes of `Universal`; the latter has
 no values that are not each of one of the first 2 types.
 
-A I<named-element collection> is conceptually a collection of 0..N elements
+A *named-element collection* is conceptually a collection of 0..N elements
 where each element is identified by a name rather than by an ordinal
 position.  Muldis D has 6 primary named-element collection types, which are
-C<Structure>, C<String>, C<Tuple>, C<Relation>, C<ScalarWP>, C<External>.
-C<Structure> is a proper subtype of C<List> consisting of every C<List>
+`Structure`, `String`, `Tuple`, `Relation`, `ScalarWP`, `External`.
+`Structure` is a proper subtype of `List` consisting of every `List`
 value that matches one of 5 specific formats; each of those formats is
 represented by exactly one of 5 mutually disjoint proper subtypes of
-C<Structure>, which are the other 5 of the 6; C<Structure> is a union type
-over all 5 of those types, and C<Structure> has no values which are not
-each of one of those 5 types.  A C<Structure> is a C<List> having at least
-2 elements, where the first element is designated the I<structure kind> and
-indicates how to interpret the remainder of the C<Structure> elements; the
-I<structure kind> is an C<Int>; all of the remaining elements are
-collectively called the I<payload elements>.
+`Structure`, which are the other 5 of the 6; `Structure` is a union type
+over all 5 of those types, and `Structure` has no values which are not
+each of one of those 5 types.  A `Structure` is a `List` having at least
+2 elements, where the first element is designated the *structure kind* and
+indicates how to interpret the remainder of the `Structure` elements; the
+*structure kind* is an `Int`; all of the remaining elements are
+collectively called the *payload elements*.
 
-This table says which I<structure kind> values indicate which of the 5
+This table says which *structure kind* values indicate which of the 5
 types:
 
     1 | String
@@ -1690,115 +1690,115 @@ types:
     4 | ScalarWP
     5 | External
 
-Rules for determining whether two C<List> are identical are defined
-separately per each of the 5 C<Structure> subtypes; but two C<List> are
+Rules for determining whether two `List` are identical are defined
+separately per each of the 5 `Structure` subtypes; but two `List` are
 certainly not identical when they are of 2 different types of the 5, or one
-is a C<Structure> and the other is not.  As an exception to the
+is a `Structure` and the other is not.  As an exception to the
 defined-separately situation, if a simple comparison of two values simply
-as a C<List>-hierarchy of C<Int> determines them to be identical, then this
+as a `List`-hierarchy of `Int` determines them to be identical, then this
 is the result; a defined-separately is only allowed to differ when the
 simple comparison determines them to be non-identical.
 
-A C<String> is a C<Structure> having exactly 1 payload element that is
-designated I<elements>.  The I<elements> is a C<List> of 0..N C<Int> where
-the intended interpretation of I<elements> is provided by the element
-repertoire of the larger context in which the C<String> exists.
-For example, if a C<String> is the primary component of a bit/octet string
+A `String` is a `Structure` having exactly 1 payload element that is
+designated *elements*.  The *elements* is a `List` of 0..N `Int` where
+the intended interpretation of *elements* is provided by the element
+repertoire of the larger context in which the `String` exists.
+For example, if a `String` is the primary component of a bit/octet string
 type, then each string element is interpreted as a single bit/octet.  Or,
-if a C<String> is the primary component of a character string type, then
+if a `String` is the primary component of a character string type, then
 each string element is interpreted as a single code point of the character
-repertoire of the character string type.  Or, if a C<String> is used in the
-I<heading> of a C<Tuple>/etc, then it is like with a character string but
+repertoire of the character string type.  Or, if a `String` is used in the
+*heading* of a `Tuple`/etc, then it is like with a character string but
 that the character repertoire is defined by the package in which it is
-defined by way of that all C<Name> in a package must have the same
+defined by way of that all `Name` in a package must have the same
 character repertoire.
-Two C<String> are only considered identical if they have the same element
-repertoire applied to them, and for two C<String> with the same repertoire,
+Two `String` are only considered identical if they have the same element
+repertoire applied to them, and for two `String` with the same repertoire,
 the rules for determining equality vary per repertoire.  It is often useful
-to fold two C<String> to the same repertoire, but that will never happen
+to fold two `String` to the same repertoire, but that will never happen
 automatically for generic comparisons.  But it will happen automatically
-where possible when comparing DBMS entity names in C<Tuple>/etc headings,
+where possible when comparing DBMS entity names in `Tuple`/etc headings,
 so that addressing DBMS entities would just work across package boundaries.
 
-A C<Tuple> is a C<Structure> having either of 2 formats, designated
-I<row-oriented tuple> and I<column-oriented tuple>; the first has exactly 2
+A `Tuple` is a `Structure` having either of 2 formats, designated
+*row-oriented tuple* and *column-oriented tuple*; the first has exactly 2
 payload elements and the second has exactly 1.  The 2 payload elements of a
-I<row-oriented tuple> are designated, in order: I<heading>, I<tuple body>.
-The I<heading> is a C<List> of 0..N mutually distinct elements where each
-element is designated an I<attribute name>; each I<attribute name> is a
-C<String>.  The I<tuple body> is a C<List> of 0..N elements where each
-element is designated an I<attribute value>; each I<attribute value> is a
-C<Universal>.  The I<heading> and I<tuple body> must each have the same
+*row-oriented tuple* are designated, in order: *heading*, *tuple body*.
+The *heading* is a `List` of 0..N mutually distinct elements where each
+element is designated an *attribute name*; each *attribute name* is a
+`String`.  The *tuple body* is a `List` of 0..N elements where each
+element is designated an *attribute value*; each *attribute value* is a
+`Universal`.  The *heading* and *tuple body* must each have the same
 number of elements, and the pair of corresponding element values
 collectively define a named tuple attribute.  The payload element of a
-I<column-oriented tuple> is designated I<tuple attributes>.  The I<tuple
-attributes> is a C<List> of 0..N elements where each element is designated
-a I<tuple attribute>; a I<tuple attribute> is a C<List> of exactly 2
-elements, that are designated in order: I<attribute name>, I<attribute
-value>.  The 2 formats of C<Tuple> are interchangeable, such that every
+*column-oriented tuple* is designated *tuple attributes*.  The *tuple
+attributes* is a `List` of 0..N elements where each element is designated
+a *tuple attribute*; a *tuple attribute* is a `List` of exactly 2
+elements, that are designated in order: *attribute name*, *attribute
+value*.  The 2 formats of `Tuple` are interchangeable, such that every
 possible tuple value is representable by either format.  When determining a
-C<Tuple>'s identity, its row vs column format is not significant, and the
+`Tuple`'s identity, its row vs column format is not significant, and the
 mutual order of its attributes are not significant, but the pairings of
-attribute names and values are significant; two C<Tuple> are considered
+attribute names and values are significant; two `Tuple` are considered
 identical iff they have the same count of attributes and the same attribute
 names and identical attribute values for corresponding names.
 
-A C<Relation> is a C<Structure> having either of 2 formats, designated
-I<row-oriented relation> and I<column-oriented relation>; the first has
+A `Relation` is a `Structure` having either of 2 formats, designated
+*row-oriented relation* and *column-oriented relation*; the first has
 exactly 2 payload elements and the second has exactly 1.  The 2 payload
-elements of a I<row-oriented relation> are designated, in order:
-I<heading>, I<relation body>.  The I<heading> is the same as that of a
-I<row-oriented tuple>.  The I<relation body> is a C<List> of 0..N mutually
-distinct elements where each element is designated a I<tuple body>.  Each
-I<tuple body> is the same as that of a I<row-oriented tuple>.  For each
-I<tuple body> of a I<relation body>, its relationship and associated
-constraints with I<heading> are as per a I<row-oriented tuple>.  The
-payload element of a I<column-oriented relation> is designated I<relation
-attributes>.  The I<relation attributes> is a C<List> of 0..N elements
-where each element is designated a I<relation attribute>; a I<relation
-attribute> is a C<List> of exactly 2 elements, that are designated in
-order: I<attribute name>, I<tuple attribute values>; a I<tuple attribute
-values> is a C<List> of 0..N elements where each element is designated
-I<attribute value>.  The 2 formats of C<Relation> are interchangeable, such
+elements of a *row-oriented relation* are designated, in order:
+*heading*, *relation body*.  The *heading* is the same as that of a
+*row-oriented tuple*.  The *relation body* is a `List` of 0..N mutually
+distinct elements where each element is designated a *tuple body*.  Each
+*tuple body* is the same as that of a *row-oriented tuple*.  For each
+*tuple body* of a *relation body*, its relationship and associated
+constraints with *heading* are as per a *row-oriented tuple*.  The
+payload element of a *column-oriented relation* is designated *relation
+attributes*.  The *relation attributes* is a `List` of 0..N elements
+where each element is designated a *relation attribute*; a *relation
+attribute* is a `List` of exactly 2 elements, that are designated in
+order: *attribute name*, *tuple attribute values*; a *tuple attribute
+values* is a `List` of 0..N elements where each element is designated
+*attribute value*.  The 2 formats of `Relation` are interchangeable, such
 that every possible relation value is representable by either format.  When
-determining a C<Relation>'s identity, its row vs column format is not
+determining a `Relation`'s identity, its row vs column format is not
 significant, and the mutual order of its attributes are not significant,
 and the mutual order of its tuples are not significant, but the pairings of
 attribute names and values per tuple are significant, and the mutual
 association of attribute values in each same tuple is significant; two
-C<Relation> are considered identical iff they have the same count of
+`Relation` are considered identical iff they have the same count of
 attributes and the same attribute names and identical attribute values for
 corresponding names for every corresponding tuple.
 
-A C<ScalarWP> (scalar with possreps) is a C<Structure> having exactly 3
-ordered payload elements, that are designated in order: I<type name>,
-I<possrep name>, I<possrep attributes>.  The I<type name> is a C<List> of
-0..N C<String> that is restricted as per an C<APTypeNC>.  The I<possrep
-name> is a C<String>.  The I<possrep attributes> is a C<Tuple> where the
-intended interpretation of I<possrep attributes> is indicated by the
-combination of I<type name> and I<possrep name>.  Generally speaking, the
-I<type name> and I<possrep name> of a C<ScalarWP> are partially
-context-independent.  For two C<ScalarWP> with the same I<type name>, iff
-there is no user-defined type known to the DBMS matching that I<type name>,
-then interpretation is as per naive C<List> comparison semantics; iff there
+A `ScalarWP` (scalar with possreps) is a `Structure` having exactly 3
+ordered payload elements, that are designated in order: *type name*,
+*possrep name*, *possrep attributes*.  The *type name* is a `List` of
+0..N `String` that is restricted as per an `APTypeNC`.  The *possrep
+name* is a `String`.  The *possrep attributes* is a `Tuple` where the
+intended interpretation of *possrep attributes* is indicated by the
+combination of *type name* and *possrep name*.  Generally speaking, the
+*type name* and *possrep name* of a `ScalarWP` are partially
+context-independent.  For two `ScalarWP` with the same *type name*, iff
+there is no user-defined type known to the DBMS matching that *type name*,
+then interpretation is as per naive `List` comparison semantics; iff there
 is a matching user-defined type, then identity semantics are determined by
-that type's definition, including the ability to compare two C<ScalarWP>
-with different I<possrep name> as being the same value.  When user-defined
+that type's definition, including the ability to compare two `ScalarWP`
+with different *possrep name* as being the same value.  When user-defined
 types are in scope that "claim" particular values, they can provide possrep
-mapping, as well as canonicalization (such as making a C<Rat>'s
-C<numerator> and C<denominator> coprime), so effectively acting as
+mapping, as well as canonicalization (such as making a `Rat`'s
+`numerator` and `denominator` coprime), so effectively acting as
 restrictions, and overriding what equality tests on those values result in.
 
-An C<External> is a C<Structure> having exactly 1 payload element, that is
-designated I<payload>.  The I<payload> is an C<Int> or a C<List> that the
+An `External` is a `Structure` having exactly 1 payload element, that is
+designated *payload*.  The *payload* is an `Int` or a `List` that the
 DBMS externally maps to a value of a type of a peer or host language to
 Muldis D, as if the payload were conceptually a memory address meaningful
-to the external language.  For two C<External>, they are considered
-identical if their I<payload> are the same C<Int> or C<List>; otherwise the
+to the external language.  For two `External`, they are considered
+identical if their *payload* are the same `Int` or `List`; otherwise the
 determination of identity is left to the other language.  Note that the
-C<List> payload provision is provided so that it is possible to have some
+`List` payload provision is provided so that it is possible to have some
 degree of external value structure visible in Muldis D, such as for the
-purposes of easily defining C<External> proper subtypes in Muldis D.
+purposes of easily defining `External` proper subtypes in Muldis D.
 
 # ENVIRONMENT
 
@@ -1875,11 +1875,11 @@ where doing so has a large net benefit to the language design.
 ## Functions and Procedures
 
 Every Muldis D routine is exactly one of 2 main routine kinds,
-C<function> and C<procedure>, where the 2 kinds are mutually exclusive.
+`function` and `procedure`, where the 2 kinds are mutually exclusive.
 Each of these 2 kinds is very distinct with regards to what
 it conceptually represents or where it may be used, and Muldis D has
 disjoint catalog data types for defining routines of each of the 2 kinds,
-which are C<Function> and C<Procedure>.
+which are `Function` and `Procedure`.
 
 Functions and procedures have many aspects in common.  Every routine,
 regardless of kind, is a distinct material of a library, either built-in or
@@ -1904,7 +1904,7 @@ routine otherwise has none of those.  Any routine may directly invoke
 functions.
 
 Functions and procedures have a strict ordered proper subset/superset
-relationship with regard to what they can be used to I<do> from a user's
+relationship with regard to what they can be used to *do* from a user's
 perspective.  A procedure is all-powerful, and anything that can be done in
 Muldis D at all can be done by invoking a procedure.  A function's
 capabilities are a proper subset of a procedure's; the most that can be
@@ -1916,10 +1916,10 @@ functions.
 
 Functions differ from procedures
 primarily in regards to how they are invoked and to how they return their
-outputs.  A function, also known as a I<read-only operator>, is the only
+outputs.  A function, also known as a *read-only operator*, is the only
 routine kind whose invocation both results in and represents a value of a
-specific data type (that is the function's I<result type> or I<declared
-type>).  A function's invocation can only exist as part of a
+specific data type (that is the function's *result type* or *declared
+type*).  A function's invocation can only exist as part of a
 value-expression of another routine, not as its own statement.  The body of
 a function is also itself a single value-expression (though its parts can
 be named for internal reuse).  All of a function's 0..N parameters are
@@ -1928,7 +1928,7 @@ inputs from its arguments and it returns all of its outputs as as a single
 function result value.  In contrast, a procedure exchanges data
 directly with its invoking routine by exclusive means of its parameters,
 or through shared global variables (the database),
-and a procedure's invocation does I<not> result in or represent a
+and a procedure's invocation does *not* result in or represent a
 value.  A procedure is invoked as the root part of a statement of
 a procedure, and never within a value-expression.  Each of a
 procedure's 0..N parameters may be either read-only or subject to update;
@@ -1948,7 +1948,7 @@ implement what is conceptually a self-referencing/cyclic expression.
 A procedure may directly see and update global variables (both catalog and
 data), and is the only kind of routine that can; every call chain that is
 meant to work with a persisting (global) dbvar must include a procedure.  A
-function can I<not> directly see any global variables.
+function can *not* directly see any global variables.
 
 A procedure is allowed to be nondeterministic, meaning that its behaviour
 can be different between multiple executions where all have the same
@@ -1983,7 +1983,7 @@ guaranteed consistency separately within each recipe that it invokes.
 A procedure's body may have 0..N lexical variables while a function's
 body may not have any lexical variables.
 
-A C<recipe> is a special case of a procedure, such that it consists of a
+A `recipe` is a special case of a procedure, such that it consists of a
 single multi-update statement whose components execute all at once, rather
 than a series of statements that execute sequentially at different times,
 and a recipe does not have any lexical variables besides its parameters.
@@ -1991,7 +1991,7 @@ and a recipe does not have any lexical variables besides its parameters.
 A recipe invocation is implicitly atomic, and a failure in the middle of
 one will at least rollback any partial update that it may conceptually have
 done.  A function invocation is trivially atomic, since it doesn't
-conceptually update anything.  A procedure invocation is I<not> implicitly
+conceptually update anything.  A procedure invocation is *not* implicitly
 atomic in its general case; unless a wider-scope explicit transaction is
 active, an aborted general case
 procedure will leave an incomplete update (though not one that violates any
@@ -1999,10 +1999,10 @@ constraints or leaves the system in an inconsistant state), because each of
 its statements had conceptually auto-committed; so Muldis D does support
 batch operations where partial completion or interruptability is
 acceptable.  A procedure can optionally constitute an explicit (lexically
-scoped) transaction; this is the case iff its defining C<Procedure>'s
-C<is_transaction> attribute is C<Bool:True>.
+scoped) transaction; this is the case iff its defining `Procedure`'s
+`is_transaction` attribute is `Bool:True`.
 
-An C<updater>, also known as an I<update operator>, is a special case of a
+An `updater`, also known as an *update operator*, is a special case of a
 recipe, such that it does not directly see or update any global variables
 (as implicit parameters), and it must have at least one subject-to-update
 explicit parameter, and it may directly invoke only updaters or functions.
@@ -2013,7 +2013,7 @@ value of the function invocation itself (and all of its parameters are
 read-only), an updater returns its result by way of at least one subject to
 update parameter (and the updater invocation has no conceptual value).  In
 some respects this is little more than a difference of syntax; either way,
-both an updater and a function are I<pure> in the functional language
+both an updater and a function are *pure* in the functional language
 sense, and can't see any data except from their own definition or their
 arguments, and they have no side-effects except via their result values.
 
@@ -2029,9 +2029,9 @@ said parameters).  The execution of an updater has 3 distinct phases in
 concept; the first phase analyses any chains of calls to other updaters and
 yields a new conceptualization of the first updater where it consists
 simply of a multi-update statement entirely of calls to the system-defined
-C<assign> updater (typically if the updater is just updating one or more
+`assign` updater (typically if the updater is just updating one or more
 parts of the global database, the new-concept consists of a single
-C<assign> to the dbvar as a whole); the second phase reads the values of
+`assign` to the dbvar as a whole); the second phase reads the values of
 all the updater's parameters (including the pre-invocation dbvar's value)
 and evaluates all the new-concept value-expression trees in the updater to
 determine the new values to assign to the subject to update parameters (or
@@ -2051,7 +2051,7 @@ A recipe is exactly the same as an updater (its body being composed of a
 single possibly multi-update statement), except that it can directly see
 and update global variables, as if the latter were implicit parameters, and
 it also isn't required to have a subject-to-update explicit parameter, but
-instead must have either a subject-to-update explicit parameter I<or> a
+instead must have either a subject-to-update explicit parameter *or* a
 lexical alias for a global variable, through which it yields its output.
 Both updaters and recipes can do data definition plus data manipulation,
 but it is likely that users will prefer to use recipes in the general case
@@ -2083,8 +2083,8 @@ procedures constitute a slim
 minority of system-defined routines.  System-defined functions include all
 value selectors, and the typical numeric, string, and relational operators,
 such that you would compose a typical database "select" query out of.
-System-defined updaters include mainly just the generic C<assign> operator
-plus some relational-assignment short-hands such as C<assign_insertion>.
+System-defined updaters include mainly just the generic `assign` operator
+plus some relational-assignment short-hands such as `assign_insertion`.
 System-defined recipes include mainly short-hands for updating the system
 catalog, such as for creating, dropping, or altering types and routines.
 System-defined procedures include mainly just service routines that reach
@@ -2145,17 +2145,17 @@ such alterations shouldn't be too common.
 ## More on Parameters
 
 Conceptually speaking, all Muldis D routines actually have exactly 1 or
-2 positional parameters behind the scenes, each of which is C<Tuple>-typed,
+2 positional parameters behind the scenes, each of which is `Tuple`-typed,
 and it is the named attributes of these positional parameters that
 correspond to the official named parameters.  With all functions,
-there is exactly 1 positional parameter named C<args>; with all procedures,
-there are exactly 2 positional parameters named C<upd_args> and
-C<ro_args>.  This conceptual nature is exposed when you use
-system-defined routines such as C<sys.std.Core.Cat.func_invo>, where
+there is exactly 1 positional parameter named `args`; with all procedures,
+there are exactly 2 positional parameters named `upd_args` and
+`ro_args`.  This conceptual nature is exposed when you use
+system-defined routines such as `sys.std.Core.Cat.func_invo`, where
 you actually are supplying a set of argument values for the routine to
-invoke as a C<Tuple> value.  Now this all being said, for the purposes of
-the rest of the Muldis D documentation, the term I<parameter> always refers
-to a named parameter, and the term I<argument> is a value passed to said.
+invoke as a `Tuple` value.  Now this all being said, for the purposes of
+the rest of the Muldis D documentation, the term *parameter* always refers
+to a named parameter, and the term *argument* is a value passed to said.
 
 Some subject-to-update or read-only parameters of routines may be optional,
 that is, do not need to be supplied explicit arguments when the routine is
@@ -2180,137 +2180,137 @@ in Muldis D, each of which is intended for particular tasks, and all
 functions allowed to be used for each particular task must have a certain
 structure.  This documentation sub-section describes a set of 7 function
 kinds where each kind is named after either its required structure or its
-intended use:  C<named-value>, C<value-map>, C<value-map-unary>,
-C<value-filter>, C<value-constraint>,
-C<value-reduction>, C<order-determination>.  Taking analogy to the type
+intended use:  `named-value`, `value-map`, `value-map-unary`,
+`value-filter`, `value-constraint`,
+`value-reduction`, `order-determination`.  Taking analogy to the type
 system, if functions in general were a maximal type, then each of these
 function kinds is a proper subtype of that maximal type.  Similarly, just
-as the catalog data type C<Function> will define any function, these proper
-subtypes of C<Function> will define functions of just their corresponding
-kinds:  C<NamedValFunc>, C<ValMapFunc>, C<ValMapUFunc>, C<ValFiltFunc>,
-C<ValConstrFunc>, C<ValRedFunc>, C<OrdDetFunc>.
+as the catalog data type `Function` will define any function, these proper
+subtypes of `Function` will define functions of just their corresponding
+kinds:  `NamedValFunc`, `ValMapFunc`, `ValMapUFunc`, `ValFiltFunc`,
+`ValConstrFunc`, `ValRedFunc`, `OrdDetFunc`.
 
-A C<named-value> is a function that is nullary / has exactly zero
+A `named-value` is a function that is nullary / has exactly zero
 parameters and unconditionally results in the same single value.  This kind
-of function is also called a I<thunk>.
+of function is also called a *thunk*.
 
-A C<value-map> is a function that has at least 1 parameter, and that 1 is
-named C<topic>.  A C<value-map-unary> is a C<value-map> that is unary / has
-exactly one parameter (just the C<topic> parameter).  A C<value-filter> is
-a C<value-map> whose result's declared type is C<Bool>.  A
-C<value-constraint> is any function that is both a C<value-filter> and a
-C<value-map-unary>.
+A `value-map` is a function that has at least 1 parameter, and that 1 is
+named `topic`.  A `value-map-unary` is a `value-map` that is unary / has
+exactly one parameter (just the `topic` parameter).  A `value-filter` is
+a `value-map` whose result's declared type is `Bool`.  A
+`value-constraint` is any function that is both a `value-filter` and a
+`value-map-unary`.
 
-A C<value-reduction> is a function that has at least 2 parameters, and
-those 2 are named C<v1> and C<v2>, and the declared types of those 2
+A `value-reduction` is a function that has at least 2 parameters, and
+those 2 are named `v1` and `v2`, and the declared types of those 2
 parameters are identical, and the declared type of the function's result is
 identical to that of either of those 2 parameters.
 
-An C<order-determination> is a function that has at least 3 parameters, and
-those 3 are named C<topic>, C<other> and C<is_reverse_order>, and the
-declared types of C<topic> and C<other> are identical, and the declared
-type of C<is_reverse_order> is C<Bool>, and the declared type of the
-function's result is C<Order>.
+An `order-determination` is a function that has at least 3 parameters, and
+those 3 are named `topic`, `other` and `is_reverse_order`, and the
+declared types of `topic` and `other` are identical, and the declared
+type of `is_reverse_order` is `Bool`, and the declared type of the
+function's result is `Order`.
 
 ## Constraint Function Kinds by Purpose
 
 There are 2 main kinds of constraint functions when considered in terms of
-their purpose of place of usage:  C<type-constraint>, C<state-constraint>.
+their purpose of place of usage:  `type-constraint`, `state-constraint`.
 
-A C<type-constraint> is a C<value-constraint> that is
+A `type-constraint` is a `value-constraint` that is
 part of the definition of a data type (every data type composes 0..N
 explicit ones of these, plus an implicit one that always results in
-C<Bool:True>) rather than being intended for explicit invocation by
+`Bool:True`) rather than being intended for explicit invocation by
 a routine, and it is invoked automatically by the
 DBMS when a value of that type is being selected.  The parameters
-of a C<type-constraint> carry information about
-the value selection attempt, and the C<type-constraint> results in either
-C<Bool:True> if the described value would be a member of the data type, or
-C<Bool:False> if not; in the latter case, the DBMS would then throw a
+of a `type-constraint` carry information about
+the value selection attempt, and the `type-constraint` results in either
+`Bool:True` if the described value would be a member of the data type, or
+`Bool:False` if not; in the latter case, the DBMS would then throw a
 type-constraint-violation exception (resulting in a transaction rollback
 where applicable), or in the former case, it would consider the selection a
 success.  If the data type being selected is a scalar type or subtype
-with possreps, then each possrep has its own C<type-constraint>, and the
-declared type of the C<topic> parameter for each is a tuple where the
+with possreps, then each possrep has its own `type-constraint`, and the
+declared type of the `topic` parameter for each is a tuple where the
 attributes of the tuple match those of the possrep; such a tuple
 argument provides the candidate components of the scalar value being
 selected.  Or, if the data type being selected of is defined as a
-subset of one other data type, then the declared type of the C<topic>
+subset of one other data type, then the declared type of the `topic`
 parameter is that other data type.  Or, if the data type being selected of
 is defined over a union of multiple other data types, then the declared
-type of the C<topic> parameter is C<Universal>.  Note that a type with a
-C<type-constraint> that unconditionally results in C<Bool:False> is an
-alias for C<Empty>.  Note that, because Muldis D requires dbvars to be
-defined over named data types, all I<state constraints> for a database,
+type of the `topic` parameter is `Universal`.  Note that a type with a
+`type-constraint` that unconditionally results in `Bool:False` is an
+alias for `Empty`.  Note that, because Muldis D requires dbvars to be
+defined over named data types, all *state constraints* for a database,
 including uniqueness keys or subset constraints or other state-constraining
-business rules, are normally defined as the C<type-constraint> for the type
-which that database is.  Conceptually speaking, a C<type-constraint> will
+business rules, are normally defined as the `type-constraint` for the type
+which that database is.  Conceptually speaking, a `type-constraint` will
 execute as the beginning part of a statement, prior to any attempt to
 update any variable's state or affect the environment.
 
-A C<state-constraint> is a C<value-constraint> and it is
-the same as a C<type-constraint> except that it is
+A `state-constraint` is a `value-constraint` and it is
+the same as a `type-constraint` except that it is
 not part of the definition of a data type, but rather it is associated with
 a variable (or pseudo-variable); it is invoked automatically by the DBMS
 when that variable is being updated, and it asserts that the variable would
-be in a valid state after the update (it results in C<Bool:True> for yes
-and C<Bool:False> for no).  The C<topic> parameter of a C<state-constraint>
+be in a valid state after the update (it results in `Bool:True` for yes
+and `Bool:False` for no).  The `topic` parameter of a `state-constraint`
 has a declared type that is the same as that of the variable; its argument
 carries the value that the variable would have post-update.  The purpose of
-having the distinct C<state-constraint> routine kind when
-C<type-constraint> would otherwise do, is to make it easier for users to
+having the distinct `state-constraint` routine kind when
+`type-constraint` would otherwise do, is to make it easier for users to
 independently and externally apply multiple (named) state constraints to
 the same variable (typically a dbvar or relvar) rather than having to
 update the existing internal explicit type constraint of the declared type
 of the variable, and other users of that type aren't affected.  When
-multiple C<state-constraint> are applied to the same variable, then a
-I<total state constraint> is in effect on the variable equivalent to the
-logical C<and> of the individual constraints.  Conceptually speaking, a
-C<state-constraint> will execute after all C<type-constraint>.
+multiple `state-constraint` are applied to the same variable, then a
+*total state constraint* is in effect on the variable equivalent to the
+logical `and` of the individual constraints.  Conceptually speaking, a
+`state-constraint` will execute after all `type-constraint`.
 
 ## Other Function Kinds by Purpose
 
 There are 7 other main kinds of functions when considered in terms of their
-purpose of place of usage:  C<named-value>, C<value-map>, C<possrep-map>,
-C<virtual-attr-map>, C<value-filter>, C<value-reduction>,
-C<order-determination>; the 3rd and 4th have the same structure.
+purpose of place of usage:  `named-value`, `value-map`, `possrep-map`,
+`virtual-attr-map`, `value-filter`, `value-reduction`,
+`order-determination`; the 3rd and 4th have the same structure.
 
-A C<named-value> is often used when you want to declare a program constant
-value that is easy to reference on a non-lexical scale.  A C<named-value>
-is frequently part of the definition of a (not-C<Empty>) data type rather
+A `named-value` is often used when you want to declare a program constant
+value that is easy to reference on a non-lexical scale.  A `named-value`
+is frequently part of the definition of a (not-`Empty`) data type rather
 than a routine, and it is invoked automatically in situations where the
 default value of the type whose declaration it is part of is needed, such
 as when initializing a variable whose declared type is that type (a
 variable must always hold a valid value of its declared type).
 
-A C<value-map> is what would be used in operations like the general case of
-relational extension or substitution.  Its C<topic> parameter is usually a
+A `value-map` is what would be used in operations like the general case of
+relational extension or substitution.  Its `topic` parameter is usually a
 tuple type but doesn't have to be.
 
-A C<possrep-map> is a C<value-map-unary> that is part
+A `possrep-map` is a `value-map-unary` that is part
 of the definition of a scalar data type, and it is used to convert a value
-from one of that type's possreps to another.  A C<possrep-map>'s C<topic>
+from one of that type's possreps to another.  A `possrep-map`'s `topic`
 parameter's declared type is a tuple whose
 attributes match those of the possrep being converted from, and its result
 type is a tuple whose attributes match those of the possrep being converted
 to.  Note that every distinct argument (domain) value of this function must
 have a distinct result (range) value, as it is a 1:1 mapping function.
 
-A C<virtual-attr-map> is a C<value-map-unary> and it is
-the same as a C<possrep-map> except that its range
+A `virtual-attr-map` is a `value-map-unary` and it is
+the same as a `possrep-map` except that its range
 may be (and typically is) smaller than its domain, it is usually part of
 the definition of a nonscalar data type, and it is used such that,
 on a per-tuple basis, one subset of that type's attributes is defined to
-be generated, by the C<virtual-attr-map> function, purely from a disjoint
-subset of that type's attributes.  So a special kind of I<functional
-dependency> exists between the first subset, which has the I<dependent>
-attributes, and the second subset, which has the I<determinant> attributes.
+be generated, by the `virtual-attr-map` function, purely from a disjoint
+subset of that type's attributes.  So a special kind of *functional
+dependency* exists between the first subset, which has the *dependent*
+attributes, and the second subset, which has the *determinant* attributes.
 For example, a dependent attribute could always hold a character string
 value that is the same as a determinant attribute but for being folded to
 uppercase; or for another example, a dependent attribute may hold the
 result of a relational join of multiple determinant attributes, or a
 restriction on one (in the latter case, the data type being defined is
-probably a database).  A C<virtual-attr-map>'s C<topic>
+probably a database).  A `virtual-attr-map`'s `topic`
 parameter's declared type is a tuple whose attributes match those of
 the determinant attributes of the type being declared, and its result type
 is a tuple whose attributes match those of the dependent attributes.  A
@@ -2319,52 +2319,52 @@ attributes can all be virtual; the DBMS can store just the determinant
 attributes, and the dependent attributes can be generated when needed (or
 they can still be pre-computed and stored for performance).
 
-A C<value-filter> is similar
-to a C<type-constraint> in that it evaluates C<topic> for membership in a
-particular value domain, resulting in C<Bool:True> if C<topic> is a member
-and C<Bool:False> otherwise; but a C<value-filter> differs from a
-C<type-constraint> in that it would be explicitly invoked possibly in any
-context, and its criteria for evaluating C<topic> can be customized at
-runtime by any not-C<topic> arguments it
-gets.  A C<value-filter> is what would be used in
-operations like the general case of relational restriction.  Its C<topic>
+A `value-filter` is similar
+to a `type-constraint` in that it evaluates `topic` for membership in a
+particular value domain, resulting in `Bool:True` if `topic` is a member
+and `Bool:False` otherwise; but a `value-filter` differs from a
+`type-constraint` in that it would be explicitly invoked possibly in any
+context, and its criteria for evaluating `topic` can be customized at
+runtime by any not-`topic` arguments it
+gets.  A `value-filter` is what would be used in
+operations like the general case of relational restriction.  Its `topic`
 parameter is usually a tuple type but doesn't have to be.
 
-A C<value-reduction> is what would
+A `value-reduction` is what would
 typically be used in N-ary operations that can be defined in terms of a
-repetition of binary operations, such that a C<value-reduction> would
+repetition of binary operations, such that a `value-reduction` would
 define such a binary operation.
 
-An C<order-determination> is structured to fill the role of a
-I<system-compatible fundamental order-determination function>; see the
+An `order-determination` is structured to fill the role of a
+*system-compatible fundamental order-determination function*; see the
 **Ordered Types** pod section in this file for more details.
 
 ## Kinds of Procedures
 
-A C<system-service> is a procedure whose sole purpose is to
+A `system-service` is a procedure whose sole purpose is to
 directly reach outside of the more deterministic DBMS
 environment in order to do non-deterministic things (besides working with
 depots), such as to initiate I/O of various kinds, or fetch the current
 date and time, or generate a random number.  Invoking a
-C<system-service> can have side-effects outside of the DBMS, but it will
+`system-service` can have side-effects outside of the DBMS, but it will
 not alter anything inside the DBMS aside from any of its subject-to-update
-parameters; it can not invoke any recipes.  A C<system-service> is
-forbidden from invoking a procedure that isn't also a C<system-service>.
-The catalog data type C<SystemService>, a proper subtype of C<Procedure>,
-will define any C<system-service>.
+parameters; it can not invoke any recipes.  A `system-service` is
+forbidden from invoking a procedure that isn't also a `system-service`.
+The catalog data type `SystemService`, a proper subtype of `Procedure`,
+will define any `system-service`.
 
-A C<transaction> is a procedure that isn't a C<system-service> but
+A `transaction` is a procedure that isn't a `system-service` but
 otherwise constitutes its own explicit (lexically scoped) transaction.  As
-with any procedure that isn't a C<system-service>, a C<transaction> may
-invoke any routine at all.  The catalog data type C<Transaction>,
-a proper subtype of C<Procedure>, will define any C<transaction>.
+with any procedure that isn't a `system-service`, a `transaction` may
+invoke any routine at all.  The catalog data type `Transaction`,
+a proper subtype of `Procedure`, will define any `transaction`.
 
-A C<recipe> is a C<transaction> which has no non-parameter lexical
+A `recipe` is a `transaction` which has no non-parameter lexical
 variables and whose root statement is a multi-update statement (or recipe
 invocation or assignment statement).  A recipe may only invoke recipes and
 functions, and not procedures that aren't recipes.
 
-An C<updater> is a C<recipe> that does not see or update any global
+An `updater` is a `recipe` that does not see or update any global
 variables (the database) and that has at least one subject-to update
 parameter.  An updater may only invoke updaters and functions.
 
@@ -2376,12 +2376,12 @@ of their parameters, where one can invoke the collection as a whole by a
 single collective name, and one of the routines in the collection is
 dispatched to automatically based on the types of the invocation arguments.
 
-This overloading feature is utilized by way of I<virtual routines>.  A
+This overloading feature is utilized by way of *virtual routines*.  A
 Muldis D routine of any kind (function or procedure), that has at
-least one parameter, is made I<virtual> by declaring that at least 1 of its
-parameters is a I<dispatch parameter>; moreover, said routine definition
-would only define its interface or I<heading> and not its implementation or
-I<body>.  A I<virtual> routine is intended to be overloaded, and the
+least one parameter, is made *virtual* by declaring that at least 1 of its
+parameters is a *dispatch parameter*; moreover, said routine definition
+would only define its interface or *heading* and not its implementation or
+*body*.  A *virtual* routine is intended to be overloaded, and the
 virtual routine's name is what one invokes explicitly in order to
 implicitly invoke one of any other routines that implement it.  The set of
 routines that implements a virtual routine is determined to be all routines
@@ -2397,10 +2397,10 @@ differ, the declared type of an implementing routine must be a subtype of
 the declared type of its virtual routine.
 
 When a virtual routine is invoked with valid arguments, the types of just
-the arguments for its I<dispatch parameters> are examined, and the
+the arguments for its *dispatch parameters* are examined, and the
 implementing routine with the most specific declared types that the
 arguments are members of is the routine that is dispatched to.  With
-functions, the declared result types of implementers can I<not> be used to
+functions, the declared result types of implementers can *not* be used to
 determine which one is dispatched to.  So conceptually a virtual routine is
 just a single given-when expression or statement that dispatches on the
 types of its arguments; a user could write this explicitly instead of using
@@ -2441,7 +2441,7 @@ semantics, so repeated invoker code updates aren't needed to expand
 explicit dispatch logic with all the choices.  The second is when the
 concrete Muldis D grammar you are using has operator syntax that is
 overloaded for multiple data types, such as the common mathematical symbols
-being overloaded for both C<Int> and C<Rat>, effectively giving multiple
+being overloaded for both `Int` and `Rat`, effectively giving multiple
 implementing routines the same name, because it would be unpleasant to do
 otherwise by invoking each variant with distinct symbols.
 
@@ -2454,8 +2454,8 @@ which must be in the same depot aside from system-defined members.
 
 # STIMULUS-RESPONSE RULES
 
-Muldis D natively supports the concept of I<stimulus-response rules>,
-otherwise known as I<triggered routines>.  The concept involves the
+Muldis D natively supports the concept of *stimulus-response rules*,
+otherwise known as *triggered routines*.  The concept involves the
 automatic execution of a procedure in response to a particular
 defined stimulus.  This is in contrast with the normal way to execute a
 routine which is in response to an explicit invocation in code.
@@ -2475,8 +2475,8 @@ kind of SQL DBMS, or to support event-driven systems like general-purpose
 programming languages.
 
 However, for now, Muldis D only supports exactly one kind of
-stimulus-response rule, which is the C<after-mount> rule used for
-bootstrapping a pure Muldis D application call stack.  With C<after-mount>,
+stimulus-response rule, which is the `after-mount` rule used for
+bootstrapping a pure Muldis D application call stack.  With `after-mount`,
 the stimulus is the act of a depot being mounted in the DBMS, and the
 response is the execution of a procedure in that depot, such that
 the latter occurs at a separate but immediately subsequent point in time
@@ -2487,13 +2487,13 @@ source code file as the main parameter to a compiler of a typical
 programming language.  Alternately, said depot can be a noninitial one and
 be mounted by code in another depot by way of a system-catalog
 depot-mount-controls update.  What happens is that once a depot is mounted,
-the DBMS scans it for any materials which are C<after-mount> rules and it
+the DBMS scans it for any materials which are `after-mount` rules and it
 executes the routine that each such rule names, which must live in the same
 depot as the rule, so everything is self-contained.  Other uses of an
-C<after-mount> rule include some kinds of initialization activities that
+`after-mount` rule include some kinds of initialization activities that
 would best precede other uses of the depot, but these might be rare.
 
-To be clear, stimulus-response rules are I<not> intended to be used to
+To be clear, stimulus-response rules are *not* intended to be used to
 implement database constraints in general; rather, constraint functions
 associated with the types of the database should be used by default, and
 only stimulus-response rules be considered for constraints if the
@@ -2504,7 +2504,7 @@ to the current system time.
 See also
 [Muldis_Data_Language_Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md)
 section **sys.std.Core.Type.Cat.MountControlSet**,
-specifically the C<allow_auto_run> attribute.  This control empowers users
+specifically the `allow_auto_run` attribute.  This control empowers users
 to decide on a per-depot-mount basis whether the depot mount will permit
 any stimulus-response rules defined in the depot to automatically execute
 when triggering events occur.  This control is to provide a measure of
@@ -2515,11 +2515,11 @@ the matter then they won't run.
 
 In a similar manner, a Muldis D DBMS should have command-line parameters
 regarding the initial "main program" depot it is mounting that correspond
-to each of the C<MountControlSet> attributes; at the very least, the
-boolean parameters C<allow_auto_run> and C<we_may_update> must be provided,
+to each of the `MountControlSet` attributes; at the very least, the
+boolean parameters `allow_auto_run` and `we_may_update` must be provided,
 in addition to any params for, say, picking the filename/etc of the initial
 depot; for security purposes, the booleans are false when not given,
-meaning users have to *always* say C<--allow_auto_run> in order to run a
+meaning users have to *always* say `--allow_auto_run` in order to run a
 pure Muldis D program, so it is quite clear up front what they are risking.
 
 # USERS AND PRIVILEGES
@@ -2559,7 +2559,7 @@ within a repository are subject to transactions and can be rolled back,
 including both data manipulation and schema manipulation; moreover, an
 interrupted session with a repository must result in an automatic rollback,
 not an automatic commit.  (But changes that occur outside the DBMS
-environment, such as by a C<system-service>, or by a host language routine,
+environment, such as by a `system-service`, or by a host language routine,
 are generally not affected by transactions at all.)
 
 It is important to point out that any attempt to implement Muldis D (what
@@ -2571,14 +2571,14 @@ will likely be made and used, such as ones implemented over existing DBMS
 products that are themselves not ACID compliant, but you should see them
 for what they are and weigh the corruption risks of using them.
 
-I<Note that the best way for an implementation to behave, if for some
+*Note that the best way for an implementation to behave, if for some
 reason it is built in such a way and/or over an existing DBMS product that
 does implicit commits after, say, data-definition statements, is for it to
 throw an exception if data-definition is attempted within an explicit /
 multi-statement transaction, such that a user of that Engine can only do
 data-definition outside of an explicit transaction; in this way, the
 implementation is still following all the Muldis D safety rules, and hence
-should be relatively safe to use, even if it lacks Muldis D features.>
+should be relatively safe to use, even if it lacks Muldis D features.*
 
 ## Virtual Machine
 
@@ -2613,8 +2613,8 @@ assigned are determined prior to any target variables being updated.
 Moreover, as all functions may not have side-effects, and in the absence of
 any defined stimulus-response rules that can perform updates, we avoid
 complicating the issue due to environment updates occurring during their
-invoker statement's first phase.  I<Semantics when there are defined
-stimulus-response rules that perform updates are still to be defined.>
+invoker statement's first phase.  *Semantics when there are defined
+stimulus-response rules that perform updates are still to be defined.*
 
 The rest of this documentation section is written just within the context
 of a single in-DBMS process, unless explicitly stated otherwise.
@@ -2640,41 +2640,41 @@ there are no explicit transaction active.
 
 The way to specify an explicit transaction within Muldis D
 is to take the statements comprising it and isolate them into their own
-C<Procedure> whose C<is_transaction> attribute is C<Bool:True>; such a
+`Procedure` whose `is_transaction` attribute is `Bool:True`; such a
 procedure is wrapped in a new child transaction that is tied to
 its lexical scope.  The transaction will begin when that scope is entered
 and end when that scope is exited; if the scope is exited normally, its
 transaction commits; if the scope terminates early due to a thrown
 exception, its transaction rolls back.  This lexically-scoped mechanism is
-the I<only> kind of explicit transaction that Muldis D code can perform
-(besides using a C<recipe> rather than a C<procedure> in general).
+the *only* kind of explicit transaction that Muldis D code can perform
+(besides using a `recipe` rather than a `procedure` in general).
 
 Sometimes, a transaction-comprising procedure will be invoked by way of an
-exception-trapping I<try> control flow statement so that only that
+exception-trapping *try* control flow statement so that only that
 procedure's changes roll back by default when an exception is thrown and
 not the prior changes of any further-out transaction, unless an associated
-I<catch> procedure then also throws (or re-throws) an exception (that is
-not caught by I<catch>).
+*catch* procedure then also throws (or re-throws) an exception (that is
+not caught by *catch*).
 
-I<TODO:  How do we specify when to start a new thread or message with
-service threads (eg, that log errors, do sequence generation).>
+*TODO:  How do we specify when to start a new thread or message with
+service threads (eg, that log errors, do sequence generation).*
 
 In a mixed-language application, when Muldis D routines are invoked by a
 host language, the host language is allowed to specify further parent-most
 explicit transactions within the DBMS that are not bound to the lexical
 scope of a block, using distinct transaction initiation and termination
-statements (suggested names being C<start_trans>, C<commit_trans>,
-C<rollback_trans>).  Such open-ended transactions are intended for
+statements (suggested names being `start_trans`, `commit_trans`,
+`rollback_trans`).  Such open-ended transactions are intended for
 transactions which last over multiple DBMS invocations of an application
 (whereas Muldis D scope-bound transactions always occur entirely within one
 invocation of the DBMS by a host language).  But it is a recommended best
 practice that host language code will associate the invocation of said
-statements with its own lexical scopes, such as its own I<try-catch>
+statements with its own lexical scopes, such as its own *try-catch*
 constructs; host language code could easily implement the scope-tied
 paradigm if it wanted to.
 
 An implicit transaction is associated with the lexical scope of every
-Muldis D C<recipe> and C<system-service>, and by
+Muldis D `recipe` and `system-service`, and by
 extension, every Muldis D statement that is an invocation of said.  Or more
 accurately, an update operation (including a multi-update operation) is
 implicitly atomic, and will either succeed and commit as a whole, or fail
@@ -2682,14 +2682,14 @@ and rollback as a whole.  Similarly, every functional routine is trivially
 a transaction, though since these never update anything, all that really
 means is that they see a consistent view of their environment.
 
-By contrast, every C<procedure>
+By contrast, every `procedure`
 is neither implicitly a transaction nor atomic (except when explicitly
 declared as one), so you can use a procedure to define an operation where
 you want to keep partial results of a failure.
 
 Since failures are always accompanied by thrown exceptions, a failure will
 unwind the call stack and rollback any active transactions one nesting
-layer at a time until either a I<try> block is exited, which halts the
+layer at a time until either a *try* block is exited, which halts the
 unwinding, or the application exits, rolling back all remaining active
 transactions.
 
@@ -2700,23 +2700,23 @@ through said procedure will result in the prior-completed statements to be
 fully committed, and only the failed statement to have left no state
 change.  At this point, a pure Muldis D application will have exited, and a
 mixed-language application will have either exited or caught an exception
-in a host-language I<try> block.
+in a host-language *try* block.
 
 All current repository mounts (persistent and temporary both) by the same
 in-DBMS process/thread are joined at the hip with respect to transactions;
 a commit or rollback is performed on all of them simultaneously, and a
 commit either succeeds for all or fails for all (a repository suddenly
-becoming inaccessible counts as a failure).  I<Note that if a Muldis D
+becoming inaccessible counts as a failure).  *Note that if a Muldis D
 implementation can not guarantee such atomicity between multiple
 repositories, then it must refuse to mount more than one repository at a
 time under the same process (users can still employ multiple depots each
 under multiple in-DBMS processes, that are not synchronized); by doing one
 of those two actions, a less capable implementation can still be considered
-reliable and recommendable.>
+reliable and recommendable.*
 
 Some Muldis D commands can not be executed within the context of a parent
 transaction; in other words, they can only be executed directly by a
-C<procedure> etc or the host language, the main examples being those that
+`procedure` etc or the host language, the main examples being those that
 mount or unmount a persistent repository; this is because such a change in
 the environment mid-transaction would result in an inconsistent state.
 
@@ -2742,13 +2742,13 @@ Muldis D also generally requires that commonly mounted repositories be the
 only point of contact between multiple processes.  No other variables can
 be shared, though immutable data can of course be shared.  If shared
 "application" variables are desired, use a common temporary repository or
-a message-passing or listen/notify mechanism.  I<Not yet specified.>
+a message-passing or listen/notify mechanism.  *Not yet specified.*
 
-I<Assuming that a DBMS supports multiple concurrency models or levels of
+*Assuming that a DBMS supports multiple concurrency models or levels of
 process isolation, then Muldis D would conceivably provide ways for users
 to specify which they want to use.  Still to specify, details related to
 accessing and exploiting the concurrency models of the DBMS, such as how to
-set locks or such things.>
+set locks or such things.*
 
 # RESOURCE MODULARITY AND PERSISTENCE
 
@@ -2757,7 +2757,7 @@ resources, where resources can be executable code (that is, data type and
 routine definitions) and/or user data.  Muldis D provides facilities to
 introspect all kinds of resources, whether system-defined or user-defined,
 and it allows users to update the latter.  Resources typically have names
-within the DBMS environment, and are referred to as I<entities>.
+within the DBMS environment, and are referred to as *entities*.
 
 ## System-Defined Resources
 
@@ -2769,7 +2769,7 @@ should carry identical semantics so user entities that just use the
 provided subset are still portable.
 
 System-defined types and routines are grouped into multiple dynamically
-loadable libraries called I<modules>.  One of these modules, named C<Core>,
+loadable libraries called *modules*.  One of these modules, named `Core`,
 is loaded by
 default at DBMS startup, and provides the most fundamental resources that
 everything else needs.  Other system-defined modules will load
@@ -2793,7 +2793,7 @@ about name collisions with unofficial extensions.
 ## User-Defined Resources
 
 All user-defined resources in Muldis D are actually data, even those that
-look like code, and these all exist in one or more I<depots>, which are
+look like code, and these all exist in one or more *depots*, which are
 the normal means provided by Muldis D for persistence.  A depot is a
 completely self-sufficient storage system for normal user data and includes
 all the metadata (type definitions) required to understand the structure
@@ -2856,7 +2856,7 @@ transaction and use sequence values in another, so the sequence generator
 doesn't give repeat values if the transaction using it rolls back.
 
 All concurrent depot mounts under the same in-DBMS process are a
-I<federation> whose updates must be collectively atomic, and commit or
+*federation* whose updates must be collectively atomic, and commit or
 rollback as one, such as if they are all managed by the same actual DBMS or
 DBMS cluster.  Although depots have independent definitions, procedures
 defined in them are allowed to invoke or reference resources stored in
@@ -2873,13 +2873,13 @@ collected in a single depot, matters of reusability between multiple
 database-sharing applications aside.  Each depot is designed to accommodate
 its own collections of resources according to various good practices.  A
 depot fundamentally consists a collection of types and routines
-(under a potentially multi-level namespace).  I<TODO: some types and
+(under a potentially multi-level namespace).  *some types and
 routines
 are private and others are public.  Each namespace level declares its
 own public interface, consisting of the types, routines, and relvars that
 are allowed to be directly invoked or referenced from outside of the
 namespace, and it can also have more types, routines, and relvars which are
-private to the namespace.>  This is analogous to a class definition with
+private to the namespace.*  This is analogous to a class definition with
 public and private elements, or to C .h vs .c files, or to an Oracle DBMS'
 "package".  All non-lexical data variables in a depot may only be database
 typed, and the databases are in turn composed of relations, because
@@ -2933,9 +2933,9 @@ its own dbvars and be a DBMS client, and the program can either just use
 the DBMS itself or be a server of it.  (This is also related to the
 concepts of SQL/MED or federated databases.)
 
-I<Note that all entity names in Muldis D are case-sensitive, as with
+*Note that all entity names in Muldis D are case-sensitive, as with
 character strings in general.  Implementations should take special care to
-compensate for any case-insensitive storage system they might use.>
+compensate for any case-insensitive storage system they might use.*
 
 This is the hierarchy of invocation namespaces of DBMS entities:
 
@@ -2983,23 +2983,23 @@ Further details of each namespace follow below.
 All globally visible Muldis D variables are database-typed and can be
 grouped into two main kinds, which are system catalog variables (one of
 which is actually constant) and user data variables.  The global system
-catalog variables all exist as the C<[sys|mnt|fed|nlx].cat>
-secondary namespaces (C<sys.cat> is a constant).  The global user data
-variables all live as the C<[fed|nlx].data> secondary namespaces.
+catalog variables all exist as the `[sys|mnt|fed|nlx].cat`
+secondary namespaces (`sys.cat` is a constant).  The global user data
+variables all live as the `[fed|nlx].data` secondary namespaces.
 All non-global variables can be of any types, and conceptually use the
-C<lex> primary namespace, of both system and user-defined routines.
+`lex` primary namespace, of both system and user-defined routines.
 
 The purpose of user data variables is hold user data, and are what gets
 read or updated by database users the vast majority of the time; working
-with these is termed I<data manipulation>.  These variables are typically
+with these is termed *data manipulation*.  These variables are typically
 all user-defined.  They are all non-magical, in that updating them has no
 side-effects, assuming they are not defined virtual.
 
 The purpose of system catalog variables is to reflect and (where
-appropriate) empower modification to the Muldis D I<meta-model>, which is
+appropriate) empower modification to the Muldis D *meta-model*, which is
 the active machine readable definition of all DBMS entities in the current
 virtual machine, both system-defined (read-only) and user-defined
-(updateable); working with these is termed I<data definition>.  They are
+(updateable); working with these is termed *data definition*.  They are
 all magical, as updating them has immediate side-effects on the visibility
 of or existence of or structure of or constraints on some other, typically
 user-defined, entities.
@@ -3025,35 +3025,35 @@ The individual catalog namespaces are described in other sections.
 ## Standard System-Defined Entities
 
 All system-defined data types and routines are globally visible and
-invokable.  Each of these exists in a I<module> (which is a I<package>).
+invokable.  Each of these exists in a *module* (which is a *package*).
 
-Each standard system-defined type and routine exists under the C<sys.std>
+Each standard system-defined type and routine exists under the `sys.std`
 primary namespace, where it is referred to with an absolute path, and its
 fully qualified name along this absolute path has at least 2 parts besides
-the C<sys.std>.  Beneath C<sys.std>, each secondary namespace is the name
+the `sys.std`.  Beneath `sys.std`, each secondary namespace is the name
 of a module.  The most fundamental standard types and routines, those that
 are ideally the least that every Muldis D implementation would provide, are
-in the C<Core> module; less fundamental but still standard types and
+in the `Core` module; less fundamental but still standard types and
 routines are grouped under various other "extension" modules, with each
 module conceptually representing a dynamically loadable plug-in library.
 Under each module name is an optional tree of generic namespaces, adding
-0..N name parts, each of which we refer to simply as a I<submodule> (which
-is a I<subpackage>).  After that, we have the lowest layer, which are
+0..N name parts, each of which we refer to simply as a *submodule* (which
+is a *subpackage*).  After that, we have the lowest layer, which are
 globally addressable type and routine unqualified names.  So the
-fully-qualified names of most user-defined entities by way of C<sys.std>
+fully-qualified names of most user-defined entities by way of `sys.std`
 are 4-5 parts.
 
-The catalog namespace C<sys.cat.system> is where all the relcons that
+The catalog namespace `sys.cat.system` is where all the relcons that
 describe, in a machine-readable way, all of the standard system-defined
 entities just discussed, as well as themselves, reside; the definitions of
 the standard data types of these relcons are also reflected by the same
 relcons.  I<Actually, this paragraph is out of date; there is no
-C<sys.cat.system> and plain C<sys.cat> currently fills that stated role.>
+`sys.cat.system` and plain `sys.cat` currently fills that stated role.>
 
 ## Implementation Specific System-Defined Entities
 
 Minimally speaking, the structure and contents of the catalog namespaces
-C<sys.cat.[mount|foreign|interp]> are expected to be implementation
+`sys.cat.[mount|foreign|interp]` are expected to be implementation
 specific, and so the (typically named nonscalar) types in terms of which
 they are defined would also have to be implementation specific.  While
 adhering to that minimum purpose for non-standard additions would be the
@@ -3064,16 +3064,16 @@ specialized niches only, rather than being intended for general use.  Or
 ideally these would be deprecated in favor of support of the niche coming
 into the standard language as an elegantly designed extension.  I<Actually,
 this paragraph is out of date; there is no
-C<sys.cat.[mount|foreign|interp]>.>
+`sys.cat.[mount|foreign|interp]`.>
 
-The C<sys.imp> primary namespace is for the hardwired non-standard /
+The `sys.imp` primary namespace is for the hardwired non-standard /
 implementation specific system-defined types and routines in the same way
-that C<sys.std> is for the standard system-defined types and routines.
+that `sys.std` is for the standard system-defined types and routines.
 Keeping this separate namespace now allows for implementations to continue
 supporting an evolving standard without becoming conflicted with their own
 legacy extensions.  Non-standard system-defined entities have fully
 qualified names, where they are referred to with an absolute path,
-with at least 2 parts besides the C<sys.imp>.  The
+with at least 2 parts besides the `sys.imp`.  The
 secondary namespace is always some authority-like identifier which could
 alternately be an implementation name, both of these being referred to
 here generically as a module name, which might itself actually use multiple
@@ -3085,48 +3085,48 @@ extended Muldis D code.  Finally, the depth of the namespace under the
 authority-like level is purely implementation specific, and is at least 1
 level.
 
-The catalog namespace C<sys.cat.impl> corresponds to C<sys.cat.system>.
-The two being separated also results in the value of the C<sys.cat.system>
+The catalog namespace `sys.cat.impl` corresponds to `sys.cat.system`.
+The two being separated also results in the value of the `sys.cat.system`
 catalog constant being exactly the same for all implementations.
 I<Actually, this paragraph is out of date; there is no
-C<sys.cat.[system|impl]>.>
+`sys.cat.[system|impl]`.>
 
 ## User-Defined Entities
 
 Users of Muldis D can define their own data types, routines, and variables,
-and each of these exists in a I<depot> (which is a I<package>), which is
+and each of these exists in a *depot* (which is a *package*), which is
 the means provided by Muldis D for persistence.
 
-The C<fed> primary namespace is for all non-lexical user-defined entities
+The `fed` primary namespace is for all non-lexical user-defined entities
 to be referred to with absolute paths.
-Beneath C<fed>, each secondary namespace is the name that a depot is
+Beneath `fed`, each secondary namespace is the name that a depot is
 mounted with by the current process/thread in the virtual machine, and
 there is one distinct second-level name per depot mount, and often there is
 just one of those at a time.  Under each mount name is an optional tree of
 generic namespaces, adding 0..N name parts, each of which we refer to
-simply as a I<subdepot> (which is a I<subpackage>).  After that, we have
+simply as a *subdepot* (which is a *subpackage*).  After that, we have
 the lowest layer, which are globally
 addressable pseudo-relvar, type, and routine unqualified names.  So the
-fully-qualified names of most user-defined entities by way of C<fed> are
+fully-qualified names of most user-defined entities by way of `fed` are
 3-4 parts.
 
 ## Non-Lexical Entities
 
-The C<nlx> primary namespace empowers non-lexical entities declared in the
+The `nlx` primary namespace empowers non-lexical entities declared in the
 same [|sub]package to refer to each other using relative paths rather than
-using absolute paths which is what C<fed|sys> provides for.  For example,
-if 2 functions whose unqualified names are C<f1> and C<f2> live directly in
+using absolute paths which is what `fed|sys` provides for.  For example,
+if 2 functions whose unqualified names are `f1` and `f2` live directly in
 the same [|sub]package, each one can reference the other, or itself,
-using C<nlx.lib.f1> or C<nlx.lib.f2> respectively.  Referring to an entity
+using `nlx.lib.f1` or `nlx.lib.f2` respectively.  Referring to an entity
 in a child namespace of the invoker's own direct parent works as you might
-expect, by adding an element per level after the C<lib|data>, for example
-C<nlx.lib.mychild.f3>.  Referring to an entity in a parent namespace of the
-invoker's own direct parent involves adding a C<par> ("parent") element per
-level immediately after the C<nlx>, for example C<nlx.par.lib.f4>.
+expect, by adding an element per level after the `lib|data`, for example
+`nlx.lib.mychild.f3`.  Referring to an entity in a parent namespace of the
+invoker's own direct parent involves adding a `par` ("parent") element per
+level immediately after the `nlx`, for example `nlx.par.lib.f4`.
 
-Using C<nlx> rather than C<fed|sys> allows package entities to be coded in
+Using `nlx` rather than `fed|sys` allows package entities to be coded in
 a portable way, not having to know too much about how they would be used,
-such as not knowing what name they are mounted under C<fed> with.  Details
+such as not knowing what name they are mounted under `fed` with.  Details
 of material definitions as seen in a live in-DBMS mount can remain
 invariant and match their actual stored definitions despite where in their
 parent namespace tree is actually mounted as a "depot" in some DBMS.  For
@@ -3135,51 +3135,51 @@ the "schema" namespaces common to a SQL database, then it doesn't matter
 whether it is the whole stored database or just a single "schema" which is
 mounted in a Muldis D DBMS as a "depot"; when any functions defined in the
 same "schema" refer to each other with the relative syntax of
-C<nlx.lib.fX>, it will work exactly correctly either way.
+`nlx.lib.fX`, it will work exactly correctly either way.
 
 In fact, nothing is allowed to directly refer to user-defined entities
-using C<fed> except a procedure, or the host language if it
+using `fed` except a procedure, or the host language if it
 exists.  All user-defined functions and types may only be referenced using
-C<nlx> (but that a host language is exempted if it exists).
+`nlx` (but that a host language is exempted if it exists).
 
-Note that a C<nlx> may I<not> navigate outside of the referencer's own
+Note that a `nlx` may *not* navigate outside of the referencer's own
 package; from its point of view, the root namespace inside its own package
 is the root beyond which a relative path can not traverse; attempting this
 is an error.
 
 This also means that a namespace of a physical depot may not be mounted in
 a DBMS as a "depot" if any of its contents reference outside that namespace
-within the physical depot using C<nlx>; in this case a sufficiently larger
+within the physical depot using `nlx`; in this case a sufficiently larger
 portion of the physical depot must be mounted as a "depot" instead so that
 all reference targets are visible in the DBMS.  Note that this restriction
 applies mainly for references to data types or database constraints, so
 that any visible entities defined in terms of such can be fully understood;
 it might not have to apply for references to procedures or such things that
-C<fed> may be used to reference; in that case the execution of such code
+`fed` may be used to reference; in that case the execution of such code
 would just fail at runtime if the referenced part of the physical depot
-isn't mounted, same as with a non-existing C<fed>-qualified reference.
+isn't mounted, same as with a non-existing `fed`-qualified reference.
 
-The C<rtn> primary namespace normally is used entirely by itself as its own
+The `rtn` primary namespace normally is used entirely by itself as its own
 fully-qualified entity name; it refers to the lexically innermost routine,
 assuming that the referencer is code within some routine.  The primary
 reason for this namespace to exist is to make it easier to write
 directly-recursive routines, especially routines that are written as
 anonymous routines, where the name of that routine is chosen automatically
 by the compiler rather than explicitly by the programmer.  For a routine
-whose name, C<foo>, is explicitly chosen by the programmer, saying C<rtn>
-in that routine is an alias for saying C<nlx.lib.foo>.
+whose name, `foo`, is explicitly chosen by the programmer, saying `rtn`
+in that routine is an alias for saying `nlx.lib.foo`.
 
 ## Lexical Entities
 
-The C<lex> primary namespace refers to entities within
+The `lex` primary namespace refers to entities within
 the same private lexical scope as the referencer.  Variables
-under C<lex> only are allowed to be of any data type, not just be relvars.
+under `lex` only are allowed to be of any data type, not just be relvars.
 
-The C<lex> primary namespace is very different in practice from all of the
+The `lex` primary namespace is very different in practice from all of the
 other primary namespaces, because all contexts where a lexical entity may
 be referenced are disjoint from all contexts where a not-lexical entity may
 be referenced, and so all references to lexical entities are actually never
-qualified with C<lex> because that would be completely redundant, while in
+qualified with `lex` because that would be completely redundant, while in
 general any references to not-lexical entities must be qualified with their
 appropriate primary namespace because they may be ambiguous otherwise as to
 which other primary namespace is relevant per context.
@@ -3196,9 +3196,9 @@ for that not-lexical which is a lexical variable.
 But it is possible, in the general case, that a Muldis D dialect might use
 common syntax for referencing lexical and not-lexical variables, such as
 one that doesn't employ user-visible aliasing of globals to lexicals, in
-which case they would probably find explicit C<lex> qualification useful.
+which case they would probably find explicit `lex` qualification useful.
 
-Therefore, any documentation that happens to use a C<lex> qualifier just is
+Therefore, any documentation that happens to use a `lex` qualifier just is
 being more clear as to what is referred to for the general case.
 
 ## Conceptions and Requirements
@@ -3226,11 +3226,11 @@ previously described meaning of a depot is adhered to, there will typically
 fundamentally (but see the next paragraph)
 be either zero (SQLite) or one (PostgreSQL, Oracle) layers of generic
 namespaces; where there is one, it typically corresponds to the storage
-system's concept of a I<schema>; where there are two, the second typically
-corresponds to Oracle's concept of a I<package>;
+system's concept of a *schema*; where there are two, the second typically
+corresponds to Oracle's concept of a *package*;
 but N layers are provided by Muldis D "just in case".
 
-Muldis D supports the concept of I<materials> (routines and types) being
+Muldis D supports the concept of *materials* (routines and types) being
 nested within others, like some typical programming languages, but also
 necessitated by the
 design decision where type and routine definitions are expressly fixed
@@ -3252,11 +3252,11 @@ these post-split artifacts.  This presumably common practice would mean
 that a package will typically have 1 more subpackage layer than otherwise,
 meaning typically 2-3 layers total (corresponding to SQL schema, Oracle
 package, each non-trivial SQL stored routine or type, or SQL table with
-built-in type definition and constraints).  So the primary namespace C<nlx>
-is I<also> used for individual post-split materials to refer to other
+built-in type definition and constraints).  So the primary namespace `nlx`
+is *also* used for individual post-split materials to refer to other
 post-split materials within the same conceptual larger material.
 
-The primary namespace C<lex> is for entities that would commonly be
+The primary namespace `lex` is for entities that would commonly be
 considered lexical parameters or variables in a routine; these would
 typically map directly to their counterparts for a routine definition
 translated to or from some other language.  That said, some kinds of
@@ -3267,21 +3267,21 @@ variables, or sometimes use native equivalents if the other language is
 pure functional.
 
 Each individual depot or subdepot should be interpreted as an integrated
-collection of material (type and routine) definitions.  I<TODO: where some
+collection of material (type and routine) definitions.  *where some
 parts of
-the collection are private and others are public.>  All entities that are
-under a non-C<lex> namespace should all be considered public or
+the collection are private and others are public.*  All entities that are
+under a non-`lex` namespace should all be considered public or
 globally referenceable (database user privileges notwithstanding).  I<TODO:
 By
-default, every material is I<private>, meaning that it can only be directly
+default, every material is *private*, meaning that it can only be directly
 referenceable by DBMS entities whose direct parent subdepot (which might be
 the depot) is the direct parent of said material, or entities that live in
 a subdepot of said parent.  But if a material is explicitly declared
-I<public>, then it may I<also> be directly referenceable by DBMS entities
+*public*, then it may *also* be directly referenceable by DBMS entities
 living externally to the direct parent of the target material.  And so,
 public materials are the public API of a library, and private ones are
 its internals.  By definition, a private material may never be directly
-invoked via the C<fed> primary namespace, and presumably not by a host
+invoked via the `fed` primary namespace, and presumably not by a host
 language either.>  Note that a depot's data/dbvar is always implicitly
 public to its full depth, as far as basic API (not user) concerns go; the
 only private data is lexicals.
@@ -3301,24 +3301,24 @@ attributes of tuple (but not possrep-having-scalar or relation
 in the general case; see below) typed variables to be used as
 pseudo-variables, to the Nth degree of recursion, with very terse syntax.
 
-For example, if C<lex.foo> was the name of a tuple-typed variable, and
-that tuple type had an attribute named C<bar>, then C<lex.foo.bar> can be
-addressed as if it were a normal variable in the same vein as C<lex.foo>.
-As a (read-only) value expression, C<lex.foo.bar> would be short-hand for
-the result of invoking a tuple attribute extractor function on C<lex.foo>
-that extracts C<bar>.  When C<lex.foo.bar> is used as the target of a value
+For example, if `lex.foo` was the name of a tuple-typed variable, and
+that tuple type had an attribute named `bar`, then `lex.foo.bar` can be
+addressed as if it were a normal variable in the same vein as `lex.foo`.
+As a (read-only) value expression, `lex.foo.bar` would be short-hand for
+the result of invoking a tuple attribute extractor function on `lex.foo`
+that extracts `bar`.  When `lex.foo.bar` is used as the target of a value
 assignment, say the value 42, that is a short-hand for selecting the
-tuple value that is equal to what C<lex.foo>'s value is except for its
-C<bar> attribute being 42, and assigning that tuple to C<lex.foo>.
+tuple value that is equal to what `lex.foo`'s value is except for its
+`bar` attribute being 42, and assigning that tuple to `lex.foo`.
 
 With scalars, this kind of terse syntax may also be used in some, though
 not all, situations as the syntax may be with tuples;
 referencing a possrep attribute requires 2 name elements,
 where the first indicates a possrep name and the second an attribute name
-of that possrep; for example, C<lex.scalar1.possrep1.attr1>.  Now as you
+of that possrep; for example, `lex.scalar1.possrep1.attr1`.  Now as you
 might expect, you can also just reference a scalar possrep as a whole, as
 if it were a tuple-typed pseudo-variable, by using just 1 name element;
-for example, C<lex.scalar1.possrep1>.
+for example, `lex.scalar1.possrep1`.
 
 With relations, this kind of terse syntax may also be used in some, though
 not all, situations as the syntax may be with tuples,
@@ -3341,10 +3341,10 @@ can be used as the full expression.
 
 B<Update:>  To be specific, when concerning general contexts such as any
 arbitrary Muldis D functional (value expressions) or procedural
-(statements) code, I<only> tuples may have their attributes accessed using
+(statements) code, *only* tuples may have their attributes accessed using
 this feature extension of DBMS entity names; in general contexts, the
-I<only> way to access scalar possrep or relation attributes is by using
-normal accessor functions such as C<sys.std.Core.Scalar.attr>.  This
+*only* way to access scalar possrep or relation attributes is by using
+normal accessor functions such as `sys.std.Core.Scalar.attr`.  This
 restriction is in place for practical reasons of Muldis D syntax being more
 strongly typed, such that it is possible to know at parse-time whether each
 attribute access is for a scalar or tuple or relation, and so both it is
@@ -3398,8 +3398,8 @@ declared one level up in place of the subpackage, and so any syntax which
 is valid for directly referencing the material may instead (and is
 recommended to) directly reference its parent subpackage instead as if it
 were the material itself.  So for example, if a material
-C<fed.lib.mydb.foo.""> exists,
-then C<fed.lib.mydb.foo> will implicitly refer to the same material in any
+`fed.lib.mydb.foo.""` exists,
+then `fed.lib.mydb.foo` will implicitly refer to the same material in any
 context that expects the name of a material.  This feature should be
 immensely helpful in supporting encapsulation of materials, such that if
 one wanted to change the implementation of a material to add support
@@ -3408,21 +3408,21 @@ actually replacing the original material with a subpackage holding the
 components of the new version, keeping those from messing up the namespace
 that the original lived in, and no external code has to know about this
 implementation change of the material, and can keep referencing it in the
-same way.  Note that this proxying feature I<will> cascade, such as when a
+same way.  Note that this proxying feature *will* cascade, such as when a
 subpackage whose name is the empty string contains a material whose name is
-the empty string; so for example, a material C<fed.lib.mydb.foo."".""> can
-also be referenced by both C<fed.lib.mydb.foo>
-and C<fed.lib.mydb.foo."">.  Note that this
-proxying feature can I<not> be used to reference a subpackage or package
+the empty string; so for example, a material `fed.lib.mydb.foo."".""` can
+also be referenced by both `fed.lib.mydb.foo`
+and `fed.lib.mydb.foo.""`.  Note that this
+proxying feature can *not* be used to reference a subpackage or package
 itself whose name is the empty string, for hopefully obvious reasons.
 
 Iff a depot or subdepot has a self-local dbvar (specifically, iff the
-former's C<fed.cat.mydb.data> is a C<Just>), then the
+former's `fed.cat.mydb.data` is a `Just`), then the
 recommended convention is that the declared type of said dbvar is defined
 by a type immediately contained in said depot/subdepot whose declared name
-is the empty string.  (This also means that C<fed.lib.mydb> alone will
+is the empty string.  (This also means that `fed.lib.mydb` alone will
 reference
-the type of the depot's C<fed.data.mydb>, when the convention is followed.)
+the type of the depot's `fed.data.mydb`, when the convention is followed.)
 
 In a function definition, it is mandatory for the root node in the
 expression node tree to have the empty string as its declared name.
@@ -3431,10 +3431,10 @@ the statement node tree to have the empty string as its declared name.
 
 ## User Namespace Correspondence
 
-The namespace hierarchies under the C<lib> and C<data> second-level
-namespaces of C<fed|nlx> are fully independent in definition, such
-that namespaces under C<lib> are defined in terms of child subdepots,
-while namespaces under C<data> are defined in terms of tuple
+The namespace hierarchies under the `lib` and `data` second-level
+namespaces of `fed|nlx` are fully independent in definition, such
+that namespaces under `lib` are defined in terms of child subdepots,
+while namespaces under `data` are defined in terms of tuple
 (database) attributes that are themselves tuples (databases) rather than
 relations.  However, in order for any given depot|subdepot to
 optionally have its own concept of a (pseudo-)dbvar that is local to
@@ -3443,87 +3443,87 @@ definition being builtin to it,
 these otherwise independent namespace hierarchies are constrained
 to resemble each other to a certain degree, when the option to have a
 self-local dbvar is exercised (a depot|subdepot can alternately
-choose to I<not> have its own dbvar); that also serves to support DBMSs
+choose to *not* have its own dbvar); that also serves to support DBMSs
 that have a common namespace hierarchy for both routines and relvars.  This
 section details that mutual constraint.
 
-The 2 system-defined user-data variables named C<[fed|nlx].data>
-are all of "just" the C<Database> type (which is a C<Tuple> proper
+The 2 system-defined user-data variables named `[fed|nlx].data`
+are all of "just" the `Database` type (which is a `Tuple` proper
 subtype), or are of its proper subtypes.
 
-The C<fed.data> variable's type is determined primarily by the current
-value of C<mnt.cat> (which depot mounts exist), and secondarily by the
+The `fed.data` variable's type is determined primarily by the current
+value of `mnt.cat` (which depot mounts exist), and secondarily by the
 contents of each mounted depot.  When a new DBMS process starts, there is
 exactly one depot mount, whose mount name is the empty string,
-and the type of C<fed.data> has either a single database-typed attribute
+and the type of `fed.data` has either a single database-typed attribute
 or zero attributes depending on whether or not the corresponding depot has
-a self-local dbvar and C<fed.data>'s default value is determined by the
-corresponding depot's default C<nlx.data> value or it is the zero-attribute
+a self-local dbvar and `fed.data`'s default value is determined by the
+corresponding depot's default `nlx.data` value or it is the zero-attribute
 tuple/database; mounting a depot adds one corresponding
-database-typed attribute to C<fed.data>'s type and value, iff the depot has
+database-typed attribute to `fed.data`'s type and value, iff the depot has
 a self-local dbvar, and unmounting the depot removes its corresponding
 attribute, iff likewise.  For each attribute of the type and value of
-C<fed.data>, its type and value is equal to the type and value of the
-C<nlx.data> variable seen by entities within the corresponding depot, iff
+`fed.data`, its type and value is equal to the type and value of the
+`nlx.data` variable seen by entities within the corresponding depot, iff
 the depot has a self-local dbvar.
 
-The C<nlx.data> variable's existence and type is determined by the catalog
+The `nlx.data` variable's existence and type is determined by the catalog
 of the same depot.  When a new depot is created, the default value of its
 catalog defines zero types or routines, and defines that the depot does
-I<not> have a self-local dbvar; this means by default the depot is just a
+*not* have a self-local dbvar; this means by default the depot is just a
 repository for code, able to contain only types and routines, and that
-depot's C<nlx.data> doesn't exist at all.  Later on, if a depot's catalog
-is updated to say that the depot I<does> have a self-local dbvar, which is
-accomplished by setting that depot's C<nlx.cat.data> to a C<Just> value
-that names the declared database type of that depot's C<nlx.data>;
+depot's `nlx.data` doesn't exist at all.  Later on, if a depot's catalog
+is updated to say that the depot *does* have a self-local dbvar, which is
+accomplished by setting that depot's `nlx.cat.data` to a `Just` value
+that names the declared database type of that depot's `nlx.data`;
 typically said named type is a material also added to the depot's root
 namespace, which typically has the empty string entity declaration name.
 
 In most typical situations, a depot's catalog is updated
-to say that the declared type of C<nlx.data> consists only of database
+to say that the declared type of `nlx.data` consists only of database
 values having specific relation-valued attributes of specific relation
 types, and database relations can not be added or removed without
 also updating the corresponding database type.  Generally speaking, the
-declared type of C<nlx.data> includes everything that SQL would define as
+declared type of `nlx.data` includes everything that SQL would define as
 table definitions, table unique key constraints, subset (foreign key)
 constraints, and generic database or table state constraints, but state
 constraints can also be associated with just variables rather than types.
 
 Conceptually speaking, for the ultimate freedom from constraints, the
-declared type of C<nlx.data> can be a simple alias for the C<Database>
-type, meaning that users can update C<nlx.data> (or more specifically,
-`fed.data.<depot-mnt-nm>`) with any C<Database> value at all, and
+declared type of `nlx.data` can be a simple alias for the `Database`
+type, meaning that users can update `nlx.data` (or more specifically,
+`fed.data.<depot-mnt-nm>`) with any `Database` value at all, and
 (where applicable) have it persist.  In this situation, adding a database
 relation is done by extending the database with a new relation-valued
 attribute, and removing one is removing its attribute.  But see further
-below as, strictly speaking, some database values can't be in C<nlx.data>.
+below as, strictly speaking, some database values can't be in `nlx.data`.
 
 If a depot has any subdepots, then for each subdepot, iff the subdepot has
-a self-local dbvar, that is iff the subdepot's C<nlx.cat.data> is a
-C<Just>, then the value of C<fed.data.mydb> must have a corresponding
+a self-local dbvar, that is iff the subdepot's `nlx.cat.data` is a
+`Just`, then the value of `fed.data.mydb` must have a corresponding
 database-typed attribute that matches by name, recursively.  For example,
-if a depot mounted as C<mydb> has a root-child subdepot named C<foo> and a
-child subdepot of that named C<bar>, and C<bar> expects to have a
-self-local dbvar, then the type of C<fed.data.mydb> must have a
-database-typed attribute named C<foo> and the type of C<foo> must have a
-database-typed attribute named C<bar>.  So then, C<fed.data.mydb.foo> is
-the pseudo-dbvar of C<nlx.data> as seen by entities in the C<foo> subdepot
-(and they have the same type and value), and C<fed.data.mydb.foo.bar> is
-the pseudo-dbvar of C<nlx.data> as seen by entities in the C<bar> subdepot.
-The type of C<fed.data.mydb> may have additional attributes besides those
+if a depot mounted as `mydb` has a root-child subdepot named `foo` and a
+child subdepot of that named `bar`, and `bar` expects to have a
+self-local dbvar, then the type of `fed.data.mydb` must have a
+database-typed attribute named `foo` and the type of `foo` must have a
+database-typed attribute named `bar`.  So then, `fed.data.mydb.foo` is
+the pseudo-dbvar of `nlx.data` as seen by entities in the `foo` subdepot
+(and they have the same type and value), and `fed.data.mydb.foo.bar` is
+the pseudo-dbvar of `nlx.data` as seen by entities in the `bar` subdepot.
+The type of `fed.data.mydb` may have additional attributes besides those
 matching subsepots, but it may not lack any corresponding ones with
 subdepots that have self-local dbvars.
 
 Now while subdepots in a depot optionally have corresponding
-database-typed C<nlx.data> attributes, the opposite is true in regards to
-routines and types in a depot; for those, there must I<not> be any
-corresponding C<nlx.data> attributes, either database or relation-typed;
+database-typed `nlx.data` attributes, the opposite is true in regards to
+routines and types in a depot; for those, there must *not* be any
+corresponding `nlx.data` attributes, either database or relation-typed;
 depot relvars effectively live in the same namespace hierarchy as types and
 routines, and must not have the same fully-qualified names.
 
 What is said above for the relationship between the catalog of a depot and
-its C<nlx.data>, goes also for the catalog of a subdepot and
-its C<nlx.data>, respectively.  Note that while a depot or
+its `nlx.data`, goes also for the catalog of a subdepot and
+its `nlx.data`, respectively.  Note that while a depot or
 subdepot does not need to have a self-local dbvar in the general
 case, if any subdepot wants to have a self-local dbvar, then all
 of its direct ancestor namespaces must have one too, because a subdepot
@@ -3531,26 +3531,26 @@ dbvar is always a pseudo-variable defined as an attribute of its
 parent depot or subdepot, recursively.
 
 Strictly speaking, the type of a depot's or subdepot's self-local dbvar
-can only be "just a database" (the C<Database> type) iff that depot has
+can only be "just a database" (the `Database` type) iff that depot has
 no subdepots or materials at all.  Regarding any other child
 materials, the type must exclude attributes with the same names.  When
-there is a child subdepot C<foo>, the situation depends on
-whether C<foo> has a self-local dbvar; if it does, then the parent's type
-must have an attribute named C<foo> and that attribute must declare its
-type to be the same type as the child subdepot's C<nlx.cat.data> names;
+there is a child subdepot `foo`, the situation depends on
+whether `foo` has a self-local dbvar; if it does, then the parent's type
+must have an attribute named `foo` and that attribute must declare its
+type to be the same type as the child subdepot's `nlx.cat.data` names;
 if it doesn't, then the parent's type must
-exclude every database value with an attribute C<foo>.
+exclude every database value with an attribute `foo`.
 
 Similar to the subdepot/dbvar duality, Muldis D also supports a
-subdepot/relvar duality.  It is allowed for both a depot/subdepot C<foo> to
-have a direct child subdepot named C<bar> and also for C<foo>'s self-local
-dbvar to have a relation-typed direct child attribute named C<bar>.  In
-that situation, C<bar> does I<not> have a self-local dbvar but the
+subdepot/relvar duality.  It is allowed for both a depot/subdepot `foo` to
+have a direct child subdepot named `bar` and also for `foo`'s self-local
+dbvar to have a relation-typed direct child attribute named `bar`.  In
+that situation, `bar` does *not* have a self-local dbvar but the
 namespace conveniently exists for a type definition to live for use as the
-explicitly declared type of the C<bar> attribute, which by convention would
+explicitly declared type of the `bar` attribute, which by convention would
 have the empty string as its name (but it isn't required to), and any
 further components of that type definition can also be grouped under the
-subdepot C<bar>.  So this arrangement is the closest analogy to SQL's
+subdepot `bar`.  So this arrangement is the closest analogy to SQL's
 normal behaviour of embedding a table's type into the table's declaration.
 
 ## Referencing Data Types
@@ -3579,7 +3579,7 @@ entity's name and then attach extra syntax indicating you want to use its
 declared type, in the form of 2..3 extra prefixed name chain elements, plus
 possibly 1 extra suffixed name chain element.
 
-The extra syntax takes the form of a new primary namespace C<type>, which
+The extra syntax takes the form of a new primary namespace `type`, which
 has 1..2 special following namespaces, and then the rest of the namespaces
 afterwards match the other/normal primary namespaces and what follow them,
 but for 1 possible extra element following those.
@@ -3587,30 +3587,30 @@ but for 1 possible extra element following those.
 The grammatically simplest scenario is taking the declared type of a
 scalar variable or pseudo-variable, which takes the form
 `type.var[.<path-elem-to-var>]**1..*[.<path-elem-to-attr>]**0..*`, for
-example C<type.var.nlx.myvar>.  A similar scenario is taking the declared
+example `type.var.nlx.myvar`.  A similar scenario is taking the declared
 type of an attribute of a distinct type entity, which takes the form
 `type.type[.<path-elem-to-type>]**1..*[.<path-elem-to-attr>]**1..*`, for
-example C<type.type.nlx.lib.mytyp.myattr>.  A similar scenario is taking
+example `type.type.nlx.lib.mytyp.myattr`.  A similar scenario is taking
 the declared result type of a function, which takes the form
 `type.func_result[.<path-elem-to-func>]**1..*[.<path-elem-to-attr>]**0..*`,
-for example C<type.func_result.nlx.lib.myfunc>.
+for example `type.func_result.nlx.lib.myfunc`.
 
 A slightly more complicated scenario is taking the declared type of a
 routine parameter, which takes the form
 `type.param[.<path-elem-to-rtn>]**1..*.<param-name>[.<path-elem-to-attr>]**0
 ..*`, for example
-C<type.param.sys.std.Core.Integer.whole_quotient.divisor>.
+`type.param.sys.std.Core.Integer.whole_quotient.divisor`.
 
 Another scenario is first taking the declared type of something where that
 type is a relation type, and then taking the tuple type in terms of which
 that relation type was directly partially defined.  And so, the
 aforementioned forms of taking types actually have
-C<[.[|dh_]tuple_from]**0..1> in their syntax following the
-C<type> (or you add the C<type> if you didn't otherwise have one because
+`[.[|dh_]tuple_from]**0..1` in their syntax following the
+`type` (or you add the `type` if you didn't otherwise have one because
 you were otherwise referring to a named type directly) and before the
 aforementioned remainder; for example
-C<type.tuple_from.var.nlx.data.myrelvar>
-or C<type.tuple_from.nlx.lib.mytype>.
+`type.tuple_from.var.nlx.data.myrelvar`
+or `type.tuple_from.nlx.lib.mytype`.
 
 Muldis D also has an extension to the previously described "taking the
 type" feature such that declaring any type, embedded or otherwise, also has
@@ -3618,28 +3618,28 @@ the effect of implicitly declaring simple nonscalar collection
 types over that type; but these implicit extra types only appear when you
 attempt to use them, in the form of adding yet another syntax element to
 all of the aforementioned forms, which is
-C<[.[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of]**0..*>;
-this C<of> element takes the same position as the C<from> element in the
-syntax, just after the C<type> (which likewise you add if you didn't
+`[.[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of]**0..*`;
+this `of` element takes the same position as the `from` element in the
+syntax, just after the `type` (which likewise you add if you didn't
 already have it); or they can both be used together in which case all the
-C<of> would appear first.
+`of` would appear first.
 
 This feature extension is intended mainly to save the language from a
 proliferation of explicitly defined but very similar nonscalar
 types; so rather than having to explicitly declare a type that is a
-sequential array of integers (that is, an C<Array> whose C<value> attribute
-has the type C<Int>), you can just use it implicitly by saying
-C<type.array_of.sys.std.Core.Type.Int>, the same as you would use the
-plain integer type by saying C<sys.std.Core.Type.Int>.  Or for the common
+sequential array of integers (that is, an `Array` whose `value` attribute
+has the type `Int`), you can just use it implicitly by saying
+`type.array_of.sys.std.Core.Type.Int`, the same as you would use the
+plain integer type by saying `sys.std.Core.Type.Int`.  Or for the common
 scenario of an attribute being optional (like SQL's nullable), you can say
-for example C<type.maybe_of.sys.std.Core.Type.Text>.  This feature
+for example `type.maybe_of.sys.std.Core.Type.Text`.  This feature
 extension lets you declare a simple collection of any type, including those
 declared by the same feature, for example:
-C<type.set_of.set_of.sys.std.Core.Type.Cat.Name>.
+`type.set_of.set_of.sys.std.Core.Type.Cat.Name`.
 
 B<Update:>  Unlike with the terse pseudo-variable syntax in general use
 (where it may only be used with tuple attributes), for the more specific
-use of referencing data types, the terse syntax may I<also> be used with
+use of referencing data types, the terse syntax may *also* be used with
 scalar possrep and relation attributes, as described in **Terse
 Pseudo-Variable Syntax**.
 
@@ -3666,16 +3666,16 @@ code comments and code element ordinal positions.
 ## Code Comments
 
 Many tuple and relation catalog data types have a special extra attribute
-named C<scm_comment>, a C<Comment> (a character string), which may
+named `scm_comment`, a `Comment` (a character string), which may
 optionally be used to associate an arbitrary piece of human-readable
 descriptive text with a code element represented by a given tuple.  For
-example, the C<Function> catalog type has it, meaning that a general
+example, the `Function` catalog type has it, meaning that a general
 overview description of a function can be remembered and guide programmers
 to understanding the function.
 
-A C<scm_comment> value of the empty string is special and means "no
+A `scm_comment` value of the empty string is special and means "no
 comment".  It is expected that any complete parser for a standard Muldis D
-dialect I<will> preserve any code comments that it encounters as much as is
+dialect *will* preserve any code comments that it encounters as much as is
 reasonably possible.
 
 ## Visible Element Order
@@ -3688,34 +3688,34 @@ and so any information about that in the natively ordered source code,
 would normally be discarded by the parser.
 
 Many tuple and relation catalog data types have a special extra attribute
-named C<scm_vis_ord>, a C<NNInt> (non-negative integer), which may
+named `scm_vis_ord`, a `NNInt` (non-negative integer), which may
 optionally be used to encode the visible ordinal position of the code
 element represented by a given tuple relative to its peers in the original
-source code.  For example, the C<NameTypeMap> catalog type has it, meaning
+source code.  For example, the `NameTypeMap` catalog type has it, meaning
 that the declared order in a programmer's source code of a list of named
 routine parameters, or of a list of named tuple-type attributes, can be
 preserved in the system catalog, and be used to guide the presented order
 of that list in source code generated from the system catalog.
 
-A C<scm_vis_ord> value of zero is special and means "not applicable"; for
-any code elements whose C<scm_vis_ord> are zero, this means that the
+A `scm_vis_ord` value of zero is special and means "not applicable"; for
+any code elements whose `scm_vis_ord` are zero, this means that the
 programmer doesn't consider it important to preserve their relative order;
-only C<scm_vis_ord> values that are C<1> or greater are considered to be
-"applicable" for being ordered.  Note that C<scm_vis_ord> is I<not> a key,
+only `scm_vis_ord` values that are `1` or greater are considered to be
+"applicable" for being ordered.  Note that `scm_vis_ord` is *not* a key,
 so multiple sibling code elements can have the same value, in which case
 their relative ordering is implementation-defined or random, and also any
-set of associated C<scm_vis_ord> is not dense, so sibling elements don't
+set of associated `scm_vis_ord` is not dense, so sibling elements don't
 need to have immediately consecutive values.
 
 To clarify, it is expected that any complete parser for a standard Muldis D
-dialect I<will> set context-distinct non-zero C<scm_vis_ord> values as much
+dialect *will* set context-distinct non-zero `scm_vis_ord` values as much
 as is reasonably possible, and that zero values will generally come from
 either situations where a parser finds ordering non-applicable or from
 programmers updating the system catalog at runtime.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

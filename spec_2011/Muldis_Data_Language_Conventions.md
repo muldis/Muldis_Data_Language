@@ -31,16 +31,16 @@ of brainstorming in point form.
 
 ## Entity Naming
 
-Note that any use of the word "name" specifically refers to a C<Name>, or
+Note that any use of the word "name" specifically refers to a `Name`, or
 in other words the declared unqualified name of an entity, which sometimes
 is always used in that form, and which other times forms an element of a
-C<NameChain>.
+`NameChain`.
 
 Although Muldis D allows names to be comprised of any characters at all,
 and hence they are used delimited in the general case, it is highly
 recommended to use only characters in names that are valid for identifier
 names in most programming languages, and that are part of the 7-bit ASCII
-repertoire, such as C<[a-zA-Z0-9_]>, and that the first character of a name
+repertoire, such as `[a-zA-Z0-9_]`, and that the first character of a name
 isn't a digit; that way, it would be easy to support Muldis D dialects
 where names are allowed to be non-delimited, as well as more easily permit
 translation of Muldis D code into other programming languages while making
@@ -50,7 +50,7 @@ any script, but names should still avoid including whitespace and
 punctuation characters.
 
 Type names should all be nouns, or nouns plus adjectives of said, and be
-named after what a value of that type I<is>; eg, for any given value Foo of
+named after what a value of that type *is*; eg, for any given value Foo of
 type Bar, you can say "Foo is a Bar".
 
 Type names should have all of their words capitalized (first letter of each
@@ -60,22 +60,22 @@ characters, but use of separators is also fine.  In other words, see the
 convention for Perl package names, perhaps aka camel case.  But if the type
 name includes acronyms, then the acronym should be all uppercase, and where
 necessary, multiple acronyms or abbreviations would then often be
-underscore-separated.  For examples, C<Int> or C<RatRoundRule>.
+underscore-separated.  For examples, `Int` or `RatRoundRule`.
 
 Function routine names should all be nouns, and be named after the meaning
 of what they result in; also, function parameters should all be nouns, and
 be named after the meaning of what they convey to the functions.  For
-example, the integer C<difference> function results in the difference when
-its C<subtrahend> argument is subtracted from its C<minuend> argument.
+example, the integer `difference` function results in the difference when
+its `subtrahend` argument is subtracted from its `minuend` argument.
 Every invocation of a function in Muldis D denotes a value, just like any
 program literal, and it is helpful for it to be named accordingly.  A
 function name should never be a verb, as a function does not take an action
-or I<do> something or have a side-effect; its invocation I<is> something.
+or *do* something or have a side-effect; its invocation *is* something.
 Likewise, all named expression names should be nouns.
 
 For a boolean-resulting function, the function name typically is best the
-text of a question whose answer is just I<yes> or I<no>; for example,
-C<is_same> or C<is_a_member>.  While not a noun per se, such names
+text of a question whose answer is just *yes* or *no*; for example,
+`is_same` or `is_a_member`.  While not a noun per se, such names
 indicate that the meaning of the function's result is the answer of the
 question as applied to the function's arguments.
 
@@ -87,21 +87,21 @@ also followed, then each part of the function's name is next to what it is
 describing (output closer to output, input to input, etc), not opposite.
 
 Procedure routine names, by contrast, should all be verbs, and
-be named after what action they take, because their invocation I<does> do
-something and/or has a side-effect, and does I<not> denote a value.  For
-example, C<fail> or C<create_function>.  Their parameters should be nouns
+be named after what action they take, because their invocation *does* do
+something and/or has a side-effect, and does *not* denote a value.  For
+example, `fail` or `create_function`.  Their parameters should be nouns
 as per function routines.  Their variables should also be nouns.
 
 If a routine has just one main parameter, and/or the routine could be
 conceived as a method for an object that is that argument, and there isn't
-already a good name for the parameter, then C<topic> is a good name to
+already a good name for the parameter, then `topic` is a good name to
 default to; it says that this argument is the topic that the routine is
-most concerned with, as per what C<$_> means to Perl (a topicalizer).
+most concerned with, as per what `$_` means to Perl (a topicalizer).
 
 All routine names should have their words separated by underscores, and
 they generally should be entirely lowercase.  The main exception to this is
 if the routine name embeds a type name, in which case the type should be
-spelled with its normal casing, such as C<Int_from_Text>.
+spelled with its normal casing, such as `Int_from_Text`.
 
 When a relation is best described as being a plurality of a kind of thing,
 where each of its tuples is exactly one of those things, then any contexts
@@ -123,11 +123,11 @@ the pair should be grouped together under their own subdepot, such that the
 subdepot has the conceptual name of the dominant type (and is referenced
 directly by users as a proxy for said), and the dominant type's actual name
 under that subdepot's namespace is the empty string, and the subservient
-type's name under that namespace is either C<T> or C<R> depending on
+type's name under that namespace is either `T` or `R` depending on
 whether it is a tuple or relation type.  For example, given the
-system-defined relation type C<Array>, that type's actual name is
-C<Array.""> and the tuple type it is partly defined over is named
-C<Array.T>.  2.  If the two types have a mutually even status, and it would
+system-defined relation type `Array`, that type's actual name is
+`Array.""` and the tuple type it is partly defined over is named
+`Array.T`.  2.  If the two types have a mutually even status, and it would
 be relatively easy to name both of them, then the pair should live out in a
 more public namespace, each directly under their conceptual names.
 
@@ -151,11 +151,11 @@ that is best for use when it should be ignored.
 One example is a binary choice encoded as a boolean value; the boolean
 parameter or attribute can be named after the infrequent choice such that
 giving it a true value will pick the infrequent choice and letting it
-default to the false value (C<Bool:False> is the default value of the
-C<Bool> type) will pick the frequent choice.
+default to the false value (`Bool:False` is the default value of the
+`Bool` type) will pick the frequent choice.
 
 Generally speaking, the default value of a type should correspond most
-closely to its concept of I<empty>, unless there is no such concept in the
+closely to its concept of *empty*, unless there is no such concept in the
 type.  So for string types this would mean the empty string, or for
 collection types, one with no elements, or for numeric types, the value
 zero.
@@ -189,7 +189,7 @@ languages are oriented left-to-right anyway, and we can follow that.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

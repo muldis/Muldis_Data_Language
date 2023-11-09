@@ -17,10 +17,10 @@ document, as that forms its own tree beneath a root document branch.
 # DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
-are specific to the core data type C<Rat>, essentially all the generic ones
+are specific to the core data type `Rat`, essentially all the generic ones
 that a typical programming language should have.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # TYPE SUMMARY
 
@@ -38,22 +38,22 @@ type graph according to their proper sub|supertype relationships:
                         sys.std.Core.Type.Rational.BRat
                         sys.std.Core.Type.Rational.DRat
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # DATA TYPES THAT SUBTYPE RATIONALS
 
 ## sys.std.Core.Type.Rational.BRat
 
-C<BRat> (binary rational) is a proper
-subtype of C<Rat> where the C<radix> is 2; it is the best option to exactly
+`BRat` (binary rational) is a proper
+subtype of `Rat` where the `radix` is 2; it is the best option to exactly
 represent rational numbers that are conceptually binary or octal or
 hexadecimal, such as most IEEE-754 floating point numbers.
 
 ## sys.std.Core.Type.Rational.DRat
 
-C<DRat> (decimal rational) is a proper
-subtype of C<Rat> where the C<radix> is 10 (or if it could be without the
-C<float> possrep normalization constraint); it is the best option to
+`DRat` (decimal rational) is a proper
+subtype of `Rat` where the `radix` is 10 (or if it could be without the
+`float` possrep normalization constraint); it is the best option to
 exactly represent rational numbers that are conceptually the decimal
 numbers that humans typically work with.
 
@@ -65,8 +65,8 @@ numbers that humans typically work with.
 other : Rat, misc_args? : Tuple, is_reverse_order? : Bool)
 implements sys.std.Core.Ordered.order {...}`
 
-This is a (total) C<order-determination> function specific to C<Rat>.  Its
-only valid C<misc_args> argument is C<Tuple:D0>.
+This is a (total) `order-determination` function specific to `Rat`.  Its
+only valid `misc_args` argument is `Tuple:D0`.
 
 # FUNCTIONS IMPLEMENTING VIRTUAL NUMERIC FUNCTIONS
 
@@ -85,8 +85,8 @@ implements sys.std.Core.Numeric.sum {...}`
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
 and adds (which is both commutative and associative) them together until
-just one is left, which is the result.  If C<topic> has zero values, then
-C<sum> results in the rational zero, which is the identity value for
+just one is left, which is the result.  If `topic` has zero values, then
+`sum` results in the rational zero, which is the identity value for
 addition.
 
 ## sys.std.Core.Rational.diff
@@ -94,8 +94,8 @@ addition.
 `function diff (Rat <-- minuend : Rat,
 subtrahend : Rat) implements sys.std.Core.Numeric.diff {...}`
 
-This function results in the difference when its C<subtrahend> argument is
-subtracted from its C<minuend> argument.
+This function results in the difference when its `subtrahend` argument is
+subtracted from its `minuend` argument.
 
 ## sys.std.Core.Rational.abs_diff
 
@@ -113,8 +113,8 @@ implements sys.std.Core.Numeric.product {...}`
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
 input values and multiplies (which is both commutative and associative)
-them together until just one is left, which is the result.  If C<topic>
-has zero values, then C<product> results in the rational 1, which is the
+them together until just one is left, which is the result.  If `topic`
+has zero values, then `product` results in the rational 1, which is the
 identity value for multiplication.
 
 ## sys.std.Core.Rational.frac_quotient
@@ -122,9 +122,9 @@ identity value for multiplication.
 `function frac_quotient (Rat <-- dividend : Rat,
 divisor : Rat) implements sys.std.Core.Numeric.frac_quotient {...}`
 
-This function results in the rational quotient when its C<dividend>
-argument is divided by its C<divisor> argument using the semantics of real
-number division.  This function will fail if C<divisor> is zero.
+This function results in the rational quotient when its `dividend`
+argument is divided by its `divisor` argument using the semantics of real
+number division.  This function will fail if `divisor` is zero.
 
 ## sys.std.Core.Rational.whole_quotient
 
@@ -132,12 +132,12 @@ number division.  This function will fail if C<divisor> is zero.
 dividend : Rat, divisor : Rat, round_meth : RoundMeth)
 implements sys.std.Core.Numeric.whole_quotient {...}`
 
-This function results in the integer quotient when its C<dividend> argument
-is divided by its C<divisor> argument using the semantics of real number
+This function results in the integer quotient when its `dividend` argument
+is divided by its `divisor` argument using the semantics of real number
 division, and then the latter's result is rounded to the same or nearest
 integer, where the nearest is determined by the rounding method specified
-by the C<round_meth> argument.  This function will fail if C<divisor> is
-zero.  I<TODO: Consider making the result a whole-number C<Rat> instead.>
+by the `round_meth` argument.  This function will fail if `divisor` is
+zero.  I<TODO: Consider making the result a whole-number `Rat` instead.>
 
 ## sys.std.Core.Rational.remainder
 
@@ -145,16 +145,16 @@ zero.  I<TODO: Consider making the result a whole-number C<Rat> instead.>
 dividend : Rat, divisor : Rat, round_meth : RoundMeth)
 implements sys.std.Core.Numeric.remainder {...}`
 
-This function results in the rational remainder when its C<dividend>
-argument is divided by its C<divisor> argument using the semantics of real
+This function results in the rational remainder when its `dividend`
+argument is divided by its `divisor` argument using the semantics of real
 number division, and then the latter's result is rounded to the same or
 nearest integer.  The semantics of this function preserve the identity
-C<x mod y = x - y * (x div y)> (read C<x> as C<dividend> and C<y>
-as C<divisor>) where the division has the same semantics as
-C<sys.std.Core.Rational.whole_quotient> (rounding guided by C<round_meth>);
+C<x mod y = x - y * (x div y)> (read `x` as `dividend` and `y`
+as `divisor`) where the division has the same semantics as
+`sys.std.Core.Rational.whole_quotient` (rounding guided by `round_meth`);
 the sign of this function's result always matches the sign of the dividend
-or the divisor if C<round_meth> is C<ToZero> (aka I<truncate>) or C<Down>
-(aka I<floor>), respectively.  This function will fail if C<divisor> is
+or the divisor if `round_meth` is `ToZero` (aka *truncate*) or `Down`
+(aka *floor*), respectively.  This function will fail if `divisor` is
 zero.
 
 ## sys.std.Core.Rational.quot_and_rem
@@ -164,10 +164,10 @@ dividend : Rat, divisor : Rat, round_meth : RoundMeth)
 implements sys.std.Core.Numeric.quot_and_rem {...}`
 
 This function results in a binary tuple whose attribute names are
-C<quotient> and C<remainder> and whose respective attribute values are what
-C<sys.std.Core.Rational.whole_quotient> and
-C<sys.std.Core.Rational.remainder> would result in when given the same
-arguments.  This function will fail if C<divisor> is zero.
+`quotient` and `remainder` and whose respective attribute values are what
+`sys.std.Core.Rational.whole_quotient` and
+`sys.std.Core.Rational.remainder` would result in when given the same
+arguments.  This function will fail if `divisor` is zero.
 
 ## sys.std.Core.Rational.range
 
@@ -175,7 +175,7 @@ arguments.  This function will fail if C<divisor> is zero.
 implements sys.std.Core.Numeric.range {...}`
 
 This function results in the difference between the lowest and highest
-element values of its argument.  If C<topic> has zero values, then
+element values of its argument.  If `topic` has zero values, then
 this function will fail.
 
 ## sys.std.Core.Rational.frac_mean
@@ -186,7 +186,7 @@ implements sys.std.Core.Numeric.frac_mean {...}`
 This function results in the rational mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
 of the input values, and dividing that sum by the count of the input values
-using the semantics of real number division.  If C<topic> has zero values,
+using the semantics of real number division.  If `topic` has zero values,
 then this function will fail.
 
 ## sys.std.Core.Rational.median
@@ -199,7 +199,7 @@ of its argument; they are returned as a set.  It is equivalent to first
 arranging the input values from least to greatest, and then taking the
 single middle value, if the count of input values is odd, or taking the 2
 middle values, if the count of input values is even (but if the 2 middle
-values are the same value, the output has one element).  If C<topic> has
+values are the same value, the output has one element).  If `topic` has
 zero values, then the result set is empty.
 
 ## sys.std.Core.Rational.frac_mean_of_median
@@ -207,7 +207,7 @@ zero values, then the result set is empty.
 `function frac_mean_of_median (Rat <-- topic : bag_of.Rat)
 implements sys.std.Core.Numeric.frac_mean_of_median {...}`
 
-This function is a wrapper over C<sys.std.Core.Rational.median> that will
+This function is a wrapper over `sys.std.Core.Rational.median` that will
 result in the rational mean of its result elements; it will fail if there
 are zero elements.
 
@@ -220,7 +220,7 @@ This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
 all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
-output.  If C<topic> has zero values, then the result set is empty.
+output.  If `topic` has zero values, then the result set is empty.
 
 ## sys.std.Core.Rational.power_with_whole_exp
 
@@ -229,8 +229,8 @@ radix : Rat, exponent : Int)
 implements sys.std.Core.Numeric.power_with_whole_exp {...}`
 
 This function results in a rational number that is the result of its
-C<radix> argument taken to the power of its integer C<exponent> argument.
-This function will result in 1 if C<radix> and C<exponent> are both zero
+`radix` argument taken to the power of its integer `exponent` argument.
+This function will result in 1 if `radix` and `exponent` are both zero
 (rather than failing).
 
 # FUNCTIONS FOR RATIONAL MATH
@@ -243,50 +243,50 @@ These functions implement commonly used rational numeric operations.
 round_rule : RatRoundRule) {...}`
 
 This function results in the rational that is equal to or otherwise nearest
-to its C<topic> argument, where the nearest is determined by the rational
-rounding rule specified by the C<round_rule> argument.
+to its `topic` argument, where the nearest is determined by the rational
+rounding rule specified by the `round_rule` argument.
 
 ## sys.std.Core.Rational.power
 
 `function power (PRat <-- radix : PRat,
 exponent : Rat, round_rule : RatRoundRule) {...}`
 
-This function results in its (positive rational) C<radix> argument taken to
-the power of its C<exponent> argument.  Since the result would be an
-irrational number in the general case, the C<round_rule> argument specifies
+This function results in its (positive rational) `radix` argument taken to
+the power of its `exponent` argument.  Since the result would be an
+irrational number in the general case, the `round_rule` argument specifies
 how to coerce the conceptual result into a rational number that is the
 actual result.  Note that, while this function might conceptually have
-multiple real number results for some fractional C<exponent>, it will
+multiple real number results for some fractional `exponent`, it will
 always only result in the one that is positive.  Note that this operation
-is also known as I<exponentiation> or C<**>.
+is also known as *exponentiation* or `**`.
 
 ## sys.std.Core.Rational.log
 
 `function log (Rat <-- topic : PRat,
 radix : PRat, round_rule : RatRoundRule) {...}`
 
-This function results in the logarithm of its C<topic> argument to the base
-given in its (positive rational) C<radix> argument.  The C<round_rule>
-parameter is as per C<power>.
+This function results in the logarithm of its `topic` argument to the base
+given in its (positive rational) `radix` argument.  The `round_rule`
+parameter is as per `power`.
 
 ## sys.std.Core.Rational.natural_power
 
 `function natural_power (PRat <-- exponent : Rat,
 round_rule : RatRoundRule) {...}`
 
-This function results in the special mathematical constant I<e> (which is
-the base of the natural logarithm) taken to the power of its C<exponent>
-argument.  The C<round_rule> parameter is as per C<power>.  Note that this
-operation is also known as C<e**>.
+This function results in the special mathematical constant *e* (which is
+the base of the natural logarithm) taken to the power of its `exponent`
+argument.  The `round_rule` parameter is as per `power`.  Note that this
+operation is also known as `e**`.
 
 ## sys.std.Core.Rational.natural_log
 
 `function natural_log (Rat <-- topic : PRat,
 round_rule : RatRoundRule) {...}`
 
-This function results in the natural logarithm of its C<topic> argument.
-The C<round_rule> parameter is as per C<power>.  Note that this operation
-is also known as C<log-e>.
+This function results in the natural logarithm of its `topic` argument.
+The `round_rule` parameter is as per `power`.  Note that this operation
+is also known as `log-e`.
 
 # SYSTEM-SERVICES FOR RANDOM NUMBER GENERATORS
 
@@ -301,15 +301,15 @@ C<system-service fetch_random (&target : Rat,
 radix : PInt2_N, max_denom : PInt, interval : sp_interval_of.Rat) [...]>
 
 This system-service routine will update the variable supplied as its
-C<target> argument so that it holds a randomly generated rational value
-that is included within the interval defined by its C<interval> argument.
+`target` argument so that it holds a randomly generated rational value
+that is included within the interval defined by its `interval` argument.
 The denominator attribute of the generated value will be a non-negative
-power of C<radix> that is not larger than C<max_denom>.  This function will
-fail if C<interval> represents an empty interval.
+power of `radix` that is not larger than `max_denom`.  This function will
+fail if `interval` represents an empty interval.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

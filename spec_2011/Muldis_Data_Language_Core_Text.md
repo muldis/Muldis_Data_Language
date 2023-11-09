@@ -17,10 +17,10 @@ document, as that forms its own tree beneath a root document branch.
 # DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
-are specific to the core data type C<Text>, essentially all the generic
+are specific to the core data type `Text`, essentially all the generic
 ones that a typical programming language should have.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
 
@@ -30,8 +30,8 @@ I<This documentation is pending.>
 other : Text, misc_args? : Tuple, is_reverse_order? : Bool)
 implements sys.std.Core.Ordered.order {...}`
 
-This is a (total) C<order-determination> function specific to C<Text>.
-I<TODO: What (optional) C<misc_args> does this support?>
+This is a (total) `order-determination` function specific to `Text`.
+I<TODO: What (optional) `misc_args` does this support?>
 
 # FUNCTIONS IMPLEMENTING VIRTUAL STRINGY FUNCTIONS
 
@@ -43,8 +43,8 @@ topic? : array_of.Text) implements sys.std.Core.Stringy.catenation {...}`
 This function results in the catenation of the N element values of its
 argument; it is a reduction operator that recursively takes each
 consecutive pair of input values and catenates (which is associative) them
-together until just one is left, which is the result.  If C<topic> has zero
-values, then C<catenation> results in the empty string value, which is the
+together until just one is left, which is the result.  If `topic` has zero
+values, then `catenation` results in the empty string value, which is the
 identity value for catenation.
 
 ## sys.std.Core.Text.replication
@@ -52,7 +52,7 @@ identity value for catenation.
 `function replication (Text <-- topic : Text,
 count : NNInt) implements sys.std.Core.Stringy.replication {...}`
 
-This function results in the catenation of C<count> instances of C<topic>.
+This function results in the catenation of `count` instances of `topic`.
 
 # GENERIC FUNCTIONS FOR TEXTS
 
@@ -64,8 +64,8 @@ These functions implement commonly used character string operations.
 topic : array_of.Text, sep : Text) {...}`
 
 This function results in the catenation of the N element values of its
-C<topic> argument such that an instance of its C<sep> argument is catenated
-between each pair of consecutive C<topic> elements.
+`topic` argument such that an instance of its `sep` argument is catenated
+between each pair of consecutive `topic` elements.
 
 ## sys.std.Core.Text.len_in_nfd_codes
 
@@ -88,17 +88,17 @@ graphemes.
 `function has_substr (Bool <-- look_in : Text,
 look_for : Text, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
-This function results in C<Bool:True> iff its C<look_for> argument is a
-substring of its C<look_in> argument as per the optional C<fixed_start> and
-C<fixed_end> constraints, and C<Bool:False> otherwise.  If C<fixed_start>
-or C<fixed_end> are C<Bool:True>, then C<look_for> must occur right at the
-start or end, respectively, of C<look_in> in order for C<contains> to
-result in C<Bool:True>; if either flag is C<Bool:False>, its additional
-constraint doesn't apply.  Each of the C<fixed_[start|end]> parameters is
-optional and defaults to C<Bool:False> if no explicit argument is given to
-it.  Note that C<has_substr> will handle the common special cases of SQL's
+This function results in `Bool:True` iff its `look_for` argument is a
+substring of its `look_in` argument as per the optional `fixed_start` and
+`fixed_end` constraints, and `Bool:False` otherwise.  If `fixed_start`
+or `fixed_end` are `Bool:True`, then `look_for` must occur right at the
+start or end, respectively, of `look_in` in order for `contains` to
+result in `Bool:True`; if either flag is `Bool:False`, its additional
+constraint doesn't apply.  Each of the `fixed_[start|end]` parameters is
+optional and defaults to `Bool:False` if no explicit argument is given to
+it.  Note that `has_substr` will handle the common special cases of SQL's
 "LIKE" operator for patterns like ['foo', '%foo', 'foo%', '%foo%'], but see
-also the C<is_like> function which provides the full generality
+also the `is_like` function which provides the full generality
 of SQL's "LIKE", such as 'foo%bar%baz'.
 
 ## sys.std.Core.Text.has_not_substr
@@ -106,7 +106,7 @@ of SQL's "LIKE", such as 'foo%bar%baz'.
 `function has_not_substr (Bool <-- look_in : Text,
 look_for : Text, fixed_start? : Bool, fixed_end? : Bool) {...}`
 
-This function is exactly the same as C<sys.std.Core.Text.has_substr> except
+This function is exactly the same as `sys.std.Core.Text.has_substr` except
 that
 it results in the opposite boolean value when given the same arguments.
 
@@ -159,13 +159,13 @@ letters.
 
 `function ASCII (Text <-- topic : Text, mark? : Text) {...}`
 
-This function results in the normalization of its C<topic> argument where
+This function results in the normalization of its `topic` argument where
 any characters not in the 7-bit ASCII repertoire are stripped out, where
 each non-ASCII character is replaced with the common ASCII character string
-specified by its C<mark> argument; if C<mark> is the empty string, then the
+specified by its `mark` argument; if `mark` is the empty string, then the
 non-ASCII characters are simply stripped.  This function is quite simple
 and does not do a smart replace with sequences of similar looking ASCII
-characters.  The C<mark> parameter is optional and defaults to the empty
+characters.  The `mark` parameter is optional and defaults to the empty
 string if no explicit argument is given to it.
 
 ## sys.std.Core.Text.trim
@@ -183,52 +183,52 @@ against a pattern or performing substitutions of characters for others;
 included are both the functionality of SQL's simple "LIKE" pattern matching
 operator but also support for Perl's regular expressions and Raku's
 rules.  All of these functions are case-sensitive et al as per
-C<is_same> unless explicitly given flags to do otherwise, where
+`is_same` unless explicitly given flags to do otherwise, where
 applicable; or just use them to search results of normalization functions
 if you need to.  Note that Perl 5.10+ is also an inspiration such that its
 regular expression feature is algorithm-agnositic and can both be plugined
-with new algorithms or have multiple system-defined ones.  I<Note that a
+with new algorithms or have multiple system-defined ones.  *Note that a
 lot of this section is still TODO, with several useful functions missing,
 or more complicated parts like the Perl pattern matching may be separated
-off into their own language extensions later.>
-I<ACTUALLY, EACH NON-TRIVIAL PATTERN-MATCHING WILL BE ITS OWN OPTIONAL
+off into their own language extensions later.*
+*ACTUALLY, EACH NON-TRIVIAL PATTERN-MATCHING WILL BE ITS OWN OPTIONAL
 EXTENSION, SO ONE FOR RAKU RULES, ONE FOR PERL REGEX, 1 PER OTHER REGEX
-KIND, ETC.  CORE KEEPS THE TRIVIALLY SIMPLE 'LIKE' OF SQL.>
+KIND, ETC.  CORE KEEPS THE TRIVIALLY SIMPLE 'LIKE' OF SQL.*
 
 ## sys.std.Core.Text.is_like
 
 `function is_like (Bool <-- look_in : Text,
 look_for : Text, escape? : Text) {...}`
 
-This function results in C<Bool:True> iff its C<look_in> argument is
-matched by the pattern given in its C<look_for> argument, and C<Bool:False>
+This function results in `Bool:True` iff its `look_in` argument is
+matched by the pattern given in its `look_for` argument, and `Bool:False`
 otherwise.  This function implements the full generalization of SQL's
-simple "LIKE" pattern matching operator.  Any characters in C<look_for> are
-matched literally except for the 2 wildcard characters C<_> (match any
-single character) and C<%> (match any string of 0..N characters); the
-preceeding assumes that the C<escape> argument is the empty string (or is
-missing).  If C<escape> is a character, then that character is also special
-and its lone occurrence in C<look_for> will no longer match itself as per
-the 2 wildcard characters; rather it will be used in C<look_for> to
-indicate when the pattern wishes to match a literal C<_> or C<%> or the
-escape character itself literally.  For example, if C<\> is used as the
-escape character, then you use C<\_>, C<\%>, C<\\> to match the literal
+simple "LIKE" pattern matching operator.  Any characters in `look_for` are
+matched literally except for the 2 wildcard characters `_` (match any
+single character) and `%` (match any string of 0..N characters); the
+preceeding assumes that the `escape` argument is the empty string (or is
+missing).  If `escape` is a character, then that character is also special
+and its lone occurrence in `look_for` will no longer match itself as per
+the 2 wildcard characters; rather it will be used in `look_for` to
+indicate when the pattern wishes to match a literal `_` or `%` or the
+escape character itself literally.  For example, if `\` is used as the
+escape character, then you use `\_`, `\%`, `\\` to match the literal
 wildcard characters or itself, respectively.  Note that this operation is
-also known as I<is match using like> or C<like>.
+also known as *is match using like* or `like`.
 
 ## sys.std.Core.Text.is_not_like
 
 `function is_not_like (Bool <-- look_in : Text,
 look_for : Text, escape? : Text) {...}`
 
-This function is exactly the same as C<sys.std.Core.Text.is_like>
+This function is exactly the same as `sys.std.Core.Text.is_like`
 except that it results in the opposite boolean value when given the same
 arguments; it implements SQL's "NOT LIKE".  Note that this operation is
-also known as I<is not match using like> or C<!like> or C<not-like>.
+also known as *is not match using like* or `!like` or `not-like`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

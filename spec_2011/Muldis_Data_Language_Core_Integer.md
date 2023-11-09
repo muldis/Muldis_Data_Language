@@ -17,10 +17,10 @@ document, as that forms its own tree beneath a root document branch.
 # DESCRIPTION
 
 This document describes essentially all of the core Muldis D operators that
-are specific to the core data type C<Int>, essentially all the generic ones
+are specific to the core data type `Int`, essentially all the generic ones
 that a typical programming language should have.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # FUNCTIONS IMPLEMENTING VIRTUAL ORDERED FUNCTIONS
 
@@ -30,8 +30,8 @@ I<This documentation is pending.>
 other : Int, misc_args? : Tuple, is_reverse_order? : Bool)
 implements sys.std.Core.Ordered.order {...}`
 
-This is a (total) C<order-determination> function specific to C<Int>.  Its
-only valid C<misc_args> argument is C<Tuple:D0>.
+This is a (total) `order-determination` function specific to `Int`.  Its
+only valid `misc_args` argument is `Tuple:D0`.
 
 # FUNCTIONS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
 
@@ -68,8 +68,8 @@ implements sys.std.Core.Numeric.sum {...}`
 This function results in the sum of the N element values of its argument;
 it is a reduction operator that recursively takes each pair of input values
 and adds (which is both commutative and associative) them together until
-just one is left, which is the result.  If C<topic> has zero values, then
-C<sum> results in the integer zero, which is the identity value for
+just one is left, which is the result.  If `topic` has zero values, then
+`sum` results in the integer zero, which is the identity value for
 addition.
 
 ## sys.std.Core.Integer.diff
@@ -77,8 +77,8 @@ addition.
 `function diff (Int <-- minuend : Int, subtrahend : Int)
 implements sys.std.Core.Numeric.diff {...}`
 
-This function results in the difference when its C<subtrahend> argument is
-subtracted from its C<minuend> argument.
+This function results in the difference when its `subtrahend` argument is
+subtracted from its `minuend` argument.
 
 ## sys.std.Core.Integer.abs_diff
 
@@ -96,8 +96,8 @@ implements sys.std.Core.Numeric.product {...}`
 This function results in the product of the N element values of its
 argument; it is a reduction operator that recursively takes each pair of
 input values and multiplies (which is both commutative and associative)
-them together until just one is left, which is the result.  If C<topic>
-has zero values, then C<product> results in the integer 1, which is the
+them together until just one is left, which is the result.  If `topic`
+has zero values, then `product` results in the integer 1, which is the
 identity value for multiplication.
 
 ## sys.std.Core.Integer.frac_quotient
@@ -105,11 +105,11 @@ identity value for multiplication.
 `function frac_quotient (Rat <-- dividend : Int, divisor : Int)
 implements sys.std.Core.Numeric.frac_quotient {...}`
 
-This function results in the rational quotient when its C<dividend>
-argument is divided by its C<divisor> argument using the semantics of real
-number division.  This function will fail if C<divisor> is zero.  It is an
-alternate way to construct a C<Rat> literal at runtime in terms of 2 C<Int>
-that are its C<numerator> and C<denominator> possrep attributes.
+This function results in the rational quotient when its `dividend`
+argument is divided by its `divisor` argument using the semantics of real
+number division.  This function will fail if `divisor` is zero.  It is an
+alternate way to construct a `Rat` literal at runtime in terms of 2 `Int`
+that are its `numerator` and `denominator` possrep attributes.
 
 ## sys.std.Core.Integer.whole_quotient
 
@@ -117,11 +117,11 @@ that are its C<numerator> and C<denominator> possrep attributes.
 dividend : Int, divisor : Int, round_meth : RoundMeth)
 implements sys.std.Core.Numeric.whole_quotient {...}`
 
-This function results in the integer quotient when its C<dividend> argument
-is divided by its C<divisor> argument using the semantics of real number
+This function results in the integer quotient when its `dividend` argument
+is divided by its `divisor` argument using the semantics of real number
 division, and then the latter's result is rounded to the same or nearest
 integer, where the nearest is determined by the rounding method specified
-by the C<round_meth> argument.  This function will fail if C<divisor> is
+by the `round_meth` argument.  This function will fail if `divisor` is
 zero.
 
 ## sys.std.Core.Integer.remainder
@@ -130,16 +130,16 @@ zero.
 dividend : Int, divisor : Int, round_meth : RoundMeth)
 implements sys.std.Core.Numeric.remainder {...}`
 
-This function results in the integer remainder when its C<dividend>
-argument is divided by its C<divisor> argument using the semantics of real
+This function results in the integer remainder when its `dividend`
+argument is divided by its `divisor` argument using the semantics of real
 number division, and then the latter's result is rounded to the same or
 nearest integer.  The semantics of this function preserve the identity
-C<x mod y = x - y * (x div y)> (read C<x> as C<dividend> and C<y>
-as C<divisor>) where the division has the same semantics as
-C<sys.std.Core.Integer.whole_quotient> (rounding guided by C<round_meth>);
+C<x mod y = x - y * (x div y)> (read `x` as `dividend` and `y`
+as `divisor`) where the division has the same semantics as
+`sys.std.Core.Integer.whole_quotient` (rounding guided by `round_meth`);
 the sign of this function's result always matches the sign of the dividend
-or the divisor if C<round_meth> is C<ToZero> (aka I<truncate>) or C<Down>
-(aka I<floor>), respectively.  This function will fail if C<divisor> is
+or the divisor if `round_meth` is `ToZero` (aka *truncate*) or `Down`
+(aka *floor*), respectively.  This function will fail if `divisor` is
 zero.
 
 ## sys.std.Core.Integer.quot_and_rem
@@ -149,10 +149,10 @@ dividend : Int, divisor : Int, round_meth : RoundMeth)
 implements sys.std.Core.Numeric.quot_and_rem {...}`
 
 This function results in a binary tuple whose attribute names are
-C<quotient> and C<remainder> and whose respective attribute values are what
-C<sys.std.Core.Integer.whole_quotient> and
-C<sys.std.Core.Integer.remainder> would result in when given the same
-arguments.  This function will fail if C<divisor> is zero.
+`quotient` and `remainder` and whose respective attribute values are what
+`sys.std.Core.Integer.whole_quotient` and
+`sys.std.Core.Integer.remainder` would result in when given the same
+arguments.  This function will fail if `divisor` is zero.
 
 ## sys.std.Core.Integer.range
 
@@ -160,7 +160,7 @@ arguments.  This function will fail if C<divisor> is zero.
 implements sys.std.Core.Numeric.range {...}`
 
 This function results in the difference between the lowest and highest
-element values of its argument.  If C<topic> has zero values, then
+element values of its argument.  If `topic` has zero values, then
 this function will fail.
 
 ## sys.std.Core.Integer.frac_mean
@@ -171,7 +171,7 @@ implements sys.std.Core.Numeric.frac_mean {...}`
 This function results in the rational mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
 of the input values, and dividing that sum by the count of the input values
-using the semantics of real number division.  If C<topic> has zero values,
+using the semantics of real number division.  If `topic` has zero values,
 then this function will fail.
 
 ## sys.std.Core.Integer.median
@@ -184,7 +184,7 @@ of its argument; they are returned as a set.  It is equivalent to first
 arranging the input values from least to greatest, and then taking the
 single middle value, if the count of input values is odd, or taking the 2
 middle values, if the count of input values is even (but if the 2 middle
-values are the same value, the output has one element).  If C<topic> has
+values are the same value, the output has one element).  If `topic` has
 zero values, then the result set is empty.
 
 ## sys.std.Core.Integer.frac_mean_of_median
@@ -192,7 +192,7 @@ zero values, then the result set is empty.
 `function frac_mean_of_median (Rat <-- topic : bag_of.Int)
 implements sys.std.Core.Numeric.frac_mean_of_median {...}`
 
-This function is a wrapper over C<sys.std.Core.Integer.median> that will
+This function is a wrapper over `sys.std.Core.Integer.median` that will
 result in the rational mean of its result elements; it will fail if there
 are zero elements.
 
@@ -205,7 +205,7 @@ This function results in the mode of the N element values of its argument;
 it is the set of values that appear the most often as input elements, and
 all have the same count of occurrances.  As a trivial case, if all input
 elements have the same count of occurrances, then they will all be in the
-output.  If C<topic> has zero values, then the result set is empty.
+output.  If `topic` has zero values, then the result set is empty.
 
 ## sys.std.Core.Integer.power_with_whole_exp
 
@@ -214,8 +214,8 @@ radix : Int, exponent : Int)
 implements sys.std.Core.Numeric.power_with_whole_exp {...}`
 
 This function results in a rational number that is the result of its
-C<radix> argument taken to the power of its integer C<exponent> argument.
-This function will result in 1 if C<radix> and C<exponent> are both zero
+`radix` argument taken to the power of its integer `exponent` argument.
+This function will result in 1 if `radix` and `exponent` are both zero
 (rather than failing).
 
 # FUNCTIONS FOR INTEGER MATH
@@ -231,8 +231,8 @@ This function results in the integer mean or arithmetic average of the N
 element values of its argument.  It is equivalent to first taking the sum
 of the input values, and dividing that sum by the count of the input
 values, where the semantics of the division are the same as those of
-C<sys.std.Core.Integer.whole_quotient> (rounding the result of a real
-number division as per C<round_meth>).  If C<topic> has zero values, then
+`sys.std.Core.Integer.whole_quotient` (rounding the result of a real
+number division as per `round_meth`).  If `topic` has zero values, then
 this function will fail.
 
 ## sys.std.Core.Integer.whole_mean_of_median
@@ -240,7 +240,7 @@ this function will fail.
 `function whole_mean_of_median (Int <--
 topic : bag_of.Int, round_meth : RoundMeth) {...}`
 
-This function is a wrapper over C<sys.std.Core.Integer.median> that will
+This function is a wrapper over `sys.std.Core.Integer.median` that will
 result in the integer mean of its result elements; it will fail if there
 are zero elements.
 
@@ -248,14 +248,14 @@ are zero elements.
 
 `function power (Int <-- radix : Int, exponent : NNInt) {...}`
 
-This function results in its C<radix> argument taken to the power of its
-(non-negative integer) C<exponent> argument.  This function will result in
-1 if C<radix> and C<exponent> are both zero (rather than failing), which
-seems reasonable given that the C<Integer.power> function strictly has no
-numeric continuity (unlike C<Rational.power>) and that this is by far the
+This function results in its `radix` argument taken to the power of its
+(non-negative integer) `exponent` argument.  This function will result in
+1 if `radix` and `exponent` are both zero (rather than failing), which
+seems reasonable given that the `Integer.power` function strictly has no
+numeric continuity (unlike `Rational.power`) and that this is by far the
 most common practice in both pure integer math contexts and computer
 languages, including SQL.  Note that this operation is also known as
-I<exponentiation> or C<exp>.
+*exponentiation* or `exp`.
 
 ## sys.std.Core.Integer.factorial
 
@@ -264,7 +264,7 @@ I<exponentiation> or C<exp>.
 This function results in the factorial of its argument (it is defined for
 an argument of zero to result in 1, as per the identity value for
 multiplication of an empty set).  Note that this operation is also known as
-(postfix) C<!>.
+(postfix) `!`.
 
 # UPDATERS IMPLEMENTING VIRTUAL ORDINAL FUNCTIONS
 
@@ -274,7 +274,7 @@ C<updater assign_pred (&topic : Int)
 implements sys.std.Core.Ordered.Ordinal.assign_pred {...}>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Integer.pred> function with the same argument, and
+`sys.std.Core.Integer.pred` function with the same argument, and
 then assigning the result of that function to its argument.
 
 ## sys.std.Core.Integer.assign_succ
@@ -283,7 +283,7 @@ C<updater assign_succ (&topic : Int)
 implements sys.std.Core.Ordered.Ordinal.assign_succ {...}>
 
 This update operator is a short-hand for first invoking the
-C<sys.std.Core.Integer.succ> function with the same argument, and
+`sys.std.Core.Integer.succ` function with the same argument, and
 then assigning the result of that function to its argument.
 
 # SYSTEM-SERVICES FOR RANDOM NUMBER GENERATORS
@@ -299,13 +299,13 @@ C<system-service fetch_random (&target : Int,
 interval : sp_interval_of.Int) [...]>
 
 This system-service routine will update the variable supplied as its
-C<target> argument so that it holds a randomly generated integer value that
-is included within the interval defined by its C<interval> argument.  This
-function will fail if C<interval> represents an empty interval.
+`target` argument so that it holds a randomly generated integer value that
+is included within the interval defined by its `interval` argument.  This
+function will fail if `interval` represents an empty interval.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

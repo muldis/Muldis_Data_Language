@@ -12,7 +12,7 @@ This document is part of the Muldis D language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
-That said, because this C<Core> document is otherwise too large to
+That said, because this `Core` document is otherwise too large to
 comfortably fit in one file, it has been split into pieces and therefore
 has its own tree of parts to follow, which it is the root of:
 [Muldis_Data_Language_Core_Types](Muldis_Data_Language_Core_Types.md), [Muldis_Data_Language_Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md),
@@ -31,16 +31,16 @@ has its own tree of parts to follow, which it is the root of:
 # DESCRIPTION
 
 Muldis D has a mandatory core set of system-defined (eternally available)
-entities, which is referred to as the I<Muldis D core> or the I<core>; they
+entities, which is referred to as the *Muldis D core* or the *core*; they
 are the minimal entities that all Muldis D implementations need to provide;
 they are mutually self-describing and are either used to bootstrap the
 language or they constitute a reasonable minimum level of functionality for
-a practically useable industrial-strength (and fully I<TTM>-conforming)
-programming language; any entities outside the core, called I<Muldis D
-extensions>, are non-mandatory and are defined in terms of the core or each
+a practically useable industrial-strength (and fully *TTM*-conforming)
+programming language; any entities outside the core, called *Muldis D
+extensions*, are non-mandatory and are defined in terms of the core or each
 other, but the reverse isn't true.
 
-This current C<Core> document features the tuple and
+This current `Core` document features the tuple and
 relation type constructors and all of the general-purpose
 relational operators, plus the type system minimal and maximal types, plus
 the special types used to define the system catalog, and the polymorphic
@@ -49,7 +49,7 @@ over them, such as identity tests or assignment; it also features the
 boolean logic, integer and rational numeric, bit and character string
 data types and all their operators.
 
-Most of the C<Core> document is actually in these pieces:
+Most of the `Core` document is actually in these pieces:
 [Muldis_Data_Language_Core_Types](Muldis_Data_Language_Core_Types.md), [Muldis_Data_Language_Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md),
 [Muldis_Data_Language_Core_Universal](Muldis_Data_Language_Core_Universal.md), [Muldis_Data_Language_Core_Ordered](Muldis_Data_Language_Core_Ordered.md),
 [Muldis_Data_Language_Core_Scalar](Muldis_Data_Language_Core_Scalar.md), [Muldis_Data_Language_Core_Boolean](Muldis_Data_Language_Core_Boolean.md),
@@ -73,7 +73,7 @@ These extensions mainly define new types plus just operators for those:
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 

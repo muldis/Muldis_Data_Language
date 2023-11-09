@@ -19,19 +19,19 @@ document, as that forms its own tree beneath a root document branch.
 This document describes essentially all of the core Muldis D generic
 scalar operators, applicable to all scalar types.
 
-I<This documentation is pending.>
+*This documentation is pending.*
 
 # GENERIC FUNCTIONS FOR SCALARS
 
 These functions are applicable to mainly scalar types, but are generic in
 that they typically work with any scalar types.  Now some of these
-functions (those with a parameter named C<possrep>) work only with scalar
+functions (those with a parameter named `possrep`) work only with scalar
 values that have possreps, and not with values of the 2 system-defined
-scalar types lacking any possreps: C<Int>, C<String>; other functions are
+scalar types lacking any possreps: `Int`, `String`; other functions are
 not limited in that way, but may be limited in other ways.  Note that the
 terminology used to describe these functions is taking advantage of the
-fact that a scalar possrep looks just like a tuple.  Each C<possrep>
-and C<name> parameter is optional and each defaults to the empty string if
+fact that a scalar possrep looks just like a tuple.  Each `possrep`
+and `name` parameter is optional and each defaults to the empty string if
 no explicit argument is given to it.
 
 ## sys.std.Core.Scalar.attr
@@ -40,25 +40,25 @@ no explicit argument is given to it.
 possrep? : Name, name? : Name) {...}`
 
 This function results in the scalar or nonscalar value of the possrep
-attribute of C<topic> where the possrep name is given by C<possrep> and the
-attribute name is given by C<name>.  This function will fail if C<possrep>
-specifies a possrep name that C<topic> doesn't have or C<name> specifies an
-attribute name that the named possrep of C<topic> doesn't have.  Note that
-this operation is also known as C<.{:}>.
+attribute of `topic` where the possrep name is given by `possrep` and the
+attribute name is given by `name`.  This function will fail if `possrep`
+specifies a possrep name that `topic` doesn't have or `name` specifies an
+attribute name that the named possrep of `topic` doesn't have.  Note that
+this operation is also known as `.{:}`.
 
 ## sys.std.Core.Scalar.update_attr
 
 `function update_attr (ScalarWP <-- topic : ScalarWP, possrep? : Name,
 name? : Name, value : Universal) {...}`
 
-This function results in its C<topic> argument but that its possrep
-attribute whose possrep name is C<possrep> and whose attribute name is
-C<name> has been updated with a new scalar or nonscalar value given by
-C<value>.  This function will fail if C<possrep> specifies a possrep name
-that C<topic> doesn't have or C<name> specifies an attribute name that the
-named possrep of C<topic> doesn't have, or if C<value> isn't of the
+This function results in its `topic` argument but that its possrep
+attribute whose possrep name is `possrep` and whose attribute name is
+`name` has been updated with a new scalar or nonscalar value given by
+`value`.  This function will fail if `possrep` specifies a possrep name
+that `topic` doesn't have or `name` specifies an attribute name that the
+named possrep of `topic` doesn't have, or if `value` isn't of the
 declared type of the attribute; this function will otherwise warn if the
-declared type of C<value> isn't a subtype of the declared type of the
+declared type of `value` isn't a subtype of the declared type of the
 attribute.
 
 ## sys.std.Core.Scalar.multi_update
@@ -66,58 +66,58 @@ attribute.
 `function multi_update (ScalarWP <--
 topic : ScalarWP, possrep? : Name, attrs : Tuple) {...}`
 
-This function is like C<sys.std.Core.Scalar.update_attr> except that it
+This function is like `sys.std.Core.Scalar.update_attr` except that it
 handles N scalar possrep attributes at once rather than just 1.  The
-heading of the C<attrs> argument must be a subset of the heading of the
-C<topic> argument's possrep named by C<possrep>; this function's result is
-C<topic> with all the possrep attribute values of C<attrs> substituted into
+heading of the `attrs` argument must be a subset of the heading of the
+`topic` argument's possrep named by `possrep`; this function's result is
+`topic` with all the possrep attribute values of `attrs` substituted into
 it.  This function could alternately be named
-I<sys.std.Core.Scalar.static_subst>.
+*sys.std.Core.Scalar.static_subst*.
 
 ## sys.std.Core.Scalar.projection
 
 `function projection (Tuple <-- topic : ScalarWP,
 possrep? : Name, attr_names : set_of.Name) {...}`
 
-This function results in the C<Tuple> that is the projection of the
-possrep (whose name is given in the C<possrep> argument) of its C<topic>
-argument that has just the subset of attributes of C<topic> which are named
-in its C<attr_names> argument.  As a trivial case, this function's result
-is the entire named possrep of C<topic> if C<attr_names> lists all
-attributes of that possrep; or, it is the nullary tuple if C<attr_names> is
-empty.  This function will fail if C<possrep> specifies a possrep name that
-C<topic> doesn't have or C<attr_names> specifies any attribute names that
-C<topic> doesn't have.  Note that this operation is also known as C<{:}>.
+This function results in the `Tuple` that is the projection of the
+possrep (whose name is given in the `possrep` argument) of its `topic`
+argument that has just the subset of attributes of `topic` which are named
+in its `attr_names` argument.  As a trivial case, this function's result
+is the entire named possrep of `topic` if `attr_names` lists all
+attributes of that possrep; or, it is the nullary tuple if `attr_names` is
+empty.  This function will fail if `possrep` specifies a possrep name that
+`topic` doesn't have or `attr_names` specifies any attribute names that
+`topic` doesn't have.  Note that this operation is also known as `{:}`.
 
 ## sys.std.Core.Scalar.cmpl_proj
 
 `function cmpl_proj (Tuple <--
 topic : ScalarWP, possrep? : Name, attr_names : set_of.Name) {...}`
 
-This function is the same as C<projection> but that it results in the
-complementary subset of possrep attributes of C<topic> when given the same
-arguments.  Note that this operation is also known as C<{:!}>.
+This function is the same as `projection` but that it results in the
+complementary subset of possrep attributes of `topic` when given the same
+arguments.  Note that this operation is also known as `{:!}`.
 
 ## sys.std.Core.Scalar.Tuple_from_Scalar
 
 `function Tuple_from_Scalar (Tuple <--
 topic : ScalarWP, possrep? : Name) {...}`
 
-This function results in the C<Tuple> that has all the same attributes of
-the possrep of C<topic> whose name is given in C<possrep>; in other words,
+This function results in the `Tuple` that has all the same attributes of
+the possrep of `topic` whose name is given in `possrep`; in other words,
 the function results in the externalization of one of a scalar value's
-possreps.  This function will fail if C<possrep> specifies a possrep name
-that C<topic> doesn't have.
+possreps.  This function will fail if `possrep` specifies a possrep name
+that `topic` doesn't have.
 
 ## sys.std.Core.Scalar.Scalar_from_Tuple
 
 `function Scalar_from_Tuple (ScalarWP <--
 topic : Tuple, type : APTypeNC, possrep? : Name) {...}`
 
-This function results in the C<ScalarWP> value whose scalar root
-[|sub]type is named by C<type>, which has a possrep whose name matches
-C<possrep>, and whose complete set of attributes of that named possrep
-match the attributes of C<topic>.  This function can be used to select any
+This function results in the `ScalarWP` value whose scalar root
+[|sub]type is named by `type`, which has a possrep whose name matches
+`possrep`, and whose complete set of attributes of that named possrep
+match the attributes of `topic`.  This function can be used to select any
 scalar value at all that has a possrep.
 
 ## sys.std.Core.Scalar.has_possrep
@@ -125,9 +125,9 @@ scalar value at all that has a possrep.
 `function has_possrep (Bool <-- topic : ScalarWP,
 possrep? : Name) {...}`
 
-This function results in C<Bool:True> iff its C<topic> argument has a
-possrep whose name is given by C<possrep>; otherwise it results in
-C<Bool:False>.
+This function results in `Bool:True` iff its `topic` argument has a
+possrep whose name is given by `possrep`; otherwise it results in
+`Bool:False`.
 
 ## sys.std.Core.Scalar.possrep_names
 
@@ -140,8 +140,8 @@ argument.
 
 `function degree (NNInt <-- topic : ScalarWP, possrep? : Name) {...}`
 
-This function results in the degree of its C<topic> argument's possrep
-whose name is given by C<possrep> (that is, the count of attributes the
+This function results in the degree of its `topic` argument's possrep
+whose name is given by `possrep` (that is, the count of attributes the
 possrep has).
 
 ## sys.std.Core.Scalar.has_attrs
@@ -149,11 +149,11 @@ possrep has).
 `function has_attrs (Bool <-- topic : ScalarWP,
 possrep? : Name, attr_names : set_of.Name) {...}`
 
-This function results in C<Bool:True> iff, for every one of the attribute
-names specified by its C<attr_names> argument, its C<topic> argument's
-possrep whose name is given by C<possrep> has an attribute with that name;
-otherwise it results in C<Bool:False>.  As a trivial case, this function's
-result is C<Bool:True> if C<attr_names> is empty.
+This function results in `Bool:True` iff, for every one of the attribute
+names specified by its `attr_names` argument, its `topic` argument's
+possrep whose name is given by `possrep` has an attribute with that name;
+otherwise it results in `Bool:False`.  As a trivial case, this function's
+result is `Bool:True` if `attr_names` is empty.
 
 ## sys.std.Core.Scalar.attr_names
 
@@ -161,11 +161,11 @@ result is C<Bool:True> if C<attr_names> is empty.
 topic : ScalarWP, possrep? : Name) {...}`
 
 This function results in the set of the names of the attributes of its
-C<topic> argument's possrep whose name is given by C<possrep>.
+`topic` argument's possrep whose name is given by `possrep`.
 
 # AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan (`darren@DarrenDuncan.net`)
 
 # LICENSE AND COPYRIGHT
 
