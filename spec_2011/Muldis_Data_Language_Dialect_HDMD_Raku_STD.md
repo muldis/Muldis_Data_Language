@@ -8,7 +8,7 @@ This document is Muldis Data Language Dialect HDMD_Raku_STD version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis Data Language language specification, whose root
+This document is part of the Muldis Data Language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
@@ -99,13 +99,13 @@ Muldis Data Language code that isn't itself qualified with a `language_name`.
 # LANGUAGE NAME
 
 As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
-must start by declaring the fully-qualified Muldis Data Language language name it is
+must start by declaring the fully-qualified Muldis Data Language name it is
 written in.  The `HDMD_Raku_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
 
 * `ln_base_name`
 
-This is the Muldis Data Language language base name; it is simply the Raku `Str` value
+This is Muldis Data Language base name; it is simply the Raku `Str` value
 `Muldis_Data_Language`.
 
 * `ln_base_authority`
@@ -394,7 +394,7 @@ There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
 While each *standard syntax extension* is closely related to a *Muldis Data Language
-language extension*, you can use the latter's types and routines without
+extension*, you can use the latter's types and routines without
 declaring the former; you only declare you are using a *standard syntax
 extension* if you want the Muldis Data Language parser to recognize special syntax
 specific to those types and routines, and otherwise you just use them using

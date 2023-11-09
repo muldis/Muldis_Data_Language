@@ -8,13 +8,13 @@ This document is Muldis Data Language Basics version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis Data Language language specification, whose root
+This document is part of the Muldis Data Language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document provides a 10,000 mile view of the Muldis Data Language language.  It
+This document provides a 10,000 mile view of Muldis Data Language.  It
 provides the basics of how the language is designed and works, as a
 foundation upon which to understand the other parts of the language spec.
 
@@ -243,7 +243,7 @@ outermost transaction.
 The text of the Muldis Data Language documentation includes a variety of characters
 from the Unicode character repertoire that are not in the character ASCII
 repertoire, almost all of them in the sections describing the concrete
-syntaxes of the Muldis Data Language language.  The documentation files are also
+syntaxes of Muldis Data Language.  The documentation files are also
 canonically stored in the Unicode UTF-8 character encoding.  This
 documentation section enumerates the characters used literally anywhere in
 the Muldis Data Language spec along with their Unicode character names and a brief
@@ -1422,7 +1422,7 @@ traditional 32-bit integer or 64-bit IEEE-754 float sans special values,
 you can have that as a simple proper subtype of the most-important numeric
 type.
 
-Now, the Muldis Data Language language actually has 2 most-important numeric data types
+Now, Muldis Data Language actually has 2 most-important numeric data types
 which are disjoint, `Int` and `Rat`, both of which are in the language
 core.  The second one is equal to the conceptual single numeric type as to
 what numeric values it can represent; the first one by contrast is
@@ -1589,7 +1589,7 @@ code can never update the system catalog of its own depot to alter types or
 routines or variables; but other system catalog updates such as affecting
 database user privileges in the same depot may be retained.*
 
-Now, the Muldis Data Language language spec is currently somewhat hazy in respect to
+Now, Muldis Data Language spec is currently somewhat hazy in respect to
 how declared types are enforced as constraints with respect to generic
 operators, and the spec currently doesn't fully formalize behaviour for
 implementations in some regards, or different parts may seem to contradict
@@ -2761,7 +2761,7 @@ within the DBMS environment, and are referred to as *entities*.
 
 ## System-Defined Resources
 
-The standard Muldis Data Language language includes a complement of data types and
+The standard Muldis Data Language includes a complement of data types and
 routines that should be hardwired into every implementation of Muldis Data Language as
 globally visible and invokable system-defined entities.  Even if an
 implementation can't provide the whole complement, the subset that it does

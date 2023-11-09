@@ -9,15 +9,15 @@ This document is Muldis Data Language Foundation (MDF) version 0.300.0.
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis Data Language Foundation** (**MDF**) primary component of the **Muldis Data Language**
-language.  The fully-qualified name of this document and the specification
+the **Muldis Data Language Foundation** (**MDF**) primary component of **Muldis Data Language**.
+The fully-qualified name of this document and the specification
 it contains is `Muldis_Data_Language_Foundation https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** meta-specification.
 
 The **Muldis Data Language Foundation** specification defines the fundamental
 architecture, behaviour, and type system of Muldis Data Language.  For all intents and
-purposes, it is the entire official Muldis Data Language language specification except
+purposes, it is the entire official Muldis Data Language specification except
 for any candidate syntaxes and any candidate standard libraries.  So it is
 generally useful to read this specification first and consider any others
 subservient to it.  While many alternative syntaxes and standard libraries
@@ -66,7 +66,7 @@ a variety of general purpose application languages, such as Raku.
 In contrast to a typical SQL DBMS which uses multiple programming languages
 together, where SQL is used for queries and something else (possibly
 SQL-alike) for defining stored procedures, a Muldis Data Language DBMS would use the
-same Muldis Data Language language to assume both roles.
+same Muldis Data Language to assume both roles.
 
 Muldis Data Language is rigorously defined and requires users to be explicit, which
 leaves little room for ambiguity and related bugs.  When something is
@@ -238,7 +238,7 @@ likely rare compared to those that don't.  An example with multiple inputs
 and outputs is the common whole division operation; it takes a dividend
 plus a divisor and gives a quotient plus a remainder.
 
-Note that for brevity the Muldis Data Language language specifications will refer to
+Note that for brevity Muldis Data Language specifications will refer to
 arguments with the same `foo` syntax regardless of whether they
 are conceptually positional or named, examples being `0` and `1` for the
 former and `like` or `body` for the latter.  However, while the latter are
@@ -727,7 +727,7 @@ entities that all Muldis Data Language implementations, at least those that clai
 support the `Muldis_Data_Language Plain_Text https://muldis.com 0.300.0` language,
 need to provide.
 
-The official Muldis Data Language language is canonically stratified into 2
+The official Muldis Data Language is canonically stratified into 2
 main layers implementation-wise, *low-level* and *high-level*.
 
 High-level Muldis Data Language provides the system-defined types and operators and
@@ -859,7 +859,7 @@ The `Stream` type is infinite.  A `Stream` value is a ... *TODO*.
 
 The `External` type is infinite.  An `External` value is an
 opaque and transient reference to an entity that is defined and managed
-externally to the Muldis Data Language language environment, either internally to the
+externally to Muldis Data Language environment, either internally to the
 Muldis Data Language host implementation or in some peer language that it mediates.
 
 # FOUNDATION SUBTYPES FOR DEFINING SOURCE CODE
@@ -1403,7 +1403,7 @@ The function `External_call_function` requires its source to be a
 `Tuple` value with just 1 attribute/argument named `0`, where that
 argument may be any value.  This function is a proxy for
 invoking a function that is defined and managed externally to the Muldis Data Language
-language environment where that external function receives the value of the
+environment where that external function receives the value of the
 `0` attribute as its source/arguments.  Its result type is `Any`.
 
 # FOUNDATION PROCEDURES
@@ -1423,7 +1423,7 @@ Darren Duncan - darren@DarrenDuncan.net
 # LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the **Muldis Data Language Foundation**
-(**MDF**) primary component of the **Muldis Data Language** language specification.
+(**MDF**) primary component of the **Muldis Data Language** specification.
 
 MDF is Copyright © 2002-2018, Muldis Data Systems, Inc.
 

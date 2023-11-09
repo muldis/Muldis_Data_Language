@@ -8,18 +8,18 @@ This document is Muldis Data Language Conventions version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis Data Language language specification, whose root
+This document is part of the Muldis Data Language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
 
-This document briefly outlines various conventions used in the Muldis Data Language
-language, and provides some style and design recommendations for code
+This document briefly outlines various conventions used in the Muldis Data Language,
+and provides some style and design recommendations for code
 and/or projects written in Muldis Data Language, or for alternate language dialects, or
 extensions, or implementations.
 
-Unlike the rest of the Muldis Data Language language specification, following anything
+Unlike the rest of the Muldis Data Language specification, following anything
 stated herein is not necessary for conformation to the spec, and you should
 feel free to break these suggestions whenever it makes sense, just like
 when using any style rules.

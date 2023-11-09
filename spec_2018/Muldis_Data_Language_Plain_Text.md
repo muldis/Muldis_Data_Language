@@ -9,14 +9,14 @@ This document is Muldis Data Language Plain Text (MDPT) version 0.300.0.
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis Data Language Plain Text** (**MDPT**) primary component of the **Muldis Data Language**
-language.  The fully-qualified name of this document and the specification
+the **Muldis Data Language Plain Text** (**MDPT**) primary component of **Muldis Data Language**.
+The fully-qualified name of this document and the specification
 it contains is `Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** meta-specification.
 
 The **Muldis Data Language Plain Text** specification defines the grammar of the official
-concrete Muldis Data Language language syntax that every Muldis Data Language implementation
+concrete Muldis Data Language syntax that every Muldis Data Language implementation
 is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis Data Language implementations.
 It is also expected to be the syntax of choice for users to write Muldis Data Language
@@ -63,7 +63,7 @@ number of data types or routines.  A key benefit of this is that it is very
 easy for users to extend the language with new features that look and work
 in the same way as the system-defined ones, and are drop-in substitutable
 for them, rather than user-defined things being second-class citizens.  The
-design also means it is much easier to implement the Muldis Data Language language
+design also means it is much easier to implement Muldis Data Language
 itself, a large part of the langauge can be bootstrapped, and both parsers
 and generators of Muldis Data Language Plain Text can be simple and easy to make.
 
@@ -140,7 +140,7 @@ following it, which is how we know where the Muldis Data Language code begins.
 
 Examples:
 
-    #!/usr/bin/env muldisdre
+    #!/usr/bin/env muldisder
 
 # PARSING UNIT SUBJECTS
 
@@ -2148,7 +2148,7 @@ Darren Duncan - darren@DarrenDuncan.net
 # LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the **Muldis Data Language Plain Text**
-(**MDPT**) primary component of the **Muldis Data Language** language specification.
+(**MDPT**) primary component of the **Muldis Data Language** specification.
 
 MDPT is Copyright © 2002-2018, Muldis Data Systems, Inc.
 

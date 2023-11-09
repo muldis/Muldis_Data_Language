@@ -8,7 +8,7 @@ This document is Muldis Data Language Core Types_Catalog version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis Data Language language specification, whose root
+This document is part of the Muldis Data Language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Core](Muldis_Data_Language_Core.md) document before this current
@@ -405,7 +405,7 @@ system-defined possrep named `coretext_chars` which consists of 1
 values are all in the range 32..126 inclusive, each element being a
 code point representing the same abstract character as the same code point of
 7-bit ASCII.  The purpose of `CoreText` is to provide a reasonable minimum
-of support for character strings in the Muldis Data Language language core.  All
+of support for character strings in Muldis Data Language core.  All
 system-defined entity names in the core and in most official modules use
 only the `CoreText` repertoire, and this type's primary purpose is to be
 used for entity names.  It can also be employed for user data though.

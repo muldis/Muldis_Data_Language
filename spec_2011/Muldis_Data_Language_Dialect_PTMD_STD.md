@@ -8,7 +8,7 @@ This document is Muldis Data Language Dialect PTMD_STD version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis Data Language language specification, whose root
+This document is part of the Muldis Data Language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
@@ -222,13 +222,13 @@ Grammar:
 placeholder and that there are currently zero valid list items.*
 
 As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
-must start by declaring the fully-qualified Muldis Data Language language name it is
+must start by declaring the fully-qualified Muldis Data Language name it is
 written in.  The `PTMD_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
 
 * `ln_base_name`
 
-This is the Muldis Data Language language base name; it is simply the bareword
+This is Muldis Data Language base name; it is simply the bareword
 character string `Muldis_Data_Language`.
 
 * `ln_base_authority`
@@ -752,7 +752,7 @@ There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
 
 While each *standard syntax extension* is closely related to a *Muldis Data Language
-language extension*, you can use the latter's types and routines without
+extension*, you can use the latter's types and routines without
 declaring the former; you only declare you are using a *standard syntax
 extension* if you want the Muldis Data Language parser to recognize special syntax
 specific to those types and routines, and otherwise you just use them using
@@ -3663,8 +3663,8 @@ A `stim_resp_rule` node specifies a new stimulus-response rule that lives
 in a depot or subdepot.  A `stim_resp_rule` node in the `PTMD_STD` grammar
 corresponds directly to a tuple of the `stim_resp_rules` attribute of a
 value of the catalog data type `sys.std.Core.Type.Cat.Depot`, which is how
-a stimulus-response rule specification is actually represented in Muldis
-D's nonsugared form, which is as a component of the system catalog.  The
+a stimulus-response rule specification is actually represented in Muldis Data Language's
+nonsugared form, which is as a component of the system catalog.  The
 `stim_resp_rules` tuple has 2 primary attributes, `name` and `material`,
 which are valued from the `stim_resp_rule` node's
 `material_declared_name` and `stim_resp_rule_payload` elements,

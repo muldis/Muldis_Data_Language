@@ -8862,10 +8862,10 @@ that this points to to hold the value of its right-hand argument.
 The selection type definer `Process` represents the infinite Muldis Data Language
 Foundation type `foundation::Process`.  A `Process` value is an opaque
 and transient reference to a *process* running inside the Muldis Data Language
-language environment / DBMS / virtual machine, which typically has its own
+environment / DBMS / virtual machine, which typically has its own
 autonomous transactional context.  Each Muldis Data Language *process*
 might be either self-contained or be a proxy for some entity outside the
-Muldis Data Language language environment.
+Muldis Data Language environment.
 
 A typical and idiomatic example use for multiple processes is to coordinate
 usage of a shared resource such as *the database*.  In this scenario, one
@@ -8907,7 +8907,7 @@ data such as from/to user I/O or the filesystem or network services etc.
 The selection type definer `External` represents the infinite Muldis Data Language
 Foundation type `foundation::External`.  An `External` value is an opaque and
 transient reference to an entity that is defined and managed externally to
-the Muldis Data Language language environment, either internally to the Muldis Data Language host
+Muldis Data Language environment, either internally to the Muldis Data Language host
 implementation or in some peer language that it mediates.
 
 As `External` values are black boxes to Muldis Data Language, it is the responsibility
@@ -8929,7 +8929,7 @@ Other programming languages may name their corresponding types *extern*
         )),
 
 The function `External::call_function` is a proxy for invoking a function
-that is defined and managed externally to the Muldis Data Language language
+that is defined and managed externally to Muldis Data Language
 environment.  Muldis Data Language will assume said function is completely
 deterministic, and there would likely be problems if it isn't.  Using
 `External::call_function` as a foundation, it is possible to define an
@@ -10391,7 +10391,7 @@ Darren Duncan - darren@DarrenDuncan.net
 # LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the **Muldis Data Language Standard
-Library** (**MDSL**) primary component of the **Muldis Data Language** language
+Library** (**MDSL**) primary component of the **Muldis Data Language**
 specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.

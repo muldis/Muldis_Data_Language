@@ -8,7 +8,7 @@ This document is Muldis Data Language version 0.148.1.
 
 # PREFACE
 
-This is the root document of the Muldis Data Language language specification; the
+This is the root document of the Muldis Data Language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
 [Basics](Muldis_Data_Language_Basics.md), [Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
@@ -21,7 +21,7 @@ to follow), [Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
 # DESCRIPTION
 
 This distribution / multi-part document is the human readable authoritative
-formal specification of the **Muldis Data Language** language, and of the virtual
+formal specification of **Muldis Data Language**, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one.
@@ -29,7 +29,7 @@ developers were negligent in updating it before this one.
 The fully-qualified name of this multi-part document and the language
 specification it contains (as a single composition) is
 `Muldis_Data_Language:"https://muldis.com":0.148.1`.  It is the official/original (not
-embraced and extended) Muldis Data Language language specification by the authority
+embraced and extended) Muldis Data Language specification by the authority
 Muldis Data Systems (`https://muldis.com`), version `0.148.1` (this number
 matches the VERSION section in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
@@ -101,7 +101,7 @@ and it is intended to be as future-proofed as possible in the face of a
 wide variety of both anticipated and unforeseen language variants, both by
 the original author and by other parties.
 
-At the highest level, a fully-qualified Muldis Data Language language name is a
+At the highest level, a fully-qualified Muldis Data Language name is a
 (ordered) sequence of values having a minimum of 2 elements, and typically
 about 4-6 elements.  The elements are read one at a time, starting with the
 first; the value of each element, combined with those before it, determine
@@ -110,7 +110,7 @@ So all Muldis Data Language variants are organized into a single hierarchy where
 child node represents a language derived from or extending the language
 represented by its parent node.
 
-In documentation, it is typical to use a Muldis Data Language language name involving
+In documentation, it is typical to use a language name involving
 just a sub-sequence of the allowed elements that is missing child-most
 allowed elements; in that case, this language name implicitly refers to the
 entire language sub-tree having the specified elements in common; an
@@ -118,7 +118,7 @@ example of this is the 3-element name mentioned in this file's DESCRIPTION
 section.  Even in code, sometimes certain child-most elements are optional.
 
 While not mandatory for Muldis Data Language variants in general, it is strongly
-recommended that all elements of a Muldis Data Language language name would, when
+recommended that all elements of a language name would, when
 expressed in terms of character strings, be expressly limited to comprising
 just non-control characters in the ASCII repertoire, and not include any
 other characters such as Unicode has.  The primary reason for this is to
@@ -157,7 +157,7 @@ code is written here by way of writing code in the host language.
 
 ## Base Name
 
-The first element of the Muldis Data Language language name is simply the character
+The first element of Muldis Data Language name is simply the character
 string `Muldis_Data_Language`.  Any language which wants to claim to be a variant of
 Muldis Data Language should have this exact first element; only have some other value
 if you don't want to claim a connection to Muldis Data Language at all, and in that
@@ -165,7 +165,7 @@ case feel free to just ignore everything else in this multi-document.
 
 ## Base Authority
 
-The second element of the Muldis Data Language language name is some character string
+The second element of Muldis Data Language name is some character string
 whose value uniquely identifies the authority or author of the variant's
 base language specification.  Generally speaking, the community at large
 should self-regulate authority identifier strings so they are reasonable
@@ -178,7 +178,7 @@ strongly recommended for Muldis Data Language variant names that authority strin
 follow the formats that are valid as authority strings for the long names
 of Raku packages, such as a CPAN identifier or an http url.
 
-For the official/original Muldis Data Language language spec by Muldis Data Systems,
+For the official/original Muldis Data Language spec by Muldis Data Systems,
 Inc., that string is always `https://muldis.com` during the foreseeable
 future.
 
@@ -203,7 +203,7 @@ delta either makes incompatible changes or adds DBMS entities in the
 
 ## Base Version Number
 
-The third element of the Muldis Data Language language name, at the very least when the
+The third element of Muldis Data Language name, at the very least when the
 base authority is `https://muldis.com`, is a multi-part base version
 number, which identifies the base language spec version between all those
 by the same authority, typically indicating the relative ages of the
@@ -218,9 +218,9 @@ corresponding to the spec containing that file.
 
 ## Dialect
 
-The fourth element of the Muldis Data Language language name, at the very least when
+The fourth element of Muldis Data Language name, at the very least when
 the base authority is `https://muldis.com`, uniquely identifies which
-Muldis Data Language language primary dialect the Muldis Data Language code (that this
+Muldis Data Language primary dialect the Muldis Data Language code (that this
 fully-qualified language name is metadata for) is formatted in; for
 example this may be one of several non-hosted plain-text variants, or one
 of several hosted data variants (each host language has its own ones).
@@ -243,7 +243,7 @@ bundled dialects (names subject to change):
 
 ## Extensions
 
-Whether or not the Muldis Data Language language name has a fifth or further elements
+Whether or not Muldis Data Language name has a fifth or further elements
 depends on the dialect.  See the documentation for each individual dialect
 to see what it supports or requires.
 

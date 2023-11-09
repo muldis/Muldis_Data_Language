@@ -9,11 +9,11 @@ This document is Muldis Data Language Standard Library (MDSL) version 0.300.0.
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis Data Language Standard Library** (**MDSL**) primary component of the **Muldis Data Language**
-language.  The fully-qualified name of this document and the specification
+the **Muldis Data Language Standard Library** (**MDSL**) primary component of **Muldis Data Language**.
+The fully-qualified name of this document and the specification
 it contains is `Muldis_Data_Language_Standard_Library https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** language meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** meta-specification.
 
 The **Muldis Data Language Standard Library** specification comprises a documented
 library written entirely in Muldis Data Language which provides its common core
@@ -47,7 +47,7 @@ Darren Duncan - darren@DarrenDuncan.net
 # LICENSE AND COPYRIGHT
 
 This file is part of the formal specification of the **Muldis Data Language Standard
-Library** (**MDSL**) primary component of the **Muldis Data Language** language
+Library** (**MDSL**) primary component of the **Muldis Data Language**
 specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.

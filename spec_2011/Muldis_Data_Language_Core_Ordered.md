@@ -8,7 +8,7 @@ This document is Muldis Data Language Core Ordered version 0.148.1.
 
 # PREFACE
 
-This document is part of the Muldis Data Language language specification, whose root
+This document is part of the Muldis Data Language specification, whose root
 document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Core](Muldis_Data_Language_Core.md) document before this current
@@ -70,8 +70,8 @@ or *last*, since such are common practice for ordinal types in other
 languages or contexts, to complement the `pred` and `succ` functions,
 providing the basis to take an `Ordinal` type and enumerate all of its
 values.  However, that common practice is generally based in contexts where
-all ordinal types are finite, such as a "32 bit integer" type.  In Muldis
-D, there is no requirement for an `Ordinal`-composing type to be finite,
+all ordinal types are finite, such as a "32 bit integer" type.  In Muldis Data Langauge,
+there is no requirement for an `Ordinal`-composing type to be finite,
 and at least 1 system-defined ordinal type, `Int`, is instead unlimited,
 and there is no concept of a first or last `Int` that can be counted from.
 Therefore, `Ordinal` has no *first* or *last*, and if you want to

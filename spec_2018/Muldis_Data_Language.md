@@ -9,7 +9,7 @@ This document is Muldis Data Language version 0.300.0.
 # DESCRIPTION
 
 This document aggregate is the human readable authoritative
-formal specification of the **Muldis Data Language** language, and of the virtual
+formal specification of the **Muldis Data Language**, and of the virtual
 environment in which it executes.  If there's a conflict between any other
 document and this one, then either the other document is in error, or the
 developers were negligent in updating it before this one.
@@ -17,11 +17,11 @@ developers were negligent in updating it before this one.
 The fully-qualified name of this document aggregate and the language
 specification it contains (as a single composition) is
 `Muldis_Data_Language https://muldis.com 0.300.0`.  It is the
-official/original (not embraced and extended) Muldis Data Language language
+official/original (not embraced and extended) Muldis Data Language
 specification by the authority Muldis Data Systems (`https://muldis.com`),
 version number `0.300.0` (this number matches the VERSION in this file).
 
-The **Muldis Data Language** language aggregate specification assumes that Muldis Data Language,
+The **Muldis Data Language** aggregate specification assumes that Muldis Data Language,
 similar to some common programming languages, can be effectively defined
 in terms of 3 individual specifications covering in turn its semantics
 (architecture, behaviour, and type system), its syntax (grammar), and its
@@ -42,13 +42,13 @@ component specifications are named, respectively:
 * **Muldis Data Language Standard Library** (**MDSL**) -
 `Muldis_Data_Language_Standard_Library https://muldis.com 0.300.0`.
 
-In this context, the **Muldis Data Language** language aggregate specification is mostly
+In this context, the **Muldis Data Language** aggregate specification is mostly
 just a top-level catalogue pointing to those 3 primary components, as well
 as to some other things in the ecosystem.
 
 The **Muldis Data Language Foundation** specification defines the fundamental
 architecture, behaviour, and type system of Muldis Data Language.  For all intents and
-purposes, it is the entire official Muldis Data Language language specification except
+purposes, it is the entire official Muldis Data Language specification except
 for any candidate syntaxes and any candidate standard libraries.  So it is
 generally useful to read this specification first and consider any others
 subservient to it.  While many alternative syntaxes and standard libraries
@@ -68,7 +68,7 @@ advantage of the strengths of each host.
 See [Foundation](Muldis_Data_Language_Foundation.md) for the **Muldis Data Language Foundation** specification.
 
 The **Muldis Data Language Plain Text** specification defines the grammar of the official
-concrete Muldis Data Language language syntax that every Muldis Data Language implementation
+concrete Muldis Data Language syntax that every Muldis Data Language implementation
 is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis Data Language implementations.
 It is also expected to be the syntax of choice for users to write Muldis Data Language
@@ -127,7 +127,7 @@ index a package loaded for execution.  This *identity* requirement applies
 both to every individual package of the **MDSL** as well as to every other
 package regardless of origin.
 
-In addition, every Muldis Data Language language component specification document is
+In addition, every Muldis Data Language component specification document is
 similarly expected to declare its own fully-qualified name, so that it can
 at the very least be referred to by other documentation or users.  In the
 case of the **MDF**, its name is also referred to by each package as a
@@ -167,7 +167,7 @@ depending on whether they have reliable simple format declarations or not.
 Note that a leading MDPT declaration in source code should be effective as
 a "magic number" for identifying it as being MDPT source code.
 
-* The expected fully-qualified name of a Muldis Data Language language specification
+* The expected fully-qualified name of a Muldis Data Language specification
 document (component or aggregate) as declared in said document has 3 main
 parts: *document base name*, *authority*, and *version number*.  The
 *document base name* is a character string, officially used examples being
