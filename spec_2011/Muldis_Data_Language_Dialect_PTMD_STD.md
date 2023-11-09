@@ -13,7 +13,7 @@ This document is Muldis::D::Dialect::PTMD_STD version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
@@ -74,8 +74,8 @@ should be considered the safest official Muldis D dialect to write in by
 default, when you don't have a specific reason to use some other dialect.
 
 See also the dialects
-L<HDMD_Raku_STD|Muldis::D::Dialect::HDMD_Raku_STD> and
-L<HDMD_Perl_STD|Muldis::D::Dialect::HDMD_Perl_STD>, which are derived
+[HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD) and
+[HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD), which are derived
 directly from C<PTMD_STD>, and represent possible Raku and Perl concrete
 syntax trees for it; in fact, most of the details in common with those
 other dialects are described just in the current file, for all 3 dialects.
@@ -103,7 +103,7 @@ which mainly is intended for use in mixed-language environments as an
 interchange format for data values between Muldis D and other languages.
 
 The grammar in this file is formatted as a hybrid between various BNF
-flavors and Raku rules (see L<http://perlcabal.org/syn/S05.html> for
+flavors and Raku rules (see <http://perlcabal.org/syn/S05.html> for
 details on the latter) with further changes.  It is only meant to be
 illustrative and human readable, and would need significant changes to
 actually be a functional parser, which are different for each parser
@@ -148,8 +148,8 @@ A C<Muldis_D> node has 2 ordered elements where the first element is a
 C<language_name> node and the second element is either a C<value> node or a
 C<depot> node.
 
-See the pod sections in this file named L</LANGUAGE NAME>, L</VALUE
-LITERALS AND SELECTORS>, and L</DEPOT SPECIFICATION>, for more details
+See the pod sections in this file named **LANGUAGE NAME**, **VALUE
+LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
 about the aforementioned tokens/nodes.
 
 When Muldis D is being compiled and invoked piecemeal, such as because the
@@ -225,7 +225,7 @@ Grammar:
 I<Please interpret the C<''> under C<< <std_syn_ext_list_item> >> as a
 placeholder and that there are currently zero valid list items.>
 
-As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
+As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
 written in.  The C<PTMD_STD> dialect formats this name as a
 C<language_name> node having 5 ordered elements:
@@ -259,10 +259,10 @@ C<PTMD_STD>.
 
 This is a set of chosen pragma/parser-config options, which is formatted
 similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
-C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
-section) and C<op_char_repertoire> (see L</OPERATOR CHARACTER REPERTOIRE>).
+C<catalog_abstraction_level> (see the **CATALOG ABSTRACTION LEVELS** pod
+section) and C<op_char_repertoire> (see **OPERATOR CHARACTER REPERTOIRE**).
 The only optional pragma is C<standard_syntax_extensions> (see the
-L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be added
+**STANDARD SYNTAX EXTENSIONS** pod section).  Other pragmas may be added
 later, which would likely be optional.
 
 =back
@@ -434,8 +434,8 @@ you get in the system catalog, but your code would be too verbose for the
 tastes of someone preferring normal high-level language code.
 
 Code written to the C<code_as_data> level can employ all of the language
-grammar constructs described in these main pod sections: L</VALUE LITERALS
-AND SELECTORS>, L</OPAQUE VALUE LITERALS>, L</COLLECTION VALUE SELECTORS>.
+grammar constructs described in these main pod sections: **VALUE LITERALS
+AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 
 Examples:
 
@@ -519,7 +519,7 @@ their own types and routines with all of the capabilities, flexibility, and
 syntax as the language's built-in features have.  This also means that it
 should be relatively simple to parse Muldis D code because the vast
 majority of language features don't have their own special syntax to
-account for, and the L</Generic Function Invocation Expressions> syntax
+account for, and the **Generic Function Invocation Expressions** syntax
 covers most of them, in terms of the common prefix/polish notation that in
 practice most invocations of user-defined routines are formatted as anyway.
 
@@ -533,14 +533,14 @@ It is expected that every Muldis D implementation which supports at least
 the C<plain_rtn_inv> level will, as much as is reasonably possible,
 preserve all non-behaviour-affecting metadata that is directly supported
 for storage by the system catalog itself, as described in
-L<Muldis::D::Basics/SOURCE CODE METADATA>.  Primarily this means preserving
+[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **SOURCE CODE METADATA**.  Primarily this means preserving
 non-value code comments, and preserving the declared relative ordinal
 position of code elements.
 
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
-described in these main pod sections: L</MATERIAL SPECIFICATION>,
-L</GENERIC VALUE EXPRESSIONS>, L</GENERIC PROCEDURE STATEMENTS>.
+described in these main pod sections: **MATERIAL SPECIFICATION**,
+**GENERIC VALUE EXPRESSIONS**, **GENERIC PROCEDURE STATEMENTS**.
 
 Examples:
 
@@ -611,8 +611,8 @@ parse grammar than SQL in its general case.
 
 Code written to the C<rtn_inv_alt_syn> level can employ all of the language
 grammar constructs that C<plain_rtn_inv> can, plus all of those described
-in these main pod sections: L</DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
-EXPRESSIONS>, L</DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS>.
+in these main pod sections: **DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
+EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**.
 
 Examples:
 
@@ -836,7 +836,7 @@ sub-language.
 
 Every grammar token, and corresponding capture node, representing a Muldis
 D value literal is similarly formatted and has 1-3 elements; the following
-pod section L</Value Literal Common Elements> describes the similarities
+pod section **Value Literal Common Elements** describes the similarities
 once for all of them, in terms of an alternate C<value> token definition
 which is called C<x_value>.  And then the other pod sections specific to
 each kind of value literal then just focus on describing their unique
@@ -1687,7 +1687,7 @@ In fact, the Muldis D spec itself uses such abbreviations frequently.
 
 The second special case involves any context where a type is being
 referenced using the C<type> namespace prefix feature described in
-L<Muldis::D::Basics/Referencing Data Types>.  In such a context, when the
+[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **Referencing Data Types**.  In such a context, when the
 namespace prefix contains either of the optional chain elements
 C<[|dh_]tuple_from> or
 C<[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of>, programmers may
@@ -3052,7 +3052,7 @@ of the procedure; each C<with_clause> specifies one inner material in its
 C<named_material> element.  A C<with_clause> is not interpreted as any part
 of the C<procedure> but rather results in other additions to its parent
 C<Depot>, in a manner similar to as if the C<named_material> were specified
-externally of the C<procedure> node; but see the L</MATERIAL SPECIFICATION>
+externally of the C<procedure> node; but see the **MATERIAL SPECIFICATION**
 main description for details on the complete effects of specifying an inner
 material.
 
@@ -3762,7 +3762,7 @@ were its child C<expr> element; the I<only> reason that the C<delim_expr>
 grammar element exists is to assist the parser in determining the
 boundaries of an C<expr> where code otherwise might be ambiguous or be
 interpreted differently than desired due to nesting precedence rules (see
-L</NESTING PRECEDENCE RULES> for more about those).  There is never a
+**NESTING PRECEDENCE RULES** for more about those).  There is never a
 distinct node in a parser's output for a C<delim_expr> itself.
 
 Iff an C<expr> is an C<expr_name>, then this typically means that the
@@ -4284,8 +4284,8 @@ In the general case of a procedure invocation, all of the arguments are
 named, as per C<named_[upd|ro]_arg>, and formatting a C<proc_invo> node
 that way is always allowed.  In some (common) special cases, some (which
 might be all) arguments may be anonymous, as per C<anon_[upd|ro]_arg>.  For
-further details on this, see the C<func_invo> node kind, under L</Generic
-Function Invocation Expressions>, because the rules regarding when
+further details on this, see the C<func_invo> node kind, under **Generic
+Function Invocation Expressions**, because the rules regarding when
 arguments may be anonymous or must be named are the same for both main
 routine kinds.
 
@@ -5765,6 +5765,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

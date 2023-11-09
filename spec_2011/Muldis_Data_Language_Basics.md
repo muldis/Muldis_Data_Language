@@ -13,7 +13,7 @@ This document is Muldis::D::Basics version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
@@ -584,7 +584,7 @@ entirety of each relation's boolean expression with an C<or>, and then
 eliminating redundancies from the result.
 
 A full list of all the relational operators having more formal (but Muldis
-D specific) descriptions occurs in the L<Muldis::D::Core>
+D specific) descriptions occurs in the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md)
 document; that list does I<not> use the aforementioned boolean analogies.
 
 =head1 MULDIS D
@@ -603,7 +603,7 @@ The language is rigorously defined and requires users to be explicit, which
 leaves little room for ambiguity and related bugs.  When something is
 specified in Muldis D, its semantics should be well known and fully
 portable (not implementation dependent).  If a conforming implementation
-(such as Muldis::D::Ref_Eng) can't provide a specified
+(such as **Muldis Data Engine Reference**) can't provide a specified
 behaviour, code using it will refuse to run at all, rather than silently
 changing its semantics; this also helps users to avoid bugs.  Moreover,
 Muldis D generally disallows any details of an implementation's "physical
@@ -691,18 +691,18 @@ which is the host of Muldis D.  The Muldis D code is written here by way of
 writing code in the host language.
 
 Some official Muldis D dialects have their specifications bundled with the
-current multi-document: L<Muldis::D::Dialect::PTMD_STD>,
-L<Muldis::D::Dialect::HDMD_Raku_STD>,
-L<Muldis::D::Dialect::HDMD_Perl_STD>.  Other, unofficial Muldis D dialects
+current multi-document: [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
+[Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
+[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).  Other, unofficial Muldis D dialects
 may be made by third parties in the future, but none are currently known.
 
 The other parts of the current multi-document generally focus on the
 behaviours and semantic features of Muldis D, rather than its syntax, and
 what they describe is generally common to all Muldis D dialects.  The most
 important of those parts are the current B<Basics> file and the
-L<Muldis::D::Core> file.
+[Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) file.
 
-See also L</SOURCE CODE METADATA> for more details on Muldis D's standard
+See also **SOURCE CODE METADATA** for more details on Muldis D's standard
 support for non-critical Muldis D code metadata.
 
 =head1 TYPE SYSTEM
@@ -958,8 +958,8 @@ homogeneous relation type.  This said, the definition of a deeply
 homogeneous tuple|relation type is restricted further than just being a set
 of deeply homogeneous tuple|relation values, and so C<DHTuple> and
 C<DHRelation> aren't actually deeply homogeneous types (they are both
-non-deeply-homogeneous types); see L</Distinction of Non-Homogeneous Types
-from Homogeneous Types> for more details.
+non-deeply-homogeneous types); see **Distinction of Non-Homogeneous Types
+from Homogeneous Types** for more details.
 
 The identity of every scalar type is defined by its name alone, and every
 scalar type must have a distinct name that is explicitly defined, either
@@ -2080,7 +2080,7 @@ update the database between 2 successive statements of a procedure, and so
 a procedure won't necessarily see the same database over its run unless it
 explicitly either uses a transaction (all of which are serializable), or it
 explicitly employs resource locks, around the relevant block of its
-statements.  See L</TRANSACTIONS AND CONCURRENCY> for
+statements.  See **TRANSACTIONS AND CONCURRENCY** for
 more discussion on this matter.
 
 =head2 Emphasis on Purity
@@ -2345,7 +2345,7 @@ define such a binary operation.
 
 An C<order-determination> is structured to fill the role of a
 I<system-compatible fundamental order-determination function>; see the
-L</Ordered Types> pod section in this file for more details.
+**Ordered Types** pod section in this file for more details.
 
 =head2 Kinds of Procedures
 
@@ -2510,7 +2510,8 @@ constraints are non-deterministic, such as that they compare a date value
 to the current system time.
 
 See also
-L<Muldis::D::Core::Types_Catalog/sys.std.Core.Type.Cat.MountControlSet>,
+[Muldis_Data_Language_Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md)
+section **sys.std.Core.Type.Cat.MountControlSet**,
 specifically the C<allow_auto_run> attribute.  This control empowers users
 to decide on a per-depot-mount basis whether the depot mount will permit
 any stimulus-response rules defined in the depot to automatically execute
@@ -2570,7 +2571,7 @@ environment, such as by a C<system-service>, or by a host language routine,
 are generally not affected by transactions at all.)
 
 It is important to point out that any attempt to implement Muldis D (what
-Muldis::D::Ref_Eng does) which does not include full ACID compliance,
+**Muldis Data Engine Reference** does) which does not include full ACID compliance,
 with all aspects described above, is not a true Muldis D implementation,
 but rather is at best a partial implementation, and should be treated with
 suspicion concerning reliability.  Of course, such partial implementations
@@ -2975,7 +2976,7 @@ This is the hierarchy of invocation namespaces of DBMS entities:
     rtn  # entities in a possib-anon-declared rtn can ref that rtn w this
 
 Conceptually speaking, there is also this, but not actually; see
-L</Lexical Entities> for an explanation:
+**Lexical Entities** for an explanation:
 
     lex  # entities in a rtn ref own lexical params|exprs|vars with this
         lex.<param>
@@ -3647,8 +3648,8 @@ C<type.set_of.set_of.sys.std.Core.Type.Cat.Name>.
 B<Update:>  Unlike with the terse pseudo-variable syntax in general use
 (where it may only be used with tuple attributes), for the more specific
 use of referencing data types, the terse syntax may I<also> be used with
-scalar possrep and relation attributes, as described in L</Terse
-Pseudo-Variable Syntax>.
+scalar possrep and relation attributes, as described in **Terse
+Pseudo-Variable Syntax**.
 
 =head1 SOURCE CODE METADATA
 
@@ -3730,6 +3731,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

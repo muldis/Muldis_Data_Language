@@ -13,7 +13,7 @@ This document is Muldis::D::Conventions version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
@@ -201,6 +201,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

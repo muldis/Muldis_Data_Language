@@ -13,9 +13,9 @@ This document is Muldis::D::Core::Types version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document before
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
-should read the L<Muldis::D::Core> document before this current
+should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
 =head1 DESCRIPTION
@@ -388,13 +388,13 @@ Plain Text Muldis D provides a specific syntax per type to select a value
 of every one of these types (or of their super/subtypes), which does not
 look like a routine invocation, but rather like a scalar literal in a
 typical programming language; details of that syntax are not given here,
-but in L<Muldis::D::Dialect::PTMD_STD>.  Hosted Data Muldis D as hosted in
+but in [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md).  Hosted Data Muldis D as hosted in
 another language will essentially use literals of corresponding host
 language types, whatever they use for eg booleans and integers and
 character strings, but tagged with extra metadata if the host language is
 more weakly typed or lacks one-to-one type correspondence; see
-L<Muldis::D::Dialect::HDMD_Raku_STD> or
-L<Muldis::D::Dialect::HDMD_Perl_STD> for a Raku|Perl-based example.  These
+[Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md) or
+[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md) for a Raku|Perl-based example.  These
 types, except for C<Scalar> and C<DHScalar>, are all ordered.
 
 =head2 sys.std.Core.Type.Scalar
@@ -1067,6 +1067,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

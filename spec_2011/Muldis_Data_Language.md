@@ -4,23 +4,23 @@
 
 =head1 NAME
 
-Muldis::D - Formal spec of Muldis D relational DBMS lang
+Muldis Data Language (MDL) - Relational database application programming language
 
 =head1 VERSION
 
-This document is Muldis::D version 0.148.1.
+This document is Muldis Data Language version 0.148.1.
 
 =head1 PREFACE
 
 This is the root document of the Muldis D language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
-L<Muldis::D::Basics>, L<Muldis::D::Core> (which has its own tree of parts
-to follow), L<Muldis::D::Dialect::PTMD_STD>,
-L<Muldis::D::Dialect::HDMD_Raku_STD>,
-L<Muldis::D::Dialect::HDMD_Perl_STD>, L<Muldis::D::Conventions>,
-L<Muldis::D::Ext::Counted>, L<Muldis::D::Ext::Temporal>,
-L<Muldis::D::Ext::Spatial>.
+[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md), [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
+to follow), [Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
+[Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
+[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md), [Muldis_Data_Language_Conventions](Muldis_Data_Language_Conventions.md),
+[Muldis_Data_Language_Ext_Counted](Muldis_Data_Language_Ext_Counted.md), [Muldis_Data_Language_Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md),
+[Muldis_Data_Language_Ext_Spatial](Muldis_Data_Language_Ext_Spatial.md).
 
 =head1 DESCRIPTION
 
@@ -39,7 +39,7 @@ matches the VERSION pod in this file).  This multi-part document is named
 and organized with the expectation that many dialects, extensions, and core
 versions of it will exist over time, some of those under the original
 author's control, and some under the control of other parties.  The
-L</VERSIONING> pod section in this file presents a formal method for
+**VERSIONING** pod section in this file presents a formal method for
 specifying the fully-qualified name of a complete language derived from
 Muldis D, including any common base plus any dialects and extensions.  All
 code written in any dialect or derivation of Muldis D should begin by
@@ -62,9 +62,9 @@ Muldis D is intended to qualify as a "B<D>" language as defined by
 "I<Databases, Types, and The Relational Model: The Third Manifesto>"
 (I<TTM>), a formal proposal for a solid foundation for data and database
 management systems, written by Chris Date (C.J. Date) and Hugh Darwen; see
-L<http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>
+<http://www.aw-bc.com/catalog/academic/product/0,1144,0321399420,00.html>
 for a publishers link to the book that formally publishes I<TTM>.  See
-L<http://www.thethirdmanifesto.com/> for some references to what I<TTM> is,
+<http://www.thethirdmanifesto.com/> for some references to what I<TTM> is,
 and also copies of some documents that were used in writing Muldis D.
 
 It should be noted that Muldis D, being quite new, may omit some features
@@ -78,19 +78,19 @@ to them.
 Muldis D also incorporates design aspects and constructs that are taken
 from or influenced by Raku, other general-purpose languages (particularly
 functional ones like Haskell), B<Tutorial D>, various B<D> implementations,
-and various SQL implementations (see the L<Muldis::D::SeeAlso>
+and various SQL implementations (see the [Muldis_Data_Language_SeeAlso](Muldis_Data_Language_SeeAlso.md)
 file).  It also appears in retrospect that Muldis D has some designs in
 common with FoxPro or xBase, and with the Ada and Lua languages.  The
-newer L<C'Dent|http://cdent.org/> language has some similarities as well.
+newer [C'Dent](http://cdent.org) language has some similarities as well.
 Most recently Lisp became a larger influence.
 
 In any event, the Muldis D documentation will be focusing mainly on how
 Muldis D itself works, and will spend little time in providing rationale;
 you can read the aforementioned external documentation for much of that.
 
-Continue reading the language spec in L<Muldis::D::Basics>.
+Continue reading the language spec in [Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md).
 
-Muldis D is an L<Acmeist|http://www.acmeism.org/> programming language for
+Muldis D is an [Acmeist](http://acmeism.org) programming language for
 writing portable database modules, that work with any DBMS and with any
 other programming language, for superior database interoperability.
 
@@ -250,8 +250,8 @@ code's behavior.
 
 See the following parts of the current multi-document for descriptions of
 bundled dialects (names subject to change):
-L<Muldis::D::Dialect::PTMD_STD>, L<Muldis::D::Dialect::HDMD_Raku_STD>,
-L<Muldis::D::Dialect::HDMD_Perl_STD>.
+[Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md), [Muldis_Data_Language_Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
+[Muldis_Data_Language_Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).
 
 =head2 Extensions
 
@@ -261,39 +261,40 @@ to see what it supports or requires.
 
 =head1 AUTHOR
 
-Darren Duncan (C<darren@DarrenDuncan.net>)
+Darren Duncan - darren@DarrenDuncan.net
 
 =head1 LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the Muldis D language.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-L<https://muldis.com>
+<https://muldis.com>
 
-Muldis D is free documentation for software;
+MDL is free documentation for software;
 you can redistribute it and/or modify it under the terms of the Apache
 License, Version 2.0 (AL2) as published by the Apache Software Foundation
-(L<https://apache.org>).  You should have received a copy of the
-AL2 as part of the Muldis D distribution, in the file
-named "LICENSE/Apache-2.0.txt"; if not, see
-L<https://apache.org/licenses/LICENSE-2.0>.
+(<https://apache.org>).  You should have received a copy of the
+AL2 as part of the MDL distribution, in the file
+[LICENSE/Apache-2.0.txt](../LICENSE/Apache-2.0.txt); if not, see
+<https://apache.org/licenses/LICENSE-2.0>.
 
-Any versions of Muldis D that you modify and distribute must carry prominent
+Any versions of MDL that you modify and distribute must carry prominent
 notices stating that you changed the files and the date of any changes, in
 addition to preserving this original copyright notice and other credits.
 
-While it is by no means required, the copyright holder of Muldis D
+While it is by no means required, the copyright holder of MDL
 would appreciate being informed any time you create a modified version of
-Muldis D that you are willing to distribute, because that is a
+MDL that you are willing to distribute, because that is a
 practical way of suggesting improvements to the standard version.
 
 =head1 TRADEMARK POLICY
 
-B<MULDIS> and B<MULDIS MULTIVERSE OF DISCOURSE> are trademarks of Muldis
-Data Systems, Inc. (L<https://muldis.com>).
+**MULDIS** and **MULDIS MULTIVERSE OF DISCOURSE** are trademarks of Muldis
+Data Systems, Inc. (<https://muldis.com>).
 The trademarks apply to computer database software and related services.
-See L<https://muldis.com/trademark_policy.html> for the full written details
+See <https://muldis.com/trademark_policy.html> for the full written details
 of Muldis Data Systems' trademark policy.
 
 =head1 ACKNOWLEDGEMENTS

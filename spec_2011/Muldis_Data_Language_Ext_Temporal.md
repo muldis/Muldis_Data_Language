@@ -13,7 +13,7 @@ This document is Muldis::D::Ext::Temporal version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
@@ -39,14 +39,14 @@ temporal types and routines that would actually be used would be either
 user-defined, or implementation-defined, or both, or some other standard
 Muldis D extensions would provide them; the latter don't exist yet.
 
-See also the separately-distributed L<Muldis::D::Manual::TemporalExtras>
+See also the separately-distributed [Muldis_Data_Language_Manual::TemporalExtras](Muldis_Data_Language_Manual::TemporalExtras.md)
 document, which provides complete examples of temporal types that could
 compose this extension's mixins, and of routines that could implement its
 virtual routines.
 
 This current document does not describe the polymorphic operators that all
 types, or some types including core types, have defined over them; said
-operators are defined once for all types in L<Muldis::D::Core>.
+operators are defined once for all types in [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md).
 
 =head1 TYPE SUMMARY
 
@@ -73,7 +73,7 @@ I<datetime> or a I<date> or a I<time>.  The cardinality of C<Instant> is
 infinity.  The C<Instant> type is not itself ordered, but often a type
 which composes C<Duration> is also ordered.  The C<Instant> type is
 intended to have exactly the same meaning as the same-named type of Raku
-(see L<http://perlcabal.org/syn/S02.html> for details).  The default value
+(see <http://perlcabal.org/syn/S02.html> for details).  The default value
 of C<Instant> is implementation-defined.
 
 =head2 sys.std.Temporal.Type.Duration
@@ -203,6 +203,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

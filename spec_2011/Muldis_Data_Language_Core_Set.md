@@ -13,9 +13,9 @@ This document is Muldis::D::Core::Set version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document before
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
-should read the L<Muldis::D::Core> document before this current
+should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
 =head1 DESCRIPTION
@@ -223,6 +223,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

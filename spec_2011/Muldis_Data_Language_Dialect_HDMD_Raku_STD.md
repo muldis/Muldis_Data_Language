@@ -13,7 +13,7 @@ This document is Muldis::D::Dialect::HDMD_Raku_STD version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
 before you read this one, which provides subservient details.
 
 =head1 DESCRIPTION
@@ -32,7 +32,7 @@ between Perl and Raku, same as with your ordinary Perl code.
 This dialect is designed to exactly match the structure of a possible
 concrete syntax tree, comprised of native Raku scalar and collection
 typed values, resulting from parsing code written in the Muldis D dialect
-L<PTMD_STD|Muldis::D::Dialect::PTMD_STD> using Raku.  This dialect
+[PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD) using Raku.  This dialect
 exists as a convenience to Raku programmers that want to generate or
 introspect Muldis D code by saving them the difficulty and overhead of
 escaping and stitching plain text code; it is expected that a Muldis D
@@ -45,7 +45,7 @@ such as the direct use of some Raku-only features.
 B<Note that most of the details that the 2 dialects have in common are
 described just in the C<PTMD_STD> file, for both dialects; this current
 file will mainly focus on the differences; you should read the
-L<Muldis::D::Dialect::PTMD_STD> file before the current one, so to provide
+[Muldis_Data_Language_Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
 a context for better understanding it.>
 
 =head1 GENERAL STRUCTURE
@@ -86,8 +86,8 @@ A C<Muldis_D> node has 2 ordered elements where the first element is a
 C<language_name> node and the second element is either a C<value> node or a
 C<depot> node.
 
-See the pod sections in this file named L</LANGUAGE NAME>, L</VALUE
-LITERALS AND SELECTORS>, and L</DEPOT SPECIFICATION>, for more details
+See the pod sections in this file named **LANGUAGE NAME**, **VALUE
+LITERALS AND SELECTORS**, and **DEPOT SPECIFICATION**, for more details
 about the aforementioned tokens/nodes.
 
 When Muldis D is being compiled and invoked piecemeal, such as because the
@@ -102,7 +102,7 @@ Muldis D code that isn't itself qualified with a C<language_name>.
 
 =head1 LANGUAGE NAME
 
-As per the VERSIONING pod section of L<Muldis::D>, code written in Muldis D
+As per the VERSIONING pod section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis D
 must start by declaring the fully-qualified Muldis D language name it is
 written in.  The C<HDMD_Raku_STD> dialect formats this name as a
 C<language_name> node having 5 ordered elements:
@@ -135,10 +135,10 @@ C<HDMD_Raku_STD>.
 
 This is a set of chosen pragma/parser-config options, which is formatted
 similarly to a C<Tuple> SCVL.  The only 2 mandatory pragmas are
-C<catalog_abstraction_level> (see the L</CATALOG ABSTRACTION LEVELS> pod
-section) and C<op_char_repertoire> (see L</OPERATOR CHARACTER REPERTOIRE>).
+C<catalog_abstraction_level> (see the **CATALOG ABSTRACTION LEVELS** pod
+section) and C<op_char_repertoire> (see **OPERATOR CHARACTER REPERTOIRE**).
 The only optional pragma is C<standard_syntax_extensions> (see the
-L</STANDARD SYNTAX EXTENSIONS> pod section).  Other pragmas may be added
+**STANDARD SYNTAX EXTENSIONS** pod section).  Other pragmas may be added
 later, which would likely be optional.
 
 The value associated with the C<ln_extensions> attribute named
@@ -251,8 +251,8 @@ This abstraction level is the best one for when you want to write code in
 exactly the same form as it would take in the system catalog.
 
 Code written to the C<code_as_data> level can employ all of the language
-grammar constructs described in these main pod sections: L</VALUE LITERALS
-AND SELECTORS>, L</OPAQUE VALUE LITERALS>, L</COLLECTION VALUE SELECTORS>.
+grammar constructs described in these main pod sections: **VALUE LITERALS
+AND SELECTORS**, **OPAQUE VALUE LITERALS**, **COLLECTION VALUE SELECTORS**.
 
 Examples:
 
@@ -309,8 +309,8 @@ general use.
 
 Code written to the C<plain_rtn_inv> level can employ all of the language
 grammar constructs that C<code_as_data> can, plus all of those
-described in these main pod sections: L</MATERIAL SPECIFICATION>,
-L</GENERIC VALUE EXPRESSIONS>, L</GENERIC PROCEDURE STATEMENTS>.
+described in these main pod sections: **MATERIAL SPECIFICATION**,
+**GENERIC VALUE EXPRESSIONS**, **GENERIC PROCEDURE STATEMENTS**.
 
 Examples:
 
@@ -341,8 +341,8 @@ for general use.
 
 Code written to the C<rtn_inv_alt_syn> level can employ all of the language
 grammar constructs that C<plain_rtn_inv> can, plus all of those described
-in these main pod sections: L</DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
-EXPRESSIONS>, L</DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS>.
+in these main pod sections: **DEPRECATED - FUNCTION INVOCATION ALTERNATE SYNTAX
+EXPRESSIONS**, **DEPRECATED - PROCEDURE INVOCATION ALTERNATE SYNTAX STATEMENTS**.
 
 Examples:
 
@@ -2270,6 +2270,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut

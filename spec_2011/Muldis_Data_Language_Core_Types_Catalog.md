@@ -13,9 +13,9 @@ This document is Muldis::D::Core::Types_Catalog version 0.148.1.
 =head1 PREFACE
 
 This document is part of the Muldis D language specification, whose root
-document is L<Muldis::D>; you should read that root document before
+document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
-should read the L<Muldis::D::Core> document before this current
+should read the [Muldis_Data_Language_Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
 
 =head1 DESCRIPTION
@@ -46,7 +46,7 @@ this document, which are specific to defining the system catalog, more or
 less.  Since there are a number of types with multiple parents, those types
 may appear multiple times in the graph; moreover, the graph is displayed in
 multiple slices, some of which are different views of the same type
-relationships.  See L<Muldis::D::Core::Types/TYPE SUMMARY> for context.
+relationships.  See [Muldis_Data_Language_Core_Types](Muldis_Data_Language_Core_Types.md) section **TYPE SUMMARY** for context.
 
 This graph slice shows all of the top-level catalog types, plus some
 non-catalog core types for context:
@@ -276,8 +276,8 @@ types, shown grouped under the mixin types that they compose:
 These types only exist in the low-level type system, and should not be used
 directly by users to define their ordinary data types or variables or
 parameters; rather they should use the conceptually higher-level types
-declared in L<Muldis::D::Core::Types> instead as their tools.  See also
-L<Muldis::D::Basics/Low Level Type System> for details of these types'
+declared in [Muldis_Data_Language_Core_Types](Muldis_Data_Language_Core_Types.md) instead as their tools.  See also
+[Muldis_Data_Language_Basics](Muldis_Data_Language_Basics.md) section **Low Level Type System** for details of these types'
 structures, how their common 5 main subtypes are defined in terms of them.
 
 =head2 sys.std.Core.Type.Cat.List
@@ -4350,6 +4350,6 @@ This file is part of the formal specification of the Muldis D language.
 
 Muldis D is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of L<Muldis::D> for details.
+See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
 
 =cut
