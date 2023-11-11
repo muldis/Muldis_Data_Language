@@ -98,9 +98,12 @@ alternately consist just of a (language-qualified) Muldis Data Language value li
 which mainly is intended for use in mixed-language environments as an
 interchange format for data values between Muldis Data Language and other languages.
 
-The grammar in this file is formatted as a hybrid between various BNF
-flavors and Raku rules (see <http://perlcabal.org/syn/S05.html> for
-details on the latter) with further changes.  It is only meant to be
+The syntax and intended interpretation of the grammar itself seen in this
+document part should match that of the user-defined grammars feature of the
+Raku language, which is described by
+<https://docs.raku.org/language/grammars>.
+
+It is only meant to be
 illustrative and human readable, and would need significant changes to
 actually be a functional parser, which are different for each parser
 toolkit.
@@ -114,31 +117,22 @@ token name, or by merging series of trivial tokens or doing escaped
 character substitutions.  No explicit capture syntax such as parenthesis is
 used in the grammar.
 
-To help understand the grammar in this file, here are a few guidelines:  1.
-The grammar is exactly the same as that of a Raku rule except where these
-guidelines state otherwise; this includes that square brackets mean
-grouping not optionality, and that when multiple sub-pattern alternatives
-match, the one that is the longest wins.  2. The grammar portion that
-actually declares a token, that is what associates a token name with its
-definition body, is formatted like EBNF, as `<footok> ::= ...` rather
-than the Raku way like `token footok { ... }` or `rule footok { ... }`.
-3. All non-quoted whitespace is not significant and just is formatting the
-grammar itself; rather, whitespace rules in the grammar are spelled out
-explicitly.  4. The meanings of any tokens with the same names as ones
-built-in to Raku but that are explicitly defined in this grammar may have
-different definitions.
+Any references like `<foo>` in either the grammar itself or in the written
+documentation specifically refer to the corresponding grammar token `foo`.
 
-The root grammar token for the entire dialect is `Muldis_Data_Language`.
+The root grammar token for the entire dialect is `Muldis_Data_Language_PTMD_STD`.
 
 # START
 
 Grammar:
 
-    <Muldis_Data_Language> ::=
+    token Muldis_Data_Language_PTMD_STD
+    {
         ^ <ws>?
             <language_name> <ws>
             [<value> | <depot>]
         <ws>? $
+    }
 
 A `Muldis_Data_Language` node has 2 ordered elements where the first element is a
 `language_name` node and the second element is either a `value` node or a
@@ -162,61 +156,87 @@ Muldis Data Language code that isn't itself qualified with a `language_name`.
 
 Grammar:
 
-    <language_name> ::=
+    token language_name
+    {
         <ln_base_name>
         <unspace> ':' <ln_base_authority>
         <unspace> ':' <ln_base_version_number>
         <unspace> ':' <ln_dialect>
         <unspace> ':' <ln_extensions>
+    }
 
-    <ln_base_name> ::=
+    token ln_base_name
+    {
         Muldis_Data_Language
+    }
 
-    <ln_base_authority> ::=
+    token ln_base_authority
+    {
         <ln_elem_str>
+    }
 
-    <ln_base_version_number> ::=
+    token ln_base_version_number
+    {
         <ln_elem_str>
+    }
 
-    <ln_dialect> ::=
+    token ln_dialect
+    {
         PTMD_STD
+    }
 
-    <ln_elem_str> ::=
+    token ln_elem_str
+    {
         <nonquoted_ln_elem_str> | <quoted_ln_elem_str>
+    }
 
-    <nonquoted_ln_elem_str> ::=
-        <[ a..z A..Z 0..9 _ - \. ]>+
+    token nonquoted_ln_elem_str
+    {
+        <[ a..z A..Z 0..9 _ \- \. ]>+
+    }
 
-    <quoted_ln_elem_str> ::=
+    token quoted_ln_elem_str
+    {
         '"'
             [<[\ ..~]-["]> | '\\"']+
         '"'
+    }
 
-    <ln_extensions> ::=
+    token ln_extensions
+    {
         '{' <ws>?
             catalog_abstraction_level <ws>? '=>' <ws>? <cat_abstr_level>
             <ws>? ',' <ws>? op_char_repertoire <ws>? '=>' <ws>? <op_cr>
             [<ws>? ',' <ws>? standard_syntax_extensions
-                <ws>? => <ws>? <std_syn_ext_list>]?
+                <ws>? '=>' <ws>? <std_syn_ext_list>]?
             [<ws>? ',']?
         <ws>? '}'
+    }
 
-    <cat_abstr_level> ::=
+    token cat_abstr_level
+    {
           the_floor
         | code_as_data
         | plain_rtn_inv
         | rtn_inv_alt_syn
+    }
 
-    <op_cr> ::=
+    token op_cr
+    {
         basic | extended
+    }
 
-    <std_syn_ext_list> ::=
+    token std_syn_ext_list
+    {
         '{' <ws>?
-            [<std_syn_ext_list_item> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<std_syn_ext_list_item>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <std_syn_ext_list_item> ::=
+    token std_syn_ext_list_item
+    {
         ''
+    }
 
 *Please interpret the `''` under `<std_syn_ext_list_item>` as a
 placeholder and that there are currently zero valid list items.*
@@ -325,14 +345,20 @@ implicitly when one isn't specified.
 When the `catalog_abstraction_level` pragma is `the_floor`, then the
 following grammar definitions are in effect:
 
-    <value> ::=
+    token value
+    {
         <value__the_floor>
+    }
 
-    <catalog> ::=
+    token catalog
+    {
         <catalog__code_as_data>
+    }
 
-    <expr> ::=
+    token expr
+    {
         <value__the_floor>
+    }
 
 This abstraction level exists more as an academic exercise and is not
 intended to actually be used.  It is meant to be analogous to those
@@ -401,14 +427,20 @@ Examples:
 When the `catalog_abstraction_level` pragma is `code_as_data`, then the
 following grammar definitions are in effect:
 
-    <value> ::=
+    token value
+    {
         <value__code_as_data>
+    }
 
-    <catalog> ::=
+    token catalog
+    {
         <catalog__code_as_data>
+    }
 
-    <expr> ::=
+    token expr
+    {
         <value__code_as_data>
+    }
 
 This abstraction level is the best one for when you want to write code in
 exactly the same form as it would take in the system catalog, and at the
@@ -478,20 +510,30 @@ Examples:
 When the `catalog_abstraction_level` pragma is `plain_rtn_inv`, then the
 following grammar definitions are in effect:
 
-    <value> ::=
+    token value
+    {
         <value__code_as_data>
+    }
 
-    <catalog> ::=
+    token catalog
+    {
         <catalog__plain_rtn_inv>
+    }
 
-    <expr> ::=
+    token expr
+    {
         <expr__plain_rtn_inv>
+    }
 
-    <update_stmt> ::=
+    token update_stmt
+    {
         <update_stmt__plain_rtn_inv>
+    }
 
-    <proc_stmt> ::=
+    token proc_stmt
+    {
         <proc_stmt__plain_rtn_inv>
+    }
 
 This abstraction level is the lowest one that can be recommended for
 general use, and every Muldis Data Language implementation that is expected to be
@@ -558,20 +600,30 @@ place of `rtn_inv_alt_syn` later for their still-unique useful features.**
 When the `catalog_abstraction_level` pragma is `rtn_inv_alt_syn`, then
 the following grammar definitions are in effect:
 
-    <value> ::=
+    token value
+    {
         <value__code_as_data>
+    }
 
-    <catalog> ::=
+    token catalog
+    {
         <catalog__plain_rtn_inv>
+    }
 
-    <expr> ::=
+    token expr
+    {
         <expr__rtn_inv_alt_syn>
+    }
 
-    <update_stmt> ::=
+    token update_stmt
+    {
         <update_stmt__rtn_inv_alt_syn>
+    }
 
-    <proc_stmt> ::=
+    token proc_stmt
+    {
         <proc_stmt__rtn_inv_alt_syn>
+    }
 
 This abstraction level is the highest one and is the most recommended one
 for general use, assuming that all the Muldis Data Language implementations you want to
@@ -662,32 +714,50 @@ Muldis Data Language implementations and older text editors.
 When the `op_char_repertoire` pragma is `basic`, then the
 following grammar definitions are in effect:
 
-    <Singleton_payload> ::=
+    token Singleton_payload
+    {
         <Singleton_payload__op_cr_basic>
+    }
 
-    <Bool_payload> ::=
+    token Bool_payload
+    {
         <Bool_payload__op_cr_basic>
+    }
 
-    <nonquoted_name_str> ::=
+    token nonquoted_name_str
+    {
         <nonquoted_name_str__op_cr_basic>
+    }
 
-    <maybe_Nothing> ::=
+    token maybe_Nothing
+    {
         <maybe_Nothing__op_cr_basic>
+    }
 
-    <comm_infix_reduce_op> ::=
+    token comm_infix_reduce_op
+    {
         <comm_infix_reduce_op__op_cr_basic>
+    }
 
-    <sym_dyadic_infix_op> ::=
+    token sym_dyadic_infix_op
+    {
         <sym_dyadic_infix_op__op_cr_basic>
+    }
 
-    <nonsym_dyadic_infix_op> ::=
+    token nonsym_dyadic_infix_op
+    {
         <nonsym_dyadic_infix_op__op_cr_basic>
+    }
 
-    <monadic_prefix_op> ::=
+    token monadic_prefix_op
+    {
         <monadic_prefix_op__op_cr_basic>
+    }
 
-    <proc_nonsym_dyadic_infix_op> ::=
+    token proc_nonsym_dyadic_infix_op
+    {
         <proc_nonsym_dyadic_infix_op__op_cr_basic>
+    }
 
 ## extended
 
@@ -716,32 +786,50 @@ and the code is otherwise more terse and arguably appears more attractive.
 When the `op_char_repertoire` pragma is `extended`, then the
 following grammar definitions are in effect:
 
-    <Singleton_payload> ::=
+    token Singleton_payload
+    {
         <Singleton_payload__op_cr_extended>
+    }
 
-    <Bool_payload> ::=
+    token Bool_payload
+    {
         <Bool_payload__op_cr_extended>
+    }
 
-    <nonquoted_name_str> ::=
+    token nonquoted_name_str
+    {
         <nonquoted_name_str__op_cr_extended>
+    }
 
-    <maybe_Nothing> ::=
+    token maybe_Nothing
+    {
         <maybe_Nothing__op_cr_extended>
+    }
 
-    <comm_infix_reduce_op> ::=
+    token comm_infix_reduce_op
+    {
         <comm_infix_reduce_op__op_cr_extended>
+    }
 
-    <sym_dyadic_infix_op> ::=
+    token sym_dyadic_infix_op
+    {
         <sym_dyadic_infix_op__op_cr_extended>
+    }
 
-    <nonsym_dyadic_infix_op> ::=
+    token nonsym_dyadic_infix_op
+    {
         <nonsym_dyadic_infix_op__op_cr_extended>
+    }
 
-    <monadic_prefix_op> ::=
+    token monadic_prefix_op
+    {
         <monadic_prefix_op__op_cr_extended>
+    }
 
-    <proc_nonsym_dyadic_infix_op> ::=
+    token proc_nonsym_dyadic_infix_op
+    {
         <proc_nonsym_dyadic_infix_op__op_cr_extended>
+    }
 
 # STANDARD SYNTAX EXTENSIONS
 
@@ -773,15 +861,20 @@ extensions may be used.
 
 Grammar:
 
-    <value__the_floor> ::=
+    token value__the_floor
+    {
           <Int>
         | <List>
+    }
 
-    <value__code_as_data> ::=
+    token value__code_as_data
+    {
           <opaque_value_literal>
         | <coll_value_selector>
+    }
 
-    <opaque_value_literal> ::=
+    token opaque_value_literal
+    {
           <Singleton>
         | <Bool>
         | <Order>
@@ -794,8 +887,10 @@ Grammar:
         | <NameChain>
         | <PNSQNameChain>
         | <RatRoundRule>
+    }
 
-    <coll_value_selector> ::=
+    token coll_value_selector
+    {
           <Scalar>
         | <Tuple>
         | <Database>
@@ -807,6 +902,7 @@ Grammar:
         | <SPInterval>
         | <MPInterval>
         | <List>
+    }
 
 A `value` node is a Muldis Data Language value literal, which is a common special case
 of a Muldis Data Language value selector.
@@ -868,14 +964,17 @@ containing `value_payload` denotes a SCVL, like `Int_payload` or
 
 Every GCVL has 1-3 elements, illustrated by this grammar:
 
-    <x_value> ::=
+    token x_value
+    {
         [
             <value_kind> ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <value_payload>
+    }
 
-    <value_kind> ::=
+    token value_kind
+    {
           Singleton
         | Bool
         | Order
@@ -899,11 +998,15 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | DH? SPInterval
         | DH? MPInterval
         | List
+    }
 
-    <type_name> ::=
+    token type_name
+    {
         <PNSQNameChain_payload>
+    }
 
-    <value_payload> ::=
+    token value_payload
+    {
           <Singleton_payload>
         | <Bool_payload>
         | <Order_payload>
@@ -927,6 +1030,7 @@ Every GCVL has 1-3 elements, illustrated by this grammar:
         | <SPInterval_payload>
         | <MPInterval_payload>
         | <List_payload>
+    }
 
 So a `x_value`|`value` node has 1-3 elements in general:
 
@@ -1025,16 +1129,22 @@ the context of a `depot` node, as it describes some semantics.
 
 Grammar:
 
-    <Singleton> ::=
+    token Singleton
+    {
         [Singleton ':' <unspace>]?
         <Singleton_payload>
+    }
 
-    <Singleton_payload__op_cr_basic> ::=
+    token Singleton_payload__op_cr_basic
+    {
         '-Inf' | Inf
+    }
 
-    <Singleton_payload__op_cr_extended> ::=
+    token Singleton_payload__op_cr_extended
+    {
           <Singleton_payload__op_cr_basic>
         | '-∞' | '∞'
+    }
 
 A `Singleton` node represents a value of any of the singleton scalar types
 that `sys.std.Core.Type.Cat.Singleton` is a union over.
@@ -1061,16 +1171,22 @@ Examples:
 
 Grammar:
 
-    <Bool> ::=
+    token Bool
+    {
         [Bool ':' <unspace>]?
         <Bool_payload>
+    }
 
-    <Bool_payload__op_cr_basic> ::=
+    token Bool_payload__op_cr_basic
+    {
         False | True
+    }
 
-    <Bool_payload__op_cr_extended> ::=
+    token Bool_payload__op_cr_extended
+    {
           <Bool_payload__op_cr_basic>
-        | ⊥ | ⊤
+        | '⊥' | '⊤'
+    }
 
 A `Bool` node represents a logical boolean value.  It is interpreted as a
 Muldis Data Language `sys.std.Core.Type.Bool` value as follows:  The `Bool_payload`
@@ -1099,12 +1215,16 @@ Examples:
 
 Grammar:
 
-    <Order> ::=
+    token Order
+    {
         [Order ':' <unspace>]?
         <Order_payload>
+    }
 
-    <Order_payload> ::=
+    token Order_payload
+    {
         Less | Same | More
+    }
 
 An `Order` node represents an order-determination.  It is interpreted as a
 Muldis Data Language `sys.std.Core.Type.Cat.Order` value as follows:  The
@@ -1123,17 +1243,21 @@ Examples:
 
 Grammar:
 
-    <RoundMeth> ::=
+    token RoundMeth
+    {
         [
             RoundMeth ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <RoundMeth_payload>
+    }
 
-    <RoundMeth_payload> ::=
+    token RoundMeth_payload
+    {
           Down | Up | ToZero | ToInf
         | HalfDown | HalfUp | HalfToZero | HalfToInf
         | HalfEven
+    }
 
 A `RoundMeth` node represents a rounding method.  It is
 interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.RoundMeth` value as
@@ -1152,53 +1276,81 @@ Examples:
 
 Grammar:
 
-    <Int> ::=
+    token Int
+    {
         [
             [Int | NNInt | PInt] ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Int_payload>
+    }
 
-    <Int_payload> ::=
+    token Int_payload
+    {
           <num_max_col_val> '#' <unspace> <int_body>
         | <num_radix_mark> <unspace> <int_body>
         | <d_int_body>
+    }
 
-    <num_max_col_val> ::=
+    token num_max_col_val
+    {
         <pint_head>
+    }
 
-    <num_radix_mark> ::=
+    token num_radix_mark
+    {
         0<[bodx]>
+    }
 
-    <int_body> ::=
+    token int_body
+    {
         0 | '-'?<pint_body>
+    }
 
-    <nnint_body> ::=
+    token nnint_body
+    {
         0 | <pint_body>
+    }
 
-    <pint_body> ::=
+    token pint_body
+    {
         <pint_head> <pint_tail>?
+    }
 
-    <pint_head> ::=
+    token pint_head
+    {
         <[ 1..9 A..Z a..z ]>
+    }
 
-    <pint_tail> ::=
-        [[_?<[ 0..9 A..Z a..z ]>+]+] ** <splitter>
+    token pint_tail
+    {
+        [[_?<[ 0..9 A..Z a..z ]>+]+]+ % <splitter>
+    }
 
-    <d_int_body> ::=
+    token d_int_body
+    {
         0 | '-'?<d_pint_body>
+    }
 
-    <d_nnint_body> ::=
+    token d_nnint_body
+    {
         0 | <d_pint_body>
+    }
 
-    <d_pint_body> ::=
+    token d_pint_body
+    {
         <d_pint_head> <d_pint_tail>?
+    }
 
-    <d_pint_head> ::=
+    token d_pint_head
+    {
         <[ 1..9 ]>
+    }
 
-    <d_pint_tail> ::=
-        [[_?<[ 0..9 ]>+]+] ** <splitter>
+    token d_pint_tail
+    {
+        [[_?<[ 0..9 ]>+]+]+ % <splitter>
+    }
 
 An `Int` node represents an integer numeric value.  It is interpreted as a
 Muldis Data Language `sys.std.Core.Type.Int` value as follows:
@@ -1262,28 +1414,36 @@ Examples:
 
 Grammar:
 
-    <Rat> ::=
+    token Rat
+    {
         [
             [Rat | NNRat | PRat] ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Rat_payload>
+    }
 
-    <Rat_payload> ::=
+    token Rat_payload
+    {
           <num_max_col_val> '#' <unspace> <rat_body>
         | <num_radix_mark> <unspace> <rat_body>
         | <d_rat_body>
+    }
 
-    <rat_body> ::=
+    token rat_body
+    {
           <int_body> <unspace> '.' <pint_tail>
         | <int_body> <unspace> '/' <pint_body>
         | <int_body> <unspace> '*' <pint_body> <unspace> '^' <int_body>
+    }
 
-    <d_rat_body> ::=
+    token d_rat_body
+    {
           <d_int_body> <unspace> '.' <d_pint_tail>
         | <d_int_body> <unspace> '/' <d_pint_body>
         | <d_int_body> <unspace> '*' <d_pint_body>
             <unspace> '^' <d_int_body>
+    }
 
 A `Rat` node represents a rational numeric value.  It is interpreted as a
 Muldis Data Language `sys.std.Core.Type.Rat` value as follows:
@@ -1341,27 +1501,37 @@ Examples:
 
 Grammar:
 
-    <Blob> ::=
+    token Blob
+    {
         [
             [Blob | OctetBlob] ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Blob_payload>
+    }
 
-    <Blob_payload> ::=
+    token Blob_payload
+    {
           <blob_max_col_val> '#' <unspace> <blob_body>
         | <blob_radix_mark> <unspace> <blob_body>
+    }
 
-    <blob_max_col_val> ::=
+    token blob_max_col_val
+    {
         <[137F]>
+    }
 
-    <blob_radix_mark> ::=
+    token blob_radix_mark
+    {
         0<[box]>
+    }
 
-    <blob_body> ::=
+    token blob_body
+    {
         '\''
             <[ 0..9 A..F a..f _ \s ]>*
         '\''
+    }
 
 A `Blob` node represents a general purpose bit string.  It is interpreted
 as a Muldis Data Language `sys.std.Core.Type.Blob` value as follows:  Fundamentally
@@ -1396,47 +1566,63 @@ Examples:
 
 Grammar:
 
-    <Text> ::=
+    token Text
+    {
         [
             Text ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Text_payload>
+    }
 
-    <Text_payload> ::=
+    token Text_payload
+    {
         '\''
             [<-[\']> | <escaped_char>]*
         '\''
+    }
 
-    <escaped_char> ::=
+    token escaped_char
+    {
           '\\\\' | '\\\'' | '\\"' | '\\`'
         | '\\t' | '\\n' | '\\f' | '\\r'
         | '\\c<' [
-              [<[ A..Z ]>+] ** ' '
+              [<[ A..Z ]>+]+ % ' '
             | [0 | <[ 1..9 ]> <[ 0..9 ]>*]
             | <[ 1..9 A..Z a..z ]> '#'
                 [0 | <[ 1..9 A..Z a..z ]> <[ 0..9 A..Z a..z ]>*]
             | 0<[ bodx ]> [0 | <[ 1..9 A..F a..f ]> <[ 0..9 A..F a..f ]>*]
           ] '>'
+    }
 
-    <unspace> ::=
+    token unspace
+    {
         '\\' <ws>? '\\'
+    }
 
-    <splitter> ::=
+    token splitter
+    {
         '\\' \s* '\\'
+    }
 
-    <ws> ::=
+    token ws
+    {
         \s+ [[<non_value_comment> | <visual_dividing_line>] \s+]*
+    }
 
-    <non_value_comment> ::=
+    token non_value_comment
+    {
         '#' \s*
             '`' \s*
                 [<-[\`]> | <escaped_char>]*
             \s* '`'
         \s* '#'
+    }
 
-    <visual_dividing_line> ::=
+    token visual_dividing_line
+    {
         '#' ** 2..*
+    }
 
 A `Text` node represents a general purpose character string.  It is
 interpreted as a Muldis Data Language `sys.std.Core.Type.Text` value as follows:
@@ -1537,46 +1723,68 @@ Examples:
 
 Grammar:
 
-    <Name> ::=
+    token Name
+    {
         Name ':' <unspace>
         [<type_name> ':' <unspace>]?
         <Name_payload>
+    }
 
-    <Name_payload> ::=
+    token Name_payload
+    {
         <nonquoted_name_str> | <quoted_name_str>
+    }
 
-    <nonquoted_name_str__op_cr_basic> ::=
-        [<[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*] ** '-'
+    token nonquoted_name_str__op_cr_basic
+    {
+        [<[ a..z A..Z _ ]> <[ a..z A..Z 0..9 _ ]>*]+ % '-'
+    }
 
-    <nonquoted_name_str__op_cr_extended> ::=
-        [<alpha> \w*] ** '-'
+    token nonquoted_name_str__op_cr_extended
+    {
+        [<alpha> \w*]+ % '-'
+    }
 
-    <quoted_name_str> ::=
+    token quoted_name_str
+    {
         '"'
             [<-[\"]> | <escaped_char>]*
         '"'
+    }
 
-    <NameChain> ::=
+    token NameChain
+    {
         NameChain ':' <unspace>
         [<type_name> ':' <unspace>]?
         <NameChain_payload>
+    }
 
-    <NameChain_payload> ::=
+    token NameChain_payload
+    {
         <nc_nonempty> | <nc_empty>
+    }
 
-    <nc_nonempty> ::=
-        <Name_payload> ** [<unspace> '.']
+    token nc_nonempty
+    {
+        <Name_payload>+ % [<unspace> '.']
+    }
 
-    <nc_empty> ::=
+    token nc_empty
+    {
         '[]'
+    }
 
-    <PNSQNameChain> ::=
+    token PNSQNameChain
+    {
         PNSQNameChain ':' <unspace>
         [<type_name> ':' <unspace>]?
         <PNSQNameChain_payload>
+    }
 
-    <PNSQNameChain_payload> ::=
+    token PNSQNameChain_payload
+    {
         <nc_nonempty>
+    }
 
 A `Name` node represents a canonical short name for any kind of DBMS
 entity when declaring it; it is a character string type, that is disjoint
@@ -1707,24 +1915,29 @@ Examples:
 
 Grammar:
 
-    <RatRoundRule> ::=
+    token RatRoundRule
+    {
         RatRoundRule ':' <unspace>
         [<type_name> ':' <unspace>]?
         <RatRoundRule_payload>
+    }
 
-    <RatRoundRule_payload> ::=
+    token RatRoundRule_payload
+    {
         '[' <ws>?
-            <radix> <ws>? ',' <ws>? <min_exp> <ws>? ',' <ws>? <round_meth>
+            <radix> <ws>? ',' <ws>? <min_exp> <ws>? ',' <ws>? <RoundMeth_payload>
         <ws>? ']'
+    }
 
-    <radix> ::=
+    token radix
+    {
         <Int_payload>
+    }
 
-    <min_exp> ::=
+    token min_exp
+    {
         <Int_payload>
-
-    <round_meth> ::=
-        <RoundMeth_payload>
+    }
 
 A `RatRoundRule` node represents a rational rounding rule.  It is
 interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.RatRoundRule` value whose
@@ -1755,20 +1968,28 @@ options exist are only valid within a `depot` node.
 
 Grammar:
 
-    <Scalar> ::=
+    token Scalar
+    {
         [DH? Scalar | '$'] ':' <unspace>
         <type_name> ':' <unspace>
         <Scalar_payload>
+    }
 
-    <Scalar_payload> ::=
+    token Scalar_payload
+    {
           <possrep_name> ':' <unspace> <possrep_attrs>
         | <possrep_attrs>
+    }
 
-    <possrep_name> ::=
+    token possrep_name
+    {
         <Name_payload>
+    }
 
-    <possrep_attrs> ::=
+    token possrep_attrs
+    {
         <tuple_list>
+    }
 
 A `Scalar` node represents a literal or selector invocation for a
 not-`Int|String` scalar subtype value.  It is interpreted as a Muldis Data Language
@@ -1824,31 +2045,45 @@ Examples:
 
 Grammar:
 
-    <Tuple> ::=
+    token Tuple
+    {
         [DH? Tuple | '%'] ':' <unspace>
         [<type_name> ':' <unspace>]?
         <Tuple_payload>
+    }
 
-    <Tuple_payload> ::=
+    token Tuple_payload
+    {
         <tuple_list> | <tuple_D0>
+    }
 
-    <tuple_list> ::=
+    token tuple_list
+    {
         '{' <ws>?
-            [[<nonord_atvl> | <same_named_nonord_atvl>]
-                ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [[<nonord_atvl> | <same_named_nonord_atvl>]+
+                % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <nonord_atvl> ::=
+    token nonord_atvl
+    {
         <attr_name> <ws>? '=>' <ws>? <expr>
+    }
 
-    <attr_name> ::=
+    token attr_name
+    {
         <Name_payload>
+    }
 
-    <same_named_nonord_atvl> ::=
+    token same_named_nonord_atvl
+    {
         '=>' <attr_name>
+    }
 
-    <tuple_D0> ::=
+    token tuple_D0
+    {
         D0
+    }
 
 A `Tuple` node represents a literal or selector invocation for a tuple
 value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Tuple` value
@@ -1910,13 +2145,17 @@ Examples:
 
 Grammar:
 
-    <Database> ::=
+    token Database
+    {
         Database ':' <unspace>
         [<type_name> ':' <unspace>]?
         <Database_payload>
+    }
 
-    <Database_payload> ::=
+    token Database_payload
+    {
         <Tuple_payload>
+    }
 
 A `Database` node represents a literal or selector invocation for a
 'database' value.  It is interpreted as a Muldis Data Language
@@ -1936,43 +2175,57 @@ a `Database` node distills to same as when `Tuple` does.
 
 Grammar:
 
-    <Relation> ::=
+    token Relation
+    {
         [DH? Relation | '@'] ':' <unspace>
         [<type_name> ':' <unspace>]?
         <Relation_payload>
+    }
 
-    <Relation_payload> ::=
+    token Relation_payload
+    {
           <r_empty_body_payload>
         | <r_nonordered_attr_payload>
         | <r_ordered_attr_payload>
         | <relation_D0>
+    }
 
-    <r_empty_body_payload> ::=
+    token r_empty_body_payload
+    {
         '{' <ws>?
-            [<attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<attr_name>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <r_nonordered_attr_payload> ::=
+    token r_nonordered_attr_payload
+    {
         '{' <ws>?
-            [<tuple_list> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<tuple_list>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <r_ordered_attr_payload> ::=
+    token r_ordered_attr_payload
+    {
         '[' <ws>?
-            [<attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<attr_name>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
         ':' <unspace>
         '{' <ws>?
-            [<ordered_tuple_attrs> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<ordered_tuple_attrs>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <ordered_tuple_attrs> ::=
+    token ordered_tuple_attrs
+    {
         '[' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<expr>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
+    }
 
-    <relation_D0> ::=
+    token relation_D0
+    {
         D0C0 | D0C1
+    }
 
 A `Relation` node represents a literal or selector invocation for a
 relation value.  It is interpreted as a Muldis Data Language
@@ -2051,17 +2304,21 @@ Examples:
 
 Grammar:
 
-    <Set> ::=
+    token Set
+    {
         [
             DH? Set ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Set_payload>
+    }
 
-    <Set_payload> ::=
+    token Set_payload
+    {
         '{' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<expr>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
 A `Set` node represents a literal or selector invocation for a set
 value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Set` value
@@ -2095,25 +2352,35 @@ Examples:
 
 Grammar:
 
-    <Maybe> ::=
+    token Maybe
+    {
         [
             DH? [Maybe | Just] ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Maybe_payload>
+    }
 
-    <Maybe_payload> ::=
+    token Maybe_payload
+    {
         <maybe_list> | <maybe_Nothing>
+    }
 
-    <maybe_list> ::=
+    token maybe_list
+    {
         '{' <ws>? <expr> <ws>? '}'
+    }
 
-    <maybe_Nothing__op_cr_basic> ::=
+    token maybe_Nothing__op_cr_basic
+    {
         Nothing
+    }
 
-    <maybe_Nothing__op_cr_extended> ::=
+    token maybe_Nothing__op_cr_extended
+    {
           <maybe_Nothing__op_cr_basic>
         | '∅'
+    }
 
 A `Maybe` node represents a literal or selector invocation for a maybe
 value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Maybe` value
@@ -2155,17 +2422,21 @@ Examples:
 
 Grammar:
 
-    <Array> ::=
+    token Array
+    {
         [
             DH? Array ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Array_payload>
+    }
 
-    <Array_payload> ::=
+    token Array_payload
+    {
         '[' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<expr>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
+    }
 
 An `Array` node represents a literal or selector invocation for an
 array value.  It is interpreted as a Muldis Data Language
@@ -2202,32 +2473,42 @@ Examples:
 
 Grammar:
 
-    <Bag> ::=
+    token Bag
+    {
         [
             DH? Bag ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <Bag_payload>
+    }
 
-    <Bag_payload> ::=
+    token Bag_payload
+    {
           <bag_payload_counted_values>
         | <bag_payload_repeated_values>
+    }
 
-    <bag_payload_counted_values> ::=
+    token bag_payload_counted_values
+    {
         '{' <ws>?
-            [[<expr> <ws>? '=>' <ws>? <count>] ** [<ws>? ',' <ws>?]
+            [[<expr> <ws>? '=>' <ws>? <count>]+ % [<ws>? ',' <ws>?]
                 [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <count> ::=
+    token count
+    {
           <num_max_col_val> '#' <unspace> <pint_body>
         | <num_radix_mark> <unspace> <pint_body>
         | <d_pint_body>
+    }
 
-    <bag_payload_repeated_values> ::=
+    token bag_payload_repeated_values
+    {
         '{' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<expr>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
 A `Bag` node represents a literal or selector invocation for a bag
 value.  It is interpreted as a Muldis Data Language `sys.std.Core.Type.Bag` value
@@ -2285,47 +2566,67 @@ Examples:
 
 Grammar:
 
-    <SPInterval> ::=
+    token SPInterval
+    {
         [
             DH? SPInterval ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <SPInterval_payload>
+    }
 
-    <SPInterval_payload> ::=
+    token SPInterval_payload
+    {
         '{' <ws>?
             <interval>
         <ws>? '}'
+    }
 
-    <interval> ::=
+    token interval
+    {
         <interval_range> | <interval_single>
+    }
 
-    <interval_range> ::=
+    token interval_range
+    {
         <min> <ws>? <interval_boundary_kind> <ws>? <max>
+    }
 
-    <min> ::=
+    token min
+    {
         <expr>
+    }
 
-    <max> ::=
+    token max
+    {
         <expr>
+    }
 
-    <interval_boundary_kind> ::=
+    token interval_boundary_kind
+    {
         '..' | '..^' | '^..' | '^..^'
+    }
 
-    <interval_single> ::=
+    token interval_single
+    {
         <expr>
+    }
 
-    <MPInterval> ::=
+    token MPInterval
+    {
         [
             DH? MPInterval ':' <unspace>
             [<type_name> ':' <unspace>]?
         ]?
         <MPInterval_payload>
+    }
 
-    <MPInterval_payload> ::=
+    token MPInterval_payload
+    {
         '{' <ws>?
-            [<interval> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<interval>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
 An `SPInterval` node represents a literal or selector invocation for a
 single-piece interval value.  It is interpreted as a Muldis Data Language
@@ -2383,15 +2684,19 @@ Examples:
 
 Grammar:
 
-    <List> ::=
+    token List
+    {
         List ':' <unspace>
         [<type_name> ':' <unspace>]?
         <List_payload>
+    }
 
-    <List_payload> ::=
+    token List_payload
+    {
         '[' <ws>?
-            [<expr> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<expr>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ']'
+    }
 
 A `List` node represents a literal or selector invocation for a
 low-level list value.  It is interpreted as a Muldis Data Language
@@ -2457,40 +2762,58 @@ Examples:
 
 Grammar:
 
-    <depot> ::=
+    token depot
+    {
         <depot_catalog>
         [<ws> <depot_data>]?
+    }
 
-    <depot_catalog> ::=
+    token depot_catalog
+    {
         'depot-catalog' <ws> <catalog>
+    }
 
-    <depot_data> ::=
+    token depot_data
+    {
         'depot-data' <ws> <Database>
+    }
 
-    <catalog__code_as_data> ::=
+    token catalog__code_as_data
+    {
         <Database>
+    }
 
-    <catalog__plain_rtn_inv> ::=
+    token catalog__plain_rtn_inv
+    {
           <catalog__code_as_data>
         | <depot_catalog_payload>
+    }
 
-    <depot_catalog_payload> ::=
+    token depot_catalog_payload
+    {
         '{' <ws>?
             [[
                   <subdepot>
                 | <named_material>
                 | <self_local_dbvar_type>
-            ] ** <ws>]?
+            ]+ % <ws>]?
         <ws>? '}'
+    }
 
-    <subdepot> ::=
+    token subdepot
+    {
         subdepot <ws> <subdepot_declared_name> <ws> <depot_catalog_payload>
+    }
 
-    <subdepot_declared_name> ::=
+    token subdepot_declared_name
+    {
         <Name_payload>
+    }
 
-    <self_local_dbvar_type> ::=
+    token self_local_dbvar_type
+    {
         'self-local-dbvar-type' <ws> <PNSQNameChain_payload>
+    }
 
 A `depot` node specifies a single complete depot, which is the widest
 scope user-defined DBMS entity that is a completely self-defined, and
@@ -2545,7 +2868,8 @@ Examples:
 
 Grammar:
 
-    <material> ::=
+    token material
+    {
           <function>
         | <procedure>
         | <scalar_type>
@@ -2559,6 +2883,7 @@ Grammar:
         | <subset_constr>
         | <distrib_subset_constr>
         | <stim_resp_rule>
+    }
 
 A `material` node specifies a new material (routine or type) that lives in
 a depot or subdepot.
@@ -2632,17 +2957,24 @@ deterministic, but the names would be non-descriptive so akin to random.
 
 Every material has 2-3 elements, illustrated by this grammar:
 
-    <x_material> ::=
+    token x_material
+    {
         <named_material> | <anon_material>
+    }
 
-    <named_material> ::=
+    token named_material
+    {
         <material_kind> <ws> <material_declared_name>
             <ws> <material_payload>
+    }
 
-    <anon_material> ::=
+    token anon_material
+    {
         <material_kind> <ws> <material_payload>
+    }
 
-    <material_kind> ::=
+    token material_kind
+    {
           function
             | 'named-value'
             | 'value-map'
@@ -2670,11 +3002,15 @@ Every material has 2-3 elements, illustrated by this grammar:
         | 'subset-constraint'
         | 'distrib-subset-constraint'
         | 'stimulus-response-rule'
+    }
 
-    <material_declared_name> ::=
+    token material_declared_name
+    {
         <Name_payload>
+    }
 
-    <material_payload> ::=
+    token material_payload
+    {
           <function_payload>
         | <procedure_payload>
         | <scalar_type_payload>
@@ -2688,6 +3024,7 @@ Every material has 2-3 elements, illustrated by this grammar:
         | <subset_constr_payload>
         | <distrib_subset_constr_payload>
         | <stim_resp_rule_payload>
+    }
 
 So a `x_material`|`material` node has 2-3 elements in general:
 
@@ -2720,12 +3057,15 @@ material in another is using a `with_clause`.
 
 Grammar:
 
-    <function> ::=
+    token function
+    {
         <function_kind>
         <ws> <material_declared_name>
         <ws> <function_payload>
+    }
 
-    <function_kind> ::=
+    token function_kind
+    {
           function
         | 'named-value'
         | 'value-map'
@@ -2734,39 +3074,58 @@ Grammar:
         | 'value-constraint'
         | 'value-reduction'
         | 'order-determination'
+    }
 
-    <function_payload> ::=
+    token function_payload
+    {
         <function_heading> <ws> <function_body>
+    }
 
-    <function_heading> ::=
+    token function_heading
+    {
         <func_signature> [<ws> <implements_clause>]*
+    }
 
-    <func_signature> ::=
+    token func_signature
+    {
         '(' <ws>?
             <result_type> <ws>? '<--'
-            [<ws>? <func_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<ws>? <func_param>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
+    }
 
-    <result_type> ::=
+    token result_type
+    {
         <type_name>
+    }
 
-    <func_param> ::=
+    token func_param
+    {
         <ro_reg_param>
+    }
 
-    <function_body> ::=
+    token function_body
+    {
         <nonempty_function_body> | <empty_function_body>
+    }
 
-    <nonempty_function_body> ::=
+    token nonempty_function_body
+    {
         '{' <ws>?
             [[<with_clause> | <named_expr>] <ws>]*
             <result_expr>
         <ws>? '}'
+    }
 
-    <result_expr> ::=
+    token result_expr
+    {
         <expr>
+    }
 
-    <empty_function_body> ::=
+    token empty_function_body
+    {
         '{' <ws>? '...' <ws>? '}'
+    }
 
 A `function` node specifies a new function that lives in a depot or
 subdepot.  A `function` node in the `PTMD_STD` grammar corresponds directly
@@ -2837,111 +3196,173 @@ Examples:
 
 Grammar:
 
-    <procedure> ::=
+    token procedure
+    {
         <procedure_kind>
         <ws> <material_declared_name>
         <ws> <procedure_payload>
+    }
 
-    <procedure_kind> ::=
+    token procedure_kind
+    {
         procedure | 'system-service' | transaction | <recipe_kind>
+    }
 
-    <recipe_kind> ::=
+    token recipe_kind
+    {
         recipe | updater
+    }
 
-    <procedure_payload> ::=
+    token procedure_payload
+    {
         <procedure_heading> <ws> <procedure_body>
+    }
 
-    <procedure_heading> ::=
+    token procedure_heading
+    {
         <proc_signature> [<ws> <implements_clause>]*
+    }
 
-    <proc_signature> ::=
+    token proc_signature
+    {
         '(' <ws>?
-            [<proc_param> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<proc_param>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
+    }
 
-    <proc_param> ::=
+    token proc_param
+    {
           <upd_reg_param>
         | <ro_reg_param>
         | <upd_global_param>
         | <ro_global_param>
+    }
 
-    <upd_reg_param> ::=
+    token upd_reg_param
+    {
         <upd_sigil> <ro_reg_param>
+    }
 
-    <upd_sigil> ::=
+    token upd_sigil
+    {
         '&'
+    }
 
-    <ro_reg_param> ::=
+    token ro_reg_param
+    {
         <param_name> <param_flag>? <ws>? ':' <ws>? <type_name>
+    }
 
-    <param_name> ::=
+    token param_name
+    {
         <lex_entity_name>
+    }
 
-    <lex_entity_name> ::=
+    token lex_entity_name
+    {
         <Name_payload>
+    }
 
-    <param_flag> ::=
+    token param_flag
+    {
         <opt_param_flag> | <dispatch_param_flag>
+    }
 
-    <opt_param_flag> ::=
+    token opt_param_flag
+    {
         '?'
+    }
 
-    <dispatch_param_flag> ::=
+    token dispatch_param_flag
+    {
         '@'
+    }
 
-    <upd_global_param> ::=
+    token upd_global_param
+    {
         <upd_sigil> <ro_global_param>
+    }
 
-    <ro_global_param> ::=
+    token ro_global_param
+    {
         <param_name> <ws>? <infix_bind_op> <ws>? <global_var_name>
+    }
 
-    <infix_bind_op> ::=
+    token infix_bind_op
+    {
         '::='
+    }
 
-    <global_var_name> ::=
+    token global_var_name
+    {
         <PNSQNameChain_payload>
+    }
 
-    <implements_clause> ::=
+    token implements_clause
+    {
         implements <ws> <routine_name>
+    }
 
-    <routine_name> ::=
+    token routine_name
+    {
         <PNSQNameChain_payload>
+    }
 
-    <procedure_body> ::=
+    token procedure_body
+    {
           <nonempty_procedure_body> | <empty_procedure_body>
         | <nonempty_recipe_body> | <empty_recipe_body>
+    }
 
-    <nonempty_procedure_body> ::=
+    token nonempty_procedure_body
+    {
         <nonempty_procedure_body_or_compound_stmt>
+    }
 
-    <nonempty_recipe_body> ::=
+    token nonempty_recipe_body
+    {
         <nonempty_recipe_body_or_multi_upd_stmt>
+    }
 
-    <nonempty_procedure_body_or_compound_stmt> ::=
+    token nonempty_procedure_body_or_compound_stmt
+    {
         '[' <ws>?
-            [[<with_clause> | <proc_var> | <named_expr> | <proc_stmt>]
-                ** <ws>]*
+            [[<with_clause> | <proc_var> | <named_expr> | <proc_stmt>]+
+                % <ws>]*
         <ws>? ']'
+    }
 
-    <nonempty_recipe_body_or_multi_upd_stmt> ::=
+    token nonempty_recipe_body_or_multi_upd_stmt
+    {
         '{' <ws>?
-            [[<with_clause> | <named_expr> | <update_stmt>] ** <ws>]*
+            [[<with_clause> | <named_expr> | <update_stmt>]+ % <ws>]*
         <ws>? '}'
+    }
 
-    <with_clause> ::=
+    token with_clause
+    {
         with <ws> <named_material>
+    }
 
-    <proc_var> ::=
+    token proc_var
+    {
         var <ws> <var_name> <ws>? ':' <ws>? <type_name>
+    }
 
-    <var_name> ::=
+    token var_name
+    {
         <lex_entity_name>
+    }
 
-    <empty_procedure_body> ::=
+    token empty_procedure_body
+    {
         '[' <ws>? '...' <ws>? ']'
+    }
 
-    <empty_recipe_body> ::=
+    token empty_recipe_body
+    {
         '{' <ws>? '...' <ws>? '}'
+    }
 
 A `procedure` node specifies a new procedure that lives in a depot or
 subdepot.  A `procedure` node in the `PTMD_STD` grammar corresponds directly
@@ -3103,12 +3524,15 @@ Examples:
 
 Grammar:
 
-    <scalar_type> ::=
+    token scalar_type
+    {
         'scalar-type'
         <ws> <material_declared_name>
         <ws> <scalar_type_payload>
+    }
 
-    <scalar_type_payload> ::=
+    token scalar_type_payload
+    {
         '{' <ws>?
             [
                   <with_clause>
@@ -3118,36 +3542,49 @@ Grammar:
                 | <possrep>
                 | <possrep_map>
                 | <default_clause>
-            ] ** <ws>
+            ]+ % <ws>
         <ws>? '}'
+    }
 
-    <subtype_constraint_clause> ::=
+    token subtype_constraint_clause
+    {
         'subtype-constraint' <ws> <routine_name>
+    }
 
-    <possrep> ::=
+    token possrep
+    {
         possrep <ws>
         <possrep_name> <ws>
         '{' <ws>?
             <tuple_type_clause>
             [<ws> <is_base_clause>]?
         <ws>? '}'
+    }
 
-    <is_base_clause> ::=
+    token is_base_clause
+    {
         'is-base'
+    }
 
-    <possrep_map> ::=
+    token possrep_map
+    {
         'possrep-map' <ws>
         '{' <ws>?
             <p2> <ws> from <ws> <p1>
             <ws> using <ws> <routine_name>
             <ws> 'reverse-using' <ws> <routine_name>
         <ws>? '}'
+    }
 
-    <p1> ::=
+    token p1
+    {
         <possrep_name>
+    }
 
-    <p2> ::=
+    token p2
+    {
         <possrep_name>
+    }
 
 A `scalar_type` node specifies a new scalar type that lives in a depot or
 subdepot.  A `scalar_type` node in the `PTMD_STD` grammar corresponds
@@ -3170,15 +3607,20 @@ It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.ScalarType` v
 
 Grammar:
 
-    <tuple_type> ::=
+    token tuple_type
+    {
         <tuple_type_kind>
         <ws> <material_declared_name>
         <ws> <tuple_type_payload>
+    }
 
-    <tuple_type_kind> ::=
+    token tuple_type_kind
+    {
         'tuple-type' | 'database-type'
+    }
 
-    <tuple_type_payload> ::=
+    token tuple_type_payload
+    {
         '{' <ws>?
             [
                   <with_clause>
@@ -3188,16 +3630,22 @@ Grammar:
                 | <virtual_attr_map>
                 | <constraint_clause>
                 | <default_clause>
-            ] ** <ws>
+            ]+ % <ws>
         <ws>? '}'
+    }
 
-    <tuple_attr> ::=
+    token tuple_attr
+    {
         attr <ws> <attr_name_lex> <ws>? ':' <ws>? <type_name>
+    }
 
-    <attr_name_lex> ::=
+    token attr_name_lex
+    {
         <lex_entity_name>
+    }
 
-    <virtual_attr_map> ::=
+    token virtual_attr_map
+    {
         'virtual-attr-map' <ws>
         '{' <ws>?
             'determinant-attrs' <ws> <aliased_attr_list>
@@ -3205,18 +3653,25 @@ Grammar:
             <ws> 'map-function' <ws> <routine_name>
             [<ws> <is_updateable_clause>]?
         <ws>? '}'
+    }
 
-    <aliased_attr_list> ::=
+    token aliased_attr_list
+    {
         '{' <ws>?
-            [[<aliased_attr_pair> | <same_named_nonord_atvl>]
-                ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [[<aliased_attr_pair> | <same_named_nonord_atvl>]+
+                % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <aliased_attr_pair> ::=
+    token aliased_attr_pair
+    {
         <attr_name_lex> <ws>? '=>' <ws>? <attr_nc_lex>
+    }
 
-    <is_updateable_clause> ::=
+    token is_updateable_clause
+    {
         'is-updateable'
+    }
 
 A `tuple_type` node specifies a new tuple type that lives in a depot or
 subdepot.  A `tuple_type` node in the `PTMD_STD` grammar corresponds
@@ -3297,12 +3752,15 @@ Examples:
 
 Grammar:
 
-    <relation_type> ::=
+    token relation_type
+    {
         'relation-type'
         <ws> <material_declared_name>
         <ws> <relation_type_payload>
+    }
 
-    <relation_type_payload> ::=
+    token relation_type_payload
+    {
         '{' <ws>?
             [
                   <with_clause>
@@ -3311,11 +3769,14 @@ Grammar:
                 | <tuple_type_clause>
                 | <constraint_clause>
                 | <default_clause>
-            ] ** <ws>
+            ]+ % <ws>
         <ws>? '}'
+    }
 
-    <tuple_type_clause> ::=
-        tuple-type <ws> <type_name>
+    token tuple_type_clause
+    {
+        'tuple-type' <ws> <type_name>
+    }
 
 A `relation_type` node specifies a new relation type that lives in a depot
 or subdepot.  A `relation_type` node in the `PTMD_STD` grammar corresponds
@@ -3364,12 +3825,15 @@ Examples:
 
 Grammar:
 
-    <domain_type> ::=
+    token domain_type
+    {
         'domain-type'
         <ws> <material_declared_name>
         <ws> <domain_type_payload>
+    }
 
-    <domain_type_payload> ::=
+    token domain_type_payload
+    {
         '{' <ws>?
             [
                   <with_clause>
@@ -3378,20 +3842,25 @@ Grammar:
                 | <domain_filters>
                 | <constraint_clause>
                 | <default_clause>
-            ] ** <ws>
+            ]+ % <ws>
         <ws>? '}'
+    }
 
-    <domain_sources> ::=
+    token domain_sources
+    {
         ['source-union' | 'source-intersection'] <ws>
         '{' <ws>?
-            [<type_name> | <type_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
+            [<type_name> | <type_name>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]
         <ws>? '}'
+    }
 
-    <domain_filters> ::=
+    token domain_filters
+    {
         ['filter-union' | 'filter-intersection'] <ws>
         '{' <ws>?
-            [<type_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<type_name>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
 A `domain_type` node specifies a new domain type that lives in a depot or
 subdepot.  A `domain_type` node in the `PTMD_STD` grammar corresponds
@@ -3414,15 +3883,20 @@ It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.DomainType` v
 
 Grammar:
 
-    <subset_type> ::=
+    token subset_type
+    {
         'subset-type'
         <ws> <material_declared_name>
         <ws> <subset_type_payload>
+    }
 
-    <subset_type_payload> ::=
+    token subset_type_payload
+    {
         <subset_type_pl_long> | <subset_type_pl_short>
+    }
 
-    <subset_type_pl_long> ::=
+    token subset_type_pl_long
+    {
         '{' <ws>?
             [
                   <with_clause>
@@ -3430,25 +3904,36 @@ Grammar:
                 | <base_type_clause>
                 | <constraint_clause>
                 | <default_clause>
-            ] ** <ws>
+            ]+ % <ws>
         <ws>? '}'
+    }
 
-    <base_type_clause> ::=
+    token base_type_clause
+    {
         ['base-type' | of] <ws> <type_name>
+    }
 
-    <constraint_clause> ::=
+    token constraint_clause
+    {
         [constraint | where] <ws> <constraint_name>
+    }
 
-    <constraint_name> ::=
+    token constraint_name
+    {
         <PNSQNameChain_payload>
+    }
 
-    <default_clause> ::=
+    token default_clause
+    {
         default <ws> <routine_name>
+    }
 
-    <subset_type_pl_short> ::=
+    token subset_type_pl_short
+    {
         <base_type_clause>
         [<ws> <constraint_clause>]?
         [<ws> <default_clause>]?
+    }
 
 A `subset_type` node specifies a new subset type that lives in a depot or
 subdepot.  A `subset_type` node in the `PTMD_STD` grammar corresponds
@@ -3471,24 +3956,32 @@ It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.SubsetType` v
 
 Grammar:
 
-    <mixin_type> ::=
+    token mixin_type
+    {
         'mixin-type'
         <ws> <material_declared_name>
         <ws> <mixin_type_payload>
+    }
 
-    <mixin_type_payload> ::=
+    token mixin_type_payload
+    {
         '{' <ws>?
             [[
                   <with_clause>
                 | <composes_clause>
-            ] ** <ws>]?
+            ]+ % <ws>]?
         <ws>? '}'
+    }
 
-    <composes_clause> ::=
+    token composes_clause
+    {
         composes <ws> <type_name> [<ws> <prov_def_clause>]?
+    }
 
-    <prov_def_clause> ::=
+    token prov_def_clause
+    {
         'and-provides-its-default'
+    }
 
 A `mixin_type` node specifies a new mixin type that lives in a depot or
 subdepot.  A `mixin_type` node in the `PTMD_STD` grammar corresponds
@@ -3511,18 +4004,24 @@ It is interpreted as a Muldis Data Language `sys.std.Core.Type.Cat.MixinType` va
 
 Grammar:
 
-    <key_constr> ::=
+    token key_constr
+    {
         <key_constr_kind>
         <ws> <material_declared_name>
         <ws> <key_constr_payload>
+    }
 
-    <key_constr_kind> ::=
+    token key_constr_kind
+    {
         'key-constraint' | 'primary-key'
+    }
 
-    <key_constr_payload> ::=
+    token key_constr_payload
+    {
         '{' <ws>?
-            [<attr_name_lex> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<attr_name_lex>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
 A `key_constr` node specifies a new unique key constraint or candidate
 key, for a relation type, that lives in a depot or subdepot.  A
@@ -3565,46 +4064,68 @@ Examples:
 
 Grammar:
 
-    <subset_constr> ::=
+    token subset_constr
+    {
         'subset-constraint'
         <ws> <material_declared_name>
         <ws> <subset_constr_payload>
+    }
 
-    <subset_constr_payload> ::=
+    token subset_constr_payload
+    {
         '{' <ws>?
             parent <ws> <parent> <ws> 'using-key' <ws> <parent_key>
             <ws> child <ws> <child> <ws> 'using-attrs' <ws> <sc_attr_map>
         <ws>? '}'
+    }
 
-    <parent> ::=
+    token parent
+    {
         <attr_nc_lex>
+    }
 
-    <attr_nc_lex> ::=
+    token attr_nc_lex
+    {
         <lex_entity_nc>
+    }
 
-    <lex_entity_nc> ::=
+    token lex_entity_nc
+    {
         <NameChain_payload>
+    }
 
-    <parent_key> ::=
+    token parent_key
+    {
         <constraint_name>
+    }
 
-    <child> ::=
+    token child
+    {
         <attr_nc_lex>
+    }
 
-    <sc_attr_map> ::=
+    token sc_attr_map
+    {
         '{' <ws>?
-            [[<sc_attr_pair> | <same_named_nonord_atvl>]
-                ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [[<sc_attr_pair> | <same_named_nonord_atvl>]+
+                % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? '}'
+    }
 
-    <sc_attr_pair> ::=
+    token sc_attr_pair
+    {
         <child_attr> <ws>? '=>' <ws>? <parent_attr>
+    }
 
-    <child_attr> ::=
+    token child_attr
+    {
         <attr_name_lex>
+    }
 
-    <parent_attr> ::=
+    token parent_attr
+    {
         <attr_name_lex>
+    }
 
 A `subset_constr` node specifies a (non-distributed) subset constraint
 (foreign key constraint) over relation-valued attributes, for a tuple type,
@@ -3645,19 +4166,27 @@ Examples:
 
 Grammar:
 
-    <stim_resp_rule> ::=
+    token stim_resp_rule
+    {
         'stimulus-response-rule'
         <ws> <material_declared_name>
         <ws> <stim_resp_rule_payload>
+    }
 
-    <stim_resp_rule_payload> ::=
+    token stim_resp_rule_payload
+    {
         when <ws> <stimulus> <ws> invoke <ws> <response>
+    }
 
-    <stimulus> ::=
+    token stimulus
+    {
         'after-mount'
+    }
 
-    <response> ::=
+    token response
+    {
         <routine_name>
+    }
 
 A `stim_resp_rule` node specifies a new stimulus-response rule that lives
 in a depot or subdepot.  A `stim_resp_rule` node in the `PTMD_STD` grammar
@@ -3690,7 +4219,8 @@ Examples:
 
 Grammar:
 
-    <expr__plain_rtn_inv> ::=
+    token expr__plain_rtn_inv
+    {
           <delim_expr>
         | <expr_name>
         | <named_expr>
@@ -3700,19 +4230,28 @@ Grammar:
         | <if_else_expr>
         | <given_when_def_expr>
         | <material_ref_sel_expr>
+    }
 
-    <expr__rtn_inv_alt_syn> ::=
+    token expr__rtn_inv_alt_syn
+    {
           <expr__plain_rtn_inv>
         | <func_invo_alt_syntax>
+    }
 
-    <delim_expr> ::=
+    token delim_expr
+    {
         '(' <ws>? <expr> <ws>? ')'
+    }
 
-    <expr_name> ::=
+    token expr_name
+    {
         <lex_entity_name>
+    }
 
-    <named_expr> ::=
+    token named_expr
+    {
         [let <ws>]? <expr_name> <ws> <infix_bind_op> <ws> <expr>
+    }
 
 An `expr` node is the general case of a Muldis Data Language value expression tree
 (which normally denotes a Muldis Data Language value selector), which must be composed
@@ -3779,17 +4318,25 @@ Examples:
 
 Grammar:
 
-    <accessor> ::=
+    token accessor
+    {
         <acc_via_named> | <acc_via_topic> | <acc_via_anon>
+    }
 
-    <acc_via_named> ::=
+    token acc_via_named
+    {
         <lex_entity_nc>
+    }
 
-    <acc_via_topic> ::=
+    token acc_via_topic
+    {
         '.' <NameChain_payload>
+    }
 
-    <acc_via_anon> ::=
+    token acc_via_anon
+    {
         <expr> <unspace> '.' <nc_nonempty>
+    }
 
 An `accessor` node represents an accessor or alias for an attribute of
 another, tuple-valued expression node.  It is interpreted as a tuple of a
@@ -3821,16 +4368,22 @@ Examples:
 
 Grammar:
 
-    <func_invo> ::=
+    token func_invo
+    {
         <routine_name> <unspace> <func_arg_list>
+    }
 
-    <func_arg_list> ::=
+    token func_arg_list
+    {
         '(' <ws>?
-            [<func_arg> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<func_arg>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
+    }
 
-    <func_arg> ::=
+    token func_arg
+    {
         <named_ro_arg> | <anon_ro_arg> | <same_named_ro_arg>
+    }
 
 A `func_invo` node represents the result of invoking a named
 function with specific arguments.  It is interpreted as a tuple of a
@@ -3930,19 +4483,27 @@ Examples:
 
 Grammar:
 
-    <if_else_expr> ::=
+    token if_else_expr
+    {
           if <ws> <if_expr> <ws> then <ws> <then_expr>
             <ws> else <ws> <else_expr>
         | <if_expr> <ws> '??' <ws> <then_expr> <ws> '!!' <ws> <else_expr>
+    }
 
-    <if_expr> ::=
+    token if_expr
+    {
         <expr>
+    }
 
-    <then_expr> ::=
+    token then_expr
+    {
         <expr>
+    }
 
-    <else_expr> ::=
+    token else_expr
+    {
         <expr>
+    }
 
 An `if_else_expr` node represents a ternary if-then-else control flow
 expression.  It is interpreted as a tuple of a Muldis Data Language
@@ -3973,22 +4534,27 @@ Examples:
 
 Grammar:
 
-    <given_when_def_expr> ::=
+    token given_when_def_expr
+    {
         given <ws> <given_expr> <ws>
         [when <ws> <when_expr> <ws> then <ws> <then_expr> <ws>]*
         default <ws> <default_expr>
+    }
 
-    <given_expr> ::=
+    token given_expr
+    {
         <expr>
+    }
 
-    <when_expr> ::=
+    token when_expr
+    {
         <expr>
+    }
 
-    <then_expr> ::=
+    token default_expr
+    {
         <expr>
-
-    <default_expr> ::=
-        <expr>
+    }
 
 A `given_when_def_expr` node represents an N-way given-when-default
 switch control flow expression that dispatches based on matching a single
@@ -4016,18 +4582,26 @@ Examples:
 
 Grammar:
 
-    <material_ref_sel_expr> ::=
+    token material_ref_sel_expr
+    {
           <material_ref>
         | <primed_func>
+    }
 
-    <material_ref> ::=
+    token material_ref
+    {
         '<' <material_name> '>'
+    }
 
-    <material_name> ::=
+    token material_name
+    {
         <PNSQNameChain_payload>
+    }
 
-    <primed_func> ::=
+    token primed_func
+    {
         <material_ref> <unspace> <func_arg_list>
+    }
 
 A `material_ref` node represents a selector invocation for a value of the
 `sys.std.Core.Type.Cat.AbsPathMaterialNC` type, which is selected in terms
@@ -4073,7 +4647,8 @@ Examples:
 
 Grammar:
 
-    <proc_stmt__plain_rtn_inv> ::=
+    token proc_stmt__plain_rtn_inv
+    {
           <stmt_name>
         | <named_stmt>
         | <compound_stmt>
@@ -4083,25 +4658,36 @@ Grammar:
         | <if_else_stmt>
         | <given_when_def_stmt>
         | <leave_or_iterate_or_loop_stmt>
+    }
 
-    <proc_stmt__rtn_inv_alt_syn> ::=
+    token proc_stmt__rtn_inv_alt_syn
+    {
           <proc_stmt__plain_rtn_inv>
         | <proc_invo_alt_syntax>
+    }
 
-    <update_stmt__plain_rtn_inv> ::=
+    token update_stmt__plain_rtn_inv
+    {
           <stmt_name>
         | <named_stmt>
         | <proc_invo>
+    }
 
-    <update_stmt__rtn_inv_alt_syn> ::=
+    token update_stmt__rtn_inv_alt_syn
+    {
           <update_stmt__plain_rtn_inv>
         | <proc_invo_alt_syntax>
+    }
 
-    <stmt_name> ::=
+    token stmt_name
+    {
         <Name_payload>
+    }
 
-    <named_stmt> ::=
+    token named_stmt
+    {
         [let <ws>]? <stmt_name> <ws> <infix_bind_op> <ws> <proc_stmt>
+    }
 
 A `proc_stmt` node is the general case of a Muldis Data Language statement tree, which
 must be composed beneath a `depot`, or specifically into a procedure
@@ -4147,8 +4733,10 @@ Examples:
 
 Grammar:
 
-    <compound_stmt> ::=
+    token compound_stmt
+    {
         <nonempty_procedure_body_or_compound_stmt>
+    }
 
 A `compound_stmt` node specifies a procedure compound statement composed
 of a sequence of 0..N other statements such that those other statements
@@ -4175,8 +4763,10 @@ Examples:
 
 Grammar:
 
-    <multi_upd_stmt> ::=
+    token multi_upd_stmt
+    {
         <nonempty_recipe_body_or_multi_upd_stmt>
+    }
 
 A `multi_upd_stmt` node specifies a multi-update statement, which is a
 procedure compound statement composed of a set of 0..N other statements
@@ -4216,42 +4806,62 @@ Examples:
 
 Grammar:
 
-    <proc_invo> ::=
+    token proc_invo
+    {
         <routine_name> <unspace> <proc_arg_list>
+    }
 
-    <proc_arg_list> ::=
+    token proc_arg_list
+    {
         '(' <ws>?
-            [<proc_arg> ** [<ws>? ',' <ws>?] [<ws>? ',']?]?
+            [<proc_arg>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]?
         <ws>? ')'
+    }
 
-    <proc_arg> ::=
+    token proc_arg
+    {
           <named_upd_arg>
         | <named_ro_arg>
         | <anon_upd_arg>
         | <anon_ro_arg>
         | <same_named_upd_arg>
         | <same_named_ro_arg>
+    }
 
-    <named_upd_arg> ::=
+    token named_upd_arg
+    {
         <upd_sigil> <named_ro_arg>
+    }
 
-    <named_ro_arg> ::=
+    token named_ro_arg
+    {
         <invo_param_name> <ws>? '=>' <ws>? <expr>
+    }
 
-    <invo_param_name> ::=
+    token invo_param_name
+    {
         <Name_payload>
+    }
 
-    <anon_upd_arg> ::=
+    token anon_upd_arg
+    {
         <upd_sigil> <anon_ro_arg>
+    }
 
-    <anon_ro_arg> ::=
+    token anon_ro_arg
+    {
         <expr>
+    }
 
-    <same_named_upd_arg> ::=
+    token same_named_upd_arg
+    {
         <upd_sigil> <same_named_ro_arg>
+    }
 
-    <same_named_ro_arg> ::=
+    token same_named_ro_arg
+    {
         '=>' <invo_param_name>
+    }
 
 A `proc_invo` node represents the invocation of a named procedure,
 with specific subject-to-update or read-only arguments, as a
@@ -4312,15 +4922,21 @@ Examples:
 
 Grammar:
 
-    <try_catch_stmt> ::=
+    token try_catch_stmt
+    {
         try <ws> <try_stmt>
         [<ws> catch <ws> <catch_stmt>]?
+    }
 
-    <try_stmt> ::=
+    token try_stmt
+    {
         <proc_stmt>
+    }
 
-    <catch_stmt> ::=
+    token catch_stmt
+    {
         <proc_stmt>
+    }
 
 A `try_catch_stmt` node represents a try-catch control flow statement.  It
 is interpreted as a tuple of a Muldis Data Language
@@ -4349,15 +4965,21 @@ Examples:
 
 Grammar:
 
-    <if_else_stmt> ::=
+    token if_else_stmt
+    {
         if <ws> <if_expr> <ws> then <ws> <then_stmt>
         [<ws> else <ws> <else_stmt>]?
+    }
 
-    <then_stmt> ::=
+    token then_stmt
+    {
         <proc_stmt>
+    }
 
-    <else_stmt> ::=
+    token else_stmt
+    {
         <proc_stmt>
+    }
 
 An `if_else_stmt` node represents a ternary if-then-else control flow
 statement.  It is interpreted as a tuple of a Muldis Data Language
@@ -4379,16 +5001,17 @@ Examples:
 
 Grammar:
 
-    <given_when_def_stmt> ::=
+    token given_when_def_stmt
+    {
         given <ws> <given_expr> <ws>
         [when <ws> <when_expr> <ws> then <ws> <then_stmt> <ws>]*
         [default <ws> <default_stmt>]?
+    }
 
-    <then_stmt> ::=
+    token default_stmt
+    {
         <proc_stmt>
-
-    <default_stmt> ::=
-        <proc_stmt>
+    }
 
 A `given_when_def_stmt` node represents an N-way given-when-default switch
 control flow statement that dispatches based on matching a single value
@@ -4421,19 +5044,27 @@ Examples:
 
 Grammar:
 
-    <leave_or_iterate_or_loop_stmt> ::=
+    token leave_or_iterate_or_loop_stmt
+    {
           <leave_stmt>
         | <iterate_stmt>
         | <loop_stmt>
+    }
 
-    <leave_stmt> ::=
+    token leave_stmt
+    {
         leave [<ws> <stmt_name>]?
+    }
 
-    <iterate_stmt> ::=
+    token iterate_stmt
+    {
         iterate [<ws> <stmt_name>]?
+    }
 
-    <loop_stmt> ::=
+    token loop_stmt
+    {
         loop <ws> <proc_stmt>
+    }
 
 The 3 node kinds `leave_stmt`, `iterate_stmt`, `loop_stmt` are all very
 useable independently and are also commonly used together.
@@ -4503,7 +5134,8 @@ Examples:
 
 Grammar:
 
-    <func_invo_alt_syntax> ::=
+    token func_invo_alt_syntax
+    {
           <comm_infix_reduce_op_invo>
         | <noncomm_infix_reduce_op_invo>
         | <sym_dyadic_infix_op_invo>
@@ -4514,6 +5146,7 @@ Grammar:
         | <num_op_invo_with_round>
         | <ord_compare_op_invo>
         | ...
+    }
 
 A `func_invo_alt_syntax` node represents the result of invoking a named
 system-defined function with specific arguments.  It is interpreted as a
@@ -4555,23 +5188,29 @@ quickly writing understandeable code.
 
 Grammar:
 
-    <comm_infix_reduce_op_invo> ::=
-        <expr> ** [<ws> <comm_infix_reduce_op> <ws>]
+    token comm_infix_reduce_op_invo
+    {
+        <expr>+ % [<ws> <comm_infix_reduce_op> <ws>]
+    }
 
-    <comm_infix_reduce_op__op_cr_basic> ::=
+    token comm_infix_reduce_op__op_cr_basic
+    {
           min | max
         | and | or | xnor | iff | xor
         | '+' | '*'
         | union | intersect | exclude | symdiff
         | join | times | 'cross-join'
         | 'union+' | 'union++' | 'intersect+'
+    }
 
-    <comm_infix_reduce_op__op_cr_extended> ::=
+    token comm_infix_reduce_op__op_cr_extended
+    {
           <comm_infix_reduce_op__op_cr_basic>
         | '∧' | '∨' | '↔' | '⊻' | '↮'
         | '∪' | '∩' | '∆'
         | '⋈' | '×'
         | '∪+' | '∪++' | '∩+'
+    }
 
 A `comm_infix_reduce_op_invo` node is for using infix notation to invoke a
 (homogeneous) commutative N-adic reduction operator function.  Such a
@@ -4658,11 +5297,15 @@ Examples:
 
 Grammar:
 
-    <noncomm_infix_reduce_op_invo> ::=
-        <expr> ** [<ws> <noncomm_infix_reduce_op> <ws>]
+    token noncomm_infix_reduce_op_invo
+    {
+        <expr>+ % [<ws> <noncomm_infix_reduce_op> <ws>]
+    }
 
-    <noncomm_infix_reduce_op> ::=
+    token noncomm_infix_reduce_op
+    {
         '[<=>]' | '~' | '//'
+    }
 
 A `noncomm_infix_reduce_op_invo` node is for using infix notation to
 invoke a (homogeneous) non-commutative N-adic reduction operator function.
@@ -4708,19 +5351,25 @@ Examples:
 
 Grammar:
 
-    <sym_dyadic_infix_op_invo> ::=
+    token sym_dyadic_infix_op_invo
+    {
         <expr> <ws> <sym_dyadic_infix_op> <ws> <expr>
+    }
 
-    <sym_dyadic_infix_op__op_cr_basic> ::=
+    token sym_dyadic_infix_op__op_cr_basic
+    {
           '=' | '!='
         | nand | nor
         | '|-|'
         | compose
+    }
 
-    <sym_dyadic_infix_op__op_cr_extended> ::=
+    token sym_dyadic_infix_op__op_cr_extended
+    {
           <sym_dyadic_infix_op__op_cr_basic>
         | '≠'
         | '⊼' | '↑' | '⊽' | '↓'
+    }
 
 A `sym_dyadic_infix_op_invo` node is for using infix notation to invoke a
 symmetric dyadic operator function.  Such a function takes exactly 2
@@ -4765,16 +5414,23 @@ Examples:
 
 Grammar:
 
-    <nonsym_dyadic_infix_op_invo> ::=
+    token nonsym_dyadic_infix_op_invo
+    {
         <lhs> <ws> <nonsym_dyadic_infix_op> <ws> <rhs>
+    }
 
-    <lhs> ::=
+    token lhs
+    {
         <expr>
+    }
 
-    <rhs> ::=
+    token rhs
+    {
         <expr>
+    }
 
-    <nonsym_dyadic_infix_op__op_cr_basic> ::=
+    token nonsym_dyadic_infix_op__op_cr_basic
+    {
           isa | '!isa' | 'not-isa' | as | asserting | assuming
         | '<' | '<=' | '>' | '>='
         | imp | implies | nimp | if | nif
@@ -4793,8 +5449,10 @@ Grammar:
         | divideby
         | 'minus+' | 'except+'
         | like | '!like' | 'not-like'
+    }
 
-    <nonsym_dyadic_infix_op__op_cr_extended> ::=
+    token nonsym_dyadic_infix_op__op_cr_extended
+    {
           <nonsym_dyadic_infix_op__op_cr_basic>
         | '≤' | '≥'
         | '→' | '↛' | '←' | '↚'
@@ -4806,6 +5464,7 @@ Grammar:
         | '⊂+' | '⊄+' | '⊃+' | '⊅+'
         | '∖' | '⊿' | '⋉' | '÷'
         | '∖+'
+    }
 
 A `nonsym_dyadic_infix_op_invo` node is for using infix notation to
 invoke a non-symmetric dyadic operator function.  Such a function takes
@@ -4970,24 +5629,36 @@ Examples:
 
 Grammar:
 
-    <monadic_prefix_op_invo> ::=
+    token monadic_prefix_op_invo
+    {
         <monadic_prefix_op_invo_alpha> | <monadic_prefix_op_invo_sym>
+    }
 
-    <monadic_prefix_op_invo_alpha> ::=
+    token monadic_prefix_op_invo_alpha
+    {
         <monadic_prefix_op_alpha> <ws> <expr>
+    }
 
-    <monadic_prefix_op_alpha> ::=
-        not abs
+    token monadic_prefix_op_alpha
+    {
+        not | abs
+    }
 
-    <monadic_prefix_op_invo_sym> ::=
+    token monadic_prefix_op_invo_sym
+    {
         <monadic_prefix_op> <ws>? <expr>
+    }
 
-    <monadic_prefix_op__op_cr_basic> ::=
+    token monadic_prefix_op__op_cr_basic
+    {
         '!' | '#' | '#+' | '%' | '@'
+    }
 
-    <monadic_prefix_op__op_cr_extended> ::=
+    token monadic_prefix_op__op_cr_extended
+    {
           <monadic_prefix_op__op_cr_basic>
         | '¬'
+    }
 
 A `monadic_prefix_op_invo` node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -5029,11 +5700,15 @@ Examples:
 
 Grammar:
 
-    <monadic_postfix_op_invo> ::=
+    token monadic_postfix_op_invo
+    {
         <expr> <ws>? <monadic_postfix_op>
+    }
 
-    <monadic_postfix_op> ::=
+    token monadic_postfix_op
+    {
         '++' | '--' | '!'
+    }
 
 A `monadic_postfix_op_invo` node is for using prefix notation to invoke a
 monadic operator function.  Such a function takes exactly 1 argument, which
@@ -5060,28 +5735,39 @@ Examples:
 
 Grammar:
 
-    <postcircumfix_op_invo> ::=
+    token postcircumfix_op_invo
+    {
           <pcf_acc_op_invo>
         | <s_pcf_op_invo> | <atb_pcf_op_invo> | <r_pcf_op_invo>
         | <pcf_mbe_op_invo> | <pcf_ary_op_invo>
+    }
 
-    <pcf_acc_op_invo> ::=
+    token pcf_acc_op_invo
+    {
         <pcf_s_acc_op_invo> | <pcf_t_acc_op_invo>
+    }
 
-    <pcf_s_acc_op_invo> ::=
+    token pcf_s_acc_op_invo
+    {
         <expr> <unspace> '.{' [<ws>? <possrep_name>]? ':' <ws>?
             <attr_name>
         <ws>? '}'
+    }
 
-    <pcf_t_acc_op_invo> ::=
+    token pcf_t_acc_op_invo
+    {
         <expr> <unspace> '.{' <ws>? <attr_name> <ws>? '}'
+    }
 
-    <s_pcf_op_invo> ::=
+    token s_pcf_op_invo
+    {
         <expr> <unspace> '{' [<ws>? <possrep_name>]? ':' <ws>?
             [<pcf_projection> | <pcf_cmpl_proj>]
         <ws>? '}'
+    }
 
-    <atb_pcf_op_invo> ::=
+    token atb_pcf_op_invo
+    {
         <expr> <unspace> '{' <ws>?
             [
                   <pcf_rename>
@@ -5090,8 +5776,10 @@ Grammar:
                 | <pcf_unwrap>
             ]
         <ws>? '}'
+    }
 
-    <r_pcf_op_invo> ::=
+    token r_pcf_op_invo
+    {
         <expr> <unspace> '{' <ws>?
             [
                   <pcf_group> | <pcf_cmpl_group>
@@ -5099,88 +5787,141 @@ Grammar:
                 | <pcf_count_per_group>
             ]
         <ws>? '}'
+    }
 
-    <pcf_rename> ::=
+    token pcf_rename
+    {
         <pcf_rename_map>
+    }
 
-    <pcf_rename_map> ::=
-        [<atnm_aft_bef> | <atnm_aft_bef> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
+    token pcf_rename_map
+    {
+        [<atnm_aft_bef> | <atnm_aft_bef>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]
+    }
 
-    <atnm_aft_bef> ::=
+    token atnm_aft_bef
+    {
         <atnm_after> <ws>? '<-' <ws>? <atnm_before>
+    }
 
-    <atnm_after> ::=
+    token atnm_after
+    {
         <attr_name>
+    }
 
-    <atnm_before> ::=
+    token atnm_before
+    {
         <attr_name>
+    }
 
-    <pcf_projection> ::=
+    token pcf_projection
+    {
         <pcf_atnms>?
+    }
 
-    <pcf_cmpl_proj> ::=
+    token pcf_cmpl_proj
+    {
         '!' <ws>? <pcf_atnms>
+    }
 
-    <pcf_atnms> ::=
-        [<attr_name> | <attr_name> ** [<ws>? ',' <ws>?] [<ws>? ',']?]
+    token pcf_atnms
+    {
+        [<attr_name> | <attr_name>+ % [<ws>? ',' <ws>?] [<ws>? ',']?]
+    }
 
-    <pcf_wrap> ::=
+    token pcf_wrap
+    {
         '%' <outer_atnm> <ws>? '<-' <ws>? <inner_atnms>
+    }
 
-    <pcf_cmpl_wrap> ::=
+    token pcf_cmpl_wrap
+    {
         '%' <outer_atnm> <ws>? '<-' <ws>? '!' <ws>? <cmpl_inner_atnms>
+    }
 
-    <pcf_unwrap> ::=
+    token pcf_unwrap
+    {
          <inner_atnms> <ws>? '<-' <ws>? '%' <outer_atnm>
+    }
 
-    <pcf_group> ::=
+    token pcf_group
+    {
         '@' <outer_atnm> <ws>? '<-' <ws>? <inner_atnms>
+    }
 
-    <pcf_cmpl_group> ::=
+    token pcf_cmpl_group
+    {
         '@' <outer_atnm> <ws>? '<-' <ws>? '!' <ws>? <cmpl_inner_atnms>
+    }
 
-    <pcf_ungroup> ::=
+    token pcf_ungroup
+    {
          <inner_atnms> <ws>? '<-' <ws>? '@' <outer_atnm>
+    }
 
-    <pcf_count_per_group> ::=
+    token pcf_count_per_group
+    {
         '#@' <count_atnm> <ws>? '<-' <ws>? '!' <ws>? <cmpl_inner_atnms>
+    }
 
-    <outer_atnm> ::=
+    token outer_atnm
+    {
         <attr_name>
+    }
 
-    <count_atnm> ::=
+    token count_atnm
+    {
         <attr_name>
+    }
 
-    <inner_atnms> ::=
+    token inner_atnms
+    {
         <pcf_atnms>
+    }
 
-    <cmpl_inner_atnms> ::=
+    token cmpl_inner_atnms
+    {
         <pcf_atnms>
+    }
 
-    <pcf_mbe_op_invo> ::=
+    token pcf_mbe_op_invo
+    {
         <expr> '.{*}'
+    }
 
-    <pcf_ary_op_invo> ::=
+    token pcf_ary_op_invo
+    {
         <pcf_ary_acc_op_invo> | <pcf_ary_slice_op_invo>
+    }
 
-    <pcf_ary_value_op_invo> ::=
+    token pcf_ary_value_op_invo
+    {
         <expr> <unspace> '.[' <ws>? <index> <ws>? ']'
+    }
 
-    <index> ::=
+    token index
+    {
           <num_max_col_val> '#' <unspace> <nnint_body>
         | <num_radix_mark> <unspace> <nnint_body>
         | <d_nnint_body>
+    }
 
-    <pcf_ary_slice_op_invo> ::=
+    token pcf_ary_slice_op_invo
+    {
         <expr> <unspace> '[' <ws>?
             <min_index> <ws>? <interval_boundary_kind> <ws>? <max_index>
         <ws>? ']'
+    }
 
-    <min_index> ::=
+    token min_index
+    {
         <index>
+    }
 
-    <max_index> ::=
+    token max_index
+    {
         <index>
+    }
 
 A `postcircumfix_op_invo` node is for using postcircumfix notation to
 invoke a relational operator function whose operation involves deriving a
@@ -5300,41 +6041,63 @@ Examples:
 
 Grammar:
 
-    <num_op_invo_with_round> ::=
+    token num_op_invo_with_round
+    {
         <num_op_invo> <ws> <rounded_with_meth_or_rule_clause>
+    }
 
-    <num_op_invo> ::=
+    token num_op_invo
+    {
           <expr>
         | <infix_num_op_invo>
         | <prefix_num_op_invo>
         | <postfix_num_op_invo>
+    }
 
-    <infix_num_op_invo> ::=
+    token infix_num_op_invo
+    {
         <lhs> <ws> <infix_num_op> <ws> <rhs>
+    }
 
-    <infix_num_op> ::=
+    token infix_num_op
+    {
         div | mod | '**' | log
+    }
 
-    <prefix_num_op_invo> ::=
+    token prefix_num_op_invo
+    {
         <expr> <ws> <prefix_num_op>
+    }
 
-    <prefix_num_op>
+    token prefix_num_op
+    {
         'e**'
+    }
 
-    <postfix_num_op_invo> ::=
+    token postfix_num_op_invo
+    {
         <expr> <ws> <postfix_num_op>
+    }
 
-    <postfix_num_op>
+    token postfix_num_op
+    {
         'log-e'
+    }
 
-    <rounded_with_meth_or_rule_clause> ::=
+    token rounded_with_meth_or_rule_clause
+    {
         round <ws> [<round_meth> | <round_rule>]
+    }
 
-    <round_meth> ::=
+    token round_meth
+    {
         <expr>
+    }
 
-    <round_rule> ::=
+    token round_rule
+    {
         <expr>
+    }
 
 A `num_op_invo_with_round` node is for using infix or prefix or postfix
 notation to invoke a rational numeric operator function whose operation
@@ -5383,10 +6146,12 @@ Examples:
 
 Grammar:
 
-    <ord_compare_op_invo> ::=
+    token ord_compare_op_invo
+    {
         <lhs> <ws> '<=>' <ws> <rhs>
             [<ws> <assuming_clause>]?
             [<ws> <reversed_clause>]?
+    }
 
 An `ord_compare_op_invo` node is for using infix notation to invoke an
 order comparison operator function.  *Details are pending.*
@@ -5403,10 +6168,12 @@ Examples:
 
 Grammar:
 
-    <proc_invo_alt_syntax> ::=
+    token proc_invo_alt_syntax
+    {
           <proc_monadic_postfix_op_invo>
         | <proc_nonsym_dyadic_infix_op_invo>
         | ...
+    }
 
 A `proc_invo_alt_syntax` node represents the invocation of a named
 system-defined procedure with specific arguments.  It is
@@ -5447,11 +6214,15 @@ these alternate syntaxes are valid in a procedure.
 
 Grammar:
 
-    <proc_monadic_postfix_op_invo> ::=
+    token proc_monadic_postfix_op_invo
+    {
         <expr> <ws> <proc_monadic_postfix_op>
+    }
 
-    <proc_monadic_postfix_op> ::=
+    token proc_monadic_postfix_op
+    {
         ':=++' | ':=--'
+    }
 
 A `proc_monadic_postfix_op_invo` node is for using prefix notation to
 invoke a monadic operator procedure.  Such a procedure
@@ -5477,23 +6248,29 @@ Examples:
 
 Grammar:
 
-    <proc_nonsym_dyadic_infix_op_invo> ::=
+    token proc_nonsym_dyadic_infix_op_invo
+    {
         <lhs> <ws> <proc_nonsym_dyadic_infix_op_invo> <ws> <rhs>
+    }
 
-    <proc_nonsym_dyadic_infix_op__op_cr_basic> ::=
+    token proc_nonsym_dyadic_infix_op__op_cr_basic
+    {
           ':='
         | ':=union'
         | ':=where' | ':=!where' | ':=not-where'
         | ':=intersect' | ':=minus' | ':=except'
-        | ':=!matching' | ':=not-matching' | ':=antijoin | ':=semiminus'
+        | ':=!matching' | ':=not-matching' | ':=antijoin' | ':=semiminus'
         | ':=matching' | ':=semijoin'
         | ':=exclude' | ':=symdiff'
+    }
 
-    <proc_nonsym_dyadic_infix_op__op_cr_extended> ::=
+    token proc_nonsym_dyadic_infix_op__op_cr_extended
+    {
           <proc_nonsym_dyadic_infix_op__op_cr_basic>
         | ':=∪'
         | ':=∩' | ':=∖' | ':=⊿' | ':=⋉'
         | ':=∆'
+    }
 
 A `proc_nonsym_dyadic_infix_op_invo` node is for using infix notation to
 invoke a non-symmetric dyadic operator procedure.  Such a
