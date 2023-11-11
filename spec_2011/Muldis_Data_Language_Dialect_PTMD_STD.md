@@ -120,6 +120,11 @@ used in the grammar.
 Any references like `<foo>` in either the grammar itself or in the written
 documentation specifically refer to the corresponding grammar token `foo`.
 
+See also the bundled actual Raku module
+[grammars_2011/Raku/lib/Muldis/Data_Language_Grammar_Reference/PTMD_STD.rakumod](
+../grammars_2011/Raku/lib/Muldis/Data_Language_Grammar_Reference/PTMD_STD.rakumod)
+which has an executable copy of the grammar.
+
 The root grammar token for the entire dialect is `Muldis_Data_Language_PTMD_STD`.
 
 # START
