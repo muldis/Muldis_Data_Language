@@ -69,3 +69,14 @@ Projects; this entry was submitted by the Muldis Data Language creator.
 
 * <http://www.alexa.com/topsites/category/Top/Computers/Software/Databases/Relational/Implementations/Third_Manifesto>
 - Muldis Data Language entry on the Alexa web directory.
+
+* <https://stackoverflow.com/questions/65045060/is-there-a-language-that-does-both-what-sql-does-and-general-purpose-programming>
+- Stack Overflow forum question "Is there a language that does both what SQL
+does and general purpose programming?" from 2020-11-27, a
+response to this has a line about Muldis Data Language.
+
+* <https://www.techopedia.com/definition/32165/alternative-sql-query>
+- Techopedia article "Alternative SQL Query" from 2016-09-30
+mentions Muldis Data Language in a list of languages.
+
+There are others that can be found with Google.

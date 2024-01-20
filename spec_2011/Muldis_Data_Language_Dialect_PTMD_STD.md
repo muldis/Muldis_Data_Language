@@ -9,7 +9,8 @@ This document is Muldis Data Language Dialect PTMD_STD version 0.148.1.
 # PREFACE
 
 This document is part of the Muldis Data Language specification, whose root
-document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md);
+you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
@@ -246,7 +247,8 @@ Grammar:
 *Please interpret the `''` under `<std_syn_ext_list_item>` as a
 placeholder and that there are currently zero valid list items.*
 
-As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
+As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md),
+code written in Muldis Data Language
 must start by declaring the fully-qualified Muldis Data Language name it is
 written in.  The `PTMD_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
@@ -572,7 +574,8 @@ It is expected that every Muldis Data Language implementation which supports at 
 the `plain_rtn_inv` level will, as much as is reasonably possible,
 preserve all non-behaviour-affecting metadata that is directly supported
 for storage by the system catalog itself, as described in
-[Basics](Muldis_Data_Language_Basics.md) section **SOURCE CODE METADATA**.  Primarily this means preserving
+[Basics](Muldis_Data_Language_Basics.md) section **SOURCE CODE METADATA**.
+Primarily this means preserving
 non-value code comments, and preserving the declared relative ordinal
 position of code elements.
 
@@ -1888,7 +1891,8 @@ In fact, the Muldis Data Language spec itself uses such abbreviations frequently
 
 The second special case involves any context where a type is being
 referenced using the `type` namespace prefix feature described in
-[Basics](Muldis_Data_Language_Basics.md) section **Referencing Data Types**.  In such a context, when the
+[Basics](Muldis_Data_Language_Basics.md) section **Referencing Data Types**.
+In such a context, when the
 namespace prefix contains either of the optional chain elements
 `[|dh_]tuple_from` or
 `[|dh_][set|maybe|just|array|bag|[s|m]p_interval]_of`, programmers may
@@ -6532,4 +6536,5 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Muldis_Data_Language](Muldis_Data_Language.md) for details.

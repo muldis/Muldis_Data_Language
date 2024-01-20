@@ -9,11 +9,13 @@ This document is Muldis Data Language Plain Text (MDPT) version 0.300.0.
 # DESCRIPTION
 
 This document is the human readable authoritative formal specification of
-the **Muldis Data Language Plain Text** (**MDPT**) primary component of **Muldis Data Language**.
+the **Muldis Data Language Plain Text** (**MDPT**)
+primary component of **Muldis Data Language**.
 The fully-qualified name of this document and the specification
 it contains is `Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0`.
 
-See also [Muldis_Data_Language](Muldis_Data_Language.md) to read the **Muldis Data Language** meta-specification.
+See also [Muldis_Data_Language](Muldis_Data_Language.md)
+to read the **Muldis Data Language** meta-specification.
 
 The **Muldis Data Language Plain Text** specification defines the grammar of the official
 concrete Muldis Data Language syntax that every Muldis Data Language implementation
@@ -21,7 +23,8 @@ is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis Data Language implementations.
 It is also expected to be the syntax of choice for users to write Muldis Data Language
 applications or database schemas in, having the most direct correspondance
-to the *native* homoiconic Muldis Data Language defined by **Muldis Data Language Foundation**, and
+to the *native* homoiconic Muldis Data Language defined by
+**Muldis Data Language Foundation**, and
 is designed to have a similar level of conciseness and readability as what
 users get in both typical general purpose application programming languages
 as well as SQL.
@@ -1382,7 +1385,8 @@ Grammar:
 
     token attr_commalist
     {
-        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | '']+ % [<sp> ',' <sp>]
+        [<anon_attr> | <named_attr> | <nested_named_attr>
+            | <same_named_attr> | <same_named_var> | '']+ % [<sp> ',' <sp>]
     }
 
     token anon_attr

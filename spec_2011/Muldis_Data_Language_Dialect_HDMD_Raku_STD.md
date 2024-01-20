@@ -9,7 +9,8 @@ This document is Muldis Data Language Dialect HDMD_Raku_STD version 0.148.1.
 # PREFACE
 
 This document is part of the Muldis Data Language specification, whose root
-document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md);
+you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
@@ -41,7 +42,8 @@ such as the direct use of some Raku-only features.
 **Note that most of the details that the 2 dialects have in common are
 described just in the `PTMD_STD` file, for both dialects; this current
 file will mainly focus on the differences; you should read the
-[Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md) file before the current one, so to provide
+[Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md)
+file before the current one, so to provide
 a context for better understanding it.**
 
 # GENERAL STRUCTURE
@@ -98,7 +100,8 @@ Muldis Data Language code that isn't itself qualified with a `language_name`.
 
 # LANGUAGE NAME
 
-As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md), code written in Muldis Data Language
+As per the VERSIONING section of [Muldis_Data_Language](Muldis_Data_Language.md),
+code written in Muldis Data Language
 must start by declaring the fully-qualified Muldis Data Language name it is
 written in.  The `HDMD_Raku_STD` dialect formats this name as a
 `language_name` node having 5 ordered elements:
@@ -388,7 +391,8 @@ text editors you want to use support it.
 # STANDARD SYNTAX EXTENSIONS
 
 The `standard_syntax_extensions` pragma declares which optional portions
-of the Muldis Data Language grammar a programmer may employ with their Muldis Data Language code.
+of the Muldis Data Language grammar a programmer may employ
+with their Muldis Data Language code.
 
 There are currently no specified standard syntax extensions.
 These are all mutually independent and any or all may be used at once.
@@ -2235,4 +2239,5 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Muldis_Data_Language](Muldis_Data_Language.md) for details.

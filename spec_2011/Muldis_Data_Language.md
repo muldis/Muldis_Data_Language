@@ -11,11 +11,14 @@ This document is Muldis Data Language version 0.148.1.
 This is the root document of the Muldis Data Language specification; the
 documents that comprise the remaining parts of the specification, in their
 suggested reading order (but that all follow the root), are:
-[Basics](Muldis_Data_Language_Basics.md), [Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
+[Basics](Muldis_Data_Language_Basics.md),
+[Core](Muldis_Data_Language_Core.md) (which has its own tree of parts
 to follow), [Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
 [Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
-[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md), [Conventions](Muldis_Data_Language_Conventions.md),
-[Ext_Counted](Muldis_Data_Language_Ext_Counted.md), [Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md),
+[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md),
+[Conventions](Muldis_Data_Language_Conventions.md),
+[Ext_Counted](Muldis_Data_Language_Ext_Counted.md),
+[Ext_Temporal](Muldis_Data_Language_Ext_Temporal.md),
 [Ext_Spatial](Muldis_Data_Language_Ext_Spatial.md).
 
 # DESCRIPTION

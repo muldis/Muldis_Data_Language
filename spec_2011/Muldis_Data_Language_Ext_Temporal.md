@@ -9,7 +9,8 @@ This document is Muldis Data Language Ext Temporal version 0.148.1.
 # PREFACE
 
 This document is part of the Muldis Data Language specification, whose root
-document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md);
+you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
@@ -35,7 +36,8 @@ temporal types and routines that would actually be used would be either
 user-defined, or implementation-defined, or both, or some other standard
 Muldis Data Language extensions would provide them; the latter don't exist yet.
 
-See also the separately-distributed [Muldis_Data_Language_Manual::TemporalExtras](Muldis_Data_Language_Manual::TemporalExtras.md)
+See also the separately-distributed
+[Muldis_Data_Language_Manual::TemporalExtras](Muldis_Data_Language_Manual::TemporalExtras.md)
 document, which provides complete examples of temporal types that could
 compose this extension's mixins, and of routines that could implement its
 virtual routines.
@@ -200,4 +202,5 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Muldis_Data_Language](Muldis_Data_Language.md) for details.

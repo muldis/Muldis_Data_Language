@@ -55,7 +55,8 @@ subservient to it.  While many alternative syntaxes and standard libraries
 are likely and expected to exist in a combination called **Muldis Data Language**,
 substituting out **Muldis Data Language Foundation** for something with a large degree
 of changes would likely yield a combination that is best to name something
-other than **Muldis Data Language**.  **Muldis Data Language Foundation** defines the *native* form
+other than **Muldis Data Language**.
+**Muldis Data Language Foundation** defines the *native* form
 of Muldis Data Language source code, which is homoiconic data structures composed
 largely in terms of function calls, and is expressly agnostic to any
 concrete language syntax.  It defines the user-facing behaviour/API of the
@@ -65,7 +66,8 @@ third-party languages which are *hosting* Muldis Data Language; formally their
 implementation or internals are expected to be hidden from the Muldis Data Language
 user, and differ in arbitrarily large ways between hosts, so to take
 advantage of the strengths of each host.
-See [Foundation](Muldis_Data_Language_Foundation.md) for the **Muldis Data Language Foundation** specification.
+See [Foundation](Muldis_Data_Language_Foundation.md) for the
+**Muldis Data Language Foundation** specification.
 
 The **Muldis Data Language Plain Text** specification defines the grammar of the official
 concrete Muldis Data Language syntax that every Muldis Data Language implementation
@@ -73,7 +75,8 @@ is expected to support as an option.  It is intended to be a standard format
 of interchange of both code and data between all Muldis Data Language implementations.
 It is also expected to be the syntax of choice for users to write Muldis Data Language
 applications or database schemas in, having the most direct correspondance
-to the *native* homoiconic Muldis Data Language defined by **Muldis Data Language Foundation**, and
+to the *native* homoiconic Muldis Data Language defined by
+**Muldis Data Language Foundation**, and
 is designed to have a similar level of conciseness and readability as what
 users get in both typical general purpose application programming languages
 as well as SQL.
@@ -82,7 +85,8 @@ language syntaxes to be used in different areas of a program, either in
 support of user tastes, or for better host/peer language integration
 (including their ORMs), or as a method of emulating other programming
 language environments or SQL DBMSs.
-See [Plain_Text](Muldis_Data_Language_Plain_Text.md) for the **Muldis Data Language Plain Text** specification.
+See [Plain_Text](Muldis_Data_Language_Plain_Text.md) for the
+**Muldis Data Language Plain Text** specification.
 
 The **Muldis Data Language Standard Library** specification comprises a documented
 library written entirely in Muldis Data Language which provides its common core
@@ -171,7 +175,8 @@ a "magic number" for identifying it as being MDPT source code.
 document (component or aggregate) as declared in said document has 3 main
 parts: *document base name*, *authority*, and *version number*.  The
 *document base name* is a character string, officially used examples being
-`Muldis_Data_Language`, `Muldis_Data_Language_Foundation`, `Muldis_Data_Language_Plain_Text`, and
+`Muldis_Data_Language`, `Muldis_Data_Language_Foundation`,
+`Muldis_Data_Language_Plain_Text`, and
 `Muldis_Data_Language_Standard_Library`.
 
 The expected format and meaning of an *authority* and a *version number*

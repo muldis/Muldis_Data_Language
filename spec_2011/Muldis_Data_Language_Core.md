@@ -9,23 +9,35 @@ This document is Muldis Data Language Core version 0.148.1.
 # PREFACE
 
 This document is part of the Muldis Data Language specification, whose root
-document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md);
+you should read that root document
 before you read this one, which provides subservient details.
 
 That said, because this `Core` document is otherwise too large to
 comfortably fit in one file, it has been split into pieces and therefore
 has its own tree of parts to follow, which it is the root of:
-[Core_Types](Muldis_Data_Language_Core_Types.md), [Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md),
-[Core_Universal](Muldis_Data_Language_Core_Universal.md), [Core_Ordered](Muldis_Data_Language_Core_Ordered.md),
-[Core_Scalar](Muldis_Data_Language_Core_Scalar.md), [Core_Boolean](Muldis_Data_Language_Core_Boolean.md),
-[Core_Numeric](Muldis_Data_Language_Core_Numeric.md), [Core_Integer](Muldis_Data_Language_Core_Integer.md),
-[Core_Rational](Muldis_Data_Language_Core_Rational.md), [Core_Stringy](Muldis_Data_Language_Core_Stringy.md),
-[Core_Blob](Muldis_Data_Language_Core_Blob.md), [Core_Text](Muldis_Data_Language_Core_Text.md),
-[Core_Cast](Muldis_Data_Language_Core_Cast.md), [Core_Attributive](Muldis_Data_Language_Core_Attributive.md),
-[Core_Tuple](Muldis_Data_Language_Core_Tuple.md), [Core_Relation](Muldis_Data_Language_Core_Relation.md),
-[Core_Collective](Muldis_Data_Language_Core_Collective.md), [Core_Set](Muldis_Data_Language_Core_Set.md),
-[Core_Array](Muldis_Data_Language_Core_Array.md), [Core_Bag](Muldis_Data_Language_Core_Bag.md),
-[Core_Interval](Muldis_Data_Language_Core_Interval.md), [Core_STDIO](Muldis_Data_Language_Core_STDIO.md),
+[Core_Types](Muldis_Data_Language_Core_Types.md),
+[Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md),
+[Core_Universal](Muldis_Data_Language_Core_Universal.md),
+[Core_Ordered](Muldis_Data_Language_Core_Ordered.md),
+[Core_Scalar](Muldis_Data_Language_Core_Scalar.md),
+[Core_Boolean](Muldis_Data_Language_Core_Boolean.md),
+[Core_Numeric](Muldis_Data_Language_Core_Numeric.md),
+[Core_Integer](Muldis_Data_Language_Core_Integer.md),
+[Core_Rational](Muldis_Data_Language_Core_Rational.md),
+[Core_Stringy](Muldis_Data_Language_Core_Stringy.md),
+[Core_Blob](Muldis_Data_Language_Core_Blob.md),
+[Core_Text](Muldis_Data_Language_Core_Text.md),
+[Core_Cast](Muldis_Data_Language_Core_Cast.md),
+[Core_Attributive](Muldis_Data_Language_Core_Attributive.md),
+[Core_Tuple](Muldis_Data_Language_Core_Tuple.md),
+[Core_Relation](Muldis_Data_Language_Core_Relation.md),
+[Core_Collective](Muldis_Data_Language_Core_Collective.md),
+[Core_Set](Muldis_Data_Language_Core_Set.md),
+[Core_Array](Muldis_Data_Language_Core_Array.md),
+[Core_Bag](Muldis_Data_Language_Core_Bag.md),
+[Core_Interval](Muldis_Data_Language_Core_Interval.md),
+[Core_STDIO](Muldis_Data_Language_Core_STDIO.md),
 [Core_Routines_Catalog](Muldis_Data_Language_Core_Routines_Catalog.md).
 
 # DESCRIPTION
@@ -50,17 +62,28 @@ boolean logic, integer and rational numeric, bit and character string
 data types and all their operators.
 
 Most of the `Core` document is actually in these pieces:
-[Core_Types](Muldis_Data_Language_Core_Types.md), [Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md),
-[Core_Universal](Muldis_Data_Language_Core_Universal.md), [Core_Ordered](Muldis_Data_Language_Core_Ordered.md),
-[Core_Scalar](Muldis_Data_Language_Core_Scalar.md), [Core_Boolean](Muldis_Data_Language_Core_Boolean.md),
-[Core_Numeric](Muldis_Data_Language_Core_Numeric.md), [Core_Integer](Muldis_Data_Language_Core_Integer.md),
-[Core_Rational](Muldis_Data_Language_Core_Rational.md), [Core_Stringy](Muldis_Data_Language_Core_Stringy.md),
-[Core_Blob](Muldis_Data_Language_Core_Blob.md), [Core_Text](Muldis_Data_Language_Core_Text.md),
-[Core_Cast](Muldis_Data_Language_Core_Cast.md), [Core_Attributive](Muldis_Data_Language_Core_Attributive.md),
-[Core_Tuple](Muldis_Data_Language_Core_Tuple.md), [Core_Relation](Muldis_Data_Language_Core_Relation.md),
-[Core_Collective](Muldis_Data_Language_Core_Collective.md), [Core_Set](Muldis_Data_Language_Core_Set.md),
-[Core_Array](Muldis_Data_Language_Core_Array.md), [Core_Bag](Muldis_Data_Language_Core_Bag.md),
-[Core_Interval](Muldis_Data_Language_Core_Interval.md), [Core_STDIO](Muldis_Data_Language_Core_STDIO.md),
+[Core_Types](Muldis_Data_Language_Core_Types.md),
+[Core_Types_Catalog](Muldis_Data_Language_Core_Types_Catalog.md),
+[Core_Universal](Muldis_Data_Language_Core_Universal.md),
+[Core_Ordered](Muldis_Data_Language_Core_Ordered.md),
+[Core_Scalar](Muldis_Data_Language_Core_Scalar.md),
+[Core_Boolean](Muldis_Data_Language_Core_Boolean.md),
+[Core_Numeric](Muldis_Data_Language_Core_Numeric.md),
+[Core_Integer](Muldis_Data_Language_Core_Integer.md),
+[Core_Rational](Muldis_Data_Language_Core_Rational.md),
+[Core_Stringy](Muldis_Data_Language_Core_Stringy.md),
+[Core_Blob](Muldis_Data_Language_Core_Blob.md),
+[Core_Text](Muldis_Data_Language_Core_Text.md),
+[Core_Cast](Muldis_Data_Language_Core_Cast.md),
+[Core_Attributive](Muldis_Data_Language_Core_Attributive.md),
+[Core_Tuple](Muldis_Data_Language_Core_Tuple.md),
+[Core_Relation](Muldis_Data_Language_Core_Relation.md),
+[Core_Collective](Muldis_Data_Language_Core_Collective.md),
+[Core_Set](Muldis_Data_Language_Core_Set.md),
+[Core_Array](Muldis_Data_Language_Core_Array.md),
+[Core_Bag](Muldis_Data_Language_Core_Bag.md),
+[Core_Interval](Muldis_Data_Language_Core_Interval.md),
+[Core_STDIO](Muldis_Data_Language_Core_STDIO.md),
 [Core_Routines_Catalog](Muldis_Data_Language_Core_Routines_Catalog.md).
 
 Extensions are in other documents.
@@ -82,4 +105,5 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Muldis_Data_Language](Muldis_Data_Language.md) for details.

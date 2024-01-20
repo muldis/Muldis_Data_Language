@@ -1454,7 +1454,8 @@ this operator in postfix like *n!*.
             is_associative : True,
             is_commutative : True,
             is_idempotent : True,
-            evaluates : ((if is_zero args:.\1 then args:.\0 else guard material::(args:.\1, mod::(args:.\0, args:.\1, RM::(\To_Zero))))
+            evaluates : ((if is_zero args:.\1 then args:.\0
+                else guard material::(args:.\1, mod::(args:.\0, args:.\1, RM::(\To_Zero))))
                 note "Calculate using the Euclidean algorithm."),
         )),
 
@@ -9359,7 +9360,8 @@ Until then, this type just represents a single positive assertion.*
                 type_specialization_attrs_template ::=
                     (
                         composes : (type : \Set_of_Identity_Identifier::(), optional : True),
-                        provides_default_for : (type : \Set_of_Identity_Identifier::(), optional : True),
+                        provides_default_for :
+                            (type : \Set_of_Identity_Identifier::(), optional : True),
                     );
 
                 type_specialization_attrs_constraint ::=
@@ -9376,17 +9378,22 @@ Until then, this type just represents a single positive assertion.*
                         commutes : (type : \Identity_Identifier::(), optional : True),
                         negates : (type : \Identity_Identifier::(), optional : True),
                         returns : (type : \Signature::(), optional : True),
-                        matches : (type : \Signature::Tuple_Attrs_Match_Simple(), optional : True),
+                        matches : (type : \Signature::Tuple_Attrs_Match_Simple(),
+                            optional : True),
                         implements : (type : ..., optional : True),
                         overrides : (type : ..., optional : True),
                         accepts : (type : \Expression::(), optional : True),
                         intends : (type : \Expression::(), optional : True),
-                        is_associative : (type : \Boolean::(), optional : True),  `two-way associative`
+                        is_associative : (type : \Boolean::(), optional : True),
+                            `two-way associative`
                         is_commutative : (type : \Boolean::(), optional : True),
                         is_idempotent : (type : \Boolean::(), optional : True),
-                        identity : (type : \Expression::(), optional : True),  `iff two-sided identity element exists`
-                        left_identity : (type : \Expression::(), optional : True),  `iff only left-identity element exists`
-                        right_identity : (type : \Expression::(), optional : True),  `iff only right-identity element exists`
+                        identity : (type : \Expression::(), optional : True),
+                            `iff two-sided identity element exists`
+                        left_identity : (type : \Expression::(), optional : True),
+                            `iff only left-identity element exists`
+                        right_identity : (type : \Expression::(), optional : True),
+                            `iff only right-identity element exists`
                         repeater : (type : ..., optional : True),
                         evaluates : (type : \Expression::(), optional : True),
                     ),));
@@ -10396,4 +10403,5 @@ specification.  MDSL substantially comprises executable code as well.
 
 MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Standard_Library](Muldis_Data_Language_Standard_Library.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Standard_Library](Muldis_Data_Language_Standard_Library.md) for details.

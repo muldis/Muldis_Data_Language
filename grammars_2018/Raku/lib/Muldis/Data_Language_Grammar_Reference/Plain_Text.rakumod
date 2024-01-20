@@ -652,7 +652,8 @@ grammar Muldis::Data_Language_Grammar_Reference::Plain_Text::Grammar
 
     token attr_commalist
     {
-        [<anon_attr> | <named_attr> | <nested_named_attr> | <same_named_attr> | <same_named_var> | '']+ % [<sp> ',' <sp>]
+        [<anon_attr> | <named_attr> | <nested_named_attr>
+            | <same_named_attr> | <same_named_var> | '']+ % [<sp> ',' <sp>]
     }
 
     token anon_attr

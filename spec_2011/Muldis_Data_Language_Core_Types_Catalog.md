@@ -9,7 +9,8 @@ This document is Muldis Data Language Core Types_Catalog version 0.148.1.
 # PREFACE
 
 This document is part of the Muldis Data Language specification, whose root
-document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document before
+document is [Muldis_Data_Language](Muldis_Data_Language.md);
+you should read that root document before
 you read this one, which provides subservient details.  Moreover, you
 should read the [Core](Muldis_Data_Language_Core.md) document before this current
 document, as that forms its own tree beneath a root document branch.
@@ -42,7 +43,8 @@ this document, which are specific to defining the system catalog, more or
 less.  Since there are a number of types with multiple parents, those types
 may appear multiple times in the graph; moreover, the graph is displayed in
 multiple slices, some of which are different views of the same type
-relationships.  See [Core_Types](Muldis_Data_Language_Core_Types.md) section **TYPE SUMMARY** for context.
+relationships.  See [Core_Types](Muldis_Data_Language_Core_Types.md)
+section **TYPE SUMMARY** for context.
 
 This graph slice shows all of the top-level catalog types, plus some
 non-catalog core types for context:
@@ -272,8 +274,10 @@ types, shown grouped under the mixin types that they compose:
 These types only exist in the low-level type system, and should not be used
 directly by users to define their ordinary data types or variables or
 parameters; rather they should use the conceptually higher-level types
-declared in [Core_Types](Muldis_Data_Language_Core_Types.md) instead as their tools.  See also
-[Basics](Muldis_Data_Language_Basics.md) section **Low Level Type System** for details of these types'
+declared in [Core_Types](Muldis_Data_Language_Core_Types.md)
+instead as their tools.  See also
+[Basics](Muldis_Data_Language_Basics.md) section **Low Level Type System**
+for details of these types'
 structures, how their common 5 main subtypes are defined in terms of them.
 
 ## sys.std.Core.Type.Cat.List
@@ -4111,4 +4115,5 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Muldis_Data_Language](Muldis_Data_Language.md) for details.

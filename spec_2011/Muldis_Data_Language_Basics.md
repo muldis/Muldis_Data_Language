@@ -9,7 +9,8 @@ This document is Muldis Data Language Basics version 0.148.1.
 # PREFACE
 
 This document is part of the Muldis Data Language specification, whose root
-document is [Muldis_Data_Language](Muldis_Data_Language.md); you should read that root document
+document is [Muldis_Data_Language](Muldis_Data_Language.md);
+you should read that root document
 before you read this one, which provides subservient details.
 
 # DESCRIPTION
@@ -685,7 +686,8 @@ writing code in the host language.
 Some official Muldis Data Language dialects have their specifications bundled with the
 current multi-document: [Dialect_PTMD_STD](Muldis_Data_Language_Dialect_PTMD_STD.md),
 [Dialect_HDMD_Raku_STD](Muldis_Data_Language_Dialect_HDMD_Raku_STD.md),
-[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).  Other, unofficial Muldis Data Language dialects
+[Dialect_HDMD_Perl_STD](Muldis_Data_Language_Dialect_HDMD_Perl_STD.md).
+Other, unofficial Muldis Data Language dialects
 may be made by third parties in the future, but none are currently known.
 
 The other parts of the current multi-document generally focus on the
@@ -3724,4 +3726,5 @@ This file is part of the formal specification named
 
 MDL is Copyright © 2002-2011, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of [Muldis_Data_Language](Muldis_Data_Language.md) for details.
+See the LICENSE AND COPYRIGHT of
+[Muldis_Data_Language](Muldis_Data_Language.md) for details.
