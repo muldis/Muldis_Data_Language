@@ -9006,9 +9006,9 @@ The singleton type definer `No_Reason` represents the `Excuse` value which
 simply says that an ordinary value for any given domain is missing and that
 there is simply no excuse that has been given for this; in other words,
 something has gone wrong without the slightest hint of an explanation.
-This is conceptually the most generic `Excuse` value there is and it can
-be used by lazy programmers as a fallback for when they don't have even a
-semblance of a better explanation for why an ordinary value is missing.
+This is conceptually the most generic `Excuse` value there is, to help with
+expedient development, but any uses should be considered technical debt, to
+be replaced later.
 Other programming languages may name their corresponding values or
 quasi-values *null* or *nil* or *none* or *nothing* or *undef* or
 *unknown*; but unlike some of those languages, `No_Reason` equals itself.
