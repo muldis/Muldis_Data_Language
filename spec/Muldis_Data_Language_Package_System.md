@@ -236,9 +236,9 @@ as *two-sided identity element* values for chained order-comparisons.
 
 `Orderable` is composed, directly or indirectly, by:
 `Before_All_Others`, `After_All_Others`, `Bicessable`,
-`Boolean`, `Integral`, `Integer`, `Fractional`, `Fraction`,
+`Boolean`, `Integral`, `Integer`, `Fractional`, `Rational`,
 `Stringy`, `Bits`, `Blob`, `Textual`, `Text`, `Positional`, `Array`,
-`Tuple_Array`.
+`Orderelation`.
 
 ## in_order
 
@@ -604,16 +604,16 @@ written in a similar style but with more type safety as any treatment of a
 value as a `Boolean` must be made explicit.
 
 `Boolable` is composed, directly or indirectly, by: `Boolean`,
-`Numerical`, `Integral`, `Integer`, `Fractional`, `Fraction`,
+`Numerical`, `Integral`, `Integer`, `Fractional`, `Rational`,
 `Emptyable`, `Stringy`, `Bits`, `Blob`, `Textual`, `Text`,
 `Homogeneous`, `Unionable`, `Discrete`, `Positional`, `Array`,
-`Set`, `Bag`, `Relational`, `Tuple_Array`, `Relation`,
-`Tuple_Bag`, `Intervalish`, `Interval`, `Unionable_Intervalish`,
-`Interval_Set`, `Interval_Bag`.
+`Set`, `Bag`, `Relational`, `Orderelation`, `Relation`,
+`Multirelation`, `Intervalish`, `Interval`, `Unionable_Intervalish`,
+`Set_Of_Interval`, `Bag_Of_Interval`.
 
 While conceivably `Boolable` could also be composed by `Attributive`, and
 hence `Tuple`, it isn't because that would set up a semantic conflict for
-`Relation` and `Tuple_Bag` which are collections across 2 dimensions, and
+`Relation` and `Multirelation` which are collections across 2 dimensions, and
 it was decided for those latter types that `Boolable` would apply to them
 explicitly in their `Homogeneous` dimension (by way of `Emptyable`) and
 not in their `Attributive` dimension.  As such, the `Attributive` functions
@@ -1040,7 +1040,7 @@ type that is numeric is also orderable.  Other programming languages may
 name their corresponding types *Numeric*.
 
 `Numerical` is composed, directly or indirectly, by: `Integral`,
-`Integer`, `Fractional`, `Fraction`, `Quantitative`, `Quantity`.
+`Integer`, `Fractional`, `Rational`, `Quantitative`, `Quantity`.
 It is also composed by a lot of additional type definers defined by other
 Muldis Data Language packages such as `System::Math`;
 these include types for irrational or algebraic or complex numbers or
@@ -1270,7 +1270,7 @@ results in the typically-fractional numeric *quotient* from performing
 (*divisor* or *denominator*) using the semantics of real number division.
 The result is always `Fractional` for both `Integral` and `Fractional`
 arguments; as such, `fractional_divided_by` is the idiomatic way to select
-any `Fraction` values in terms of `Integer` values.  The result is only
+any `Rational` values in terms of `Integer` values.  The result is only
 *defined* when the `1` argument is a nonzero number; it is `\!Div_By_Zero`
 otherwise.  This operation has a *right identity element* value of a
 number positive one.
@@ -1662,7 +1662,7 @@ for the composing type `Integer`.
 ## reciprocal (Integer)
 
         reciprocal::Integer : (\Function : (
-            returns : {\$Fraction, \$Div_By_Zero},
+            returns : {\$Rational, \$Div_By_Zero},
             matches : (\$Integer,),
             implements : \$folder::'',
             evaluates : (1 / args:.\0),
@@ -1745,7 +1745,7 @@ virtual function `multiple_of` for the composing type `Integer`.
 ## fractional_divided_by (Integer)
 
         fractional_divided_by::Integer : (\Function : (
-            returns : {\$Fraction, \$Div_By_Zero},
+            returns : {\$Rational, \$Div_By_Zero},
             matches : (\$Integer, \$Integer),
             implements : \$folder::'',
             right_identity : 1,
@@ -1755,7 +1755,7 @@ virtual function `multiple_of` for the composing type `Integer`.
 
                 returns if d = 0 then \!Div_By_Zero else guard q;
 
-                q ::= (\Fraction : (
+                q ::= (\Rational : (
                     numerator   : div::((if d > 0 then n else -n), gcd, RM::(\To_Zero)),
                     denominator : div::((if d > 0 then d else -d), gcd, RM::(\To_Zero)),
                 ));
@@ -1853,7 +1853,7 @@ virtual function `integral_divided_by` aka `div` for the composing type
 ## integral_power (Integer)
 
         integral_power::Integer : (\Function : (
-            returns : {\$Fraction, \$Zero_To_The_Zero},
+            returns : {\$Rational, \$Zero_To_The_Zero},
             matches : (\$Integer, \$Integer),
             implements : \$folder::'',
             evaluates : (if args:.\0 = 0 and args:.\1 = 0 then \!Zero_To_The_Zero
@@ -1920,12 +1920,12 @@ positive, or is something that can act as such.  Idiomatically a
 of thing in particular, neither cardinal nor ordinal nor nominal; however
 some types which do represent such a particular kind of thing may choose to
 compose `Fractional` because it makes sense to provide its operators.  The
-default value of `Fractional` is the `Fraction` value `0.0`.
+default value of `Fractional` is the `Rational` value `0.0`.
 `Fractional` is `Orderable`; for each type composing `Fractional`, a
 value closer to negative infinity is ordered before a value closer to
 positive infinity.  In the general case it is not `Bicessable` nor does it
 have a minimum or maximum value, but sometimes a type that is `Fractional`
-will have either of those.  `Fractional` is composed by `Fraction`.
+will have either of those.  `Fractional` is composed by `Rational`.
 
 ## Fractional_NN
 
@@ -1939,17 +1939,17 @@ The selection type definer `Fractional_NN` represents the infinite type
 consisting just of the `Fractional` values that are non-negative.  Its
 default and minmum value is `0.0`; it has no maximum value.
 
-## to_Fraction
+## to_Rational
 
-        to_Fraction::'' : (\Function : (
+        to_Rational::'' : (\Function : (
             virtual : 0bTRUE,
-            returns : \$Fraction,
+            returns : \$Rational,
             matches : (\$Fractional,),
         )),
 
-The virtual function `to_Fraction` results in the `Fraction` value that
+The virtual function `to_Rational` results in the `Rational` value that
 represents the same rational value as its `0` argument.  The purpose of
-`to_Fraction` is to canonicalize `Fractional` values so they can be
+`to_Rational` is to canonicalize `Fractional` values so they can be
 compared abstractly as rationals, or so that it is easier to do exact math
 with rationals without running afoul of possible range limits of fixed-size
 `Fractional` types, just dealing with the latter for storage.
@@ -1980,14 +1980,14 @@ The virtual function `denominator` results in the *denominator* of its
 
 # FRACTION DATA TYPES
 
-## Fraction
+## Rational
 
-        Fraction::'' : (\Function : (
+        Rational::'' : (\Function : (
             is_type_definer : 0bTRUE,
             composes : {\$Fractional},
             provides_default_for : {\$Fractional},
             evaluates : (\$Signature::Article_Match : (
-                label : \Fraction,
+                label : \Rational,
                 attrs : [
                     (
                         numerator : \Integer::(),
@@ -1999,32 +1999,32 @@ The virtual function `denominator` results in the *denominator* of its
             default : 0.0,
         )),
 
-The selection type definer `Fraction` is infinite.  A
-`Fraction` value is a general purpose exact rational number of any
+The selection type definer `Rational` is infinite.  A
+`Rational` value is a general purpose exact rational number of any
 magnitude and precision, expressible as a coprime
 *numerator* / *denominator* pair of `Integer` whose *denominator* is
 positive, which explicitly does not represent any kind of thing in
 particular, neither cardinal nor ordinal nor nominal.  Its default value is
-`0.0`.  `Fraction` is `Orderable`; it has no minimum or maximum value.
+`0.0`.  `Rational` is `Orderable`; it has no minimum or maximum value.
 Other programming languages may name their corresponding types *BigRat*
 or *Rational*.
 
-## Fraction_NN
+## Rational_NN
 
-        Fraction_NN : (\Function : (
+        Rational_NN : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Fraction::(), \'>='::( 1: 0.0 )],
+            evaluates : [\Rational::(), \'>='::( 1: 0.0 )],
         )),
 
-The selection type definer `Fraction_NN` represents the infinite type
-consisting just of the `Fraction` values that are non-negative.  Its
+The selection type definer `Rational_NN` represents the infinite type
+consisting just of the `Rational` values that are non-negative.  Its
 default and minmum value is `0.0`; it has no maximum value.
 
-## in_order (Fraction)
+## in_order (Rational)
 
-        in_order::Fraction : (\Function : (
+        in_order::Rational : (\Function : (
             returns : \$Boolean,
-            matches : (\$Fraction, \$Fraction),
+            matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             evaluates : (
                 if (denominator args:.\0) = (denominator args:.\1)
@@ -2040,85 +2040,85 @@ default and minmum value is `0.0`; it has no maximum value.
             ),
         )),
 
-The function `in_order::Fraction` implements the `Orderable` virtual
-function `in_order` for the composing type `Fraction`.
+The function `in_order::Rational` implements the `Orderable` virtual
+function `in_order` for the composing type `Rational`.
 
-## to_Boolean (Fraction)
+## to_Boolean (Rational)
 
-        to_Boolean::Fraction : (\Function : (
+        to_Boolean::Rational : (\Function : (
             returns : \$Boolean,
-            matches : (\$Fraction,),
+            matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (args:.\0 != 0.0),
         )),
 
-The function `to_Boolean::Fraction` results in `0bTRUE` iff its `0`
+The function `to_Boolean::Rational` results in `0bTRUE` iff its `0`
 argument is not `0.0`, and in `0bFALSE` if it is `0.0`.  This function
 implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Fraction`.
+`?` for the composing type `Rational`.
 
-## zero (Fraction)
+## zero (Rational)
 
-        zero::Fraction : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction,),
+        zero::Rational : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (0.0),
         )),
 
-The function `zero::Fraction` simply results in `0.0`.  This function
+The function `zero::Rational` simply results in `0.0`.  This function
 implements the `Numerical` virtual function `zero` for the composing type
-`Fraction`.
+`Rational`.
 
-## opposite (Fraction)
+## opposite (Rational)
 
-        opposite::Fraction : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction,),
+        opposite::Rational : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (-(numerator args:.\0) / (denominator args:.\0)),
         )),
 
-The function `opposite::Fraction` implements the `Numerical` virtual
+The function `opposite::Rational` implements the `Numerical` virtual
 function `opposite` aka `additive_inverse` aka unary `-` aka unary `−`
-for the composing type `Fraction`.
+for the composing type `Rational`.
 
-## reciprocal (Fraction)
+## reciprocal (Rational)
 
-        reciprocal::Fraction : (\Function : (
-            returns : {\$Fraction, \$Div_By_Zero},
-            matches : (\$Fraction,),
+        reciprocal::Rational : (\Function : (
+            returns : {\$Rational, \$Div_By_Zero},
+            matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (if args:.\0 = 0.0 then \!Div_By_Zero
                 else guard (denominator args:.\0) / (numerator args:.\0)),
         )),
 
-The function `reciprocal::Fraction` implements the `Numerical` virtual
+The function `reciprocal::Rational` implements the `Numerical` virtual
 function `reciprocal` aka `multiplicative_inverse` for the composing type
-`Fraction`.
+`Rational`.
 
-## modulus (Fraction)
+## modulus (Rational)
 
-        modulus::Fraction : (\Function : (
-            returns : \$Fraction_NN,
-            matches : (\$Fraction,),
+        modulus::Rational : (\Function : (
+            returns : \$Rational_NN,
+            matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (abs::(numerator args:.\0) / (denominator args:.\0)),
         )),
 
-The function `modulus::Fraction` implements the `Numerical`
-virtual function `modulus` aka `abs` for the composing type `Fraction`.
+The function `modulus::Rational` implements the `Numerical`
+virtual function `modulus` aka `abs` for the composing type `Rational`.
 
-## plus (Fraction)
+## plus (Rational)
 
-        plus::Fraction : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction, \$Fraction),
+        plus::Rational : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : 0.0,
-            repeater : \$times::Fraction_Integer,
+            repeater : \$times::Rational_Integer,
             evaluates : (
                 if (denominator args:.\0) = (denominator args:.\1)
                     then (numerator args:.\0) + (numerator args:.\1) / (denominator args:.\0)
@@ -2132,85 +2132,85 @@ virtual function `modulus` aka `abs` for the composing type `Fraction`.
             ),
         )),
 
-The function `plus::Fraction` implements the `Numerical`
-virtual function `plus` aka `+` for the composing type `Fraction`.
+The function `plus::Rational` implements the `Numerical`
+virtual function `plus` aka `+` for the composing type `Rational`.
 
-## minus (Fraction)
+## minus (Rational)
 
-        minus::Fraction : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction, \$Fraction),
+        minus::Rational : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             right_identity : 0.0,
             evaluates : (args:.\0 + -args:.\1),
         )),
 
-The function `minus::Fraction` implements the `Numerical` virtual function
-`minus` aka binary `-` aka binary `−` for the composing type `Fraction`.
+The function `minus::Rational` implements the `Numerical` virtual function
+`minus` aka binary `-` aka binary `−` for the composing type `Rational`.
 
-## times (Fraction)
+## times (Rational)
 
-        times::Fraction : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction, \$Fraction),
+        times::Rational : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : 1.0,
-            repeater : \$integral_nn_power::Fraction,
+            repeater : \$integral_nn_power::Rational,
             evaluates : (((numerator args:.\0) * (numerator args:.\1))
                 / ((denominator args:.\0) * (denominator args:.\1))),
         )),
 
-The function `times::Fraction` implements the `Numerical` virtual function
-`times` aka `*` aka `×` for the composing type `Fraction`.
+The function `times::Rational` implements the `Numerical` virtual function
+`times` aka `*` aka `×` for the composing type `Rational`.
 
-## times (Fraction, Integer)
+## times (Rational, Integer)
 
-        times::Fraction_Integer : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction, \$Integer),
+        times::Rational_Integer : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational, \$Integer),
             implements : \$folder::'',
             evaluates : (((numerator args:.\0) * args:.\1) / (denominator args:.\0)),
         )),
 
-The function `times::Fraction_Integer` implements the `Numerical` virtual
-function `times` aka `*` aka `×` for the composing type `Fraction`,
+The function `times::Rational_Integer` implements the `Numerical` virtual
+function `times` aka `*` aka `×` for the composing type `Rational`,
 specifically for multiplying one by an `Integer`.
 
-## multiple_of (Fraction)
+## multiple_of (Rational)
 
-        multiple_of::Fraction : (\Function : (
+        multiple_of::Rational : (\Function : (
             returns : {\$Boolean, \$Div_By_Zero},
-            matches : (\$Fraction, \$Fraction),
+            matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             evaluates : (if args:.\1 = 0.0 then \!Div_By_Zero
                 else guard (args:.\0 mod args:.\1) = 0.0),
         )),
 
-The function `multiple_of::Fraction` implements the `Numerical`
-virtual function `multiple_of` for the composing type `Fraction`.
+The function `multiple_of::Rational` implements the `Numerical`
+virtual function `multiple_of` for the composing type `Rational`.
 
-## fractional_divided_by (Fraction)
+## fractional_divided_by (Rational)
 
-        fractional_divided_by::Fraction : (\Function : (
-            returns : {\$Fraction, \$Div_By_Zero},
-            matches : (\$Fraction, \$Fraction),
+        fractional_divided_by::Rational : (\Function : (
+            returns : {\$Rational, \$Div_By_Zero},
+            matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             right_identity : 1.0,
             evaluates : (if args:.\1 = 0.0 then \!Div_By_Zero
                 else guard args:.\0 * reciprocal::(args:.\1)),
         )),
 
-The function `fractional_divided_by::Fraction` implements the `Numerical`
+The function `fractional_divided_by::Rational` implements the `Numerical`
 virtual function `fractional_divided_by` aka `/` aka `÷` aka `∕` for
-the composing type `Fraction`.
+the composing type `Rational`.
 
-## integral_divided_by (Fraction)
+## integral_divided_by (Rational)
 
-        integral_divided_by::Fraction : (\Function : (
-            returns : {\$Fraction, \$Div_By_Zero},
-            matches : (\$Fraction, \$Fraction, \$Round_Meth),
+        integral_divided_by::Rational : (\Function : (
+            returns : {\$Rational, \$Div_By_Zero},
+            matches : (\$Rational, \$Rational, \$Round_Meth),
             implements : \$folder::'',
             right_identity : 1.0,
             evaluates : (
@@ -2222,71 +2222,71 @@ the composing type `Fraction`.
             ),
         )),
 
-The function `integral_divided_by::Fraction` implements the `Numerical`
+The function `integral_divided_by::Rational` implements the `Numerical`
 virtual function `integral_divided_by` aka `div` for the composing type
-`Fraction`.
+`Rational`.
 
-## integral_power (Fraction)
+## integral_power (Rational)
 
-        integral_power::Fraction : (\Function : (
-            returns : {\$Fraction, \$Zero_To_The_Zero},
-            matches : (\$Fraction, \$Integer),
+        integral_power::Rational : (\Function : (
+            returns : {\$Rational, \$Zero_To_The_Zero},
+            matches : (\$Rational, \$Integer),
             implements : \$folder::'',
             evaluates : (evaluates \integral_nn_power::()
                 <-- (if args:.\1 >= 0 then args else (reciprocal::(args:.\0), -args:.\1))),
         )),
 
-The function `integral_power::Fraction` implements the `Numerical` virtual
-function `integral_power` aka `**` for the composing type `Fraction`.
+The function `integral_power::Rational` implements the `Numerical` virtual
+function `integral_power` aka `**` for the composing type `Rational`.
 
-## integral_nn_power (Fraction)
+## integral_nn_power (Rational)
 
-        integral_nn_power::Fraction : (\Function : (
-            returns : {\$Fraction, \$Zero_To_The_Zero},
-            matches : (\$Fraction, \$Integer_NN),
+        integral_nn_power::Rational : (\Function : (
+            returns : {\$Rational, \$Zero_To_The_Zero},
+            matches : (\$Rational, \$Integer_NN),
             implements : \$folder::'',
             evaluates : (if args:.\0 = 0.0 and args:.\1 = 0 then \!Zero_To_The_Zero
                 else guard ((numerator args:.\0) ** args:.\1) / ((denominator args:.\0) ** args:.\1)),
         )),
 
-The function `integral_nn_power::Fraction` implements the `Numerical`
+The function `integral_nn_power::Rational` implements the `Numerical`
 virtual function `integral_nn_power` aka `power` for the composing type
-`Fraction`.
+`Rational`.
 
-## to_Fraction (Fraction)
+## to_Rational (Rational)
 
-        to_Fraction::Fraction : (\Function : (
-            returns : \$Fraction,
-            matches : (\$Fraction,),
+        to_Rational::Rational : (\Function : (
+            returns : \$Rational,
+            matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (args:.\0),
         )),
 
-The function `to_Fraction::Fraction` simply results in its `0` argument.
-This function implements the `Fractional` virtual function `to_Fraction`
-for the composing type `Fraction`.
+The function `to_Rational::Rational` simply results in its `0` argument.
+This function implements the `Fractional` virtual function `to_Rational`
+for the composing type `Rational`.
 
-## numerator (Fraction)
+## numerator (Rational)
 
-        numerator::Fraction : (\Function : (
+        numerator::Rational : (\Function : (
             returns : \$Integer,
-            matches : (\$Fraction,),
+            matches : (\$Rational,),
             evaluates : (args:.\0:>.\numerator),
         )),
 
-The function `numerator::Fraction` implements the `Fractional` virtual
-function `numerator` for the composing type `Fraction`.
+The function `numerator::Rational` implements the `Fractional` virtual
+function `numerator` for the composing type `Rational`.
 
-## denominator (Fraction)
+## denominator (Rational)
 
-        denominator::Fraction : (\Function : (
+        denominator::Rational : (\Function : (
             returns : \$Integer_P,
-            matches : (\$Fraction,),
+            matches : (\$Rational,),
             evaluates : (args:.\0:>.\denominator),
         )),
 
-The function `denominator::Fraction` implements the `Fractional` virtual
-function `denominator` for the composing type `Fraction`.
+The function `denominator::Rational` implements the `Fractional` virtual
+function `denominator` for the composing type `Rational`.
 
 # EMPTYABLE DATA TYPES
 
@@ -2308,8 +2308,8 @@ The default value of `Emptyable` is the `Bits` value with zero members.
 `Emptyable` is composed, directly or indirectly, by: `Stringy`, `Bits`,
 `Blob`, `Textual`, `Text`, `Homogeneous`, `Unionable`, `Discrete`,
 `Positional`, `Array`, `Set`, `Bag`, `Relational`,
-`Tuple_Array`, `Relation`, `Tuple_Bag`, `Intervalish`, `Interval`,
-`Unionable_Intervalish`, `Interval_Set`, `Interval_Bag`.
+`Orderelation`, `Relation`, `Multirelation`, `Intervalish`, `Interval`,
+`Unionable_Intervalish`, `Set_Of_Interval`, `Bag_Of_Interval`.
 
 ## to_Boolean (Emptyable) has_any_members
 
@@ -2353,7 +2353,7 @@ Other programming languages may name their corresponding operators *empty?*.
 The virtual function `empty` aka `∅` results in the value of its `0`
 argument's collection type that has zero members.  For many types like
 `Text` or `Set`, this is a constant value, but for types like `Relation`
-or `Tuple_Bag`, there is a distinct result for each distinct *heading*.
+or `Multirelation`, there is a distinct result for each distinct *heading*.
 Other programming languages may name their corresponding operators *clear*.
 
 # STRINGY DATA TYPES
@@ -2390,7 +2390,7 @@ orderable (but that some `Positional` are only conditionally so), and
 idiomatically that is done by some kind of pairwise comparison of members.
 
 `Stringy` is composed, directly or indirectly, by: `Bits`, `Blob`,
-`Textual`, `Text`, `Positional`, `Array`, `Tuple_Array`.
+`Textual`, `Text`, `Positional`, `Array`, `Orderelation`.
 
 ## substring_of
 
@@ -3383,7 +3383,7 @@ along just the *homogeneous* dimension and ignore *attributive*, so for
 brevity we just say their components *are* members.  Values of the
 `Tuple` type each arrange their components along just the *attributive*
 dimension and ignore *homogeneous*, so for brevity we just say their
-components *are* attributes.  Values of the `Relation` and `Tuple_Bag`
+components *are* attributes.  Values of the `Relation` and `Multirelation`
 types each arrange their components over both of the dimensions, so we say
 they have both members and attributes.
 
@@ -3444,7 +3444,7 @@ inserting or removing slots besides key uniqueness, but typically don't.
 
 The default value of `Accessible` is the `Tuple` value with zero
 attributes, `()`.  `Accessible` is composed, directly or indirectly, by:
-`Positional`, `Array`, `Tuple_Array`, `Structural`, `Tuple`.
+`Positional`, `Array`, `Orderelation`, `Structural`, `Tuple`.
 *TODO: Also composed by Dictionary.*
 
 Note that this interface type definer could have as easily been mamed
@@ -3675,8 +3675,8 @@ otherwise, duplication of values may occur amongst members.
 
 `Homogeneous` is composed, directly or indirectly, by: `Unionable`,
 `Discrete`, `Positional`, `Array`, `Set`, `Bag`,
-`Relational`, `Tuple_Array`, `Relation`, `Tuple_Bag`, `Intervalish`,
-`Interval`, `Unionable_Intervalish`, `Interval_Set`, `Interval_Bag`.
+`Relational`, `Orderelation`, `Relation`, `Multirelation`, `Intervalish`,
+`Interval`, `Unionable_Intervalish`, `Set_Of_Interval`, `Bag_Of_Interval`.
 
 *TODO.  Note that for all the regular function-taking member-wise
 Homogeneous operators that are logically supposed to work with each
@@ -3686,7 +3686,7 @@ of {any, where, map} etc, but not including the likes of {reduce}, the
 operators will only be passing the asset portion (where applicable) of the
 member to the higher-order function, and not say the ordinal-position-asset pair for a
 Positional or the asset-count pair for a Baggy.  Note that for a Relation
-or Tuple_Bag each entire Tuple is the member asset, and for a Dictionary
+or Multirelation each entire Tuple is the member asset, and for a Dictionary
 the pair is the asset.  (With the corresponding attribute-wise Tuple
 operators, they are given the whole attribute name-asset pair.)  The main
 reason for this is to help ensure consistency of results while supporting a
@@ -4091,9 +4091,9 @@ zero members, `[]`.
 
 `Unionable` is composed, directly or indirectly, by: `Discrete`,
 `Positional`, `Array`, `Set`, `Bag`, `Relational`,
-`Tuple_Array`, `Relation`, `Tuple_Bag`, `Unionable_Intervalish`,
-`Interval_Set`, `Interval_Bag`.  A key type that composes `Homogeneous`
-but not `Unionable` is `Interval`; use `Interval_Set` instead for its
+`Orderelation`, `Relation`, `Multirelation`, `Unionable_Intervalish`,
+`Set_Of_Interval`, `Bag_Of_Interval`.  A key type that composes `Homogeneous`
+but not `Unionable` is `Interval`; use `Set_Of_Interval` instead for its
 `Unionable` closest analogy.
 
 ## insert
@@ -4434,8 +4434,8 @@ individuals and counted.  The default value of `Discrete` is the `Array`
 value with zero members, `[]`.
 
 `Discrete` is composed, directly or indirectly, by: `Positional`,
-`Array`, `Set`, `Bag`, `Relational`, `Tuple_Array`,
-`Relation`, `Tuple_Bag`.
+`Array`, `Set`, `Bag`, `Relational`, `Orderelation`,
+`Relation`, `Multirelation`.
 
 ## to_Set ?|
 
@@ -4564,7 +4564,7 @@ ordinal position; iff `Positional` value X is a leading sub-sequence of `Positio
 value Y, then X is ordered before Y; otherwise, the mutual ordering of the
 lowest-ordinal-positioned non-matching members of X and Y determines that the ordering
 of X and Y as a whole are the same as said members.  `Positional` is
-composed, directly or indirectly, by: `Array`, `Tuple_Array`.
+composed, directly or indirectly, by: `Array`, `Orderelation`.
 
 ## singular (Positional)
 
@@ -5618,7 +5618,7 @@ The semantic type definer `Setty` is semifinite.  A `Setty` value is a
 *collective* value such that every one of its component *members* is a
 distinct value.  The default value of `Setty` is the `Set` value with
 zero members, `{}`.  `Setty` is composed, directly or indirectly, by:
-`Set`, `Relation`, `Interval`, `Interval_Set`.
+`Set`, `Relation`, `Interval`, `Set_Of_Interval`.
 
 # SET DATA TYPES
 
@@ -6611,7 +6611,7 @@ isomorphic to a `Homogeneous` collection each of whose *members* is a
 `Tuple`; otherwise, that may not be the case.
 
 `Attributive` is composed, directly or indirectly, by: `Structural`,
-`Tuple`, `Relational`, `Tuple_Array`, `Relation`, `Tuple_Bag`.
+`Tuple`, `Relational`, `Orderelation`, `Relation`, `Multirelation`.
 
 ## has_any_attrs ?$
 
@@ -6647,7 +6647,7 @@ argument has no attributes, and in `0bFALSE` iff it has any attributes.
 
 The virtual function `nullary` results in the value of its `0` argument's
 collection type that has zero attributes.  For `Structural` types like
-`Tuple`, this is a constant value, but for types like `Tuple_Bag`, there
+`Tuple`, this is a constant value, but for types like `Multirelation`, there
 is a distinct result for each *cardinality*; for types like `Relation`
 there are exactly 2 possible result values.
 
@@ -7664,7 +7664,7 @@ value is or is isomorphic to a `Homogeneous` collection each of whose
 *heading*; but a `Relational` value still has a heading even if it has no
 members.  The default value of `Relational` is the `Relation` value with
 zero attributes and zero members, `\?%()`.  `Relational` is composed by
-`Tuple_Array`, `Relation`, `Tuple_Bag`.
+`Orderelation`, `Relation`, `Multirelation`.
 
 ## to_Boolean (Relational)
 
@@ -8159,7 +8159,7 @@ This function implements the `Attributive` virtual function
 
 The function `nullary::Relational` results in the value of its `0`
 argument's relational type that has zero attributes.  For types like
-`Tuple_Bag`, there is a distinct result for each *cardinality*; for types
+`Multirelation`, there is a distinct result for each *cardinality*; for types
 like `Relation` there are exactly 2 possible result values.  This function
 implements the `Attributive` virtual function `nullary` for the composing
 type `Relational`.
@@ -8361,13 +8361,13 @@ types that restrict their possible headings at the type level.*
 
 # TUPLE-ARRAY DATA TYPES
 
-## Tuple_Array
+## Orderelation
 
-        Tuple_Array : (\Function : (
+        Orderelation : (\Function : (
             is_type_definer : 0bTRUE,
             composes : {\$Relational, \$Positional},
             evaluates : (\$Signature::Article_Match : (
-                label : \Tuple_Array,
+                label : \Orderelation,
                 attrs : [
                     (
                         heading : \Heading::(),
@@ -8381,7 +8381,7 @@ types that restrict their possible headings at the type level.*
 
 *TODO.*
 
-*Note:  The in_order(TA,TA) inherited via Positional, which Tuple_Array
+*Note:  The in_order(TA,TA) inherited via Positional, which Orderelation
 implements just for convenience and consistency with Array but doesn't
 expect to be meaningful any more than say the Boolean version...
 It needs to inline the in_order(Tuple,Tuple) used for its heading and for
@@ -8390,68 +8390,68 @@ since we don't want to infect the generic Tuple with all the Orderable ops.*
 *Note: This type structurally resembles a spreadsheet or a .NET DataTable,
 or a subtype of it does.*
 
-## Tuple_Array_D0C0
+## Orderelation_D0C0
 
-        Tuple_Array_D0C0 : (\Function : (
+        Orderelation_D0C0 : (\Function : (
             is_type_definer : 0bTRUE,
             constant : \~%(),
         )),
 
-The singleton type definer `Tuple_Array_D0C0` represents the only zero-attribute,
-zero-tuple `Tuple_Array` value.
+The singleton type definer `Orderelation_D0C0` represents the only zero-attribute,
+zero-tuple `Orderelation` value.
 
-## Tuple_Array_D0C1
+## Orderelation_D0C1
 
-        Tuple_Array_D0C1 : (\Function : (
+        Orderelation_D0C1 : (\Function : (
             is_type_definer : 0bTRUE,
             constant : \~%[()],
         )),
 
-The singleton type definer `Tuple_Array_D0C1` represents the only zero-attribute,
-single-tuple `Tuple_Array` value.
+The singleton type definer `Orderelation_D0C1` represents the only zero-attribute,
+single-tuple `Orderelation` value.
 
-## heading (Tuple_Array)
+## heading (Orderelation)
 
-        heading::Tuple_Array : (\Function : (
+        heading::Orderelation : (\Function : (
             returns : \$Heading,
-            matches : (\$Tuple_Array,),
+            matches : (\$Orderelation,),
             implements : \$folder::'',
             evaluates : (args:.\0:>.\heading),
         )),
 
-The function `heading::Tuple_Array` results in the relational *heading*
+The function `heading::Orderelation` results in the relational *heading*
 of its `0` argument, that is its set of distinct attribute names.  This
 function implements the `Attributive` virtual function `heading` aka `$`
-for the composing type `Tuple_Array`.
+for the composing type `Orderelation`.
 
-## body (Tuple_Array)
+## body (Orderelation)
 
-        body::Tuple_Array : (\Function : (
+        body::Orderelation : (\Function : (
             returns : \$Array,
-            matches : (\$Tuple_Array,),
+            matches : (\$Orderelation,),
             implements : \$folder::'',
             evaluates : (args:.\0:>.\body),
         )),
 
-The function `body::Tuple_Array` results in the relational *body* of its
+The function `body::Orderelation` results in the relational *body* of its
 `0` argument, that is its multiset of member tuples.  This function
 implements the `Relational` virtual function `body` aka `|` for the
-composing type `Tuple_Array`.
+composing type `Orderelation`.
 
-## select_Relational (Tuple_Array)
+## select_Relational (Orderelation)
 
-        select_Relational::Tuple_Array : (\Function : (
+        select_Relational::Orderelation : (\Function : (
             returns : {\$Relational, \$...},
-            matches : (like : \$Tuple_Array, heading : \$Heading, body : \$Array),
+            matches : (like : \$Orderelation, heading : \$Heading, body : \$Array),
             implements : \$folder::'',
-            evaluates : ((\Tuple_Array : (args %= \$(heading,body)))),
+            evaluates : ((\Orderelation : (args %= \$(heading,body)))),
         )),
 
-The function `select_Relational::Tuple_Array` results in the
-`Tuple_Array` value that has the same *heading* as its `heading`
+The function `select_Relational::Orderelation` results in the
+`Orderelation` value that has the same *heading* as its `heading`
 argument and whose *body* consists of just the member *tuples* of its
 `body` argument.  This function implements the `Relational` virtual
-function `select_Relational` for the composing type `Tuple_Array`.
+function `select_Relational` for the composing type `Orderelation`.
 
 # RELATION DATA TYPES
 
@@ -8543,13 +8543,13 @@ function `select_Relational` for the composing type `Relation`.
 
 # TUPLE-BAG DATA TYPES
 
-## Tuple_Bag
+## Multirelation
 
-        Tuple_Bag : (\Function : (
+        Multirelation : (\Function : (
             is_type_definer : 0bTRUE,
             composes : {\$Relational, \$Discrete},
             evaluates : (\$Signature::Article_Match : (
-                label : \Tuple_Bag,
+                label : \Multirelation,
                 attrs : [
                     (
                         heading : \Heading::(),
@@ -8563,68 +8563,68 @@ function `select_Relational` for the composing type `Relation`.
 
 *TODO.*
 
-## Tuple_Bag_D0C0
+## Multirelation_D0C0
 
-        Tuple_Bag_D0C0 : (\Function : (
+        Multirelation_D0C0 : (\Function : (
             is_type_definer : 0bTRUE,
             constant : \+%(),
         )),
 
-The singleton type definer `Tuple_Bag_D0C0` represents the only zero-attribute,
-zero-tuple `Tuple_Bag` value.
+The singleton type definer `Multirelation_D0C0` represents the only zero-attribute,
+zero-tuple `Multirelation` value.
 
-## Tuple_Bag_D0C1
+## Multirelation_D0C1
 
-        Tuple_Bag_D0C1 : (\Function : (
+        Multirelation_D0C1 : (\Function : (
             is_type_definer : 0bTRUE,
             constant : \+%{()},
         )),
 
-The singleton type definer `Tuple_Bag_D0C1` represents the only zero-attribute,
-single-tuple `Tuple_Bag` value.
+The singleton type definer `Multirelation_D0C1` represents the only zero-attribute,
+single-tuple `Multirelation` value.
 
-## heading (Tuple_Bag)
+## heading (Multirelation)
 
-        heading::Tuple_Bag : (\Function : (
+        heading::Multirelation : (\Function : (
             returns : \$Heading,
-            matches : (\$Tuple_Bag,),
+            matches : (\$Multirelation,),
             implements : \$folder::'',
             evaluates : (args:.\0:>.\heading),
         )),
 
-The function `heading::Tuple_Bag` results in the relational *heading*
+The function `heading::Multirelation` results in the relational *heading*
 of its `0` argument, that is its set of distinct attribute names.  This
 function implements the `Attributive` virtual function `heading` aka `$`
-for the composing type `Tuple_Bag`.
+for the composing type `Multirelation`.
 
-## body (Tuple_Bag)
+## body (Multirelation)
 
-        body::Tuple_Bag : (\Function : (
+        body::Multirelation : (\Function : (
             returns : \$Bag,
-            matches : (\$Tuple_Bag,),
+            matches : (\$Multirelation,),
             implements : \$folder::'',
             evaluates : (args:.\0:>.\body),
         )),
 
-The function `body::Tuple_Bag` results in the relational *body* of its
+The function `body::Multirelation` results in the relational *body* of its
 `0` argument, that is its multiset of member tuples.  This function
 implements the `Relational` virtual function `body` aka `|` for the
-composing type `Tuple_Bag`.
+composing type `Multirelation`.
 
-## select_Relational (Tuple_Bag)
+## select_Relational (Multirelation)
 
-        select_Relational::Tuple_Bag : (\Function : (
+        select_Relational::Multirelation : (\Function : (
             returns : {\$Relational, \$...},
-            matches : (like : \$Tuple_Bag, heading : \$Heading, body : \$Bag),
+            matches : (like : \$Multirelation, heading : \$Heading, body : \$Bag),
             implements : \$folder::'',
-            evaluates : ((\Tuple_Bag : (args %= \$(heading,body)))),
+            evaluates : ((\Multirelation : (args %= \$(heading,body)))),
         )),
 
-The function `select_Relational::Tuple_Bag` results in the
-`Tuple_Bag` value that has the same *heading* as its `heading`
+The function `select_Relational::Multirelation` results in the
+`Multirelation` value that has the same *heading* as its `heading`
 argument and whose *body* consists of just the member *tuples* of its
 `body` argument.  This function implements the `Relational` virtual
-function `select_Relational` for the composing type `Tuple_Bag`.
+function `select_Relational` for the composing type `Multirelation`.
 
 # INTERVALISH DATA TYPES
 
@@ -8677,33 +8677,33 @@ function `select_Relational` for the composing type `Tuple_Bag`.
 
 # INTERVAL-SET DATA TYPES
 
-## Interval_Set
+## Set_Of_Interval
 
-        Interval_Set : (\Function : (
+        Set_Of_Interval : (\Function : (
             is_type_definer : 0bTRUE,
             composes : {\$Unionable_Intervalish, \$Setty},
             evaluates : (\$Signature::Article_Match : (
-                label : \Interval_Set,
+                label : \Set_Of_Interval,
                 attrs : (
-                    members : [\Interval_Bag::(), \all_unique::()],
+                    members : [\Bag_Of_Interval::(), \all_unique::()],
                 ),
             )),
             default : ...,
         )),
 
-*TODO.  See also definition of Set in terms of Bag, which Interval_Set mirrors.*
+*TODO.  See also definition of Set in terms of Bag, which Set_Of_Interval mirrors.*
 
 # INTERVAL-BAG DATA TYPES
 
-## Interval_Bag
+## Bag_Of_Interval
 
-        Interval_Bag : (\Function : (
+        Bag_Of_Interval : (\Function : (
             is_type_definer : 0bTRUE,
             composes : {\$Unionable_Intervalish},
             evaluates : (\$Signature::Article_Match : (
-                label : \Interval_Bag,
+                label : \Bag_Of_Interval,
                 attrs : (
-                    members : [\Tuple_Bag::(), ...],
+                    members : [\Multirelation::(), ...],
                 ),
             )),
             default : ...,
