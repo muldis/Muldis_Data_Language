@@ -605,7 +605,7 @@ value as a `Boolean` must be made explicit.
 
 `Boolable` is composed, directly or indirectly, by: `Boolean`,
 `Numerical`, `Integral`, `Integer`, `Fractional`, `Rational`,
-`Emptyable`, `Homogeneous`, `Unionable`, `Discrete`,
+`Homogeneous`, `Unionable`, `Discrete`,
 `Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`,
 `Set`, `Bag`, `Relational`, `Orderelation`, `Relation`,
 `Multirelation`, `Intervalish`, `Interval`, `Unionable_Intervalish`,
@@ -615,7 +615,7 @@ While conceivably `Boolable` could also be composed by `Attributive`, and
 hence `Tuple`, it isn't because that would set up a semantic conflict for
 `Relation` and `Multirelation` which are collections across 2 dimensions, and
 it was decided for those latter types that `Boolable` would apply to them
-explicitly in their `Homogeneous` dimension (by way of `Emptyable`) and
+explicitly in their `Homogeneous` dimension and
 not in their `Attributive` dimension.  As such, the `Attributive` functions
 `has_any_attrs` and `is_nullary` are provided as that dimension's direct
 analogies to the `Homogeneous` dimension's `Boolable`-implementing
@@ -2288,74 +2288,6 @@ function `numerator` for the composing type `Rational`.
 The function `denominator::Rational` implements the `Fractional` virtual
 function `denominator` for the composing type `Rational`.
 
-# EMPTYABLE DATA TYPES
-
-## Emptyable
-
-        Emptyable : (\Function : (
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-            composes : {\$Boolable},
-        )),
-
-The interface type definer `Emptyable` is semifinite.  An `Emptyable` value is
-an aggregate `Boolable` value that can have either zero or more than zero
-components.  The primary reason for `Emptyable` is to provide easy
-consistent and terse ways to ask if an aggregate has any values, or to ask
-for the value with no members of the same type as a given aggregate value.
-The default value of `Emptyable` is the `Bits` value with zero members.
-
-`Emptyable` is composed, directly or indirectly, by:
-`Homogeneous`, `Unionable`, `Discrete`, `Positional`, `Bits`,
-`Blob`, `Textual`, `Text`, `Array`, `Set`, `Bag`, `Relational`,
-`Orderelation`, `Relation`, `Multirelation`, `Intervalish`, `Interval`,
-`Unionable_Intervalish`, `Set_Of_Interval`, `Bag_Of_Interval`.
-
-## to_Boolean (Emptyable) has_any_members
-
-        to_Boolean::Emptyable : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Emptyable,),
-            implements : \$folder::'',
-        )),
-
-        has_any_members : (\Alias : ( of : \$to_Boolean::Emptyable, )),
-
-The virtual function `to_Boolean::Emptyable` aka `has_any_members`
-results in `0bTRUE` iff its `0` argument has any members, and in `0bFALSE`
-iff it has no members.  This function implements the `Boolable` virtual
-function `to_Boolean` aka `so` aka `?` for the composing type
-`Emptyable`.
-
-## is_empty ∅?
-
-        is_empty : (\Function : (
-            negates : \$to_Boolean::Emptyable,
-        )),
-
-        Unicode_Aliases::'∅?' : (\Alias : ( of : \$is_empty, )),
-
-The function `is_empty` aka `∅?` results in `0bTRUE` iff its `0` argument
-has no members, and in `0bFALSE` iff it has any members.
-Other programming languages may name their corresponding operators *empty?*.
-
-## empty ∅
-
-        empty::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : {\$Emptyable, \$No_Empty_Value},
-            matches : (\$Emptyable,),
-        )),
-
-        Unicode_Aliases::'∅' : (\Alias : ( of : \$empty, )),
-
-The virtual function `empty` aka `∅` results in the value of its `0`
-argument's collection type that has zero members.  For many types like
-`Text` or `Set`, this is a constant value, but for types like `Relation`
-or `Multirelation`, there is a distinct result for each distinct *heading*.
-Other programming languages may name their corresponding operators *clear*.
-
 # COLLECTIVE DATA TYPES OVERVIEW
 
 A *collective* value either is a generic regular aggregate of a
@@ -2688,7 +2620,7 @@ languages may name their corresponding operators *Remove* or *remove* or
         Homogeneous : (\Function : (
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
-            composes : {\$Emptyable},
+            composes : {\$Boolable},
         )),
 
 The interface type definer `Homogeneous` is semifinite.  A `Homogeneous` value
@@ -2738,6 +2670,51 @@ For that matter, the likes of {reduce} should probably be treated the same
 way; see also the 'repeater' function trait that helps optimize it.
 Surely, any time when one may think these operations need to know the
 baggy count or ordinal position, its for a problem best solved differently.*
+
+## to_Boolean (Homogeneous) has_any_members
+
+        to_Boolean::Homogeneous : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Homogeneous,),
+            implements : \$folder::'',
+        )),
+
+        has_any_members : (\Alias : ( of : \$to_Boolean::Homogeneous, )),
+
+The virtual function `to_Boolean::Homogeneous` aka `has_any_members`
+results in `0bTRUE` iff its `0` argument has any members, and in `0bFALSE`
+iff it has no members.  This function implements the `Boolable` virtual
+function `to_Boolean` aka `so` aka `?` for the composing type
+`Homogeneous`.
+
+## is_empty ∅?
+
+        is_empty : (\Function : (
+            negates : \$to_Boolean::Homogeneous,
+        )),
+
+        Unicode_Aliases::'∅?' : (\Alias : ( of : \$is_empty, )),
+
+The function `is_empty` aka `∅?` results in `0bTRUE` iff its `0` argument
+has no members, and in `0bFALSE` iff it has any members.
+Other programming languages may name their corresponding operators *empty?*.
+
+## empty ∅
+
+        empty::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : {\$Homogeneous, \$No_Empty_Value},
+            matches : (\$Homogeneous,),
+        )),
+
+        Unicode_Aliases::'∅' : (\Alias : ( of : \$empty, )),
+
+The virtual function `empty` aka `∅` results in the value of its `0`
+argument's collection type that has zero members.  For many types like
+`Text` or `Set`, this is a constant value, but for types like `Relation`
+or `Multirelation`, there is a distinct result for each distinct *heading*.
+Other programming languages may name their corresponding operators *clear*.
 
 ## singular
 
@@ -4297,7 +4274,7 @@ implements the `Boolable` virtual function `to_Boolean` aka `so` aka
         )),
 
 The function `empty::Bits` simply results in `0bb`.  This function
-implements the `Emptyable` virtual function `empty` for the composing
+implements the `Homogeneous` virtual function `empty` for the composing
 type `Bits`.
 
 ## substring_of (Bits)
@@ -4462,7 +4439,7 @@ implements the `Boolable` virtual function `to_Boolean` aka `so` aka
         )),
 
 The function `empty::Blob` simply results in `0xx`.  This function
-implements the `Emptyable` virtual function `empty` for the composing
+implements the `Homogeneous` virtual function `empty` for the composing
 type `Blob`.
 
 ## substring_of (Blob)
@@ -4739,7 +4716,7 @@ composing type `Text`.
         )),
 
 The function `empty::Text` simply results in `""`.  This function
-implements the `Emptyable` virtual function `empty` for the composing
+implements the `Homogeneous` virtual function `empty` for the composing
 type `Text`.
 
 ## substring_of (Text)
@@ -5105,7 +5082,7 @@ implements the `Boolable` virtual function `to_Boolean` aka `so` aka
         )),
 
 The function `empty::Array` results in the only zero-member `Array`
-value.  This function implements the `Emptyable` virtual function `empty`
+value.  This function implements the `Homogeneous` virtual function `empty`
 aka `∅` for the composing type `Array`.
 
 ## has_n (Array)
@@ -5642,7 +5619,7 @@ implements the `Boolable` virtual function `to_Boolean` aka `so` aka
         )),
 
 The function `empty::Set` results in the only zero-member `Set`
-value.  This function implements the `Emptyable` virtual function `empty`
+value.  This function implements the `Homogeneous` virtual function `empty`
 aka `∅` for the composing type `Set`.
 
 ## singular (Set)
@@ -6109,7 +6086,7 @@ implements the `Boolable` virtual function `to_Boolean` aka `so` aka
         )),
 
 The function `empty::Bag` results in the only zero-member `Bag`
-value.  This function implements the `Emptyable` virtual function `empty`
+value.  This function implements the `Homogeneous` virtual function `empty`
 aka `∅` for the composing type `Bag`.
 
 ## singular (Bag)
@@ -7654,7 +7631,7 @@ function implements the `Boolable` virtual function `to_Boolean` aka
 The function `empty::Relational` results in the only value of its `0`
 argument's relational type that has the same *heading* as that argument
 and whose *body* has zero tuples.  This function implements the
-`Emptyable` virtual function `empty` aka `∅` for the composing type
+`Homogeneous` virtual function `empty` aka `∅` for the composing type
 `Relational`.
 
 ## singular (Relational)
