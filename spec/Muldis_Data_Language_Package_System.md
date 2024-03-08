@@ -237,7 +237,7 @@ as *two-sided identity element* values for chained order-comparisons.
 `Orderable` is composed, directly or indirectly, by:
 `Before_All_Others`, `After_All_Others`, `Bicessable`,
 `Boolean`, `Integral`, `Integer`, `Fractional`, `Rational`,
-`Stringy`, `Bits`, `Blob`, `Textual`, `Text`, `Positional`, `Array`,
+`Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`,
 `Orderelation`.
 
 ## in_order
@@ -605,8 +605,8 @@ value as a `Boolean` must be made explicit.
 
 `Boolable` is composed, directly or indirectly, by: `Boolean`,
 `Numerical`, `Integral`, `Integer`, `Fractional`, `Rational`,
-`Emptyable`, `Stringy`, `Bits`, `Blob`, `Textual`, `Text`,
-`Homogeneous`, `Unionable`, `Discrete`, `Positional`, `Array`,
+`Emptyable`, `Homogeneous`, `Unionable`, `Discrete`,
+`Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`,
 `Set`, `Bag`, `Relational`, `Orderelation`, `Relation`,
 `Multirelation`, `Intervalish`, `Interval`, `Unionable_Intervalish`,
 `Set_Of_Interval`, `Bag_Of_Interval`.
@@ -2305,9 +2305,9 @@ consistent and terse ways to ask if an aggregate has any values, or to ask
 for the value with no members of the same type as a given aggregate value.
 The default value of `Emptyable` is the `Bits` value with zero members.
 
-`Emptyable` is composed, directly or indirectly, by: `Stringy`, `Bits`,
-`Blob`, `Textual`, `Text`, `Homogeneous`, `Unionable`, `Discrete`,
-`Positional`, `Array`, `Set`, `Bag`, `Relational`,
+`Emptyable` is composed, directly or indirectly, by:
+`Homogeneous`, `Unionable`, `Discrete`, `Positional`, `Bits`,
+`Blob`, `Textual`, `Text`, `Array`, `Set`, `Bag`, `Relational`,
 `Orderelation`, `Relation`, `Multirelation`, `Intervalish`, `Interval`,
 `Unionable_Intervalish`, `Set_Of_Interval`, `Bag_Of_Interval`.
 
@@ -3568,167 +3568,6 @@ generic `in_order` function may be used as the `1` argument; regardless,
 the `1` argument can define any total order it likes for members that are
 of any type, both `Orderable` or not.
 
-# STRINGY DATA TYPES
-
-## Stringy
-
-        Stringy : (\Function : (
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-            composes : {\$Orderable, \$Emptyable},
-            provides_default_for : {\$Emptyable},
-        )),
-
-The interface type definer `Stringy` is semifinite.  A `Stringy` value is a
-homogeneous ordered aggregate of other values such that there may not
-necessarily be any single best interpretation of where each component value
-begins or ends, and as such the only generic interpretation of a `Stringy`
-value is that it is a sequence of smaller `Stringy` values of the same
-type.  Idiomatically a `Stringy` type has opaque values that each
-represent something specific, such as a sequence of bits or of octets or of
-characters of some repertoire; that being said, by way of `Positional`,
-some `Stringy` types are in fact generic collections whose elements don't
-represent something specific.  The general case of a `Stringy` type has
-operators for catenating or splitting `Stringy` values, but it has no
-generic concept of counting or addressing individual members of the
-aggregate, with the lone special case exception that a count of zero can be
-distinguished from a count of more than zero.  Addressing or counting
-individual members can only be done properly in a composing type-specific
-way, and often a single composing type may provide multiple ways, such as
-character string types offering both code point and grapheme
-representations.  The default value of `Stringy` is the `Bits` value with
-zero members.  `Stringy` expects every one of its composing types to be
-orderable (but that some `Positional` are only conditionally so), and
-idiomatically that is done by some kind of pairwise comparison of members.
-
-`Stringy` is composed, directly or indirectly, by: `Bits`, `Blob`,
-`Textual`, `Text`, `Positional`, `Array`, `Orderelation`.
-
-## substring_of
-
-        substring_of::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-        )),
-
-The virtual function `substring_of` results in `0bTRUE` iff the sequence of
-members of its `0` argument is a substring of the sequence of members of
-its `1` argument; otherwise it results in `0bFALSE`.  Other programming
-languages may name their corresponding operators *in*.
-
-## superstring_of
-
-        superstring_of : (\Function : (
-            commutes : \$substring_of,
-        )),
-
-The function `superstring_of` results in `0bTRUE` iff the sequence of
-members of its `0` argument is a superstring of the sequence of members of
-its `1` argument; otherwise it results in `0bFALSE`.  Other programming
-languages may name their corresponding operators *contains* or
-*include?*; some of them instead provide more generalized pattern
-searching operators such as *like* or `~~` or `=~`; some of them also
-provide operators that result in an ordinal position or nonmatch indicator
-rather than a boolean.
-
-## proper_substring_or_superstring
-
-        proper_substring_or_superstring : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-            evaluates : (args:.\0 != args:.\1 and (args:.\0 substring_or_superstring args:.\1)),
-        )),
-
-The function `proper_substring_or_superstring` results in `0bTRUE` iff the
-sequence of members of one of its 2 arguments `0` and `1` is a proper
-substring of the sequence of members of its other argument; otherwise it
-results in `0bFALSE`.
-
-## substring_or_superstring
-
-        substring_or_superstring : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-            evaluates : ((args:.\0 substring_of args:.\1) or (args:.\0 superstring_of args:.\1)),
-        )),
-
-The function `substring_or_superstring` results in `0bTRUE` iff the
-sequence of members of one of its 2 arguments `0` and `1` is a substring
-of the sequence of members of its other argument; otherwise it results in
-`0bFALSE`.
-
-## overlaps_string
-
-        overlaps_string::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-        )),
-
-The virtual function `overlaps_string` results in `0bTRUE` iff, given *X*
-as the sequence of members of its argument `0` and *Y* as the sequence of
-members of its argument `1`, when *X* and *Y* are overlapped to the
-greatest possible extent such that every corresponding member pair has 2 of
-the same value, the overlap of *X* and *Y* has at least 1 member, and
-each of *X* and *Y* has at least 1 member that is not overlapped;
-otherwise it results in `0bFALSE`.
-
-## disjoint_string
-
-        disjoint_string::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-        )),
-
-The virtual function `disjoint_string` results in `0bTRUE` iff the sequence
-of members of its `0` argument can not be overlapped with the sequence of
-members of its `1` argument by at least 1 member such that every
-corresponding member pair has 2 of the same value; otherwise it results in
-`0bFALSE`.
-
-## catenate ~
-
-        catenate::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Stringy,
-            matches : (\$Stringy, \$Stringy),
-            is_associative : 0bTRUE,
-            repeater : \$replicate,
-        )),
-
-        '~' : (\Alias : ( of : \$catenate, )),
-
-The virtual function `catenate` aka `~` results in the catenation of its
-2 arguments `0` and `1` such that the result starts with the members of
-`0` and ends with the members of `1`, the members from both in the same
-order as in their respective arguments.  This operation has a *two-sided identity element*
-value of a collection with zero members.  Other programming languages may
-name their corresponding operators *concat* or `||` or `+` or *.* or
-*strcat* or *join*; some of them also have string interpolation syntax
-which logically does the same thing without an explicit operator.
-
-## replicate ~#
-
-        replicate::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Stringy,
-            matches : (\$Stringy, \$Integer_NN),
-        )),
-
-        '~#' : (\Alias : ( of : \$replicate, )),
-
-The virtual function `replicate` aka `~#` results in the catenation of N
-instances of its `0` argument where N is defined by its `1` argument.  If
-the `1` argument is zero then the result is the value of the `0`
-argument's collection type that has zero members.  Other programming
-languages may name their corresponding operators *x*.
-
 # POSITIONAL DATA TYPES
 
 ## Positional
@@ -3736,12 +3575,12 @@ languages may name their corresponding operators *x*.
         Positional : (\Function : (
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
-            composes : {\$Stringy, \$Discrete, \$Accessible},
+            composes : {\$Orderable, \$Discrete, \$Accessible},
             provides_default_for : {\$Discrete},
         )),
 
 The interface type definer `Positional` is semifinite.  A `Positional` value is
-both a `Stringy` value and a `Discrete` value; it is a homogeneous
+a `Discrete` value; it is a homogeneous
 aggregate of other, *member* values that are arranged in an explicit total
 order and can both be enumerated in that order as well as be looked up by
 integral ordinal position against that order; there is a single
@@ -3766,8 +3605,10 @@ pairwise comparison of its members by matching ordinal position starting at the 
 ordinal position; iff `Positional` value X is a leading sub-sequence of `Positional`
 value Y, then X is ordered before Y; otherwise, the mutual ordering of the
 lowest-ordinal-positioned non-matching members of X and Y determines that the ordering
-of X and Y as a whole are the same as said members.  `Positional` is
-composed, directly or indirectly, by: `Array`, `Orderelation`.
+of X and Y as a whole are the same as said members.
+
+`Positional` is composed, directly or indirectly, by: `Bits`, `Blob`,
+`Textual`, `Text`, `Array`, `Orderelation`.
 
 ## singular (Positional)
 
@@ -4084,6 +3925,131 @@ The purpose of `to_Array` is to canonicalize `Positional` values so they
 can be treated abstractly as sequences of discrete values with minimal
 effort.
 
+## substring_of
+
+        substring_of::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Positional, \$Positional),
+        )),
+
+The virtual function `substring_of` results in `0bTRUE` iff the sequence of
+members of its `0` argument is a substring of the sequence of members of
+its `1` argument; otherwise it results in `0bFALSE`.  Other programming
+languages may name their corresponding operators *in*.
+
+## superstring_of
+
+        superstring_of : (\Function : (
+            commutes : \$substring_of,
+        )),
+
+The function `superstring_of` results in `0bTRUE` iff the sequence of
+members of its `0` argument is a superstring of the sequence of members of
+its `1` argument; otherwise it results in `0bFALSE`.  Other programming
+languages may name their corresponding operators *contains* or
+*include?*; some of them instead provide more generalized pattern
+searching operators such as *like* or `~~` or `=~`; some of them also
+provide operators that result in an ordinal position or nonmatch indicator
+rather than a boolean.
+
+## proper_substring_or_superstring
+
+        proper_substring_or_superstring : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Positional, \$Positional),
+            is_commutative : 0bTRUE,
+            evaluates : (args:.\0 != args:.\1 and (args:.\0 substring_or_superstring args:.\1)),
+        )),
+
+The function `proper_substring_or_superstring` results in `0bTRUE` iff the
+sequence of members of one of its 2 arguments `0` and `1` is a proper
+substring of the sequence of members of its other argument; otherwise it
+results in `0bFALSE`.
+
+## substring_or_superstring
+
+        substring_or_superstring : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Positional, \$Positional),
+            is_commutative : 0bTRUE,
+            evaluates : ((args:.\0 substring_of args:.\1) or (args:.\0 superstring_of args:.\1)),
+        )),
+
+The function `substring_or_superstring` results in `0bTRUE` iff the
+sequence of members of one of its 2 arguments `0` and `1` is a substring
+of the sequence of members of its other argument; otherwise it results in
+`0bFALSE`.
+
+## overlaps_string
+
+        overlaps_string::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Positional, \$Positional),
+            is_commutative : 0bTRUE,
+        )),
+
+The virtual function `overlaps_string` results in `0bTRUE` iff, given *X*
+as the sequence of members of its argument `0` and *Y* as the sequence of
+members of its argument `1`, when *X* and *Y* are overlapped to the
+greatest possible extent such that every corresponding member pair has 2 of
+the same value, the overlap of *X* and *Y* has at least 1 member, and
+each of *X* and *Y* has at least 1 member that is not overlapped;
+otherwise it results in `0bFALSE`.
+
+## disjoint_string
+
+        disjoint_string::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Positional, \$Positional),
+            is_commutative : 0bTRUE,
+        )),
+
+The virtual function `disjoint_string` results in `0bTRUE` iff the sequence
+of members of its `0` argument can not be overlapped with the sequence of
+members of its `1` argument by at least 1 member such that every
+corresponding member pair has 2 of the same value; otherwise it results in
+`0bFALSE`.
+
+## catenate ~
+
+        catenate::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Positional,
+            matches : (\$Positional, \$Positional),
+            is_associative : 0bTRUE,
+            repeater : \$replicate,
+        )),
+
+        '~' : (\Alias : ( of : \$catenate, )),
+
+The virtual function `catenate` aka `~` results in the catenation of its
+2 arguments `0` and `1` such that the result starts with the members of
+`0` and ends with the members of `1`, the members from both in the same
+order as in their respective arguments.  This operation has a *two-sided identity element*
+value of a collection with zero members.  Other programming languages may
+name their corresponding operators *concat* or `||` or `+` or *.* or
+*strcat* or *join*; some of them also have string interpolation syntax
+which logically does the same thing without an explicit operator.
+
+## replicate ~#
+
+        replicate::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Positional,
+            matches : (\$Positional, \$Integer_NN),
+        )),
+
+        '~#' : (\Alias : ( of : \$replicate, )),
+
+The virtual function `replicate` aka `~#` results in the catenation of N
+instances of its `0` argument where N is defined by its `1` argument.  If
+the `1` argument is zero then the result is the value of the `0`
+argument's collection type that has zero members.  Other programming
+languages may name their corresponding operators *x*.
+
 ## squish
 
         squish : (\Function : (
@@ -4264,8 +4230,8 @@ the argument.
 
         Bits : (\Function : (
             is_type_definer : 0bTRUE,
-            composes : {\$Stringy},
-            provides_default_for : {\$Stringy},
+            composes : {\$Positional},
+            provides_default_for : {\$Positional},
             evaluates : (\$Signature::Article_Match : (
                 label : \Bits,
                 attrs : (
@@ -4343,7 +4309,7 @@ type `Bits`.
             evaluates : ((Bits_to_Array_Bits args:.\0) substring_of (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `substring_of::Bits` implements the `Stringy` virtual
+The function `substring_of::Bits` implements the `Positional` virtual
 function `substring_of` for the composing type `Bits`.
 
 ## overlaps_string (Bits)
@@ -4357,7 +4323,7 @@ function `substring_of` for the composing type `Bits`.
                 overlaps_string (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `overlaps_string::Bits` implements the `Stringy` virtual
+The function `overlaps_string::Bits` implements the `Positional` virtual
 function `overlaps_string` for the composing type `Bits`.
 
 ## disjoint_string (Bits)
@@ -4371,7 +4337,7 @@ function `overlaps_string` for the composing type `Bits`.
                 disjoint_string (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `disjoint_string::Bits` implements the `Stringy` virtual
+The function `disjoint_string::Bits` implements the `Positional` virtual
 function `disjoint_string` for the composing type `Bits`.
 
 ## catenate (Bits)
@@ -4387,7 +4353,7 @@ function `disjoint_string` for the composing type `Bits`.
                 ~ (Bits_to_Array_Bits args:.\1))),
         )),
 
-The function `catenate::Bits` implements the `Stringy` virtual function
+The function `catenate::Bits` implements the `Positional` virtual function
 `catenate` aka `~` for the composing type `Bits`.
 
 ## replicate (Bits)
@@ -4399,7 +4365,7 @@ The function `catenate::Bits` implements the `Stringy` virtual function
             evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0) ~# args:.\1)),
         )),
 
-The function `replicate::Bits` implements the `Stringy` virtual function
+The function `replicate::Bits` implements the `Positional` virtual function
 `replicate` aka `~#` for the composing type `Bits`.
 
 ## Bits_from_Array_Bits
@@ -4430,7 +4396,7 @@ the bits of its `Bits`-typed `0` argument.
 
         Blob : (\Function : (
             is_type_definer : 0bTRUE,
-            composes : {\$Stringy},
+            composes : {\$Positional},
             evaluates : (\$Signature::Article_Match : (
                 label : \Blob,
                 attrs : (
@@ -4508,7 +4474,7 @@ type `Blob`.
             evaluates : ((Blob_to_Octets args:.\0) substring_of (Blob_to_Octets args:.\1)),
         )),
 
-The function `substring_of::Blob` implements the `Stringy` virtual
+The function `substring_of::Blob` implements the `Positional` virtual
 function `substring_of` for the composing type `Blob`.
 
 ## overlaps_string (Blob)
@@ -4521,7 +4487,7 @@ function `substring_of` for the composing type `Blob`.
             evaluates : ((Blob_to_Octets args:.\0) overlaps_string (Blob_to_Octets args:.\1)),
         )),
 
-The function `overlaps_string::Blob` implements the `Stringy` virtual
+The function `overlaps_string::Blob` implements the `Positional` virtual
 function `overlaps_string` for the composing type `Blob`.
 
 ## disjoint_string (Blob)
@@ -4534,7 +4500,7 @@ function `overlaps_string` for the composing type `Blob`.
             evaluates : ((Blob_to_Octets args:.\0) disjoint_string (Blob_to_Octets args:.\1)),
         )),
 
-The function `disjoint_string::Blob` implements the `Stringy` virtual
+The function `disjoint_string::Blob` implements the `Positional` virtual
 function `disjoint_string` for the composing type `Blob`.
 
 ## catenate (Blob)
@@ -4549,7 +4515,7 @@ function `disjoint_string` for the composing type `Blob`.
             evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~ (Blob_to_Octets args:.\1))),
         )),
 
-The function `catenate::Blob` implements the `Stringy` virtual function
+The function `catenate::Blob` implements the `Positional` virtual function
 `catenate` aka `~` for the composing type `Blob`.
 
 ## replicate (Blob)
@@ -4561,7 +4527,7 @@ The function `catenate::Blob` implements the `Stringy` virtual function
             evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~# args:.\1)),
         )),
 
-The function `replicate::Blob` implements the `Stringy` virtual function
+The function `replicate::Blob` implements the `Positional` virtual function
 `replicate` aka `~#` for the composing type `Blob`.
 
 ## Blob_from_Octets
@@ -4593,16 +4559,12 @@ octets of its `Blob`-typed `0` argument.
         Textual : (\Function : (
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
-            composes : {\$Stringy},
+            composes : {\$Positional},
         )),
 
 The interface type definer `Textual` is semifinite.  A `Textual` value is a
-`Stringy` value which is explicitly a sequence of characters of some
-repertoire, typically Unicode or a subset thereof such as ASCII.  Note that
-the `System` package has no concept of a *single character* value in the
-abstract sense that some programming languages do; the closest analogy is a
-`Stringy` value that just contains either one code point or grapheme or
-similar concept; this is something in common with the Raku language.
+`Positional` value which is explicitly a sequence of character code points of some
+repertoire, typically Unicode or a subset thereof such as ASCII.
 
 `Textual` is composed by `Text`, which implements `Orderable` using the
 simple culture-agnostic method of ordering code points numerically.
@@ -4790,7 +4752,7 @@ type `Text`.
                 substring_of (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `substring_of::Text` implements the `Stringy` virtual
+The function `substring_of::Text` implements the `Positional` virtual
 function `substring_of` for the composing type `Text`.
 
 ## overlaps_string (Text)
@@ -4804,7 +4766,7 @@ function `substring_of` for the composing type `Text`.
                 overlaps_string (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `overlaps_string::Text` implements the `Stringy` virtual
+The function `overlaps_string::Text` implements the `Positional` virtual
 function `overlaps_string` for the composing type `Text`.
 
 ## disjoint_string (Text)
@@ -4818,7 +4780,7 @@ function `overlaps_string` for the composing type `Text`.
                 disjoint_string (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `disjoint_string::Text` implements the `Stringy` virtual
+The function `disjoint_string::Text` implements the `Positional` virtual
 function `disjoint_string` for the composing type `Text`.
 
 ## catenate (Text)
@@ -4834,7 +4796,7 @@ function `disjoint_string` for the composing type `Text`.
                 ~ (Text_to_Unicode_Codes args:.\1))),
         )),
 
-The function `catenate::Text` implements the `Stringy` virtual function
+The function `catenate::Text` implements the `Positional` virtual function
 `catenate` aka `~` for the composing type `Text`.
 
 ## replicate (Text)
@@ -4846,7 +4808,7 @@ The function `catenate::Text` implements the `Stringy` virtual function
             evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0) ~# args:.\1)),
         )),
 
-The function `replicate::Text` implements the `Stringy` virtual function
+The function `replicate::Text` implements the `Positional` virtual function
 `replicate` aka `~#` for the composing type `Text`.
 
 ## to_Text (Text)
@@ -5145,90 +5107,6 @@ implements the `Boolable` virtual function `to_Boolean` aka `so` aka
 The function `empty::Array` results in the only zero-member `Array`
 value.  This function implements the `Emptyable` virtual function `empty`
 aka `∅` for the composing type `Array`.
-
-## substring_of (Array)
-
-        substring_of::Array : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Array, \$Array),
-            implements : \$folder::'',
-            evaluates : (evaluates args --> \foundation::Array_substring_of()),
-        )),
-
-The function `substring_of::Array` results in `0bTRUE` iff the sequence of
-members of its `0` argument is a substring of the sequence of members of
-its `1` argument; otherwise it results in `0bFALSE`.  This function
-implements the `Stringy` virtual function `substring_of` for the
-composing type `Array`.
-
-## overlaps_string (Array)
-
-        overlaps_string::Array : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Array, \$Array),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Array_overlaps_string()),
-        )),
-
-The function `overlaps_string::Array` results in `0bTRUE` iff, given *X*
-as the sequence of members of its argument `0` and *Y* as the sequence of
-members of its argument `1`, when *X* and *Y* are overlapped to the
-greatest possible extent such that every corresponding member pair has 2 of
-the same value, the overlap of *X* and *Y* has at least 1 member, and
-each of *X* and *Y* has at least 1 member that is not overlapped;
-otherwise it results in `0bFALSE`.  This function implements the `Stringy`
-virtual function `overlaps_string` for the composing type `Array`.
-
-## disjoint_string (Array)
-
-        disjoint_string::Array : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Array, \$Array),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Array_disjoint_string()),
-        )),
-
-The function `disjoint_string::Array` results in `0bTRUE` iff the sequence
-of members of its `0` argument can not be overlapped with the sequence of
-members of its `1` argument by at least 1 member such that every
-corresponding member pair has 2 of the same value; otherwise it results in
-`0bFALSE`.  This function implements the `Stringy` virtual function
-`disjoint_string` for the composing type `Array`.
-
-## catenate (Array)
-
-        catenate::Array : (\Function : (
-            returns : \$Array,
-            matches : (\$Array, \$Array),
-            implements : \$folder::'',
-            is_associative : 0bTRUE,
-            identity : [],
-            repeater : \$replicate::Array,
-            evaluates : (evaluates args --> \foundation::Array_catenate()),
-        )),
-
-The function `catenate::Array` results in the catenation of its 2
-arguments `0` and `1` such that the result starts with the members of
-`0` and ends with the members of `1`.  This function implements the
-`Stringy` virtual function `catenate` aka `~` for the composing type
-`Array`.
-
-## replicate (Array)
-
-        replicate::Array : (\Function : (
-            returns : \$Array,
-            matches : (\$Array, \$Integer_NN),
-            implements : \$folder::'',
-            evaluates : (evaluates args --> \foundation::Array_replicate()),
-        )),
-
-The function `replicate::Array` results in the catenation of N instances
-of its `0` argument where N is defined by its `1` argument.  If the `1`
-argument is zero then the result is the only zero-member `Array`.  This
-function implements the `Stringy` virtual function `replicate` aka `~#`
-for the composing type `Array`.
 
 ## has_n (Array)
 
@@ -5558,6 +5436,90 @@ composing type `Array`.
 The function `to_Array::Array` simply results in its `0` argument.  This
 function implements the `Positional` virtual function `to_Array` aka
 `~|` for the composing type `Array`.
+
+## substring_of (Array)
+
+        substring_of::Array : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Array, \$Array),
+            implements : \$folder::'',
+            evaluates : (evaluates args --> \foundation::Array_substring_of()),
+        )),
+
+The function `substring_of::Array` results in `0bTRUE` iff the sequence of
+members of its `0` argument is a substring of the sequence of members of
+its `1` argument; otherwise it results in `0bFALSE`.  This function
+implements the `Positional` virtual function `substring_of` for the
+composing type `Array`.
+
+## overlaps_string (Array)
+
+        overlaps_string::Array : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Array, \$Array),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : (evaluates args --> \foundation::Array_overlaps_string()),
+        )),
+
+The function `overlaps_string::Array` results in `0bTRUE` iff, given *X*
+as the sequence of members of its argument `0` and *Y* as the sequence of
+members of its argument `1`, when *X* and *Y* are overlapped to the
+greatest possible extent such that every corresponding member pair has 2 of
+the same value, the overlap of *X* and *Y* has at least 1 member, and
+each of *X* and *Y* has at least 1 member that is not overlapped;
+otherwise it results in `0bFALSE`.  This function implements the `Positional`
+virtual function `overlaps_string` for the composing type `Array`.
+
+## disjoint_string (Array)
+
+        disjoint_string::Array : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Array, \$Array),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : (evaluates args --> \foundation::Array_disjoint_string()),
+        )),
+
+The function `disjoint_string::Array` results in `0bTRUE` iff the sequence
+of members of its `0` argument can not be overlapped with the sequence of
+members of its `1` argument by at least 1 member such that every
+corresponding member pair has 2 of the same value; otherwise it results in
+`0bFALSE`.  This function implements the `Positional` virtual function
+`disjoint_string` for the composing type `Array`.
+
+## catenate (Array)
+
+        catenate::Array : (\Function : (
+            returns : \$Array,
+            matches : (\$Array, \$Array),
+            implements : \$folder::'',
+            is_associative : 0bTRUE,
+            identity : [],
+            repeater : \$replicate::Array,
+            evaluates : (evaluates args --> \foundation::Array_catenate()),
+        )),
+
+The function `catenate::Array` results in the catenation of its 2
+arguments `0` and `1` such that the result starts with the members of
+`0` and ends with the members of `1`.  This function implements the
+`Positional` virtual function `catenate` aka `~` for the composing type
+`Array`.
+
+## replicate (Array)
+
+        replicate::Array : (\Function : (
+            returns : \$Array,
+            matches : (\$Array, \$Integer_NN),
+            implements : \$folder::'',
+            evaluates : (evaluates args --> \foundation::Array_replicate()),
+        )),
+
+The function `replicate::Array` results in the catenation of N instances
+of its `0` argument where N is defined by its `1` argument.  If the `1`
+argument is zero then the result is the only zero-member `Array`.  This
+function implements the `Positional` virtual function `replicate` aka `~#`
+for the composing type `Array`.
 
 ## first_possible_ord_pos (Array)
 
