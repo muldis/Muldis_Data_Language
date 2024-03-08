@@ -7,7 +7,7 @@ and its supporting documents.
 The **Muldis Data Language** document is currently being rewritten,
 and also had prior rewrites.
 
-This is the newest version, which is mostly empty as of this writing:
+This is the newest version, which is a partially complete work in progress:
 
 - [spec/Muldis_Data_Language.md](spec/Muldis_Data_Language.md)
 

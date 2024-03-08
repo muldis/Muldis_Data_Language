@@ -1,19 +1,40 @@
+<a name="TOP"></a>
+
 # NAME
 
-System - Muldis Data Language primary data types and operators
+Muldis Data Language (MDL) - Relational database application programming language
 
 # VERSION
 
-This document is System version 0.300.0.
+The fully-qualified name of this document is
+`Muldis_Data_Language https://muldis.com 0.400.0`.
+
+# PART
+
+This artifact is part 2 of 2 of the document
+`Muldis_Data_Language https://muldis.com 0.400.0`;
+its part name is `Package_System`.
+
+# CONTENTS
+
+- [SYNOPSIS](#SYNOPSIS)
+- [DESCRIPTION](#DESCRIPTION)
+- [THE OTHER SECTIONS OF THIS PART](#THE-OTHER-SECTIONS-OF-THIS-PART)
+- [AUTHOR](#AUTHOR)
+- [LICENSE AND COPYRIGHT](#LICENSE-AND-COPYRIGHT)
+
+[RETURN](#TOP)
+
+<a name="SYNOPSIS"></a>
 
 # SYNOPSIS
 
 ```
  `Muldis_Content_Predicate
- MCP version https://muldis.com 0.300.0 MCP
+ MCP version https://muldis.com 0.400.0 MCP
  MCP script text Unicode 2.1 UTF-8 MCP
- MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0 MCP
- MCP model Muldis_Data_Language https://muldis.com 0.300.0 MCP
+ MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.400.0 MCP
+ MCP model Muldis_Data_Language https://muldis.com 0.400.0 MCP
  Muldis_Content_Predicate`
  (\Package : (
     identity : (
@@ -23,13 +44,13 @@ This document is System version 0.300.0.
     ),
     foundation : (
         authority : "https://muldis.com",
-        version_number : "0.300.0",
+        version_number : "0.400.0",
     ),
     uses : (
         MD : (
             package_base_name : [\System],
             authority : "https://muldis.com",
-            version_number : "0.300.0",
+            version_number : "0.400.0",
         ),
     ),
     entry : \$package::main,
@@ -40,34 +61,41 @@ This document is System version 0.300.0.
  ))
 ```
 
+[RETURN](#TOP)
+
+<a name="DESCRIPTION"></a>
+
 # DESCRIPTION
 
-This document defines the Muldis Data Language package
-`System https://muldis.com 0.300.0` which provides the common core
-system-defined data types and operators that regular users of the language
-would employ directly in their applications and schemas.
+This document consists of multiple parts; for a directory to all of the
+parts, see [Overview](Muldis_Data_Language.md).
 
-See also [Standard_Library](Muldis_Data_Language_Standard_Library.md) to read about the **Muldis Data Language
-Standard Library** specification, of which this document is a part.
+This part of the **Muldis Data Languagen** document specifies the
+common core system-defined data types and operators that regular users of
+the language would employ directly in their applications and schemas.
+
+[RETURN](#TOP)
+
+<a name="THE-OTHER-SECTIONS-OF-THIS-PART"></a>
 
 # PACKAGE
 
 ```
  `Muldis_Content_Predicate
- MCP version https://muldis.com 0.300.0 MCP
+ MCP version https://muldis.com 0.400.0 MCP
  MCP script text Unicode 2.1 UTF-8 MCP
- MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.300.0 MCP
- MCP model Muldis_Data_Language https://muldis.com 0.300.0 MCP
+ MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.400.0 MCP
+ MCP model Muldis_Data_Language https://muldis.com 0.400.0 MCP
  Muldis_Content_Predicate`
  (\Package : (
     identity : (
         package_base_name : [\System],
         authority : "https://muldis.com",
-        version_number : "0.300.0",
+        version_number : "0.400.0",
     ),
     foundation : (
         authority : "https://muldis.com",
-        version_number : "0.300.0",
+        version_number : "0.400.0",
     ),
     floating : {\$package},
     materials : (
@@ -10391,17 +10419,23 @@ and would not cause a problem if missing.*
 
 *TODO.*
 
+[RETURN](#TOP)
+
+<a name="AUTHOR"></a>
+
 # AUTHOR
 
 Darren Duncan - darren@DarrenDuncan.net
 
+[RETURN](#TOP)
+
+<a name="LICENSE-AND-COPYRIGHT"></a>
+
 # LICENSE AND COPYRIGHT
 
-This file is part of the formal specification of the **Muldis Data Language Standard
-Library** (**MDSL**) primary component of the **Muldis Data Language**
-specification.  MDSL substantially comprises executable code as well.
+This file is part of the formal specification named
+**Muldis Data Language** (**MDL**).
 
-MDSL is Copyright © 2002-2018, Muldis Data Systems, Inc.
+MDL is Copyright © 2002-2024, Muldis Data Systems, Inc.
 
-See the LICENSE AND COPYRIGHT of
-[Standard_Library](Muldis_Data_Language_Standard_Library.md) for details.
+See the LICENSE AND COPYRIGHT of [Overview](Muldis_Data_Language.md) for details.
