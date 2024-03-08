@@ -114,11 +114,12 @@ the language would employ directly in their applications and schemas.
             default : 0bFALSE,
         )),
 
-The selection type definer `Any` represents the infinite
-*universal type*, which is the maximal data type of the entire Muldis Data Language
+The selection type definer `Any` represents the infinite *universal type*,
+which is the maximal data type of the entire Muldis Data Language
 type system and consists of all values which can possibly exist.  It also
-represents the infinite Muldis Data Language Foundation type `foundation::Any`.  Its
-default value is `0bFALSE`.  Other programming languages may name their
+represents the infinite Muldis Data Language Foundation type `foundation::Any`.
+It is the union of all other types.  It is a *supertype* of every other type.
+Its default value is `0bFALSE`.  Other programming languages may name their
 corresponding types *Object* or *Universal*.
 
 ## None
@@ -129,8 +130,10 @@ corresponding types *Object* or *Universal*.
         )),
 
 The selection type definer `None` represents the finite *empty type*,
-which is the minimal data type of the entire Muldis Data Language type system and
-consists of exactly zero values.  It can not have any default value.
+which is the minimal data type of the entire Muldis Data Language type
+system and consists of exactly zero values.
+It is the intersection of all other types.  It is a *subtype* of every other type.
+It can not have a default value.
 
 ## same =
 
@@ -212,8 +215,9 @@ member of the type specified by its `1` argument, and `0bTRUE` otherwise.
         )),
 
 The interface type definer `Orderable` is semifinite.  An `Orderable` value has
-all of the traditional comparison operators defined for it such that values
-of its type *T* can be deterministically sorted by Muldis Data Language into a
+all of the traditional comparison operators defined for it, such that
+for each composing type *T* of `Orderable`, the set of values of *T*
+can be deterministically mutually sorted by Muldis Data Language into a
 canonical total order.  But *T* otherwise does not necessarily have
 conceptually a total order in the normal sense or that order is different
 than what the provided comparison operators give you.  An `Orderable` type
@@ -229,16 +233,20 @@ and `\!After_All_Others`, respectively; these 2 `Excuse` values are
 canonically considered to be before and after, respectively, *every* other
 value of the Muldis Data Language type system, regardless of whether those values are
 members a type for which an `Orderable`-composing type definer exists.  The
-primary reason for having these values `\!Before_All_Others` and
-`\!After_All_Others` is so Muldis Data Language has an easy consistent way to
-define an `Interval` that is partially or completely unbounded, and to use
+two values `\!Before_All_Others` and `\!After_All_Others` can be useful in
+defining an *interval* that is partially or completely unbounded, and to use
 as *two-sided identity element* values for chained order-comparisons.
+To be clear, Muldis Data Language does not actually system-define a
+default total order for the whole type system, nor does it define
+any orderings between discrete regular types, including with the
+conceptually minimum and maximum values, so the set of all values
+comprising `Orderable` itself only has a partial order, but users can
+define a cross-composer total order for their own use cases as desired.
 
 `Orderable` is composed, directly or indirectly, by:
 `Before_All_Others`, `After_All_Others`, `Bicessable`,
 `Boolean`, `Integral`, `Integer`, `Fractional`, `Rational`,
-`Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`,
-`Orderelation`.
+`Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`, `Orderelation`.
 
 ## in_order
 
@@ -590,11 +598,13 @@ its `0` argument, where N is its `1` argument, or in
         )),
 
 The selection type definer `Boolean` represents the finite
-Muldis Data Language Foundation type `foundation::Boolean`.  A `Boolean` value is a general purpose
-2-valued logic boolean or *truth value*, or specifically it is one of the
-2 values `0bFALSE` and `0bTRUE`.  Its default value is `0bFALSE`.  `Boolean`
-is both `Orderable` and `Bicessable`; its minimum value is `0bFALSE` and
-its maximum value is `0bTRUE`.  Other programming languages frequently don't
+foundation type `foundation::Boolean`.
+A `Boolean` value is a general purpose 2-valued logic boolean or *truth
+value*, or specifically it is one of the 2 values `0bFALSE` and `0bTRUE`.
+`Boolean` has a default value of `0bFALSE`.
+`Boolean` is both `Orderable` and `Bicessable`;
+its minimum value is `0bFALSE` and its maximum value is `0bTRUE`.
+Other programming languages frequently don't
 have a dedicated boolean type but rather consider values of other types,
 typically integer types, to be *false* or *true*.
 
@@ -1451,11 +1461,13 @@ otherwise.
         )),
 
 The selection type definer `Integer` represents
-the infinite Muldis Data Language Foundation type `foundation::Integer`.  An `Integer`
-value is a general purpose exact integral number of any magnitude, which
-explicitly does not represent any kind of thing in particular, neither
-cardinal nor ordinal nor nominal.  Its default value is `0`.  `Integer`
-is both `Orderable` and `Bicessable`; it has no minimum or maximum value.
+the infinite foundation type `foundation::Integer`.
+An `Integer` value is a general purpose exact integral number of any
+magnitude, which explicitly does not represent any kind of
+thing in particular, neither cardinal nor ordinal nor nominal.
+`Integer` has a default value of `0`.
+`Integer` is both `Orderable` and `Bicessable`;
+it has no minimum or maximum value.
 Other programming languages may name their corresponding types *BigInt*
 or *Bignum* or *BigInteger*.
 
@@ -1912,13 +1924,20 @@ The virtual function `denominator` results in the *denominator* of its
             default : 0.0,
         )),
 
-The selection type definer `Rational` is infinite.  A
-`Rational` value is a general purpose exact rational number of any
-magnitude and precision, expressible as a coprime
-*numerator* / *denominator* pair of `Integer` whose *denominator* is
-positive, which explicitly does not represent any kind of thing in
-particular, neither cardinal nor ordinal nor nominal.  Its default value is
-`0.0`.  `Rational` is `Orderable`; it has no minimum or maximum value.
+The selection type definer `Rational`
+represents the infinite foundation type `foundation::Rational`.
+A `Rational` value is a general purpose exact rational number of any
+magnitude and precision, which explicitly does not represent any
+kind of thing in particular, neither cardinal nor ordinal nor nominal.
+A `Rational` value is characterized by the pairing of a *numerator*,
+which is an `Integer` value, with a *denominator*, which is an
+`Integer` value that is non-zero.
+The intended interpretation of a `Rational` is as the rational number
+that results from evaluating the given 2 integers as the mathematical
+expression `numerator/denominator`, such that `/` means divide.
+Canonically the *numerator* / *denominator* pair is normalized/reduced/coprime.
+`Rational` has a default value of `0.0`.
+`Rational` is `Orderable`; it has no minimum or maximum value.
 Other programming languages may name their corresponding types *BigRat*
 or *Rational*.
 
@@ -2559,8 +2578,9 @@ that order; otherwise, that may not be possible.  If a `Homogeneous` value
 is also `Setty`, all of its members are guaranteed to be distinct values;
 otherwise, duplication of values may occur amongst members.
 
-`Homogeneous` is composed, directly or indirectly, by: `Unionable`,
-`Discrete`, `Positional`, `Array`, `Set`, `Bag`,
+`Homogeneous` is composed, directly or indirectly, by:
+`Unionable`, `Discrete`, `Positional`,
+`Bits`, `Blob`, `Textual`, `Text`, `Array`, `Set`, `Bag`,
 `Relational`, `Orderelation`, `Relation`, `Multirelation`, `Intervalish`,
 `Interval`, `Unionable_Intervalish`, `Set_Of_Interval`, `Bag_Of_Interval`.
 
@@ -4527,19 +4547,20 @@ like national collations or fixed-size types.
 
         Text::Unicode : (\Alias : ( of : \$Text, )),
 
-The selection type definer `Text` is infinite.  A `Text` value is
-characterized by an arbitrarily-long sequence of Unicode 12.1 standard
-*character code points*, where each distinct code point corresponds to a
-distinct integer in the set `{0..0xD7FF,0xE000..0x10FFFF}`.  Each
-character is taken from a finite repertoire having 0x10F7FF members, but
-`Text` imposes no limit on the length of each character sequence.  `Text`
-has its own canonical representation in terms of an `Array` value named
-`Unicode_Codes`.  A `Text` value is isomorphic to an `Attr_Name` value.
-The default value of `Text`
-is `""` (the empty character string).  `Text` is `Orderable`; its
-minimum value is the same `""` as its default value; it has no maximum
-value; its ordering algorithm corresponds directly to that of `Array`,
-pairwise as integer sequences.  Other programming languages may name their
+The selection type definer `Text`
+represents the infinite foundation type `foundation::Text`.
+A `Text` value is characterized by an arbitrarily-large ordered sequence of
+Unicode standard *character code points*, where each distinct code point
+corresponds to a distinct integer in the set `[0..0xD7FF,0xE000..0x10FFFF]`,
+which explicitly does not represent any kind of thing in particular.
+Each character is taken from a finite repertoire having 0x10F7FF members,
+but `Text` imposes no limit on the length of each character sequence.
+A `Text` value is isomorphic to an `Attr_Name` value.
+`Text` has a default value of `""` (the empty character string).
+`Text` is `Orderable`; its minimum value is `""`; it has no maximum value;
+its ordering algorithm corresponds directly to that of `Array`,
+pairwise as integer sequences.
+Other programming languages may name their
 corresponding types *Str* or *string* or *varchar* or *char*.
 
 There are many defined character sets in the computing world that map
@@ -8828,20 +8849,21 @@ arbitrarily complex type graph involving `External` values.
             default : 0iIGNORANCE,
         )),
 
-The selection type definer `Excuse` is infinite.  An `Excuse` value is an
-explicitly stated reason for why, given some particular problem domain, a
-value is not being used that is ordinary for that domain.  For example, the
-typical integer division operation is not defined to give an integer result
-when the divisor is zero, and so a Muldis Data Language function for integer division
-could be defined to result in an `Excuse` value rather than throw an
-exception in that case.  For another example, an `Excuse` value could be
+The interface type definer `Excuse` is semifinite.  An `Excuse`
+value is an explicitly stated reason for why, given some particular
+problem domain, a value is not being used that is ordinary for that
+domain.  For example, the typical integer division operation is not
+defined to give an integer result when the divisor is zero, and so a
+function for integer division could be defined to result in an
+`Excuse` value rather than throw an exception in that case.
+For another example, an `Excuse` value could be
 used to declare that the information we are storing about a person is
 missing certain details and why those are missing, such as because the
 person left the birthdate field blank on their application form.  Its
-default value is `0iIGNORANCE`.  An `Excuse` is isomorphic to an
-`Exception` but that use of the former is not meant to terminate execution
-of code early unlike the latter which is.  Other programming languages that
-have typed exceptions are analogous.
+default value is `0iIGNORANCE`.
+An `Excuse` is also characterized by an *exception* that is not
+meant to terminate execution of code early.
+Other programming languages that have typed exceptions are analogous.
 
 *TODO:  To be more specific, an Excuse value only should denote a
 categorical reason for a normal value not being provided, and all possible
@@ -8879,13 +8901,16 @@ automatically halt blocks of code.*
             constant : 0iIGNORANCE,
         )),
 
-The singleton type definer `Ignorance` represents the `Excuse` value which
-simply says that an ordinary value for any given domain is missing and that
-there is simply no excuse that has been given for this; in other words,
-something has gone wrong without the slightest hint of an explanation.
-This is conceptually the most generic `Excuse` value there is, to help with
-expedient development, but any uses should be considered technical debt, to
-be replaced later.
+The singleton type definer `Ignorance`
+represents the finite foundation type `foundation::Ignorance`.
+The `Ignorance` value represents the `Excuse` value which
+simply says that an ordinary value for any given domain is missing
+and that there is simply no excuse that has been given for this; in
+other words, something has gone wrong without the slightest hint of
+an explanation.  This is conceptually the most generic `Excuse`
+value there is, to help with expedient development, but any uses
+should be considered technical debt, to be replaced later.
+`Ignorance` has a default value of `0iIGNORANCE`.
 Other programming languages may name their corresponding values or
 quasi-values *null* or *nil* or *none* or *nothing* or *undef* or
 *unknown*; but unlike some of those languages, `Ignorance` equals itself.
