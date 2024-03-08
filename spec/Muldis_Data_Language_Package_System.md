@@ -2356,964 +2356,6 @@ argument's collection type that has zero members.  For many types like
 or `Multirelation`, there is a distinct result for each distinct *heading*.
 Other programming languages may name their corresponding operators *clear*.
 
-# STRINGY DATA TYPES
-
-## Stringy
-
-        Stringy : (\Function : (
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-            composes : {\$Orderable, \$Emptyable},
-            provides_default_for : {\$Emptyable},
-        )),
-
-The interface type definer `Stringy` is semifinite.  A `Stringy` value is a
-homogeneous ordered aggregate of other values such that there may not
-necessarily be any single best interpretation of where each component value
-begins or ends, and as such the only generic interpretation of a `Stringy`
-value is that it is a sequence of smaller `Stringy` values of the same
-type.  Idiomatically a `Stringy` type has opaque values that each
-represent something specific, such as a sequence of bits or of octets or of
-characters of some repertoire; that being said, by way of `Positional`,
-some `Stringy` types are in fact generic collections whose elements don't
-represent something specific.  The general case of a `Stringy` type has
-operators for catenating or splitting `Stringy` values, but it has no
-generic concept of counting or addressing individual members of the
-aggregate, with the lone special case exception that a count of zero can be
-distinguished from a count of more than zero.  Addressing or counting
-individual members can only be done properly in a composing type-specific
-way, and often a single composing type may provide multiple ways, such as
-character string types offering both code point and grapheme
-representations.  The default value of `Stringy` is the `Bits` value with
-zero members.  `Stringy` expects every one of its composing types to be
-orderable (but that some `Positional` are only conditionally so), and
-idiomatically that is done by some kind of pairwise comparison of members.
-
-`Stringy` is composed, directly or indirectly, by: `Bits`, `Blob`,
-`Textual`, `Text`, `Positional`, `Array`, `Orderelation`.
-
-## substring_of
-
-        substring_of::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-        )),
-
-The virtual function `substring_of` results in `0bTRUE` iff the sequence of
-members of its `0` argument is a substring of the sequence of members of
-its `1` argument; otherwise it results in `0bFALSE`.  Other programming
-languages may name their corresponding operators *in*.
-
-## superstring_of
-
-        superstring_of : (\Function : (
-            commutes : \$substring_of,
-        )),
-
-The function `superstring_of` results in `0bTRUE` iff the sequence of
-members of its `0` argument is a superstring of the sequence of members of
-its `1` argument; otherwise it results in `0bFALSE`.  Other programming
-languages may name their corresponding operators *contains* or
-*include?*; some of them instead provide more generalized pattern
-searching operators such as *like* or `~~` or `=~`; some of them also
-provide operators that result in an ordinal position or nonmatch indicator
-rather than a boolean.
-
-## proper_substring_or_superstring
-
-        proper_substring_or_superstring : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-            evaluates : (args:.\0 != args:.\1 and (args:.\0 substring_or_superstring args:.\1)),
-        )),
-
-The function `proper_substring_or_superstring` results in `0bTRUE` iff the
-sequence of members of one of its 2 arguments `0` and `1` is a proper
-substring of the sequence of members of its other argument; otherwise it
-results in `0bFALSE`.
-
-## substring_or_superstring
-
-        substring_or_superstring : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-            evaluates : ((args:.\0 substring_of args:.\1) or (args:.\0 superstring_of args:.\1)),
-        )),
-
-The function `substring_or_superstring` results in `0bTRUE` iff the
-sequence of members of one of its 2 arguments `0` and `1` is a substring
-of the sequence of members of its other argument; otherwise it results in
-`0bFALSE`.
-
-## overlaps_string
-
-        overlaps_string::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-        )),
-
-The virtual function `overlaps_string` results in `0bTRUE` iff, given *X*
-as the sequence of members of its argument `0` and *Y* as the sequence of
-members of its argument `1`, when *X* and *Y* are overlapped to the
-greatest possible extent such that every corresponding member pair has 2 of
-the same value, the overlap of *X* and *Y* has at least 1 member, and
-each of *X* and *Y* has at least 1 member that is not overlapped;
-otherwise it results in `0bFALSE`.
-
-## disjoint_string
-
-        disjoint_string::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Stringy, \$Stringy),
-            is_commutative : 0bTRUE,
-        )),
-
-The virtual function `disjoint_string` results in `0bTRUE` iff the sequence
-of members of its `0` argument can not be overlapped with the sequence of
-members of its `1` argument by at least 1 member such that every
-corresponding member pair has 2 of the same value; otherwise it results in
-`0bFALSE`.
-
-## catenate ~
-
-        catenate::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Stringy,
-            matches : (\$Stringy, \$Stringy),
-            is_associative : 0bTRUE,
-            repeater : \$replicate,
-        )),
-
-        '~' : (\Alias : ( of : \$catenate, )),
-
-The virtual function `catenate` aka `~` results in the catenation of its
-2 arguments `0` and `1` such that the result starts with the members of
-`0` and ends with the members of `1`, the members from both in the same
-order as in their respective arguments.  This operation has a *two-sided identity element*
-value of a collection with zero members.  Other programming languages may
-name their corresponding operators *concat* or `||` or `+` or *.* or
-*strcat* or *join*; some of them also have string interpolation syntax
-which logically does the same thing without an explicit operator.
-
-## replicate ~#
-
-        replicate::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Stringy,
-            matches : (\$Stringy, \$Integer_NN),
-        )),
-
-        '~#' : (\Alias : ( of : \$replicate, )),
-
-The virtual function `replicate` aka `~#` results in the catenation of N
-instances of its `0` argument where N is defined by its `1` argument.  If
-the `1` argument is zero then the result is the value of the `0`
-argument's collection type that has zero members.  Other programming
-languages may name their corresponding operators *x*.
-
-# BITS DATA TYPES
-
-## Bits
-
-        Bits : (\Function : (
-            is_type_definer : 0bTRUE,
-            composes : {\$Stringy},
-            provides_default_for : {\$Stringy},
-            evaluates : (\$Signature::Article_Match : (
-                label : \Bits,
-                attrs : (
-                    bits : \Array::Bits(),
-                ),
-            )),
-            default : 0bb,
-        )),
-
-The selection type definer `Bits` is infinite.  A `Bits` value is an
-arbitrarily-long sequence of *bits* where each bit is represented by
-an `Integer` in the range 0..1.  The default value of `Bits` is
-`0bb` (the empty bit string).  `Bits` is `Orderable`; its minimum
-value is the same `0bb` as its default value; it has no maximum value;
-its ordering algorithm corresponds directly to that of `Array`, pairwise
-as integer sequences.  Other programming languages may name their
-corresponding types *bit* or *bit varying*.
-
-## Array::Bits
-
-        Array::Bits : (\Function : (
-            is_type_definer : 0bTRUE,
-            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..1 ) )],
-        )),
-
-The selection type definer `Array::Bits` represents the infinite type
-consisting just of the `Array` values for which every one of their member
-values is an integer in the range 0..1 inclusive.
-
-## in_order (Bits)
-
-        in_order::Bits : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Bits, \$Bits),
-            implements : \$folder::'',
-            evaluates : ((Bits_to_Array_Bits args:.\0) in_order (Bits_to_Array_Bits args:.\1)),
-        )),
-
-The function `in_order::Bits` implements the `Orderable` virtual
-function `in_order` for the composing type `Bits`.
-
-## to_Boolean (Bits)
-
-        to_Boolean::Bits : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Bits,),
-            implements : \$folder::'',
-            evaluates : (args:.\0 != 0bb),
-        )),
-
-The function `to_Boolean::Bits` results in `0bTRUE` iff its `0` argument
-is not `0bb`, and in `0bFALSE` if it is `0bb`.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Bits`.
-
-## empty (Bits)
-
-        empty::Bits : (\Function : (
-            returns : \$Bits,
-            matches : (\$Bits,),
-            implements : \$folder::'',
-            evaluates : (0bb),
-        )),
-
-The function `empty::Bits` simply results in `0bb`.  This function
-implements the `Emptyable` virtual function `empty` for the composing
-type `Bits`.
-
-## substring_of (Bits)
-
-        substring_of::Bits : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Bits, \$Bits),
-            implements : \$folder::'',
-            evaluates : ((Bits_to_Array_Bits args:.\0) substring_of (Bits_to_Array_Bits args:.\1)),
-        )),
-
-The function `substring_of::Bits` implements the `Stringy` virtual
-function `substring_of` for the composing type `Bits`.
-
-## overlaps_string (Bits)
-
-        overlaps_string::Bits : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Bits, \$Bits),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : ((Bits_to_Array_Bits args:.\0)
-                overlaps_string (Bits_to_Array_Bits args:.\1)),
-        )),
-
-The function `overlaps_string::Bits` implements the `Stringy` virtual
-function `overlaps_string` for the composing type `Bits`.
-
-## disjoint_string (Bits)
-
-        disjoint_string::Bits : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Bits, \$Bits),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : ((Bits_to_Array_Bits args:.\0)
-                disjoint_string (Bits_to_Array_Bits args:.\1)),
-        )),
-
-The function `disjoint_string::Bits` implements the `Stringy` virtual
-function `disjoint_string` for the composing type `Bits`.
-
-## catenate (Bits)
-
-        catenate::Bits : (\Function : (
-            returns : \$Bits,
-            matches : (\$Bits, \$Bits),
-            implements : \$folder::'',
-            is_associative : 0bTRUE,
-            identity : 0bb,
-            repeater : \$replicate::Bits,
-            evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0)
-                ~ (Bits_to_Array_Bits args:.\1))),
-        )),
-
-The function `catenate::Bits` implements the `Stringy` virtual function
-`catenate` aka `~` for the composing type `Bits`.
-
-## replicate (Bits)
-
-        replicate::Bits : (\Function : (
-            returns : \$Bits,
-            matches : (\$Bits, \$Integer_NN),
-            implements : \$folder::'',
-            evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0) ~# args:.\1)),
-        )),
-
-The function `replicate::Bits` implements the `Stringy` virtual function
-`replicate` aka `~#` for the composing type `Bits`.
-
-## Bits_from_Array_Bits
-
-        Bits_from_Array_Bits : (\Function : (
-            returns : \$Bits,
-            matches : (\$Array::Bits,),
-            evaluates : ((\Bits : (bits : args:.\0,))),
-        )),
-
-The function `Bits_from_Array_Bits` results in the `Bits` value selected
-in terms of the integer sequence of its `0` argument.
-
-## Bits_to_Array_Bits
-
-        Bits_to_Array_Bits : (\Function : (
-            returns : \$Array::Bits,
-            matches : (\$Bits,),
-            evaluates : (args:.\0:>.\bits),
-        )),
-
-The function `Bits_to_Array_Bits` results in an integer sequence defining
-the bits of its `Bits`-typed `0` argument.
-
-# BLOB DATA TYPES
-
-## Blob
-
-        Blob : (\Function : (
-            is_type_definer : 0bTRUE,
-            composes : {\$Stringy},
-            evaluates : (\$Signature::Article_Match : (
-                label : \Blob,
-                attrs : (
-                    octets : \Array::Octets(),
-                ),
-            )),
-            default : 0xx,
-        )),
-
-The selection type definer `Blob` is infinite.  A `Blob` value is an
-arbitrarily-long sequence of *octets* where each octet is represented by
-an `Integer` in the range 0..255.  The default value of `Blob` is
-`0xx` (the empty octet string).  `Blob` is `Orderable`; its minimum
-value is the same `0xx` as its default value; it has no maximum value;
-its ordering algorithm corresponds directly to that of `Array`, pairwise
-as integer sequences.  Other programming languages may name their
-corresponding types *Buf* or *byte[]* or *bytea*.
-
-## Array::Octets
-
-        Array::Octets : (\Function : (
-            is_type_definer : 0bTRUE,
-            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..255 ) )],
-        )),
-
-The selection type definer `Array::Octets` represents the infinite type
-consisting just of the `Array` values for which every one of their member
-values is an integer in the range 0..255 inclusive.
-
-## in_order (Blob)
-
-        in_order::Blob : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob, \$Blob),
-            implements : \$folder::'',
-            evaluates : ((Blob_to_Octets args:.\0) in_order (Blob_to_Octets args:.\1)),
-        )),
-
-The function `in_order::Blob` implements the `Orderable` virtual
-function `in_order` for the composing type `Blob`.
-
-## to_Boolean (Blob)
-
-        to_Boolean::Blob : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob,),
-            implements : \$folder::'',
-            evaluates : (args:.\0 != 0xx),
-        )),
-
-The function `to_Boolean::Blob` results in `0bTRUE` iff its `0` argument
-is not `0xx`, and in `0bFALSE` if it is `0xx`.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Blob`.
-
-## empty (Blob)
-
-        empty::Blob : (\Function : (
-            returns : \$Blob,
-            matches : (\$Blob,),
-            implements : \$folder::'',
-            evaluates : (0xx),
-        )),
-
-The function `empty::Blob` simply results in `0xx`.  This function
-implements the `Emptyable` virtual function `empty` for the composing
-type `Blob`.
-
-## substring_of (Blob)
-
-        substring_of::Blob : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob, \$Blob),
-            implements : \$folder::'',
-            evaluates : ((Blob_to_Octets args:.\0) substring_of (Blob_to_Octets args:.\1)),
-        )),
-
-The function `substring_of::Blob` implements the `Stringy` virtual
-function `substring_of` for the composing type `Blob`.
-
-## overlaps_string (Blob)
-
-        overlaps_string::Blob : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob, \$Blob),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : ((Blob_to_Octets args:.\0) overlaps_string (Blob_to_Octets args:.\1)),
-        )),
-
-The function `overlaps_string::Blob` implements the `Stringy` virtual
-function `overlaps_string` for the composing type `Blob`.
-
-## disjoint_string (Blob)
-
-        disjoint_string::Blob : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob, \$Blob),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : ((Blob_to_Octets args:.\0) disjoint_string (Blob_to_Octets args:.\1)),
-        )),
-
-The function `disjoint_string::Blob` implements the `Stringy` virtual
-function `disjoint_string` for the composing type `Blob`.
-
-## catenate (Blob)
-
-        catenate::Blob : (\Function : (
-            returns : \$Blob,
-            matches : (\$Blob, \$Blob),
-            implements : \$folder::'',
-            is_associative : 0bTRUE,
-            identity : 0xx,
-            repeater : \$replicate::Blob,
-            evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~ (Blob_to_Octets args:.\1))),
-        )),
-
-The function `catenate::Blob` implements the `Stringy` virtual function
-`catenate` aka `~` for the composing type `Blob`.
-
-## replicate (Blob)
-
-        replicate::Blob : (\Function : (
-            returns : \$Blob,
-            matches : (\$Blob, \$Integer_NN),
-            implements : \$folder::'',
-            evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~# args:.\1)),
-        )),
-
-The function `replicate::Blob` implements the `Stringy` virtual function
-`replicate` aka `~#` for the composing type `Blob`.
-
-## Blob_from_Octets
-
-        Blob_from_Octets : (\Function : (
-            returns : \$Blob,
-            matches : (\$Array::Octets,),
-            evaluates : ((\Blob : (octets : args:.\0,))),
-        )),
-
-The function `Blob_from_Octets` results in the `Blob` value selected in
-terms of the integer sequence of its `0` argument.
-
-## Blob_to_Octets
-
-        Blob_to_Octets : (\Function : (
-            returns : \$Array::Octets,
-            matches : (\$Blob,),
-            evaluates : (args:.\0:>.\octets),
-        )),
-
-The function `Blob_to_Octets` results in an integer sequence defining the
-octets of its `Blob`-typed `0` argument.
-
-# TEXTUAL DATA TYPES
-
-## Textual
-
-        Textual : (\Function : (
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-            composes : {\$Stringy},
-        )),
-
-The interface type definer `Textual` is semifinite.  A `Textual` value is a
-`Stringy` value which is explicitly a sequence of characters of some
-repertoire, typically Unicode or a subset thereof such as ASCII.  Note that
-the `System` package has no concept of a *single character* value in the
-abstract sense that some programming languages do; the closest analogy is a
-`Stringy` value that just contains either one code point or grapheme or
-similar concept; this is something in common with the Raku language.
-
-`Textual` is composed by `Text`, which implements `Orderable` using the
-simple culture-agnostic method of ordering code points numerically.
-Idiomatically each culture-specific text collation method will have its own
-distinct `Textual`-composing type that implements `Orderable` in its own
-way, so the latter's operators will just work like users expect.
-
-The `System` package excludes the majority of useful operators specific to
-working with character strings; see instead other Muldis Data Language packages such as
-`System::Text` for these things.  Such tasks
-include like case folding, pattern matching, whitespace trimming, Unicode
-normalization, encoding to and decoding from most binary formats, and so on.
-
-Muldis Data Language is designed expressly to avoid mandatory external dependencies of
-large complexity, such as most of the details of Unicode, in contrast with
-a lot of the more modern languages of its time.  The Muldis Data Language Foundation
-and `System` package are strictly limited in their knowledge of Unicode;
-they know that a code point of the Unicode repertoire is just in the integer
-set `{0..0xD7FF,0xE000..0x10FFFF}`,
-and that the leading subset `0..127` is also 7-bit
-ASCII, and they know how to read and write the fairly simple and stable
-`UTF-8` binary encoding for Unicode text, which is a proper superset of
-7-bit ASCII encoding and is CPU endian-agnostic.  In contrast, anything to
-do with knowing what abstract characters exist, and their various
-properties (upper or lowercase, combining or not, etc), anything to do with
-normalization or folding or pattern matching, and anything to do with other
-binary encodings or character repertoires especially endian-specific, this
-is all expressly *not* part of the language core.  A
-Muldis Data Language implementation can choose whether or not to support them, allowing
-for a lower barrier to entry.  Unicode in particular requires a vast
-knowledge base to work properly with that is regularly updated, and
-Muldis Data Language has a principle that it is better to have multiple specialized components
-that do their jobs well, such as handle Unicode intricacies, while the core
-language can focus on other core competencies that don't involve complex
-externally-defined moving targets.  The `System` package loosely just
-considers a character string to be a sequence of generic integers and
-doesn't ascribe very many distinct semantics to particular ones, while
-non-`System` code is empowered to do that instead.
-
-## to_Text
-
-        to_Text::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Text,
-            matches : (\$Textual,),
-        )),
-
-The virtual function `to_Text` results in the `Text` value that
-represents the same character string value as its `0` argument.  The
-purpose of `to_Text` is to canonicalize `Textual` values so they can be
-compared or worked with as character strings in a manner agnostic to things
-like national collations or fixed-size types.
-
-*TODO: Add an Excuse for when the source type has non-Unicode characters.*
-
-# TEXT DATA TYPES
-
-## Text Text::Unicode
-
-        Text::'' : (\Function : (
-            is_type_definer : 0bTRUE,
-            composes : {\$Textual},
-            provides_default_for : {\$Textual},
-            evaluates : (\$Signature::Article_Match : (
-                label : \Text,
-                attrs : (
-                    unicode_codes : \Array::Unicode_Codes(),
-                ),
-            )),
-            default : "",
-        )),
-
-        Text::Unicode : (\Alias : ( of : \$Text, )),
-
-The selection type definer `Text` is infinite.  A `Text` value is
-characterized by an arbitrarily-long sequence of Unicode 12.1 standard
-*character code points*, where each distinct code point corresponds to a
-distinct integer in the set `{0..0xD7FF,0xE000..0x10FFFF}`.  Each
-character is taken from a finite repertoire having 0x10F7FF members, but
-`Text` imposes no limit on the length of each character sequence.  `Text`
-has its own canonical representation in terms of an `Array` value named
-`Unicode_Codes`.  A `Text` value is isomorphic to an `Attr_Name` value.
-The default value of `Text`
-is `""` (the empty character string).  `Text` is `Orderable`; its
-minimum value is the same `""` as its default value; it has no maximum
-value; its ordering algorithm corresponds directly to that of `Array`,
-pairwise as integer sequences.  Other programming languages may name their
-corresponding types *Str* or *string* or *varchar* or *char*.
-
-There are many defined character sets in the computing world that map
-agreed upon sets of symbols to integers.  For those character repertoires
-that are a subset of Unicode, such as 7-bit ASCII or ISO Latin 1 or EBCDIC,
-the `Text` type should map with character strings using them in a simple
-and well-defined way, although the integers used to represent the same
-logical characters may be different.  But for other character sets that are
-not a subset of Unicode, such as ISO/IEC 2022 or Mojikyo or HKSCS, a
-`Text` value can not directly represent all possible character strings
-that they can, and so other `Textual`-composing types should be used
-instead for such character strings.
-
-## Array::Unicode_Codes
-
-        Array::Unicode_Codes : (\Function : (
-            is_type_definer : 0bTRUE,
-            evaluates : [\Array::(),
-                \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )],
-        )),
-
-The selection type definer `Array::Unicode_Codes` represents the infinite type
-consisting just of the `Array` values for which every one of their member
-values is an integer in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
-
-## Text::ASCII
-
-        Text::ASCII : (\Function : (
-            is_type_definer : 0bTRUE,
-            evaluates : (Text::Unicode::(args:.\0) and_then guard
-                Array::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
-        )),
-
-The selection type definer `Text::ASCII` represents the infinite type
-consisting just of the `Text` values for which every one of their member
-characters is a member of the 128-character repertoire of 7-bit ASCII.
-This `Text` subtype has its own canonical representation in terms of an
-`Array` value named `ASCII_Chars` where each member code point matches
-the standard ASCII codes for the same symbols.
-
-## Array::ASCII_Chars
-
-        Array::ASCII_Chars : (\Function : (
-            is_type_definer : 0bTRUE,
-            evaluates : [\Array::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )],
-        )),
-
-The selection type definer `Array::ASCII_Chars` represents the infinite type
-consisting just of the `Array` values for which every one of their member
-values is an integer in the range 0..127 inclusive.
-
-## in_order (Text)
-
-        in_order::Text : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Text, \$Text),
-            implements : \$folder::'',
-            evaluates : ((Text_to_Unicode_Codes args:.\0) in_order (Text_to_Unicode_Codes args:.\1)),
-        )),
-
-The function `in_order::Text` implements the `Orderable` virtual
-function `in_order` for the composing type `Text`.
-
-## to_Boolean (Text)
-
-        to_Boolean::Text : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Text,),
-            implements : \$folder::'',
-            evaluates : (args:.\0 != ""),
-        )),
-
-The function `to_Boolean::Text` results in `0bTRUE` iff its `0` argument
-is not `""`, and in `0bFALSE` if it is `""`.  This function implements the
-`Boolable` virtual function `to_Boolean` aka `so` aka `?` for the
-composing type `Text`.
-
-## empty (Text)
-
-        empty::Text : (\Function : (
-            returns : \$Text,
-            matches : (\$Text,),
-            implements : \$folder::'',
-            evaluates : (""),
-        )),
-
-The function `empty::Text` simply results in `""`.  This function
-implements the `Emptyable` virtual function `empty` for the composing
-type `Text`.
-
-## substring_of (Text)
-
-        substring_of::Text : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Text, \$Text),
-            implements : \$folder::'',
-            evaluates : ((Text_to_Unicode_Codes args:.\0)
-                substring_of (Text_to_Unicode_Codes args:.\1)),
-        )),
-
-The function `substring_of::Text` implements the `Stringy` virtual
-function `substring_of` for the composing type `Text`.
-
-## overlaps_string (Text)
-
-        overlaps_string::Text : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Text, \$Text),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : ((Text_to_Unicode_Codes args:.\0)
-                overlaps_string (Text_to_Unicode_Codes args:.\1)),
-        )),
-
-The function `overlaps_string::Text` implements the `Stringy` virtual
-function `overlaps_string` for the composing type `Text`.
-
-## disjoint_string (Text)
-
-        disjoint_string::Text : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Text, \$Text),
-            implements : \$folder::'',
-            is_commutative : 0bTRUE,
-            evaluates : ((Text_to_Unicode_Codes args:.\0)
-                disjoint_string (Text_to_Unicode_Codes args:.\1)),
-        )),
-
-The function `disjoint_string::Text` implements the `Stringy` virtual
-function `disjoint_string` for the composing type `Text`.
-
-## catenate (Text)
-
-        catenate::Text : (\Function : (
-            returns : \$Text,
-            matches : (\$Text, \$Text),
-            implements : \$folder::'',
-            is_associative : 0bTRUE,
-            identity : "",
-            repeater : \$replicate::Text,
-            evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0)
-                ~ (Text_to_Unicode_Codes args:.\1))),
-        )),
-
-The function `catenate::Text` implements the `Stringy` virtual function
-`catenate` aka `~` for the composing type `Text`.
-
-## replicate (Text)
-
-        replicate::Text : (\Function : (
-            returns : \$Text,
-            matches : (\$Text, \$Integer_NN),
-            implements : \$folder::'',
-            evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0) ~# args:.\1)),
-        )),
-
-The function `replicate::Text` implements the `Stringy` virtual function
-`replicate` aka `~#` for the composing type `Text`.
-
-## to_Text (Text)
-
-        to_Text::Text : (\Function : (
-            returns : \$Text,
-            matches : (\$Text,),
-            implements : \$folder::'',
-            evaluates : (args:.\0),
-        )),
-
-The function `to_Text::Text` simply results in its `0` argument.
-This function implements the `Textual` virtual function `to_Text`
-for the composing type `Text`.
-
-## Text_from_Unicode_Codes
-
-        Text_from_Unicode_Codes : (\Function : (
-            returns : \$Text,
-            matches : (\$Array::Unicode_Codes,),
-            evaluates : ((\Text : (unicode_codes : args:.\0,))),
-        )),
-
-The function `Text_from_Unicode_Codes` results in the `Text` value selected
-in terms of an integer sequence in the standard Unicode code point
-mapping of its `0` argument.
-
-## Text_to_Unicode_Codes
-
-        Text_to_Unicode_Codes : (\Function : (
-            returns : \$Array::Unicode_Codes,
-            matches : (\$Text,),
-            evaluates : (args:.\0:>.\unicode_codes),
-        )),
-
-The function `Text_to_Unicode_Codes` results in an integer sequence in the
-standard Unicode code point mapping that corresponds to its
-`Text`-typed `0` argument.
-
-## Text_from_ASCII_Chars
-
-        Text_from_ASCII_Chars : (\Function : (
-            returns : \$Text::ASCII,
-            matches : (\$Array::ASCII_Chars,),
-            evaluates : (Text_from_Unicode_Codes args:.\0),
-        )),
-
-The function `Text_from_ASCII_Chars` results in the `Text` value selected
-in terms of an integer sequence in the standard 7-bit ASCII character
-mapping of its `0` argument.
-
-## Text_to_ASCII_Chars
-
-        Text_to_ASCII_Chars : (\Function : (
-            returns : \$Array::ASCII_Chars,
-            matches : (\$Text::ASCII,),
-            evaluates : (Text_to_Unicode_Codes args:.\0),
-        )),
-
-The function `Text_to_ASCII_Chars` results in an integer sequence in the
-standard 7-bit ASCII character mapping that corresponds to its
-`Text`-typed `0` argument.
-
-## Blob_is_UTF_8
-
-        Blob_is_UTF_8 : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob,),
-            evaluates : (...),
-        )),
-
-*TODO.  See also https://tools.ietf.org/html/rfc3629 for the UTF-8 definition.*
-
-*TODO.  Note that while the UTF-8 encoding scheme can represent all Unicode
-code points in the range 0..0x1FFFFF with 4 octets (and all 0..0x7FFFFFFF
-with 6 octets), the UTF-8 standard further restricts the range to
-{0..0xD7FF,0xE000..0x10FFFF} to match the constraints of the limitations of UTF-16.*
-
-*TODO.  Note that we don't define a Blob::UTF_8 type as
-it is superfluous with simply trying to decode one and see if it succeeded.*
-
-## Text_from_UTF_8_Blob
-
-        Text_from_UTF_8_Blob : (\Function : (
-            returns : {\$Text::Unicode, \$Unicode::..., ...},
-            matches : (\$Blob,),
-            evaluates : (...),
-        )),
-
-*TODO.  As a code/implementation comment, say the parallel design is
-benefitting from the self-syncrhonizing nature that is a key feature of UTF-8.*
-
-*TODO.  Note, the multiple Excuse options are used to indicate the
-different reasons why the Blob is not considered valid UTF-8, including
-that it doesn't use the fewest bytes possible for a character, or it
-represents code points greater than 0x10FFFF or it represents illegal
-code points in the 0xD800..0xDFFF range of UTF-16 surrogates, or it has the
-wrong number of continuation bytes following an ASCII char or starting byte
-etc.  If a Blob contains multiple errors, the returned Excuse is for the
-error closest to the start of the Blob; that is, chained anticoalesce() is
-used. TODO, perhaps declare a union type collecting the Unicode errors like
-we have with rounding methods, or we actually may have multiple Unicode sets.*
-
-*TODO.  See also http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
-and http://cpansearch.perl.org/src/RJBS/perl-5.24.0/t/op/utf8decode.t for
-some decoder edge case testing.*
-
-## Text_from_UTF_8_Blob_with_repl_Text
-
-        Text_from_UTF_8_Blob_with_repl_Text : (\Function : (
-            returns : \$Text::Unicode,
-            matches : (\$Blob, \$Text::Unicode),
-            evaluates : (...),
-        )),
-
-*TODO.  Each invalid octet encountered is replaced by the substitution text
-(which can be a single character, or several, or the empty string).  For
-consistency, even if the sequence decodes fine in one sense but is an out
-of range character, the instances of substitution are per count of octets
-not one per character.*
-
-## Text_from_UTF_8_Blob_with_repl_char
-
-        Text_from_UTF_8_Blob_with_repl_char : (\Function : (
-            returns : \$Text::Unicode,
-            matches : (\$Blob,),
-            evaluates : (Text_from_UTF_8_Blob_with_repl_Text::(args:.\0,"\\c<0xFFFD>")),
-        )),
-
-*TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.*
-
-## Text_to_UTF_8_Blob
-
-        Text_to_UTF_8_Blob : (\Function : (
-            returns : \$Blob,
-            matches : (\$Text::Unicode,),
-            evaluates : (...),
-        )),
-
-*TODO.  This should just work as Text::Unicode excludes the surrogate
-pairs and out of range etc stuff.*
-
-## Blob_is_ASCII
-
-        Blob_is_ASCII : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Blob,),
-            evaluates : (Array::ASCII_Chars(Blob_to_Octets args:.\0)),
-        )),
-
-*TODO.*
-
-## Text_from_ASCII_Blob
-
-        Text_from_ASCII_Blob : (\Function : (
-            returns : {\$Text::ASCII, \$ASCII::High_Bit_Not_Zero},
-            matches : (\$Blob,),
-            evaluates : (
-                octets ::= Blob_to_Octets args:.\0;
-                returns if Array::ASCII_Chars(octets)
-                    then guard Text_from_ASCII_Chars octets
-                    else ASCII::High_Bit_Not_Zero();
-            ),
-        )),
-
-*TODO.  Note, still have to define that Excuse.*
-
-## Text_from_ASCII_Blob_with_repl_Text
-
-        Text_from_ASCII_Blob_with_repl_Text : (\Function : (
-            returns : \$Text::ASCII,
-            matches : (\$Blob, \$Text::ASCII),
-            evaluates : (
-                src_octets ::= Blob_to_Octets args:.\0;
-                repl_chars ::= Text_to_ASCII_Chars args:.\1;
-                result_chars ::=
-                    given #repl_chars
-                        when 0 then
-                            src_octets where \in::( 1: 0..127 )
-                        when 1 then guard
-                            src_octets
-                                map \(if args:.\0 in 0..127 then args:.\0 else args:.\1)
-                                    <-- (1 : repl_chars.0,)
-                        default
-                            src_octets
-                                map \(if args:.\0 in 0..127 then [args:.\0] else args:.\1)
-                                    <-- (1 : repl_chars,)
-                                reduce \catenate::()
-                    ;
-                returns Text_from_ASCII_Chars result_chars;
-            ),
-        )),
-
-*TODO.  Each invalid octet encountered is replaced by the substitution text
-(which can be a single character, or several, or the empty string).
-Note there is no alternate with a predefined substitution char as there
-is no good implicit default in ASCII, unlike with Unicode.*
-
-## Text_to_ASCII_Blob
-
-        Text_to_ASCII_Blob : (\Function : (
-            returns : \$Blob,
-            matches : (\$Text::ASCII,),
-            evaluates : (Blob_from_Octets::(Text_to_ASCII_Chars args:.\0)),
-        )),
-
-*TODO.*
-
 # COLLECTIVE DATA TYPES OVERVIEW
 
 A *collective* value either is a generic regular aggregate of a
@@ -4526,6 +3568,167 @@ generic `in_order` function may be used as the `1` argument; regardless,
 the `1` argument can define any total order it likes for members that are
 of any type, both `Orderable` or not.
 
+# STRINGY DATA TYPES
+
+## Stringy
+
+        Stringy : (\Function : (
+            is_type_definer : 0bTRUE,
+            is_generalization : 0bTRUE,
+            composes : {\$Orderable, \$Emptyable},
+            provides_default_for : {\$Emptyable},
+        )),
+
+The interface type definer `Stringy` is semifinite.  A `Stringy` value is a
+homogeneous ordered aggregate of other values such that there may not
+necessarily be any single best interpretation of where each component value
+begins or ends, and as such the only generic interpretation of a `Stringy`
+value is that it is a sequence of smaller `Stringy` values of the same
+type.  Idiomatically a `Stringy` type has opaque values that each
+represent something specific, such as a sequence of bits or of octets or of
+characters of some repertoire; that being said, by way of `Positional`,
+some `Stringy` types are in fact generic collections whose elements don't
+represent something specific.  The general case of a `Stringy` type has
+operators for catenating or splitting `Stringy` values, but it has no
+generic concept of counting or addressing individual members of the
+aggregate, with the lone special case exception that a count of zero can be
+distinguished from a count of more than zero.  Addressing or counting
+individual members can only be done properly in a composing type-specific
+way, and often a single composing type may provide multiple ways, such as
+character string types offering both code point and grapheme
+representations.  The default value of `Stringy` is the `Bits` value with
+zero members.  `Stringy` expects every one of its composing types to be
+orderable (but that some `Positional` are only conditionally so), and
+idiomatically that is done by some kind of pairwise comparison of members.
+
+`Stringy` is composed, directly or indirectly, by: `Bits`, `Blob`,
+`Textual`, `Text`, `Positional`, `Array`, `Orderelation`.
+
+## substring_of
+
+        substring_of::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Stringy, \$Stringy),
+        )),
+
+The virtual function `substring_of` results in `0bTRUE` iff the sequence of
+members of its `0` argument is a substring of the sequence of members of
+its `1` argument; otherwise it results in `0bFALSE`.  Other programming
+languages may name their corresponding operators *in*.
+
+## superstring_of
+
+        superstring_of : (\Function : (
+            commutes : \$substring_of,
+        )),
+
+The function `superstring_of` results in `0bTRUE` iff the sequence of
+members of its `0` argument is a superstring of the sequence of members of
+its `1` argument; otherwise it results in `0bFALSE`.  Other programming
+languages may name their corresponding operators *contains* or
+*include?*; some of them instead provide more generalized pattern
+searching operators such as *like* or `~~` or `=~`; some of them also
+provide operators that result in an ordinal position or nonmatch indicator
+rather than a boolean.
+
+## proper_substring_or_superstring
+
+        proper_substring_or_superstring : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Stringy, \$Stringy),
+            is_commutative : 0bTRUE,
+            evaluates : (args:.\0 != args:.\1 and (args:.\0 substring_or_superstring args:.\1)),
+        )),
+
+The function `proper_substring_or_superstring` results in `0bTRUE` iff the
+sequence of members of one of its 2 arguments `0` and `1` is a proper
+substring of the sequence of members of its other argument; otherwise it
+results in `0bFALSE`.
+
+## substring_or_superstring
+
+        substring_or_superstring : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Stringy, \$Stringy),
+            is_commutative : 0bTRUE,
+            evaluates : ((args:.\0 substring_of args:.\1) or (args:.\0 superstring_of args:.\1)),
+        )),
+
+The function `substring_or_superstring` results in `0bTRUE` iff the
+sequence of members of one of its 2 arguments `0` and `1` is a substring
+of the sequence of members of its other argument; otherwise it results in
+`0bFALSE`.
+
+## overlaps_string
+
+        overlaps_string::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Stringy, \$Stringy),
+            is_commutative : 0bTRUE,
+        )),
+
+The virtual function `overlaps_string` results in `0bTRUE` iff, given *X*
+as the sequence of members of its argument `0` and *Y* as the sequence of
+members of its argument `1`, when *X* and *Y* are overlapped to the
+greatest possible extent such that every corresponding member pair has 2 of
+the same value, the overlap of *X* and *Y* has at least 1 member, and
+each of *X* and *Y* has at least 1 member that is not overlapped;
+otherwise it results in `0bFALSE`.
+
+## disjoint_string
+
+        disjoint_string::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Boolean,
+            matches : (\$Stringy, \$Stringy),
+            is_commutative : 0bTRUE,
+        )),
+
+The virtual function `disjoint_string` results in `0bTRUE` iff the sequence
+of members of its `0` argument can not be overlapped with the sequence of
+members of its `1` argument by at least 1 member such that every
+corresponding member pair has 2 of the same value; otherwise it results in
+`0bFALSE`.
+
+## catenate ~
+
+        catenate::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Stringy,
+            matches : (\$Stringy, \$Stringy),
+            is_associative : 0bTRUE,
+            repeater : \$replicate,
+        )),
+
+        '~' : (\Alias : ( of : \$catenate, )),
+
+The virtual function `catenate` aka `~` results in the catenation of its
+2 arguments `0` and `1` such that the result starts with the members of
+`0` and ends with the members of `1`, the members from both in the same
+order as in their respective arguments.  This operation has a *two-sided identity element*
+value of a collection with zero members.  Other programming languages may
+name their corresponding operators *concat* or `||` or `+` or *.* or
+*strcat* or *join*; some of them also have string interpolation syntax
+which logically does the same thing without an explicit operator.
+
+## replicate ~#
+
+        replicate::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Stringy,
+            matches : (\$Stringy, \$Integer_NN),
+        )),
+
+        '~#' : (\Alias : ( of : \$replicate, )),
+
+The virtual function `replicate` aka `~#` results in the catenation of N
+instances of its `0` argument where N is defined by its `1` argument.  If
+the `1` argument is zero then the result is the value of the `0`
+argument's collection type that has zero members.  Other programming
+languages may name their corresponding operators *x*.
+
 # POSITIONAL DATA TYPES
 
 ## Positional
@@ -5054,6 +4257,803 @@ the argument.
         )),
 
 *TODO.  Also consider ord_pos_first_diff_elem or ord_pos_succ_common_prefix as name.*
+
+# BITS DATA TYPES
+
+## Bits
+
+        Bits : (\Function : (
+            is_type_definer : 0bTRUE,
+            composes : {\$Stringy},
+            provides_default_for : {\$Stringy},
+            evaluates : (\$Signature::Article_Match : (
+                label : \Bits,
+                attrs : (
+                    bits : \Array::Bits(),
+                ),
+            )),
+            default : 0bb,
+        )),
+
+The selection type definer `Bits` is infinite.  A `Bits` value is an
+arbitrarily-long sequence of *bits* where each bit is represented by
+an `Integer` in the range 0..1.  The default value of `Bits` is
+`0bb` (the empty bit string).  `Bits` is `Orderable`; its minimum
+value is the same `0bb` as its default value; it has no maximum value;
+its ordering algorithm corresponds directly to that of `Array`, pairwise
+as integer sequences.  Other programming languages may name their
+corresponding types *bit* or *bit varying*.
+
+## Array::Bits
+
+        Array::Bits : (\Function : (
+            is_type_definer : 0bTRUE,
+            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..1 ) )],
+        )),
+
+The selection type definer `Array::Bits` represents the infinite type
+consisting just of the `Array` values for which every one of their member
+values is an integer in the range 0..1 inclusive.
+
+## in_order (Bits)
+
+        in_order::Bits : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Bits, \$Bits),
+            implements : \$folder::'',
+            evaluates : ((Bits_to_Array_Bits args:.\0) in_order (Bits_to_Array_Bits args:.\1)),
+        )),
+
+The function `in_order::Bits` implements the `Orderable` virtual
+function `in_order` for the composing type `Bits`.
+
+## to_Boolean (Bits)
+
+        to_Boolean::Bits : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Bits,),
+            implements : \$folder::'',
+            evaluates : (args:.\0 != 0bb),
+        )),
+
+The function `to_Boolean::Bits` results in `0bTRUE` iff its `0` argument
+is not `0bb`, and in `0bFALSE` if it is `0bb`.  This function
+implements the `Boolable` virtual function `to_Boolean` aka `so` aka
+`?` for the composing type `Bits`.
+
+## empty (Bits)
+
+        empty::Bits : (\Function : (
+            returns : \$Bits,
+            matches : (\$Bits,),
+            implements : \$folder::'',
+            evaluates : (0bb),
+        )),
+
+The function `empty::Bits` simply results in `0bb`.  This function
+implements the `Emptyable` virtual function `empty` for the composing
+type `Bits`.
+
+## substring_of (Bits)
+
+        substring_of::Bits : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Bits, \$Bits),
+            implements : \$folder::'',
+            evaluates : ((Bits_to_Array_Bits args:.\0) substring_of (Bits_to_Array_Bits args:.\1)),
+        )),
+
+The function `substring_of::Bits` implements the `Stringy` virtual
+function `substring_of` for the composing type `Bits`.
+
+## overlaps_string (Bits)
+
+        overlaps_string::Bits : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Bits, \$Bits),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : ((Bits_to_Array_Bits args:.\0)
+                overlaps_string (Bits_to_Array_Bits args:.\1)),
+        )),
+
+The function `overlaps_string::Bits` implements the `Stringy` virtual
+function `overlaps_string` for the composing type `Bits`.
+
+## disjoint_string (Bits)
+
+        disjoint_string::Bits : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Bits, \$Bits),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : ((Bits_to_Array_Bits args:.\0)
+                disjoint_string (Bits_to_Array_Bits args:.\1)),
+        )),
+
+The function `disjoint_string::Bits` implements the `Stringy` virtual
+function `disjoint_string` for the composing type `Bits`.
+
+## catenate (Bits)
+
+        catenate::Bits : (\Function : (
+            returns : \$Bits,
+            matches : (\$Bits, \$Bits),
+            implements : \$folder::'',
+            is_associative : 0bTRUE,
+            identity : 0bb,
+            repeater : \$replicate::Bits,
+            evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0)
+                ~ (Bits_to_Array_Bits args:.\1))),
+        )),
+
+The function `catenate::Bits` implements the `Stringy` virtual function
+`catenate` aka `~` for the composing type `Bits`.
+
+## replicate (Bits)
+
+        replicate::Bits : (\Function : (
+            returns : \$Bits,
+            matches : (\$Bits, \$Integer_NN),
+            implements : \$folder::'',
+            evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0) ~# args:.\1)),
+        )),
+
+The function `replicate::Bits` implements the `Stringy` virtual function
+`replicate` aka `~#` for the composing type `Bits`.
+
+## Bits_from_Array_Bits
+
+        Bits_from_Array_Bits : (\Function : (
+            returns : \$Bits,
+            matches : (\$Array::Bits,),
+            evaluates : ((\Bits : (bits : args:.\0,))),
+        )),
+
+The function `Bits_from_Array_Bits` results in the `Bits` value selected
+in terms of the integer sequence of its `0` argument.
+
+## Bits_to_Array_Bits
+
+        Bits_to_Array_Bits : (\Function : (
+            returns : \$Array::Bits,
+            matches : (\$Bits,),
+            evaluates : (args:.\0:>.\bits),
+        )),
+
+The function `Bits_to_Array_Bits` results in an integer sequence defining
+the bits of its `Bits`-typed `0` argument.
+
+# BLOB DATA TYPES
+
+## Blob
+
+        Blob : (\Function : (
+            is_type_definer : 0bTRUE,
+            composes : {\$Stringy},
+            evaluates : (\$Signature::Article_Match : (
+                label : \Blob,
+                attrs : (
+                    octets : \Array::Octets(),
+                ),
+            )),
+            default : 0xx,
+        )),
+
+The selection type definer `Blob` is infinite.  A `Blob` value is an
+arbitrarily-long sequence of *octets* where each octet is represented by
+an `Integer` in the range 0..255.  The default value of `Blob` is
+`0xx` (the empty octet string).  `Blob` is `Orderable`; its minimum
+value is the same `0xx` as its default value; it has no maximum value;
+its ordering algorithm corresponds directly to that of `Array`, pairwise
+as integer sequences.  Other programming languages may name their
+corresponding types *Buf* or *byte[]* or *bytea*.
+
+## Array::Octets
+
+        Array::Octets : (\Function : (
+            is_type_definer : 0bTRUE,
+            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..255 ) )],
+        )),
+
+The selection type definer `Array::Octets` represents the infinite type
+consisting just of the `Array` values for which every one of their member
+values is an integer in the range 0..255 inclusive.
+
+## in_order (Blob)
+
+        in_order::Blob : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob, \$Blob),
+            implements : \$folder::'',
+            evaluates : ((Blob_to_Octets args:.\0) in_order (Blob_to_Octets args:.\1)),
+        )),
+
+The function `in_order::Blob` implements the `Orderable` virtual
+function `in_order` for the composing type `Blob`.
+
+## to_Boolean (Blob)
+
+        to_Boolean::Blob : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob,),
+            implements : \$folder::'',
+            evaluates : (args:.\0 != 0xx),
+        )),
+
+The function `to_Boolean::Blob` results in `0bTRUE` iff its `0` argument
+is not `0xx`, and in `0bFALSE` if it is `0xx`.  This function
+implements the `Boolable` virtual function `to_Boolean` aka `so` aka
+`?` for the composing type `Blob`.
+
+## empty (Blob)
+
+        empty::Blob : (\Function : (
+            returns : \$Blob,
+            matches : (\$Blob,),
+            implements : \$folder::'',
+            evaluates : (0xx),
+        )),
+
+The function `empty::Blob` simply results in `0xx`.  This function
+implements the `Emptyable` virtual function `empty` for the composing
+type `Blob`.
+
+## substring_of (Blob)
+
+        substring_of::Blob : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob, \$Blob),
+            implements : \$folder::'',
+            evaluates : ((Blob_to_Octets args:.\0) substring_of (Blob_to_Octets args:.\1)),
+        )),
+
+The function `substring_of::Blob` implements the `Stringy` virtual
+function `substring_of` for the composing type `Blob`.
+
+## overlaps_string (Blob)
+
+        overlaps_string::Blob : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob, \$Blob),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : ((Blob_to_Octets args:.\0) overlaps_string (Blob_to_Octets args:.\1)),
+        )),
+
+The function `overlaps_string::Blob` implements the `Stringy` virtual
+function `overlaps_string` for the composing type `Blob`.
+
+## disjoint_string (Blob)
+
+        disjoint_string::Blob : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob, \$Blob),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : ((Blob_to_Octets args:.\0) disjoint_string (Blob_to_Octets args:.\1)),
+        )),
+
+The function `disjoint_string::Blob` implements the `Stringy` virtual
+function `disjoint_string` for the composing type `Blob`.
+
+## catenate (Blob)
+
+        catenate::Blob : (\Function : (
+            returns : \$Blob,
+            matches : (\$Blob, \$Blob),
+            implements : \$folder::'',
+            is_associative : 0bTRUE,
+            identity : 0xx,
+            repeater : \$replicate::Blob,
+            evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~ (Blob_to_Octets args:.\1))),
+        )),
+
+The function `catenate::Blob` implements the `Stringy` virtual function
+`catenate` aka `~` for the composing type `Blob`.
+
+## replicate (Blob)
+
+        replicate::Blob : (\Function : (
+            returns : \$Blob,
+            matches : (\$Blob, \$Integer_NN),
+            implements : \$folder::'',
+            evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~# args:.\1)),
+        )),
+
+The function `replicate::Blob` implements the `Stringy` virtual function
+`replicate` aka `~#` for the composing type `Blob`.
+
+## Blob_from_Octets
+
+        Blob_from_Octets : (\Function : (
+            returns : \$Blob,
+            matches : (\$Array::Octets,),
+            evaluates : ((\Blob : (octets : args:.\0,))),
+        )),
+
+The function `Blob_from_Octets` results in the `Blob` value selected in
+terms of the integer sequence of its `0` argument.
+
+## Blob_to_Octets
+
+        Blob_to_Octets : (\Function : (
+            returns : \$Array::Octets,
+            matches : (\$Blob,),
+            evaluates : (args:.\0:>.\octets),
+        )),
+
+The function `Blob_to_Octets` results in an integer sequence defining the
+octets of its `Blob`-typed `0` argument.
+
+# TEXTUAL DATA TYPES
+
+## Textual
+
+        Textual : (\Function : (
+            is_type_definer : 0bTRUE,
+            is_generalization : 0bTRUE,
+            composes : {\$Stringy},
+        )),
+
+The interface type definer `Textual` is semifinite.  A `Textual` value is a
+`Stringy` value which is explicitly a sequence of characters of some
+repertoire, typically Unicode or a subset thereof such as ASCII.  Note that
+the `System` package has no concept of a *single character* value in the
+abstract sense that some programming languages do; the closest analogy is a
+`Stringy` value that just contains either one code point or grapheme or
+similar concept; this is something in common with the Raku language.
+
+`Textual` is composed by `Text`, which implements `Orderable` using the
+simple culture-agnostic method of ordering code points numerically.
+Idiomatically each culture-specific text collation method will have its own
+distinct `Textual`-composing type that implements `Orderable` in its own
+way, so the latter's operators will just work like users expect.
+
+The `System` package excludes the majority of useful operators specific to
+working with character strings; see instead other Muldis Data Language packages such as
+`System::Text` for these things.  Such tasks
+include like case folding, pattern matching, whitespace trimming, Unicode
+normalization, encoding to and decoding from most binary formats, and so on.
+
+Muldis Data Language is designed expressly to avoid mandatory external dependencies of
+large complexity, such as most of the details of Unicode, in contrast with
+a lot of the more modern languages of its time.  The Muldis Data Language Foundation
+and `System` package are strictly limited in their knowledge of Unicode;
+they know that a code point of the Unicode repertoire is just in the integer
+set `{0..0xD7FF,0xE000..0x10FFFF}`,
+and that the leading subset `0..127` is also 7-bit
+ASCII, and they know how to read and write the fairly simple and stable
+`UTF-8` binary encoding for Unicode text, which is a proper superset of
+7-bit ASCII encoding and is CPU endian-agnostic.  In contrast, anything to
+do with knowing what abstract characters exist, and their various
+properties (upper or lowercase, combining or not, etc), anything to do with
+normalization or folding or pattern matching, and anything to do with other
+binary encodings or character repertoires especially endian-specific, this
+is all expressly *not* part of the language core.  A
+Muldis Data Language implementation can choose whether or not to support them, allowing
+for a lower barrier to entry.  Unicode in particular requires a vast
+knowledge base to work properly with that is regularly updated, and
+Muldis Data Language has a principle that it is better to have multiple specialized components
+that do their jobs well, such as handle Unicode intricacies, while the core
+language can focus on other core competencies that don't involve complex
+externally-defined moving targets.  The `System` package loosely just
+considers a character string to be a sequence of generic integers and
+doesn't ascribe very many distinct semantics to particular ones, while
+non-`System` code is empowered to do that instead.
+
+## to_Text
+
+        to_Text::'' : (\Function : (
+            virtual : 0bTRUE,
+            returns : \$Text,
+            matches : (\$Textual,),
+        )),
+
+The virtual function `to_Text` results in the `Text` value that
+represents the same character string value as its `0` argument.  The
+purpose of `to_Text` is to canonicalize `Textual` values so they can be
+compared or worked with as character strings in a manner agnostic to things
+like national collations or fixed-size types.
+
+*TODO: Add an Excuse for when the source type has non-Unicode characters.*
+
+# TEXT DATA TYPES
+
+## Text Text::Unicode
+
+        Text::'' : (\Function : (
+            is_type_definer : 0bTRUE,
+            composes : {\$Textual},
+            provides_default_for : {\$Textual},
+            evaluates : (\$Signature::Article_Match : (
+                label : \Text,
+                attrs : (
+                    unicode_codes : \Array::Unicode_Codes(),
+                ),
+            )),
+            default : "",
+        )),
+
+        Text::Unicode : (\Alias : ( of : \$Text, )),
+
+The selection type definer `Text` is infinite.  A `Text` value is
+characterized by an arbitrarily-long sequence of Unicode 12.1 standard
+*character code points*, where each distinct code point corresponds to a
+distinct integer in the set `{0..0xD7FF,0xE000..0x10FFFF}`.  Each
+character is taken from a finite repertoire having 0x10F7FF members, but
+`Text` imposes no limit on the length of each character sequence.  `Text`
+has its own canonical representation in terms of an `Array` value named
+`Unicode_Codes`.  A `Text` value is isomorphic to an `Attr_Name` value.
+The default value of `Text`
+is `""` (the empty character string).  `Text` is `Orderable`; its
+minimum value is the same `""` as its default value; it has no maximum
+value; its ordering algorithm corresponds directly to that of `Array`,
+pairwise as integer sequences.  Other programming languages may name their
+corresponding types *Str* or *string* or *varchar* or *char*.
+
+There are many defined character sets in the computing world that map
+agreed upon sets of symbols to integers.  For those character repertoires
+that are a subset of Unicode, such as 7-bit ASCII or ISO Latin 1 or EBCDIC,
+the `Text` type should map with character strings using them in a simple
+and well-defined way, although the integers used to represent the same
+logical characters may be different.  But for other character sets that are
+not a subset of Unicode, such as ISO/IEC 2022 or Mojikyo or HKSCS, a
+`Text` value can not directly represent all possible character strings
+that they can, and so other `Textual`-composing types should be used
+instead for such character strings.
+
+## Array::Unicode_Codes
+
+        Array::Unicode_Codes : (\Function : (
+            is_type_definer : 0bTRUE,
+            evaluates : [\Array::(),
+                \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )],
+        )),
+
+The selection type definer `Array::Unicode_Codes` represents the infinite type
+consisting just of the `Array` values for which every one of their member
+values is an integer in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
+
+## Text::ASCII
+
+        Text::ASCII : (\Function : (
+            is_type_definer : 0bTRUE,
+            evaluates : (Text::Unicode::(args:.\0) and_then guard
+                Array::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
+        )),
+
+The selection type definer `Text::ASCII` represents the infinite type
+consisting just of the `Text` values for which every one of their member
+characters is a member of the 128-character repertoire of 7-bit ASCII.
+This `Text` subtype has its own canonical representation in terms of an
+`Array` value named `ASCII_Chars` where each member code point matches
+the standard ASCII codes for the same symbols.
+
+## Array::ASCII_Chars
+
+        Array::ASCII_Chars : (\Function : (
+            is_type_definer : 0bTRUE,
+            evaluates : [\Array::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )],
+        )),
+
+The selection type definer `Array::ASCII_Chars` represents the infinite type
+consisting just of the `Array` values for which every one of their member
+values is an integer in the range 0..127 inclusive.
+
+## in_order (Text)
+
+        in_order::Text : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Text, \$Text),
+            implements : \$folder::'',
+            evaluates : ((Text_to_Unicode_Codes args:.\0) in_order (Text_to_Unicode_Codes args:.\1)),
+        )),
+
+The function `in_order::Text` implements the `Orderable` virtual
+function `in_order` for the composing type `Text`.
+
+## to_Boolean (Text)
+
+        to_Boolean::Text : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Text,),
+            implements : \$folder::'',
+            evaluates : (args:.\0 != ""),
+        )),
+
+The function `to_Boolean::Text` results in `0bTRUE` iff its `0` argument
+is not `""`, and in `0bFALSE` if it is `""`.  This function implements the
+`Boolable` virtual function `to_Boolean` aka `so` aka `?` for the
+composing type `Text`.
+
+## empty (Text)
+
+        empty::Text : (\Function : (
+            returns : \$Text,
+            matches : (\$Text,),
+            implements : \$folder::'',
+            evaluates : (""),
+        )),
+
+The function `empty::Text` simply results in `""`.  This function
+implements the `Emptyable` virtual function `empty` for the composing
+type `Text`.
+
+## substring_of (Text)
+
+        substring_of::Text : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Text, \$Text),
+            implements : \$folder::'',
+            evaluates : ((Text_to_Unicode_Codes args:.\0)
+                substring_of (Text_to_Unicode_Codes args:.\1)),
+        )),
+
+The function `substring_of::Text` implements the `Stringy` virtual
+function `substring_of` for the composing type `Text`.
+
+## overlaps_string (Text)
+
+        overlaps_string::Text : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Text, \$Text),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : ((Text_to_Unicode_Codes args:.\0)
+                overlaps_string (Text_to_Unicode_Codes args:.\1)),
+        )),
+
+The function `overlaps_string::Text` implements the `Stringy` virtual
+function `overlaps_string` for the composing type `Text`.
+
+## disjoint_string (Text)
+
+        disjoint_string::Text : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Text, \$Text),
+            implements : \$folder::'',
+            is_commutative : 0bTRUE,
+            evaluates : ((Text_to_Unicode_Codes args:.\0)
+                disjoint_string (Text_to_Unicode_Codes args:.\1)),
+        )),
+
+The function `disjoint_string::Text` implements the `Stringy` virtual
+function `disjoint_string` for the composing type `Text`.
+
+## catenate (Text)
+
+        catenate::Text : (\Function : (
+            returns : \$Text,
+            matches : (\$Text, \$Text),
+            implements : \$folder::'',
+            is_associative : 0bTRUE,
+            identity : "",
+            repeater : \$replicate::Text,
+            evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0)
+                ~ (Text_to_Unicode_Codes args:.\1))),
+        )),
+
+The function `catenate::Text` implements the `Stringy` virtual function
+`catenate` aka `~` for the composing type `Text`.
+
+## replicate (Text)
+
+        replicate::Text : (\Function : (
+            returns : \$Text,
+            matches : (\$Text, \$Integer_NN),
+            implements : \$folder::'',
+            evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0) ~# args:.\1)),
+        )),
+
+The function `replicate::Text` implements the `Stringy` virtual function
+`replicate` aka `~#` for the composing type `Text`.
+
+## to_Text (Text)
+
+        to_Text::Text : (\Function : (
+            returns : \$Text,
+            matches : (\$Text,),
+            implements : \$folder::'',
+            evaluates : (args:.\0),
+        )),
+
+The function `to_Text::Text` simply results in its `0` argument.
+This function implements the `Textual` virtual function `to_Text`
+for the composing type `Text`.
+
+## Text_from_Unicode_Codes
+
+        Text_from_Unicode_Codes : (\Function : (
+            returns : \$Text,
+            matches : (\$Array::Unicode_Codes,),
+            evaluates : ((\Text : (unicode_codes : args:.\0,))),
+        )),
+
+The function `Text_from_Unicode_Codes` results in the `Text` value selected
+in terms of an integer sequence in the standard Unicode code point
+mapping of its `0` argument.
+
+## Text_to_Unicode_Codes
+
+        Text_to_Unicode_Codes : (\Function : (
+            returns : \$Array::Unicode_Codes,
+            matches : (\$Text,),
+            evaluates : (args:.\0:>.\unicode_codes),
+        )),
+
+The function `Text_to_Unicode_Codes` results in an integer sequence in the
+standard Unicode code point mapping that corresponds to its
+`Text`-typed `0` argument.
+
+## Text_from_ASCII_Chars
+
+        Text_from_ASCII_Chars : (\Function : (
+            returns : \$Text::ASCII,
+            matches : (\$Array::ASCII_Chars,),
+            evaluates : (Text_from_Unicode_Codes args:.\0),
+        )),
+
+The function `Text_from_ASCII_Chars` results in the `Text` value selected
+in terms of an integer sequence in the standard 7-bit ASCII character
+mapping of its `0` argument.
+
+## Text_to_ASCII_Chars
+
+        Text_to_ASCII_Chars : (\Function : (
+            returns : \$Array::ASCII_Chars,
+            matches : (\$Text::ASCII,),
+            evaluates : (Text_to_Unicode_Codes args:.\0),
+        )),
+
+The function `Text_to_ASCII_Chars` results in an integer sequence in the
+standard 7-bit ASCII character mapping that corresponds to its
+`Text`-typed `0` argument.
+
+## Blob_is_UTF_8
+
+        Blob_is_UTF_8 : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob,),
+            evaluates : (...),
+        )),
+
+*TODO.  See also https://tools.ietf.org/html/rfc3629 for the UTF-8 definition.*
+
+*TODO.  Note that while the UTF-8 encoding scheme can represent all Unicode
+code points in the range 0..0x1FFFFF with 4 octets (and all 0..0x7FFFFFFF
+with 6 octets), the UTF-8 standard further restricts the range to
+{0..0xD7FF,0xE000..0x10FFFF} to match the constraints of the limitations of UTF-16.*
+
+*TODO.  Note that we don't define a Blob::UTF_8 type as
+it is superfluous with simply trying to decode one and see if it succeeded.*
+
+## Text_from_UTF_8_Blob
+
+        Text_from_UTF_8_Blob : (\Function : (
+            returns : {\$Text::Unicode, \$Unicode::..., ...},
+            matches : (\$Blob,),
+            evaluates : (...),
+        )),
+
+*TODO.  As a code/implementation comment, say the parallel design is
+benefitting from the self-syncrhonizing nature that is a key feature of UTF-8.*
+
+*TODO.  Note, the multiple Excuse options are used to indicate the
+different reasons why the Blob is not considered valid UTF-8, including
+that it doesn't use the fewest bytes possible for a character, or it
+represents code points greater than 0x10FFFF or it represents illegal
+code points in the 0xD800..0xDFFF range of UTF-16 surrogates, or it has the
+wrong number of continuation bytes following an ASCII char or starting byte
+etc.  If a Blob contains multiple errors, the returned Excuse is for the
+error closest to the start of the Blob; that is, chained anticoalesce() is
+used. TODO, perhaps declare a union type collecting the Unicode errors like
+we have with rounding methods, or we actually may have multiple Unicode sets.*
+
+*TODO.  See also http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
+and http://cpansearch.perl.org/src/RJBS/perl-5.24.0/t/op/utf8decode.t for
+some decoder edge case testing.*
+
+## Text_from_UTF_8_Blob_with_repl_Text
+
+        Text_from_UTF_8_Blob_with_repl_Text : (\Function : (
+            returns : \$Text::Unicode,
+            matches : (\$Blob, \$Text::Unicode),
+            evaluates : (...),
+        )),
+
+*TODO.  Each invalid octet encountered is replaced by the substitution text
+(which can be a single character, or several, or the empty string).  For
+consistency, even if the sequence decodes fine in one sense but is an out
+of range character, the instances of substitution are per count of octets
+not one per character.*
+
+## Text_from_UTF_8_Blob_with_repl_char
+
+        Text_from_UTF_8_Blob_with_repl_char : (\Function : (
+            returns : \$Text::Unicode,
+            matches : (\$Blob,),
+            evaluates : (Text_from_UTF_8_Blob_with_repl_Text::(args:.\0,"\\c<0xFFFD>")),
+        )),
+
+*TODO.  The special Unicode char "REPLACEMENT CHARACTER" aka 0xFFFD is used.*
+
+## Text_to_UTF_8_Blob
+
+        Text_to_UTF_8_Blob : (\Function : (
+            returns : \$Blob,
+            matches : (\$Text::Unicode,),
+            evaluates : (...),
+        )),
+
+*TODO.  This should just work as Text::Unicode excludes the surrogate
+pairs and out of range etc stuff.*
+
+## Blob_is_ASCII
+
+        Blob_is_ASCII : (\Function : (
+            returns : \$Boolean,
+            matches : (\$Blob,),
+            evaluates : (Array::ASCII_Chars(Blob_to_Octets args:.\0)),
+        )),
+
+*TODO.*
+
+## Text_from_ASCII_Blob
+
+        Text_from_ASCII_Blob : (\Function : (
+            returns : {\$Text::ASCII, \$ASCII::High_Bit_Not_Zero},
+            matches : (\$Blob,),
+            evaluates : (
+                octets ::= Blob_to_Octets args:.\0;
+                returns if Array::ASCII_Chars(octets)
+                    then guard Text_from_ASCII_Chars octets
+                    else ASCII::High_Bit_Not_Zero();
+            ),
+        )),
+
+*TODO.  Note, still have to define that Excuse.*
+
+## Text_from_ASCII_Blob_with_repl_Text
+
+        Text_from_ASCII_Blob_with_repl_Text : (\Function : (
+            returns : \$Text::ASCII,
+            matches : (\$Blob, \$Text::ASCII),
+            evaluates : (
+                src_octets ::= Blob_to_Octets args:.\0;
+                repl_chars ::= Text_to_ASCII_Chars args:.\1;
+                result_chars ::=
+                    given #repl_chars
+                        when 0 then
+                            src_octets where \in::( 1: 0..127 )
+                        when 1 then guard
+                            src_octets
+                                map \(if args:.\0 in 0..127 then args:.\0 else args:.\1)
+                                    <-- (1 : repl_chars.0,)
+                        default
+                            src_octets
+                                map \(if args:.\0 in 0..127 then [args:.\0] else args:.\1)
+                                    <-- (1 : repl_chars,)
+                                reduce \catenate::()
+                    ;
+                returns Text_from_ASCII_Chars result_chars;
+            ),
+        )),
+
+*TODO.  Each invalid octet encountered is replaced by the substitution text
+(which can be a single character, or several, or the empty string).
+Note there is no alternate with a predefined substitution char as there
+is no good implicit default in ASCII, unlike with Unicode.*
+
+## Text_to_ASCII_Blob
+
+        Text_to_ASCII_Blob : (\Function : (
+            returns : \$Blob,
+            matches : (\$Text::ASCII,),
+            evaluates : (Blob_from_Octets::(Text_to_ASCII_Chars args:.\0)),
+        )),
+
+*TODO.*
 
 # ARRAY DATA TYPES
 
