@@ -578,84 +578,13 @@ The virtual function `nth_pred` results in the Nth *predecessor* value of
 its `0` argument, where N is its `1` argument, or in
 `\!Before_All_Others` if there is none.
 
-# BOOLABLE DATA TYPES
-
-## Boolable
-
-        Boolable : (\Function : (
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-        )),
-
-The interface type definer `Boolable` is semifinite.  A `Boolable` value has a
-canonical way of being cast to a `Boolean` value in a context-free manner,
-as the answer to the non-specific question "Is that so?" on the value taken
-in isolation, whatever that would conceivably mean for the value's type.
-The idiomatic predicate being asked has to do with whether or not something
-exists; for composing numeric types it is asking whether the number is
-nonzero; for composing collection types it is asking whether the collection
-has any members.  The primary reason for `Boolable` is to provide an easy
-consistent and terse way to ask a common predicate question such as this.
-The default value of `Boolable` is `0bFALSE`.  Other programming languages
-often have the concept of particular values from a wide variety of types as
-being conceptually either *false* or *true*, and `Boolable` is the
-formalization of that concept for Muldis Data Language, allowing program code to be
-written in a similar style but with more type safety as any treatment of a
-value as a `Boolean` must be made explicit.
-
-`Boolable` is composed, directly or indirectly, by: `Boolean`,
-`Numerical`, `Integral`, `Integer`, `Fractional`, `Rational`,
-`Homogeneous`, `Unionable`, `Discrete`,
-`Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`,
-`Set`, `Bag`, `Relational`, `Orderelation`, `Relation`,
-`Multirelation`, `Intervalish`, `Interval`, `Unionable_Intervalish`,
-`Set_Of_Interval`, `Bag_Of_Interval`.
-
-While conceivably `Boolable` could also be composed by `Attributive`, and
-hence `Tuple`, it isn't because that would set up a semantic conflict for
-`Relation` and `Multirelation` which are collections across 2 dimensions, and
-it was decided for those latter types that `Boolable` would apply to them
-explicitly in their `Homogeneous` dimension and
-not in their `Attributive` dimension.  As such, the `Attributive` functions
-`has_any_attrs` and `is_nullary` are provided as that dimension's direct
-analogies to the `Homogeneous` dimension's `Boolable`-implementing
-`has_any_members` (`to_Boolean`/`so`) and `is_empty` (`not_so`) functions.
-
-## to_Boolean so ?
-
-        to_Boolean::'' : (\Function : (
-            virtual : 0bTRUE,
-            returns : \$Boolean,
-            matches : (\$Boolable,),
-        )),
-
-        so  : (\Alias : ( of : \$to_Boolean, )),
-        '?' : (\Alias : ( of : \$to_Boolean, )),
-
-The virtual function `to_Boolean` aka `so` aka `?` results in `0bTRUE`
-typically when its `0` argument is a nonzero number or a nonempty
-collection; otherwise it results in `0bFALSE`.
-
-## not_so !?
-
-        not_so : (\Function : (
-            negates : \$to_Boolean,
-        )),
-
-        '!?' : (\Alias : ( of : \$not_so, )),
-
-The function `not_so` aka `!?` results in `0bTRUE` typically when
-its `0` argument is a number zero or an empty collection; otherwise
-it results in `0bFALSE`.
-
 # BOOLEAN DATA TYPES
 
 ## Boolean
 
         Boolean : (\Function : (
             is_type_definer : 0bTRUE,
-            composes : {\$Bicessable, \$Boolable},
-            provides_default_for : {\$Boolable},
+            composes : {\$Bicessable},
             evaluates : \foundation::Boolean(),
             default : 0bFALSE,
         )),
@@ -744,24 +673,12 @@ function `nth_pred` for the composing type `Boolean`.
 The function `nth_succ::Boolean` implements the `Successable` virtual
 function `nth_succ` for the composing type `Boolean`.
 
-## to_Boolean (Boolean)
-
-        to_Boolean::Boolean : (\Function : (
-            returns : \$Boolean,
-            matches : (\$Boolean,),
-            implements : \$folder::'',
-            evaluates : (args:.\0),
-        )),
-
-The function `to_Boolean::Boolean` performs a logical *proposition*; it
-simply results in its `0` argument.  This function implements the
-`Boolable` virtual function `to_Boolean` aka `so` aka `?` for the
-composing type `Boolean`.
-
 ## not ! ¬
 
         not : (\Function : (
-            negates : \$to_Boolean::Boolean,
+            returns : \$Boolean,
+            matches : (\$Boolean,),
+            evaluates : (if args:.\0 then 0bFALSE else 0bTRUE),
         )),
 
         '!' : (\Alias : ( of : \$not, )),
@@ -1019,7 +936,6 @@ terms of the `Attr_Name` of its `0` argument.
         Numerical : (\Function : (
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
-            composes : {\$Boolable},
         )),
 
 The interface type definer `Numerical` is semifinite.  A `Numerical` value
@@ -1047,24 +963,21 @@ these include types for irrational or algebraic or complex numbers or
 quaternions or rational types with a fixed precision or scale or
 floating-point types and so on.
 
-## to_Boolean (Numerical)
+## not_zero
 
-        to_Boolean::Numerical : (\Function : (
+        not_zero : (\Function : (
             virtual : 0bTRUE,
             returns : \$Boolean,
             matches : (\$Numerical,),
-            implements : \$folder::'',
         )),
 
-The virtual function `to_Boolean::Numerical` results in `0bTRUE` when its
-`0` argument is a nonzero number; otherwise it results in `0bFALSE`.  This
-function implements the `Boolable` virtual function `to_Boolean` aka
-`so` aka `?` for the composing type `Numerical`.
+The virtual function `not_zero` results in `0bTRUE` when its
+`0` argument is a nonzero number; otherwise it results in `0bFALSE`.
 
 ## is_zero
 
         is_zero : (\Function : (
-            negates : \$to_Boolean::Numerical,
+            negates : \$not_zero,
         )),
 
 The function `is_zero` results in `0bTRUE` when its `0` argument is a
@@ -1619,19 +1532,19 @@ virtual function `nth_pred` for the composing type `Integer`.
 The function `nth_succ::Integer` implements the `Successable`
 virtual function `nth_succ` for the composing type `Integer`.
 
-## to_Boolean (Integer)
+## not_zero (Integer)
 
-        to_Boolean::Integer : (\Function : (
+        not_zero::Integer : (\Function : (
             returns : \$Boolean,
             matches : (\$Integer,),
             implements : \$folder::'',
             evaluates : (args:.\0 != 0),
         )),
 
-The function `to_Boolean::Integer` results in `0bTRUE` iff its `0`
+The function `not_zero::Integer` results in `0bTRUE` iff its `0`
 argument is not `0`, and in `0bFALSE` if it is `0`.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Integer`.
+implements the `Numerical` virtual function `not_zero`
+for the composing type `Integer`.
 
 ## zero (Integer)
 
@@ -2043,19 +1956,19 @@ default and minmum value is `0.0`; it has no maximum value.
 The function `in_order::Rational` implements the `Orderable` virtual
 function `in_order` for the composing type `Rational`.
 
-## to_Boolean (Rational)
+## not_zero (Rational)
 
-        to_Boolean::Rational : (\Function : (
+        not_zero::Rational : (\Function : (
             returns : \$Boolean,
             matches : (\$Rational,),
             implements : \$folder::'',
             evaluates : (args:.\0 != 0.0),
         )),
 
-The function `to_Boolean::Rational` results in `0bTRUE` iff its `0`
+The function `not_zero::Rational` results in `0bTRUE` iff its `0`
 argument is not `0.0`, and in `0bFALSE` if it is `0.0`.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Rational`.
+implements the `Numerical` virtual function `not_zero`
+for the composing type `Rational`.
 
 ## zero (Rational)
 
@@ -2620,7 +2533,6 @@ languages may name their corresponding operators *Remove* or *remove* or
         Homogeneous : (\Function : (
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
-            composes : {\$Boolable},
         )),
 
 The interface type definer `Homogeneous` is semifinite.  A `Homogeneous` value
@@ -2671,27 +2583,26 @@ way; see also the 'repeater' function trait that helps optimize it.
 Surely, any time when one may think these operations need to know the
 baggy count or ordinal position, its for a problem best solved differently.*
 
-## to_Boolean (Homogeneous) has_any_members
+## not_empty has_any_members ∅!?
 
-        to_Boolean::Homogeneous : (\Function : (
+        not_empty : (\Function : (
             virtual : 0bTRUE,
             returns : \$Boolean,
             matches : (\$Homogeneous,),
-            implements : \$folder::'',
         )),
 
-        has_any_members : (\Alias : ( of : \$to_Boolean::Homogeneous, )),
+        has_any_members : (\Alias : ( of : \$not_empty, )),
 
-The virtual function `to_Boolean::Homogeneous` aka `has_any_members`
+        Unicode_Aliases::'∅!?' : (\Alias : ( of : \$is_empty, )),
+
+The virtual function `not_empty` aka `has_any_members` aka `∅!?`
 results in `0bTRUE` iff its `0` argument has any members, and in `0bFALSE`
-iff it has no members.  This function implements the `Boolable` virtual
-function `to_Boolean` aka `so` aka `?` for the composing type
-`Homogeneous`.
+iff it has no members.
 
 ## is_empty ∅?
 
         is_empty : (\Function : (
-            negates : \$to_Boolean::Homogeneous,
+            negates : \$not_empty,
         )),
 
         Unicode_Aliases::'∅?' : (\Alias : ( of : \$is_empty, )),
@@ -4079,7 +3990,7 @@ zero-based `Positional`, the result is equal to its `count`.
         first_ord_pos : (\Function : (
             returns : \$Integer,
             matches : (\$Positional,),
-            accepts : (so args:.\0),
+            accepts : (not_empty args:.\0),
             evaluates : (first_possible_ord_pos::(args:.\0)),
         )),
 
@@ -4091,7 +4002,7 @@ nonempty `0` argument's first member.
         last_ord_pos : (\Function : (
             returns : \$Integer,
             matches : (\$Positional,),
-            accepts : (so args:.\0),
+            accepts : (not_empty args:.\0),
             evaluates : (--first_unused_ord_pos::(args:.\0)),
         )),
 
@@ -4123,7 +4034,7 @@ their corresponding operators *array_slice*.
         slice_range : (\Function : (
             returns : \$Positional,
             matches : (\$Positional, \$Integer, \$Integer),
-            accepts : (so args:.\0 and args:.\1 >= first_possible_ord_pos::(args:.\0)
+            accepts : (not_empty args:.\0 and args:.\1 >= first_possible_ord_pos::(args:.\0)
                 and args:.\2 < first_unused_ord_pos::(args:.\0)),
             evaluates : (slice_n::(args:.\0, args:.\1, args:.\2 - args:.\1 + 1)),
         )),
@@ -4143,7 +4054,7 @@ may instead overload their array element subscripting syntax.
         first : (\Function : (
             returns : \$Any,
             matches : (\$Positional,),
-            accepts : (so args:.\0),
+            accepts : (not_empty args:.\0),
             evaluates : (args:.\0 . first_ord_pos::(args:.\0)),
         )),
 
@@ -4154,7 +4065,7 @@ The function `first` results in its nonempty `0` argument's first member.
         nonfirst : (\Function : (
             returns : \$Positional,
             matches : (\$Positional,),
-            accepts : (so args:.\0),
+            accepts : (not_empty args:.\0),
             evaluates : (slice_range::(args:.\0, ++first_ord_pos::(args:.\0), last_ord_pos::(args:.\0))),
         )),
 
@@ -4169,7 +4080,7 @@ they did in the argument.
         last : (\Function : (
             returns : \$Any,
             matches : (\$Positional,),
-            accepts : (so args:.\0),
+            accepts : (not_empty args:.\0),
             evaluates : (args:.\0 . last_ord_pos::(args:.\0)),
         )),
 
@@ -4180,7 +4091,7 @@ The function `last` results in its nonempty `0` argument's last member.
         nonlast : (\Function : (
             returns : \$Positional,
             matches : (\$Positional,),
-            accepts : (so args:.\0),
+            accepts : (not_empty args:.\0),
             evaluates : (slice_range::(args:.\0, first_ord_pos::(args:.\0), --last_ord_pos::(args:.\0))),
         )),
 
@@ -4250,19 +4161,19 @@ values is an integer in the range 0..1 inclusive.
 The function `in_order::Bits` implements the `Orderable` virtual
 function `in_order` for the composing type `Bits`.
 
-## to_Boolean (Bits)
+## not_empty (Bits)
 
-        to_Boolean::Bits : (\Function : (
+        not_empty::Bits : (\Function : (
             returns : \$Boolean,
             matches : (\$Bits,),
             implements : \$folder::'',
             evaluates : (args:.\0 != 0bb),
         )),
 
-The function `to_Boolean::Bits` results in `0bTRUE` iff its `0` argument
+The function `not_empty::Bits` results in `0bTRUE` iff its `0` argument
 is not `0bb`, and in `0bFALSE` if it is `0bb`.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Bits`.
+implements the `Homogeneous` virtual function `not_empty`
+for the composing type `Bits`.
 
 ## empty (Bits)
 
@@ -4415,19 +4326,19 @@ values is an integer in the range 0..255 inclusive.
 The function `in_order::Blob` implements the `Orderable` virtual
 function `in_order` for the composing type `Blob`.
 
-## to_Boolean (Blob)
+## not_empty (Blob)
 
-        to_Boolean::Blob : (\Function : (
+        not_empty::Blob : (\Function : (
             returns : \$Boolean,
             matches : (\$Blob,),
             implements : \$folder::'',
             evaluates : (args:.\0 != 0xx),
         )),
 
-The function `to_Boolean::Blob` results in `0bTRUE` iff its `0` argument
+The function `not_empty::Blob` results in `0bTRUE` iff its `0` argument
 is not `0xx`, and in `0bFALSE` if it is `0xx`.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Blob`.
+implements the `Homogeneous` virtual function `not_empty`
+for the composing type `Blob`.
 
 ## empty (Blob)
 
@@ -4692,19 +4603,18 @@ values is an integer in the range 0..127 inclusive.
 The function `in_order::Text` implements the `Orderable` virtual
 function `in_order` for the composing type `Text`.
 
-## to_Boolean (Text)
+## not_empty (Text)
 
-        to_Boolean::Text : (\Function : (
+        not_empty::Text : (\Function : (
             returns : \$Boolean,
             matches : (\$Text,),
             implements : \$folder::'',
             evaluates : (args:.\0 != ""),
         )),
 
-The function `to_Boolean::Text` results in `0bTRUE` iff its `0` argument
+The function `not_empty::Text` results in `0bTRUE` iff its `0` argument
 is not `""`, and in `0bFALSE` if it is `""`.  This function implements the
-`Boolable` virtual function `to_Boolean` aka `so` aka `?` for the
-composing type `Text`.
+`Homogeneous` virtual function `not_empty` for the composing type `Text`.
 
 ## empty (Text)
 
@@ -5058,19 +4968,19 @@ The function `in_order::Array` implements the `Orderable` virtual
 function `in_order` for the composing type `Array`.  This function
 will succeed iff `in_order` is also defined for the types of the members.
 
-## to_Boolean (Array)
+## not_empty (Array)
 
-        to_Boolean::Array : (\Function : (
+        not_empty::Array : (\Function : (
             returns : \$Boolean,
             matches : (\$Array,),
             implements : \$folder::'',
             evaluates : (args:.\0 != []),
         )),
 
-The function `to_Boolean::Array` results in `0bTRUE` iff its `0` argument
+The function `not_empty::Array` results in `0bTRUE` iff its `0` argument
 has any members, and in `0bFALSE` iff it has no members.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Array`.
+implements the `Homogeneous` virtual function `not_empty`
+for the composing type `Array`.
 
 ## empty (Array)
 
@@ -5595,19 +5505,19 @@ the only zero-member `Set` value.
 The singleton type definer `Set_C0` aka `?∅` represents the only zero-member
 `Set` value, `{}`.
 
-## to_Boolean (Set)
+## not_empty (Set)
 
-        to_Boolean::Set : (\Function : (
+        not_empty::Set : (\Function : (
             returns : \$Boolean,
             matches : (\$Set,),
             implements : \$folder::'',
             evaluates : (args:.\0 != {}),
         )),
 
-The function `to_Boolean::Set` results in `0bTRUE` iff its `0` argument
+The function `not_empty::Set` results in `0bTRUE` iff its `0` argument
 has any members, and in `0bFALSE` iff it has no members.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Set`.
+implements the `Homogeneous` virtual function `not_empty`
+for the composing type `Set`.
 
 ## empty (Set)
 
@@ -6062,19 +5972,19 @@ corresponding types *Multiset*.
 The singleton type definer `Bag_C0` aka `+∅` represents the only zero-member
 `Bag` value, `{0:0}`.
 
-## to_Boolean (Bag)
+## not_empty (Bag)
 
-        to_Boolean::Bag : (\Function : (
+        not_empty::Bag : (\Function : (
             returns : \$Boolean,
             matches : (\$Bag,),
             implements : \$folder::'',
             evaluates : (args:.\0 != {0:0}),
         )),
 
-The function `to_Boolean::Bag` results in `0bTRUE` iff its `0` argument
+The function `not_empty::Bag` results in `0bTRUE` iff its `0` argument
 has any members, and in `0bFALSE` iff it has no members.  This function
-implements the `Boolable` virtual function `to_Boolean` aka `so` aka
-`?` for the composing type `Bag`.
+implements the `Homogeneous` virtual function `not_empty`
+for the composing type `Bag`.
 
 ## empty (Bag)
 
@@ -7605,19 +7515,19 @@ members.  The default value of `Relational` is the `Relation` value with
 zero attributes and zero members, `\?%()`.  `Relational` is composed by
 `Orderelation`, `Relation`, `Multirelation`.
 
-## to_Boolean (Relational)
+## not_empty (Relational)
 
-        to_Boolean::Relational : (\Function : (
+        not_empty::Relational : (\Function : (
             returns : \$Boolean,
             matches : (\$Relational,),
             implements : \$folder::'',
             evaluates : (? |args:.\0),
         )),
 
-The function `to_Boolean::Relational` results in `0bTRUE` iff its `0`
+The function `not_empty::Relational` results in `0bTRUE` iff its `0`
 argument has any tuples, and in `0bFALSE` iff it has no tuples.  This
-function implements the `Boolable` virtual function `to_Boolean` aka
-`so` aka `?` for the composing type `Relational`.
+function implements the `Homogeneous` virtual function `not_empty`
+for the composing type `Relational`.
 
 ## empty (Relational)
 
@@ -9174,7 +9084,7 @@ for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
 
         Package::Base_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Nesting::(), \so::(), \'∌'::( 1: \'' )],
+            evaluates : [\Nesting::(), \not_empty::(), \'∌'::( 1: \'' )],
         )),
 
 *TODO.*
@@ -9183,7 +9093,7 @@ for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
 
         Package::Canon_Authority : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Text::(), \so::()],
+            evaluates : [\Text::(), \not_empty::()],
         )),
 
 *TODO.*
@@ -9192,7 +9102,7 @@ for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
 
         Package::Canon_Version_Number : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Text::(), \so::()],
+            evaluates : [\Text::(), \not_empty::()],
         )),
 
 *TODO.*
@@ -10087,7 +9997,7 @@ a thing for opening tuples as for creating them.*
 
         Local_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Nesting::(), \so::(), \(
+            evaluates : [\Nesting::(), \not_empty::(), \(
                 given args:.\0.0
                     when \foundation then #args:.\0 = 2
                     when \used       then #args:.\0 ≥ 2  `elem 2 is pkg local alias`
