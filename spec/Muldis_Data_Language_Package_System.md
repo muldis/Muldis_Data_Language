@@ -211,13 +211,7 @@ member of the type specified by its `1` argument, and `0bTRUE` otherwise.
 
         Excuse : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (\$Signature::Article_Match : (
-                label : \Excuse,
-                attrs : (
-                    0 : \Any(),
-                ),
-            )),
-            default : 0iIGNORANCE,
+            is_generalization : 0bTRUE,
         )),
 
 The interface type definer `Excuse` is semifinite.  An `Excuse`
@@ -313,6 +307,8 @@ for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
 
         Ignorance : (\Function : (
             is_type_definer : 0bTRUE,
+            composes : {\$Excuse},
+            provides_default_for : {\$Excuse},
             constant : 0iIGNORANCE,
         )),
 
@@ -334,8 +330,8 @@ quasi-values *null* or *nil* or *none* or *nothing* or *undef* or
 
         Before_All_Others : (\Function : (
             is_type_definer : 0bTRUE,
-            composes : {\$Orderable},
-            constant : \!Before_All_Others,
+            composes : {\$Excuse, \$Orderable},
+            constant : (\$Before_All_Others : ()),
         )),
 
 The singleton type definer `Before_All_Others` represents a type-agnostic
@@ -350,8 +346,8 @@ defined in other, not-`System`, Muldis Data Language packages for the relevant d
 
         After_All_Others : (\Function : (
             is_type_definer : 0bTRUE,
-            composes : {\$Orderable},
-            constant : \!After_All_Others,
+            composes : {\$Excuse, \$Orderable},
+            constant : (\$After_All_Others : ()),
         )),
 
 The singleton type definer `After_All_Others` represents a type-agnostic
@@ -366,7 +362,8 @@ defined in other, not-`System`, Muldis Data Language packages for the relevant d
 
         Div_By_Zero : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \!Div_By_Zero,
+            composes : {\$Excuse},
+            constant : (\$Div_By_Zero : ()),
         )),
 
 The singleton type definer `Div_By_Zero` represents the *undefined* result of
@@ -379,7 +376,8 @@ positive) zero, but the Muldis Data Language `System` package lacks those concep
 
         Zero_To_The_Zero : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \!Zero_To_The_Zero,
+            composes : {\$Excuse},
+            constant : (\$Zero_To_The_Zero : ()),
         )),
 
 The singleton type definer `Zero_To_The_Zero` represents the *undefined* result
@@ -389,7 +387,8 @@ of attempting to exponentiate a number zero to the power of a number zero.
 
         No_Empty_Value : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \!No_Empty_Value,
+            composes : {\$Excuse},
+            constant : (\$No_Empty_Value : ()),
         )),
 
 The singleton type definer `No_Empty_Value` represents the *undefined* result
@@ -400,7 +399,8 @@ type that doesn't have a value with zero members.
 
         No_Such_Ord_Pos : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \!No_Such_Ord_Pos,
+            composes : {\$Excuse},
+            constant : (\$No_Such_Ord_Pos : ()),
         )),
 
 The singleton type definer `No_Such_Ord_Pos` represents the *undefined* result of
@@ -411,7 +411,8 @@ assuming incorrectly that *V* already has a member whose ordinal position is *P*
 
         No_Such_Attr_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \!No_Such_Attr_Name,
+            composes : {\$Excuse},
+            constant : (\$No_Such_Attr_Name : ()),
         )),
 
 The singleton type definer `No_Such_Attr_Name` represents the *undefined*
@@ -423,7 +424,8 @@ name is *N*.
 
         Not_Same_Heading : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \!Not_Same_Heading,
+            composes : {\$Excuse},
+            constant : (\$Not_Same_Heading : ()),
         )),
 
 The singleton type definer `Not_Same_Heading` represents the *undefined* result
@@ -454,12 +456,12 @@ programming languages may name their corresponding types *IComparable* or
 *Ord* or *ordered* or *ordinal*.
 
 The default value of `Orderable` is the `Integer` value `0`.  The
-minimum and maximum values of `Orderable` are `\!Before_All_Others`
-and `\!After_All_Others`, respectively; these 2 `Excuse` values are
+minimum and maximum values of `Orderable` are `(\$Before_All_Others : ())`
+and `(\$After_All_Others : ())`, respectively; these 2 `Excuse` values are
 canonically considered to be before and after, respectively, *every* other
 value of the Muldis Data Language type system, regardless of whether those values are
 members a type for which an `Orderable`-composing type definer exists.  The
-two values `\!Before_All_Others` and `\!After_All_Others` can be useful in
+two values `(\$Before_All_Others : ())` and `(\$After_All_Others : ())` can be useful in
 defining an *interval* that is partially or completely unbounded, and to use
 as *two-sided identity element* values for chained order-comparisons.
 To be clear, Muldis Data Language does not actually system-define a
@@ -600,7 +602,7 @@ name this operator *ge*.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             is_idempotent : 0bTRUE,
-            identity : \!After_All_Others,
+            identity : (\$After_All_Others : ()),
             evaluates : (if args:.\0 in_order args:.\1 then args:.\0 else args:.\1),
         )),
 
@@ -617,7 +619,7 @@ any number of values in order to pick the one that sorts
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             is_idempotent : 0bTRUE,
-            identity : \!Before_All_Others,
+            identity : (\$Before_All_Others : ()),
             evaluates : (if args:.\0 in_order args:.\1 then args:.\1 else args:.\0),
         )),
 
@@ -720,7 +722,7 @@ programming languages may name their corresponding operators *Current*.
         )),
 
 The function `succ` results in the *successor* value of its `0`
-argument, or in `\!After_All_Others` if there is none.  Other
+argument, or in `(\$After_All_Others : ())` if there is none.  Other
 programming languages may name their corresponding operators *next* or
 *MoveNext*.
 
@@ -734,7 +736,7 @@ programming languages may name their corresponding operators *next* or
 
 The virtual function `nth_succ` results in the Nth *successor* value of
 its `0` argument, where N is its `1` argument, or in
-`\!After_All_Others` if there is none.
+`(\$After_All_Others : ())` if there is none.
 
 # BICESSABLE DATA TYPES
 
@@ -796,7 +798,7 @@ values and should not be conceptualized as mathematical operations.
         )),
 
 The function `pred` results in the *predecessor* value of its `0`
-argument, or in `\!Before_All_Others` if there is none.  Other
+argument, or in `(\$Before_All_Others : ())` if there is none.  Other
 programming languages may name their corresponding operators *prior* or
 *previous*.
 
@@ -810,7 +812,7 @@ programming languages may name their corresponding operators *prior* or
 
 The virtual function `nth_pred` results in the Nth *predecessor* value of
 its `0` argument, where N is its `1` argument, or in
-`\!Before_All_Others` if there is none.
+`(\$Before_All_Others : ())` if there is none.
 
 # BOOLEAN DATA TYPES
 
@@ -891,7 +893,7 @@ the composing type `Boolean`.
             returns : {\$0bFALSE, \$Before_All_Others},
             matches : (\$Boolean, \$Integer_NN),
             implements : \$folder::'',
-            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and args:.\0 then 0bFALSE else \!Before_All_Others),
+            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and args:.\0 then 0bFALSE else (\$Before_All_Others : ())),
         )),
 
 The function `nth_pred::Boolean` implements the `Bicessable` virtual
@@ -903,7 +905,7 @@ function `nth_pred` for the composing type `Boolean`.
             returns : {\$0bTRUE, \$After_All_Others},
             matches : (\$Boolean, \$Integer_NN),
             implements : \$folder::'',
-            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then 0bTRUE else \!After_All_Others),
+            evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then 0bTRUE else (\$After_All_Others : ())),
         )),
 
 The function `nth_succ::Boolean` implements the `Successable` virtual
@@ -1263,7 +1265,7 @@ argument, and is a shorthand for dividing one by that argument.  By
 definition, the product of a number and its reciprocal is one.  The result
 is always `Fractional` for both `Integral` and `Fractional` arguments.
 The result is only *defined* when the argument is a nonzero number; it is
-`\!Div_By_Zero` otherwise.
+`(\$Div_By_Zero : ())` otherwise.
 
 ## modulus abs
 
@@ -1374,7 +1376,7 @@ The virtual function `multiple_of` results in `0bTRUE` iff its `0`
 argument is an even multiple of its `1` argument (that is, the former is
 evenly divisible by the latter), and `0bFALSE` otherwise.  The result is
 only *defined* when the `1` argument is a nonzero number; it is
-`\!Div_By_Zero` otherwise.  Other programming languages may name their
+`(\$Div_By_Zero : ())` otherwise.  Other programming languages may name their
 corresponding operators `%%`.
 
 ## nearest_multiple_of round
@@ -1382,7 +1384,7 @@ corresponding operators `%%`.
         nearest_multiple_of : (\Function : (
             returns : {\$Numerical, \$Div_By_Zero},
             matches : (\$Numerical, \$Numerical, \$Round_Meth),
-            evaluates : (if is_zero args:.\1 then \!Div_By_Zero
+            evaluates : (if is_zero args:.\1 then (\$Div_By_Zero : ())
                 else guard args:.\1 * (args:.\0 div args:.\1)),
         )),
 
@@ -1396,7 +1398,7 @@ argument.  For the common case of rounding to the nearest integer, use a
 `1` argument of positive one.  The result is `Integral` for `Integral`
 arguments and is `Fractional` for `Fractional` arguments.  The result is
 only *defined* when the `1` argument is a nonzero number; it is
-`\!Div_By_Zero` otherwise.  Other programming languages may name their
+`(\$Div_By_Zero : ())` otherwise.  Other programming languages may name their
 corresponding operators *truncate* or *int* or *floor* or *ceil* or
 other things, some of which would always round to a multiple of one.
 
@@ -1420,7 +1422,7 @@ results in the typically-fractional numeric *quotient* from performing
 The result is always `Fractional` for both `Integral` and `Fractional`
 arguments; as such, `fractional_divided_by` is the idiomatic way to select
 any `Rational` values in terms of `Integer` values.  The result is only
-*defined* when the `1` argument is a nonzero number; it is `\!Div_By_Zero`
+*defined* when the `1` argument is a nonzero number; it is `(\$Div_By_Zero : ())`
 otherwise.  This operation has a *right identity element* value of a
 number positive one.
 
@@ -1442,7 +1444,7 @@ result is rounded to the same or nearest integral number, where the nearest
 is determined by the rounding method specified by the `2` argument.  The
 result is `Integral` for `Integral` arguments and is `Fractional` with a
 *denominator* of one for `Fractional` arguments.  The result is only
-*defined* when the `1` argument is a nonzero number; it is `\!Div_By_Zero`
+*defined* when the `1` argument is a nonzero number; it is `(\$Div_By_Zero : ())`
 otherwise.  This operation has a *right identity element* value of a
 number positive one.
 
@@ -1451,7 +1453,7 @@ number positive one.
         modulo : (\Function : (
             returns : {\$Numerical, \$Div_By_Zero},
             matches : (\$Numerical, \$Numerical, \$Round_Meth),
-            evaluates : (if is_zero args:.\1 then \!Div_By_Zero
+            evaluates : (if is_zero args:.\1 then (\$Div_By_Zero : ())
                 else guard args:.\0 - (args:.\0 nearest_multiple_of args:.\1)),
         )),
 
@@ -1463,7 +1465,7 @@ numeric *remainder* from performing same *division* operation as
 `modulo` preserves the identity `x mod y = x - y * (x div y)`.  The
 result is `Integral` for `Integral` arguments and is `Fractional` for
 `Fractional` arguments.  The result is only *defined* when the `1`
-argument is a nonzero number; it is `\!Div_By_Zero` otherwise.  Other
+argument is a nonzero number; it is `(\$Div_By_Zero : ())` otherwise.  Other
 programming languages may name their corresponding operators `%` or `//`
 or `\\` or *div* or *rem* or *remainder* or various other things.
 
@@ -1495,7 +1497,7 @@ typically-fractional number from performing *exponentiation* of its 2
 arguments `0` (*base*) and `1` (*exponent* or *power*).  The result is
 always `Fractional` for both an `Integral` and a `Fractional` `0`
 argument.  The result is only *defined* when at least one of the arguments
-`0` and `1` is a nonzero number; it is `\!Zero_To_The_Zero` otherwise.  Other
+`0` and `1` is a nonzero number; it is `(\$Zero_To_The_Zero : ())` otherwise.  Other
 programming languages may name their corresponding operators *exp* or `^`.
 
 ## integral_nn_power power
@@ -1513,7 +1515,7 @@ possibly-fractional number from performing *exponentiation* of its 2
 arguments `0` (*base*) and `1` (*exponent* or *power*).  The result is
 `Integral` for an `Integral` `0` argument and is `Fractional` for a
 `Fractional` `0` argument.  The result is only *defined* when at least
-one of the arguments `0` and `1` is a nonzero number; it is `\!Zero_To_The_Zero`
+one of the arguments `0` and `1` is a nonzero number; it is `(\$Zero_To_The_Zero : ())`
 otherwise.
 
 # INTEGRAL DATA TYPES
@@ -1577,7 +1579,7 @@ default and minmum value is `1`; it has no maximum value.
         )),
 
 The function `--` results in the *predecessor* value of its `0`
-argument, or in `\!Before_All_Others` if there is none.  It is an integral numeric
+argument, or in `(\$Before_All_Others : ())` if there is none.  It is an integral numeric
 specific alias for the `Bicessable` virtual function `pred`.  Other
 programming languages may name their corresponding operators *decrement*.
 
@@ -1590,7 +1592,7 @@ programming languages may name their corresponding operators *decrement*.
         )),
 
 The function `++` results in the *successor* value of its `0` argument,
-or in `\!After_All_Others` if there is none.  It is an integral numeric specific
+or in `(\$After_All_Others : ())` if there is none.  It is an integral numeric specific
 alias for the `Successable` virtual function `succ`.  Other programming
 languages may name their corresponding operators *increment*.
 
@@ -1886,7 +1888,7 @@ The function `times::Integer` implements the `Numerical` virtual function
             returns : {\$Boolean, \$Div_By_Zero},
             matches : (\$Integer, \$Integer),
             implements : \$folder::'',
-            evaluates : (if args:.\1 = 0 then \!Div_By_Zero
+            evaluates : (if args:.\1 = 0 then (\$Div_By_Zero : ())
                 else guard evaluates args --> \foundation::Integer_multiple_of()),
         )),
 
@@ -1904,7 +1906,7 @@ virtual function `multiple_of` for the composing type `Integer`.
                 n ::= args:.\0;
                 d ::= args:.\1;
 
-                returns if d = 0 then \!Div_By_Zero else guard q;
+                returns if d = 0 then (\$Div_By_Zero : ()) else guard q;
 
                 q ::= (\Rational : (
                     numerator   : div::((if d > 0 then n else -n), gcd, RM::(\To_Zero)),
@@ -1931,7 +1933,7 @@ the composing type `Integer`.
                 divisor    ::= args:.\1;
                 round_meth ::= args:.\2;
 
-                returns if divisor = 0 then \!Div_By_Zero else guard e1;
+                returns if divisor = 0 then (\$Div_By_Zero : ()) else guard e1;
 
                 e1 note "This is the case where we are dividing by a non-zero.";
 
@@ -2007,7 +2009,7 @@ virtual function `integral_divided_by` aka `div` for the composing type
             returns : {\$Rational, \$Zero_To_The_Zero},
             matches : (\$Integer, \$Integer),
             implements : \$folder::'',
-            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then \!Zero_To_The_Zero
+            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then (\$Zero_To_The_Zero : ())
                 else guard args:.\0 / 1 ** args:.\1),
         )),
 
@@ -2020,7 +2022,7 @@ function `integral_power` aka `**` for the composing type `Integer`.
             returns : {\$Integer, \$Zero_To_The_Zero},
             matches : (\$Integer, \$Integer_NN),
             implements : \$folder::'',
-            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then \!Zero_To_The_Zero
+            evaluates : (if args:.\0 = 0 and args:.\1 = 0 then (\$Zero_To_The_Zero : ())
                 else guard evaluates args --> \foundation::Integer_nn_power()),
         )),
 
@@ -2247,7 +2249,7 @@ for the composing type `Rational`.
             returns : {\$Rational, \$Div_By_Zero},
             matches : (\$Rational,),
             implements : \$folder::'',
-            evaluates : (if args:.\0 = 0.0 then \!Div_By_Zero
+            evaluates : (if args:.\0 = 0.0 then (\$Div_By_Zero : ())
                 else guard (denominator args:.\0) / (numerator args:.\0)),
         )),
 
@@ -2342,7 +2344,7 @@ specifically for multiplying one by an `Integer`.
             returns : {\$Boolean, \$Div_By_Zero},
             matches : (\$Rational, \$Rational),
             implements : \$folder::'',
-            evaluates : (if args:.\1 = 0.0 then \!Div_By_Zero
+            evaluates : (if args:.\1 = 0.0 then (\$Div_By_Zero : ())
                 else guard (args:.\0 mod args:.\1) = 0.0),
         )),
 
@@ -2356,7 +2358,7 @@ virtual function `multiple_of` for the composing type `Rational`.
             matches : (\$Rational, \$Rational),
             implements : \$folder::'',
             right_identity : 1.0,
-            evaluates : (if args:.\1 = 0.0 then \!Div_By_Zero
+            evaluates : (if args:.\1 = 0.0 then (\$Div_By_Zero : ())
                 else guard args:.\0 * reciprocal::(args:.\1)),
         )),
 
@@ -2375,7 +2377,7 @@ the composing type `Rational`.
                 d ::= lcm::(denominator args:.\0, denominator args:.\1);
                 n0 ::= (numerator args:.\0) * div::(d, denominator args:.\0, RM::(\To_Zero));
                 n1 ::= (numerator args:.\1) * div::(d, denominator args:.\1, RM::(\To_Zero));
-                returns if args:.\1 = 0.0 then \!Div_By_Zero
+                returns if args:.\1 = 0.0 then (\$Div_By_Zero : ())
                     else guard div::(n0 * d, n1 * d, args:.\2) / 1;
             ),
         )),
@@ -2403,7 +2405,7 @@ function `integral_power` aka `**` for the composing type `Rational`.
             returns : {\$Rational, \$Zero_To_The_Zero},
             matches : (\$Rational, \$Integer_NN),
             implements : \$folder::'',
-            evaluates : (if args:.\0 = 0.0 and args:.\1 = 0 then \!Zero_To_The_Zero
+            evaluates : (if args:.\0 = 0.0 and args:.\1 = 0 then (\$Zero_To_The_Zero : ())
                 else guard ((numerator args:.\0) ** args:.\1) / ((denominator args:.\0) ** args:.\1)),
         )),
 
@@ -3927,12 +3929,12 @@ virtual function `mapping_at` aka `.:` for the composing type
             returns : \$Any,
             matches : (\$Positional, \$Integer),
             implements : \$folder::'',
-            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else \!No_Such_Ord_Pos),
+            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else (\$No_Such_Ord_Pos : ())),
         )),
 
 The function `maybe_at::Positional` results in the member value of its
 `0` argument whose ordinal position is equal to its `1` argument, iff there
-is such a member; otherwise it results in `\!No_Such_Ord_Pos`.  This function
+is such a member; otherwise it results in `(\$No_Such_Ord_Pos : ())`.  This function
 implements the `Accessible` virtual function `maybe_at` aka `.!` for the
 composing type `Positional`.
 
@@ -7291,12 +7293,12 @@ type `Structural`.
             returns : \$Any,
             matches : (\$Structural, \$Attr_Name),
             implements : \$folder::'',
-            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else \!No_Such_Attr_Name),
+            evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else (\$No_Such_Attr_Name : ())),
         )),
 
 The function `maybe_at::Structural` results in the attribute asset value
 of its `0` argument whose attribute name is equal to its `1` argument,
-iff there is such an attribute; otherwise it results in `\!No_Such_Attr_Name`.  This
+iff there is such an attribute; otherwise it results in `(\$No_Such_Attr_Name : ())`.  This
 function implements the `Accessible` virtual function `maybe_at` aka
 `.!` for the composing type `Structural`.
 
@@ -7827,7 +7829,7 @@ virtual function `only_member` for the composing type `Relational`.
             matches : (\$Relational, \$Structural, \$Integer_NN),
             implements : \$folder::'',
             evaluates : (if args:.\0 =$ args:.\1 then guard has_n::(|args:.\0, args:.\1, args:.\2)
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `has_n::Relational` results in `0bTRUE` iff its `0` argument
@@ -7837,7 +7839,7 @@ result is always `0bTRUE` when the `2` argument is zero.  Note that having
 a `2` argument greater than 1 in combination with a `Setty` typed `0`
 argument will always result in `0bFALSE`.  The result is only *defined*
 when the `0` and `1` arguments have the same *heading*; it is
-`\!Not_Same_Heading` otherwise.  This function implements the `Homogeneous` virtual
+`(\$Not_Same_Heading : ())` otherwise.  This function implements the `Homogeneous` virtual
 function `has_n` for the composing type `Relational`.
 
 ## multiplicity (Relational)
@@ -7896,14 +7898,14 @@ composing type `Relational`.
             matches : (\$Relational, \$Relational),
             implements : \$folder::'',
             evaluates : (if args:.\0 =$ args:.\1 then guard |args:.\0 subset_of |args:.\1
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `subset_of::Relational` results in `0bTRUE` iff the multiset
 of tuples of its `0` argument is a subset of the multiset of tuples of its
 `1` argument; otherwise it results in `0bFALSE`.  The result is only
 *defined* when the 2 arguments have the same *heading*; it is
-`\!Not_Same_Heading` otherwise.  This function implements the `Homogeneous` virtual
+`(\$Not_Same_Heading : ())` otherwise.  This function implements the `Homogeneous` virtual
 function `subset_of` aka `⊆` for the composing type `Relational`.
 
 ## same_members (Relational)
@@ -7914,7 +7916,7 @@ function `subset_of` aka `⊆` for the composing type `Relational`.
             implements : \$folder::'',
             is_commutative : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard |args:.\0 same_members |args:.\1
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `same_members::Relational` results in `0bTRUE` iff the
@@ -7924,7 +7926,7 @@ function may result in `0bTRUE` for some `Positional` arguments for which
 `same` would result in `0bFALSE` because the latter considers tuple order
 significant while the former doesn't; for non-`Positional` arguments, the
 2 functions are typically the same.  The result is only *defined* when the
-2 arguments have the same *heading*; it is `\!Not_Same_Heading` otherwise.  This
+2 arguments have the same *heading*; it is `(\$Not_Same_Heading : ())` otherwise.  This
 function implements the `Homogeneous` virtual function `same_members` for
 the composing type `Relational`.
 
@@ -7936,7 +7938,7 @@ the composing type `Relational`.
             implements : \$folder::'',
             is_commutative : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard |args:.\0 overlaps_members |args:.\1
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `overlaps_members::Relational` results in `0bTRUE` iff, given
@@ -7945,7 +7947,7 @@ multiset of tuples of its argument `1`, there exists at least 1 tuple that
 both *X* and *Y* have, and there also exists at least 1 other tuple each
 of *X* and *Y* that the other doesn't have; otherwise it results in
 `0bFALSE`.  The result is only *defined* when the 2 arguments have the same
-*heading*; it is `\!Not_Same_Heading` otherwise.  This function implements the
+*heading*; it is `(\$Not_Same_Heading : ())` otherwise.  This function implements the
 `Homogeneous` virtual function `overlaps_members` for the composing type
 `Relational`.
 
@@ -7957,14 +7959,14 @@ of *X* and *Y* that the other doesn't have; otherwise it results in
             implements : \$folder::'',
             is_commutative : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard |args:.\0 disjoint_members |args:.\1
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `disjoint_members::Relational` results in `0bTRUE` iff the
 multiset of tuples of its `0` argument has no tuples in common with the
 multiset of tuples of its `1` argument; otherwise it results in `0bFALSE`.
 The result is only *defined* when the 2 arguments have the same
-*heading*; it is `\!Not_Same_Heading` otherwise.  This function implements the
+*heading*; it is `(\$Not_Same_Heading : ())` otherwise.  This function implements the
 `Homogeneous` virtual function `disjoint_members` for the composing type
 `Relational`.
 
@@ -7987,7 +7989,7 @@ The result is only *defined* when the 2 arguments have the same
             implements : \$folder::'',
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: insert_n::(|args:.\0, args:.\1, args:.\2) )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `insert_n::Relational` results in the value of its `0`
@@ -8000,7 +8002,7 @@ may equal the `0` argument even when the `2` argument is nonzero.  If the
 result's type is `Positional`, then the result starts with all of the
 tuples of `0` in the same order and ends with any added instances of `1`.
 The result is only *defined* when the `0` and `1` arguments have the
-same *heading*; it is `\!Not_Same_Heading` otherwise. This function implements the
+same *heading*; it is `(\$Not_Same_Heading : ())` otherwise. This function implements the
 `Unionable` virtual function `insert_n` for the composing type
 `Relational`.
 
@@ -8012,7 +8014,7 @@ same *heading*; it is `\!Not_Same_Heading` otherwise. This function implements t
             implements : \$folder::'',
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: remove_n::(|args:.\0, args:.\1, args:.\2) )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `remove_n::Relational` results in the value of its `0`
@@ -8023,7 +8025,7 @@ count of tuples of `0` equal to the `1` argument, so the result may equal
 the `0` argument even when the `2` argument is nonzero.  If the result's
 type is `Positional`, then the removed instances of `1` are those closest
 to the end of `0`.  The result is only *defined* when the `0` and `1`
-arguments have the same *heading*; it is `\!Not_Same_Heading` otherwise.  This
+arguments have the same *heading*; it is `(\$Not_Same_Heading : ())` otherwise.  This
 function implements the `Unionable` virtual function `remove_n` for the
 composing type `Relational`.
 
@@ -8036,7 +8038,7 @@ composing type `Relational`.
             is_associative : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: |args:.\0 member_plus |args:.\1 )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `member_plus::Relational` results in the *multiset sum* of
@@ -8054,7 +8056,7 @@ then behaves identically to `catenate` aka `~` when given the same
 arguments.  This operation has a *two-sided identity element* value of a collection with zero
 members.  For non-ordered types, this operation is also commutative.  The
 result is only *defined* when the 2 arguments have the same *heading*; it
-is `\!Not_Same_Heading` otherwise.  This function implements the `Unionable`
+is `(\$Not_Same_Heading : ())` otherwise.  This function implements the `Unionable`
 virtual function `member_plus` aka `⊎` for the composing type
 `Relational`.
 
@@ -8066,7 +8068,7 @@ virtual function `member_plus` aka `⊎` for the composing type
             implements : \$folder::'',
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: |args:.\0 except |args:.\1 )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `except::Relational` results in the *multiset difference*
@@ -8081,7 +8083,7 @@ negative.  If the result's type is `Positional`, then the removed
 instances of any distinct tuple are those closest to the end of `0`.  This
 operation has a *right identity element* value of a collection with zero members.  The
 result is only *defined* when the 2 arguments have the same *heading*; it
-is `\!Not_Same_Heading` otherwise.  This function implements the `Unionable`
+is `(\$Not_Same_Heading : ())` otherwise.  This function implements the `Unionable`
 virtual function `except` aka `∖` for the composing type `Relational`.
 
 ## intersect (Relational)
@@ -8094,7 +8096,7 @@ virtual function `except` aka `∖` for the composing type `Relational`.
             is_idempotent : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: |args:.\0 intersect |args:.\1 )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `intersect::Relational` results in the *multiset
@@ -8109,7 +8111,7 @@ tuple are those closest to the end of `0`.  This operation conceptually
 has a *two-sided identity element* value of a collection with an infinite number of members.
 For non-ordered types, this operation is also commutative.  The result is
 only *defined* when the 2 arguments have the same *heading*; it is
-`\!Not_Same_Heading` otherwise.  This function implements the `Unionable` virtual
+`(\$Not_Same_Heading : ())` otherwise.  This function implements the `Unionable` virtual
 function `intersect` aka `∩` for the composing type `Relational`.
 
 ## union (Relational)
@@ -8121,7 +8123,7 @@ function `intersect` aka `∩` for the composing type `Relational`.
             is_idempotent : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: |args:.\0 union |args:.\1 )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `union::Relational` results in the *multiset union* of its 2
@@ -8137,7 +8139,7 @@ from both in the same order as in their respective arguments; the removed
 end of `1`.  This operation has a *two-sided identity element* value of a collection with
 zero members.  For non-ordered types, this operation is also associative
 and commutative.  The result is only *defined* when the 2 arguments have
-the same *heading*; it is `\!Not_Same_Heading` otherwise.  This function
+the same *heading*; it is `(\$Not_Same_Heading : ())` otherwise.  This function
 implements the `Unionable` virtual function `union` aka `∪` for the
 composing type `Relational`.
 
@@ -8151,7 +8153,7 @@ composing type `Relational`.
             is_commutative : 0bTRUE,
             evaluates : (if args:.\0 =$ args:.\1 then guard select_Relational::
                     ( like: args:.\0, heading: $args:.\0, body: |args:.\0 exclusive |args:.\1 )
-                else \!Not_Same_Heading),
+                else (\$Not_Same_Heading : ())),
         )),
 
 The function `exclusive::Relational` results in the *multiset symmetric
@@ -8169,7 +8171,7 @@ closest to the end of `0` or `1` respectively.  This operation has a
 *two-sided identity element* value of a collection with zero members.  For non-ordered types,
 this operation is also associative and commutative.  The result is only
 *defined* when the 2 arguments have the same *heading*; it is
-`\!Not_Same_Heading` otherwise. This function implements the `Unionable` virtual
+`(\$Not_Same_Heading : ())` otherwise. This function implements the `Unionable` virtual
 function `exclusive` aka `symm_diff` aka `∆` for the composing type
 `Relational`.
 
@@ -8745,7 +8747,7 @@ function `select_Relational` for the composing type `Multirelation`.
                 label : \Interval,
                 attrs : \Interval_Attrs::(),
             )),
-            default : (\!Before_All_Others..\!After_All_Others),
+            default : ((\$Before_All_Others : ())..(\$After_All_Others : ())),
         )),
 
 *TODO.*
