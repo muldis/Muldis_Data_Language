@@ -9238,24 +9238,24 @@ Until then, this type just represents a single positive assertion.*
 
                 when_generalized_type_definer ::=
                     traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : \0bTRUE::(),),
-                        is_generalization : (type : \0bTRUE::(),),
+                        is_type_definer : (type : \True::(),),
+                        is_generalization : (type : \True::(),),
                         default : (type : \Expression::(), optional : 0bTRUE),
                     ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 when_singleton_type_definer ::=
                     traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : \0bTRUE::(),),
-                        is_generalization : (type : \0bFALSE::(), optional : 0bTRUE),
+                        is_type_definer : (type : \True::(),),
+                        is_generalization : (type : \False::(), optional : 0bTRUE),
                         constant : (type : \Expression::(),),
                     ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 when_regular_type_definer ::=
                     traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : \0bTRUE::(),),
-                        is_generalization : (type : \0bFALSE::(), optional : 0bTRUE),
+                        is_type_definer : (type : \True::(),),
+                        is_generalization : (type : \False::(), optional : 0bTRUE),
                         evaluates : (type : {\Expression::(), \Signature::()},),
                         default : (type : \Expression::(), optional : 0bTRUE),
                     ) %+ type_specialization_attrs_template,))
@@ -9277,7 +9277,7 @@ Until then, this type just represents a single positive assertion.*
 
                 when_regular_function ::=
                     traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : \0bFALSE::(), optional : 0bTRUE),
+                        is_type_definer : (type : \False::(), optional : 0bTRUE),
                         virtual : (type : \Boolean::(), optional : 0bTRUE),
                         commutes : (type : \Identity_Identifier::(), optional : 0bTRUE),
                         negates : (type : \Identity_Identifier::(), optional : 0bTRUE),
@@ -9993,7 +9993,7 @@ with special syntax examples `iterate` or `iterate do_work`.*
 
         Heading : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(), \all_attr_assets::( 1: \0bTRUE::() )],
+            evaluates : [\Tuple::(), \all_attr_assets::( 1: \True::() )],
         )),
 
 *TODO.*
