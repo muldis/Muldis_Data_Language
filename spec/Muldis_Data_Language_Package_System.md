@@ -30,13 +30,9 @@ its part name is `Package_System`.
 # SYNOPSIS
 
 ```
- `Muldis_Content_Predicate
- MCP version https://muldis.com 0.400.0 MCP
- MCP script text Unicode 2.1 UTF-8 MCP
- MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.400.0 MCP
- MCP model Muldis_Data_Language https://muldis.com 0.400.0 MCP
- Muldis_Content_Predicate`
- (\Package : (
+ (Muldis_Object_Notation_Syntax:([Muldis_Data_Language_Plain_Text, "https://muldis.com", "0.400.0"]:
+  (Muldis_Object_Notation_Model:([Muldis_Data_Language, "https://muldis.com", "0.400.0"]:
+   (\Package : (
     identity : (
         package_base_name : (\Array:[\My_App]),
         authority : "http://mycorp.com",
@@ -58,6 +54,8 @@ its part name is `Package_System`.
     materials : (\Tuple:{
         `TODO: Put example routines etc here, one is a procedure named "main".`
     }),
+   ))
+  ))
  ))
 ```
 
@@ -81,13 +79,9 @@ the language would employ directly in their applications and schemas.
 # PACKAGE
 
 ```
- `Muldis_Content_Predicate
- MCP version https://muldis.com 0.400.0 MCP
- MCP script text Unicode 2.1 UTF-8 MCP
- MCP syntax Muldis_Data_Language_Plain_Text https://muldis.com 0.400.0 MCP
- MCP model Muldis_Data_Language https://muldis.com 0.400.0 MCP
- Muldis_Content_Predicate`
- (\Package : (
+ (Muldis_Object_Notation_Syntax:([Muldis_Data_Language_Plain_Text, "https://muldis.com", "0.400.0"]:
+  (Muldis_Object_Notation_Model:([Muldis_Data_Language, "https://muldis.com", "0.400.0"]:
+   (\Package : (
     identity : (
         package_base_name : (\Array:[\System]),
         authority : "https://muldis.com",
@@ -101,6 +95,8 @@ the language would employ directly in their applications and schemas.
     materials : (
         ...
     ),
+   ))
+  ))
  ))
 ```
 
