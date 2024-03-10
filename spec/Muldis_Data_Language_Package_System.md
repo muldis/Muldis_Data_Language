@@ -205,6 +205,232 @@ particular routine input and output signatures.
 The function `not_is_a` results in `0bFALSE` iff its `0` argument is a
 member of the type specified by its `1` argument, and `0bTRUE` otherwise.
 
+# EXCUSE DATA TYPES
+
+## Excuse
+
+        Excuse : (\Function : (
+            is_type_definer : 0bTRUE,
+            evaluates : (\$Signature::Article_Match : (
+                label : \Excuse,
+                attrs : (
+                    0 : \Any(),
+                ),
+            )),
+            default : 0iIGNORANCE,
+        )),
+
+The interface type definer `Excuse` is semifinite.  An `Excuse`
+value is an explicitly stated reason for why, given some particular
+problem domain, a value is not being used that is ordinary for that
+domain.  For example, the typical integer division operation is not
+defined to give an integer result when the divisor is zero, and so a
+function for integer division could be defined to result in an
+`Excuse` value rather than throw an exception in that case.
+For another example, an `Excuse` value could be
+used to declare that the information we are storing about a person is
+missing certain details and why those are missing, such as because the
+person left the birthdate field blank on their application form.  Its
+default value is `0iIGNORANCE`.
+An `Excuse` is also characterized by an *exception* that is not
+meant to terminate execution of code early.
+Other programming languages that have typed exceptions are analogous.
+
+*TODO:  To be more specific, an Excuse value only should denote a
+categorical reason for a normal value not being provided, and all possible
+values of Excuse should be considered hard-coded.  They should not be
+possible to vary based on user input; for example, a key out of range error
+should not specify the attempted key.  Instead, other types that include an
+Excuse as a component, such as an Exception, can include details that vary
+on the specific user input, or include stack traces and such.*
+
+*TODO:  Generally speaking, criteria for when it is better to use an
+Excuse result value rather than exception is like this.  In a function, any
+result which is non-determinisitic must always be as an exception; in a
+function it should generally not be possible to cause non-determinisim on
+purpose (except perhaps memory exhaustion), so such a failure would
+originate in the runtime environment and truly be exceptional.  Otherwise,
+in a function, Excuses should be used by default in most circumstances,
+typically where it is reasonable to expect a fraction of inputs may be bad
+and we are purposefully letting the function determine which is which and
+tell us (such as parsers say), or situations where it is reasonable to
+propagate errors while continuing to process good parts; in contrast,
+exceptions should be reserved for situations where the caller should easily
+have known better to either invoke it with correct inputs and doing
+otherwise is obviously wrong code the caller should fix.  In a procedure,
+the non-determinism factor categorically doesn't require an exception.  In
+general, exceptions are for exceptional circumstances that we shouldn't
+have to expect to account for within the normal code paths, where
+cancelling whole blocks of code is ok, while returning Excuses is for when
+we do expect to handle these things within the normal code flow and/or not
+automatically halt blocks of code.*
+
+## coalesce ??
+
+        coalesce : (\Function : (
+            returns : \$Any,
+            matches : (\$Any, \$Any),
+            is_associative : 0bTRUE,
+            is_idempotent : 0bTRUE,
+            left_identity : 0iIGNORANCE,
+            evaluates : (if Excuse args:.\0 then args:.\1 else args:.\0),
+        )),
+
+        '??' : (\Alias : ( of : \$coalesce, )),
+
+The function `coalesce` aka `??` results in its `0` argument iff the
+latter is not an `Excuse`, and results in its `1` argument otherwise.
+This function is designed to be chained for any number of sequenced values
+in order to pick the first non-`Excuse` in a list.
+This function has analogous stop-or-continue behaviour to the Muldis Data Language
+special syntax `or_else` where any `Excuse` or non-`Excuse` stands in
+for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
+Other programming languages may name their corresponding *null coalescing*
+operators `?:` or `//` or *NVL* or *ISNULL*.
+
+## anticoalesce !!
+
+        anticoalesce : (\Function : (
+            returns : \$Any,
+            matches : (\$Any, \$Any),
+            is_associative : 0bTRUE,
+            is_idempotent : 0bTRUE,
+            left_identity : 0bTRUE,
+            evaluates : (if Excuse args:.\0 then args:.\0 else args:.\1),
+        )),
+
+        '!!' : (\Alias : ( of : \$anticoalesce, )),
+
+The function `anticoalesce` aka `!!` results in its `0` argument iff the
+latter is an `Excuse`, and results in its `1` argument otherwise.
+This function is designed to be chained for any number of sequenced values
+in order to pick the first `Excuse` in a list.
+This function has analogous stop-or-continue behaviour to the Muldis Data Language
+special syntax `and_then` where any `Excuse` or non-`Excuse` stands in
+for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
+
+## Ignorance
+
+        Ignorance : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : 0iIGNORANCE,
+        )),
+
+The singleton type definer `Ignorance`
+represents the finite foundation type `foundation::Ignorance`.
+The `Ignorance` value represents the `Excuse` value which
+simply says that an ordinary value for any given domain is missing
+and that there is simply no excuse that has been given for this; in
+other words, something has gone wrong without the slightest hint of
+an explanation.  This is conceptually the most generic `Excuse`
+value there is, to help with expedient development, but any uses
+should be considered technical debt, to be replaced later.
+`Ignorance` has a default value of `0iIGNORANCE`.
+Other programming languages may name their corresponding values or
+quasi-values *null* or *nil* or *none* or *nothing* or *undef* or
+*unknown*; but unlike some of those languages, `Ignorance` equals itself.
+
+## Before_All_Others
+
+        Before_All_Others : (\Function : (
+            is_type_definer : 0bTRUE,
+            composes : {\$Orderable},
+            constant : \!Before_All_Others,
+        )),
+
+The singleton type definer `Before_All_Others` represents a type-agnostic
+analogy of negative infinity, an `Orderable` value that sorts *before*
+all other values in the Muldis Data Language type system, and that is its only meaning.
+This value is expressly *not* meant to represent any specific mathematical
+or physical concept of *infinity* or `∞` (of which there are many),
+including those of the IEEE floating-point standards; such things should be
+defined in other, not-`System`, Muldis Data Language packages for the relevant domains.
+
+## After_All_Others
+
+        After_All_Others : (\Function : (
+            is_type_definer : 0bTRUE,
+            composes : {\$Orderable},
+            constant : \!After_All_Others,
+        )),
+
+The singleton type definer `After_All_Others` represents a type-agnostic
+analogy of positive infinity, an `Orderable` value that sorts *after*
+all other values in the Muldis Data Language type system, and that is its only meaning.
+This value is expressly *not* meant to represent any specific mathematical
+or physical concept of *infinity* or `∞` (of which there are many),
+including those of the IEEE floating-point standards; such things should be
+defined in other, not-`System`, Muldis Data Language packages for the relevant domains.
+
+## Div_By_Zero
+
+        Div_By_Zero : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : \!Div_By_Zero,
+        )),
+
+The singleton type definer `Div_By_Zero` represents the *undefined* result of
+attempting to divide a simple number by a simple, unsigned, number zero.
+Note that IEEE floating-point standards define a negative or positive
+infinity result value when dividing by an explicitly signed (negative or
+positive) zero, but the Muldis Data Language `System` package lacks those concepts.
+
+## Zero_To_The_Zero
+
+        Zero_To_The_Zero : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : \!Zero_To_The_Zero,
+        )),
+
+The singleton type definer `Zero_To_The_Zero` represents the *undefined* result
+of attempting to exponentiate a number zero to the power of a number zero.
+
+## No_Empty_Value
+
+        No_Empty_Value : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : \!No_Empty_Value,
+        )),
+
+The singleton type definer `No_Empty_Value` represents the *undefined* result
+of attempting to request the value with zero members of some collection
+type that doesn't have a value with zero members.
+
+## No_Such_Ord_Pos
+
+        No_Such_Ord_Pos : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : \!No_Such_Ord_Pos,
+        )),
+
+The singleton type definer `No_Such_Ord_Pos` represents the *undefined* result of
+attempting to use a member ordinal position *P* of `Positional` value *V* while
+assuming incorrectly that *V* already has a member whose ordinal position is *P*.
+
+## No_Such_Attr_Name
+
+        No_Such_Attr_Name : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : \!No_Such_Attr_Name,
+        )),
+
+The singleton type definer `No_Such_Attr_Name` represents the *undefined*
+result of attempting to use an attribute named *N* of `Attributive` value
+*V* while assuming incorrectly that *V* already has an attribute whose
+name is *N*.
+
+## Not_Same_Heading
+
+        Not_Same_Heading : (\Function : (
+            is_type_definer : 0bTRUE,
+            constant : \!Not_Same_Heading,
+        )),
+
+The singleton type definer `Not_Same_Heading` represents the *undefined* result
+of attempting to perform an operation that takes 2 `Attributive` inputs
+and requires them to have the same relational *heading* but the actual 2
+inputs have different headings.
+
 # ORDERABLE DATA TYPES
 
 ## Orderable
@@ -8833,232 +9059,6 @@ environment.  Muldis Data Language will assume said function is completely
 deterministic, and there would likely be problems if it isn't.  Using
 `External::call_function` as a foundation, it is possible to define an
 arbitrarily complex type graph involving `External` values.
-
-# EXCUSE DATA TYPES
-
-## Excuse
-
-        Excuse : (\Function : (
-            is_type_definer : 0bTRUE,
-            evaluates : (\$Signature::Article_Match : (
-                label : \Excuse,
-                attrs : (
-                    0 : \Any(),
-                ),
-            )),
-            default : 0iIGNORANCE,
-        )),
-
-The interface type definer `Excuse` is semifinite.  An `Excuse`
-value is an explicitly stated reason for why, given some particular
-problem domain, a value is not being used that is ordinary for that
-domain.  For example, the typical integer division operation is not
-defined to give an integer result when the divisor is zero, and so a
-function for integer division could be defined to result in an
-`Excuse` value rather than throw an exception in that case.
-For another example, an `Excuse` value could be
-used to declare that the information we are storing about a person is
-missing certain details and why those are missing, such as because the
-person left the birthdate field blank on their application form.  Its
-default value is `0iIGNORANCE`.
-An `Excuse` is also characterized by an *exception* that is not
-meant to terminate execution of code early.
-Other programming languages that have typed exceptions are analogous.
-
-*TODO:  To be more specific, an Excuse value only should denote a
-categorical reason for a normal value not being provided, and all possible
-values of Excuse should be considered hard-coded.  They should not be
-possible to vary based on user input; for example, a key out of range error
-should not specify the attempted key.  Instead, other types that include an
-Excuse as a component, such as an Exception, can include details that vary
-on the specific user input, or include stack traces and such.*
-
-*TODO:  Generally speaking, criteria for when it is better to use an
-Excuse result value rather than exception is like this.  In a function, any
-result which is non-determinisitic must always be as an exception; in a
-function it should generally not be possible to cause non-determinisim on
-purpose (except perhaps memory exhaustion), so such a failure would
-originate in the runtime environment and truly be exceptional.  Otherwise,
-in a function, Excuses should be used by default in most circumstances,
-typically where it is reasonable to expect a fraction of inputs may be bad
-and we are purposefully letting the function determine which is which and
-tell us (such as parsers say), or situations where it is reasonable to
-propagate errors while continuing to process good parts; in contrast,
-exceptions should be reserved for situations where the caller should easily
-have known better to either invoke it with correct inputs and doing
-otherwise is obviously wrong code the caller should fix.  In a procedure,
-the non-determinism factor categorically doesn't require an exception.  In
-general, exceptions are for exceptional circumstances that we shouldn't
-have to expect to account for within the normal code paths, where
-cancelling whole blocks of code is ok, while returning Excuses is for when
-we do expect to handle these things within the normal code flow and/or not
-automatically halt blocks of code.*
-
-## Ignorance
-
-        Ignorance : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : 0iIGNORANCE,
-        )),
-
-The singleton type definer `Ignorance`
-represents the finite foundation type `foundation::Ignorance`.
-The `Ignorance` value represents the `Excuse` value which
-simply says that an ordinary value for any given domain is missing
-and that there is simply no excuse that has been given for this; in
-other words, something has gone wrong without the slightest hint of
-an explanation.  This is conceptually the most generic `Excuse`
-value there is, to help with expedient development, but any uses
-should be considered technical debt, to be replaced later.
-`Ignorance` has a default value of `0iIGNORANCE`.
-Other programming languages may name their corresponding values or
-quasi-values *null* or *nil* or *none* or *nothing* or *undef* or
-*unknown*; but unlike some of those languages, `Ignorance` equals itself.
-
-## Before_All_Others
-
-        Before_All_Others : (\Function : (
-            is_type_definer : 0bTRUE,
-            composes : {\$Orderable},
-            constant : \!Before_All_Others,
-        )),
-
-The singleton type definer `Before_All_Others` represents a type-agnostic
-analogy of negative infinity, an `Orderable` value that sorts *before*
-all other values in the Muldis Data Language type system, and that is its only meaning.
-This value is expressly *not* meant to represent any specific mathematical
-or physical concept of *infinity* or `∞` (of which there are many),
-including those of the IEEE floating-point standards; such things should be
-defined in other, not-`System`, Muldis Data Language packages for the relevant domains.
-
-## After_All_Others
-
-        After_All_Others : (\Function : (
-            is_type_definer : 0bTRUE,
-            composes : {\$Orderable},
-            constant : \!After_All_Others,
-        )),
-
-The singleton type definer `After_All_Others` represents a type-agnostic
-analogy of positive infinity, an `Orderable` value that sorts *after*
-all other values in the Muldis Data Language type system, and that is its only meaning.
-This value is expressly *not* meant to represent any specific mathematical
-or physical concept of *infinity* or `∞` (of which there are many),
-including those of the IEEE floating-point standards; such things should be
-defined in other, not-`System`, Muldis Data Language packages for the relevant domains.
-
-## Div_By_Zero
-
-        Div_By_Zero : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : \!Div_By_Zero,
-        )),
-
-The singleton type definer `Div_By_Zero` represents the *undefined* result of
-attempting to divide a simple number by a simple, unsigned, number zero.
-Note that IEEE floating-point standards define a negative or positive
-infinity result value when dividing by an explicitly signed (negative or
-positive) zero, but the Muldis Data Language `System` package lacks those concepts.
-
-## Zero_To_The_Zero
-
-        Zero_To_The_Zero : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : \!Zero_To_The_Zero,
-        )),
-
-The singleton type definer `Zero_To_The_Zero` represents the *undefined* result
-of attempting to exponentiate a number zero to the power of a number zero.
-
-## No_Empty_Value
-
-        No_Empty_Value : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : \!No_Empty_Value,
-        )),
-
-The singleton type definer `No_Empty_Value` represents the *undefined* result
-of attempting to request the value with zero members of some collection
-type that doesn't have a value with zero members.
-
-## No_Such_Ord_Pos
-
-        No_Such_Ord_Pos : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : \!No_Such_Ord_Pos,
-        )),
-
-The singleton type definer `No_Such_Ord_Pos` represents the *undefined* result of
-attempting to use a member ordinal position *P* of `Positional` value *V* while
-assuming incorrectly that *V* already has a member whose ordinal position is *P*.
-
-## No_Such_Attr_Name
-
-        No_Such_Attr_Name : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : \!No_Such_Attr_Name,
-        )),
-
-The singleton type definer `No_Such_Attr_Name` represents the *undefined*
-result of attempting to use an attribute named *N* of `Attributive` value
-*V* while assuming incorrectly that *V* already has an attribute whose
-name is *N*.
-
-## Not_Same_Heading
-
-        Not_Same_Heading : (\Function : (
-            is_type_definer : 0bTRUE,
-            constant : \!Not_Same_Heading,
-        )),
-
-The singleton type definer `Not_Same_Heading` represents the *undefined* result
-of attempting to perform an operation that takes 2 `Attributive` inputs
-and requires them to have the same relational *heading* but the actual 2
-inputs have different headings.
-
-## coalesce ??
-
-        coalesce : (\Function : (
-            returns : \$Any,
-            matches : (\$Any, \$Any),
-            is_associative : 0bTRUE,
-            is_idempotent : 0bTRUE,
-            left_identity : 0iIGNORANCE,
-            evaluates : (if Excuse args:.\0 then args:.\1 else args:.\0),
-        )),
-
-        '??' : (\Alias : ( of : \$coalesce, )),
-
-The function `coalesce` aka `??` results in its `0` argument iff the
-latter is not an `Excuse`, and results in its `1` argument otherwise.
-This function is designed to be chained for any number of sequenced values
-in order to pick the first non-`Excuse` in a list.
-This function has analogous stop-or-continue behaviour to the Muldis Data Language
-special syntax `or_else` where any `Excuse` or non-`Excuse` stands in
-for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
-Other programming languages may name their corresponding *null coalescing*
-operators `?:` or `//` or *NVL* or *ISNULL*.
-
-## anticoalesce !!
-
-        anticoalesce : (\Function : (
-            returns : \$Any,
-            matches : (\$Any, \$Any),
-            is_associative : 0bTRUE,
-            is_idempotent : 0bTRUE,
-            left_identity : 0bTRUE,
-            evaluates : (if Excuse args:.\0 then args:.\0 else args:.\1),
-        )),
-
-        '!!' : (\Alias : ( of : \$anticoalesce, )),
-
-The function `anticoalesce` aka `!!` results in its `0` argument iff the
-latter is an `Excuse`, and results in its `1` argument otherwise.
-This function is designed to be chained for any number of sequenced values
-in order to pick the first `Excuse` in a list.
-This function has analogous stop-or-continue behaviour to the Muldis Data Language
-special syntax `and_then` where any `Excuse` or non-`Excuse` stands in
-for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
 
 # SOURCE CODE BEHAVIOURAL DATA TYPES
 
