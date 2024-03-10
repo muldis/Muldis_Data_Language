@@ -8474,7 +8474,7 @@ types that restrict their possible headings at the type level.*
                     \(args:.\0:.\body all \($args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
             )),
-            default : \~%(),
+            default : (Orderelation:{}),
         )),
 
 *TODO.*
@@ -8492,7 +8492,7 @@ or a subtype of it does.*
 
         Orderelation_D0C0 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \~%(),
+            constant : (Orderelation:{}),
         )),
 
 The singleton type definer `Orderelation_D0C0` represents the only zero-attribute,
@@ -8502,7 +8502,7 @@ zero-tuple `Orderelation` value.
 
         Orderelation_D0C1 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \~%(\Array:[()]),
+            constant : (Orderelation:[{}]),
         )),
 
 The singleton type definer `Orderelation_D0C1` represents the only zero-attribute,
@@ -8569,7 +8569,7 @@ function `select_Relational` for the composing type `Orderelation`.
                     \(args:.\0:.\body all \($args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
             )),
-            default : \?%(),
+            default : (Relation:{}),
         )),
 
 *TODO.  See also definition of Set in terms of Bag, which Relation mirrors.*
@@ -8578,7 +8578,7 @@ function `select_Relational` for the composing type `Orderelation`.
 
         Relation_D0C0 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \?%(),
+            constant : (Relation:{}),
         )),
 
 The singleton type definer `Relation_D0C0` represents the only
@@ -8589,7 +8589,7 @@ Manifesto* also refers to this value by the special name *TABLE_DUM*.
 
         Relation_D0C1 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \?%(\Set:[()]),
+            constant : (Relation:[{}]),
         )),
 
 The singleton type definer `Relation_D0C1` represents the only
@@ -8656,7 +8656,7 @@ function `select_Relational` for the composing type `Relation`.
                     \(args:.\0:.\body all \($args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
             )),
-            default : \+%(),
+            default : (Multirelation:{}),
         )),
 
 *TODO.*
@@ -8665,7 +8665,7 @@ function `select_Relational` for the composing type `Relation`.
 
         Multirelation_D0C0 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \+%(),
+            constant : (Multirelation:{}),
         )),
 
 The singleton type definer `Multirelation_D0C0` represents the only zero-attribute,
@@ -8675,7 +8675,7 @@ zero-tuple `Multirelation` value.
 
         Multirelation_D0C1 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \+%(\Set:[()]),
+            constant : (Multirelation:[{}]),
         )),
 
 The singleton type definer `Multirelation_D0C1` represents the only zero-attribute,
