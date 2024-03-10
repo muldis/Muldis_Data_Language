@@ -38,7 +38,7 @@ its part name is `Package_System`.
  Muldis_Content_Predicate`
  (\Package : (
     identity : (
-        package_base_name : [\My_App],
+        package_base_name : (\Array:[\My_App]),
         authority : "http://mycorp.com",
         version_number : "0",
     ),
@@ -48,7 +48,7 @@ its part name is `Package_System`.
     ),
     uses : (
         MD : (
-            package_base_name : [\System],
+            package_base_name : (\Array:[\System]),
             authority : "https://muldis.com",
             version_number : "0.400.0",
         ),
@@ -89,7 +89,7 @@ the language would employ directly in their applications and schemas.
  Muldis_Content_Predicate`
  (\Package : (
     identity : (
-        package_base_name : [\System],
+        package_base_name : (\Array:[\System]),
         authority : "https://muldis.com",
         version_number : "0.400.0",
     ),
@@ -1144,11 +1144,11 @@ Other programming languages may name their corresponding types
 
         Round_Meth_Attr_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Attr_Name::(), \'⊆$'::( 1:
+            evaluates : (\Array:[\Attr_Name::(), \'⊆$'::( 1:
                 ::(Down,Up,To_Zero,To_Inf
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd)
-            )],
+            )]),
             default : \To_Zero,
         )),
 
@@ -1703,7 +1703,7 @@ or *Bignum* or *BigInteger*.
 
         Integer_NN : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Integer::(), \'>='::( 1: 0 )],
+            evaluates : (\Array:[\Integer::(), \'>='::( 1: 0 )]),
         )),
 
 The selection type definer `Integer_NN` represents the infinite type
@@ -1714,7 +1714,7 @@ default and minmum value is `0`; it has no maximum value.
 
         Integer_P : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Integer_NN::(), \'>'::( 1: 0 )],
+            evaluates : (\Array:[\Integer_NN::(), \'>'::( 1: 0 )]),
             default : 1,
         )),
 
@@ -2141,13 +2141,13 @@ The virtual function `denominator` results in the *denominator* of its
             provides_default_for : {::Fractional},
             evaluates : (Signature::Article_Match : (
                 label : \Rational,
-                attrs : [
+                attrs : (\Array:[
                     (
                         numerator : \Integer::(),
                         denominator : \Integer_P::(),
                     ),
                     \(args:.\0:.\numerator coprime args:.\0:.\denominator),
-                ],
+                ]),
             )),
             default : 0.0,
         )),
@@ -2173,7 +2173,7 @@ or *Rational*.
 
         Rational_NN : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Rational::(), \'>='::( 1: 0.0 )],
+            evaluates : (\Array:[\Rational::(), \'>='::( 1: 0.0 )]),
         )),
 
 The selection type definer `Rational_NN` represents the infinite type
@@ -2791,7 +2791,7 @@ particular, such as a text or a graphic, and is simply the sum of its
 *members*; however some types which do represent such a particular kind of
 thing may choose to compose `Homogeneous` because it makes sense to
 provide its operators.  The default value of `Homogeneous` is the `Array`
-value with zero members, `[]`.
+value with zero members, `(\Array:[])`.
 
 If a `Homogeneous` value is also `Unionable`, then another value of its
 collection type can be derived by either inserting new members whose values
@@ -3265,7 +3265,7 @@ The interface type definer `Unionable` is semifinite.  A `Unionable` value is a
 derived by either inserting new members whose values are distinct from
 those already in the collection or by removing arbitrary members from the
 collection.  The default value of `Unionable` is the `Array` value with
-zero members, `[]`.
+zero members, `(\Array:[])`.
 
 `Unionable` is composed, directly or indirectly, by: `Discrete`,
 `Positional`, `Array`, `Set`, `Bag`, `Relational`,
@@ -3609,7 +3609,7 @@ otherwise the reduce is a serial operation, at least naively.*
 The interface type definer `Discrete` is semifinite.  A `Discrete` value is a
 `Unionable` value such that all of its members can be enumerated as
 individuals and counted.  The default value of `Discrete` is the `Array`
-value with zero members, `[]`.
+value with zero members, `(\Array:[])`.
 
 `Discrete` is composed, directly or indirectly, by: `Positional`,
 `Array`, `Set`, `Bag`, `Relational`, `Orderelation`,
@@ -3733,9 +3733,9 @@ value *P* such that the first ordinal position of every value of *T* is
 well-definined shifting of member values between ordinal positions.
 
 The default value of `Positional` is the `Array` value with zero members,
-`[]`.  `Positional` is `Orderable` in the general case conditionally
+`(\Array:[])`.  `Positional` is `Orderable` in the general case conditionally
 depending on whether all of its member values are mutually `Orderable`
-themselves; its minimum value is the same `[]` as its default value; it
+themselves; its minimum value is the same `(\Array:[])` as its default value; it
 has no maximum value.  The ordering algorithm of `Positional` is based on
 pairwise comparison of its members by matching ordinal position starting at the lowest
 ordinal position; iff `Positional` value X is a leading sub-sequence of `Positional`
@@ -4390,7 +4390,7 @@ corresponding types *bit* or *bit varying*.
 
         Array::Bits : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..1 ) )],
+            evaluates : (\Array:[\Array::(), \all::( 1: \in::( 1: 0..1 ) )]),
         )),
 
 The selection type definer `Array::Bits` represents the infinite type
@@ -4549,13 +4549,13 @@ an `Integer` in the range 0..255.  The default value of `Blob` is
 value is the same `0xx` as its default value; it has no maximum value;
 its ordering algorithm corresponds directly to that of `Array`, pairwise
 as integer sequences.  Other programming languages may name their
-corresponding types *Buf* or *byte[]* or *bytea*.
+corresponding types *Buf* or *byte(\Array:[])* or *bytea*.
 
 ## Array::Octets
 
         Array::Octets : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Array::(), \all::( 1: \in::( 1: 0..255 ) )],
+            evaluates : (\Array:[\Array::(), \all::( 1: \in::( 1: 0..255 ) )]),
         )),
 
 The selection type definer `Array::Octets` represents the infinite type
@@ -4779,7 +4779,7 @@ The selection type definer `Text`
 represents the infinite foundation type `foundation::Text`.
 A `Text` value is characterized by an arbitrarily-large ordered sequence of
 Unicode standard *character code points*, where each distinct code point
-corresponds to a distinct integer in the set `[0..0xD7FF,0xE000..0x10FFFF]`,
+corresponds to a distinct integer in the set `(\Array:[0..0xD7FF,0xE000..0x10FFFF])`,
 which explicitly does not represent any kind of thing in particular.
 Each character is taken from a finite repertoire having 0x10F7FF members,
 but `Text` imposes no limit on the length of each character sequence.
@@ -4806,8 +4806,8 @@ instead for such character strings.
 
         Array::Unicode_Codes : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Array::(),
-                \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )],
+            evaluates : (\Array:[\Array::(),
+                \all::( 1: \in::( 1: ?..{0..0xD7FF,0xE000..0x10FFFF} ) )]),
         )),
 
 The selection type definer `Array::Unicode_Codes` represents the infinite type
@@ -4833,7 +4833,7 @@ the standard ASCII codes for the same symbols.
 
         Array::ASCII_Chars : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Array::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )],
+            evaluates : (\Array:[\Array::Unicode_Codes(), \all::( 1: \in::( 1: 0..127 ) )]),
         )),
 
 The selection type definer `Array::ASCII_Chars` represents the infinite type
@@ -5130,7 +5130,7 @@ pairs and out of range etc stuff.*
                                     <-- (1 : repl_chars.0,)
                         default
                             src_octets
-                                map \(if args:.\0 in 0..127 then [args:.\0] else args:.\1)
+                                map \(if args:.\0 in 0..127 then (\Array:[args:.\0]) else args:.\1)
                                     <-- (1 : repl_chars,)
                                 reduce \catenate::()
                     ;
@@ -5162,7 +5162,7 @@ is no good implicit default in ASCII, unlike with Unicode.*
             composes : {::Positional},
             provides_default_for : {::Positional},
             evaluates : \foundation::Array(),
-            default : [],
+            default : (\Array:[]),
         )),
 
 The selection type definer `Array` represents the infinite Muldis Data Language Foundation
@@ -5174,9 +5174,9 @@ members, then its first-ordered member is at ordinal position `0`, and its
 last-ordinal-positioned member is at the ordinal position that is one less than the
 count of its members.  An `Array` in the general case may have
 multiple members that are the same value, and any duplicates may or may not
-exist at consecutive ordinal positions.  The default value of `Array` is `[]`, the
+exist at consecutive ordinal positions.  The default value of `Array` is `(\Array:[])`, the
 only zero-member `Array` value.  `Array` is `Orderable`; its minimum
-value is the same `[]` as its default value; it has no maximum value; its
+value is the same `(\Array:[])` as its default value; it has no maximum value; its
 ordering algorithm is defined by `Positional`.  Other programming
 languages may name their corresponding types *List*.
 
@@ -5184,13 +5184,13 @@ languages may name their corresponding types *List*.
 
         Array_C0 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : [],
+            constant : (\Array:[]),
         )),
 
         Unicode_Aliases::'~∅' : (\Alias : ( of : ::Array_C0, )),
 
 The singleton type definer `Array_C0` aka `~∅` represents the only zero-member
-`Array` value, `[]`.
+`Array` value, `(\Array:[])`.
 
 ## in_order (Array)
 
@@ -5223,7 +5223,7 @@ will succeed iff `in_order` is also defined for the types of the members.
             returns : ::Boolean,
             matches : (::Array,),
             implements : folder::'',
-            evaluates : (args:.\0 != []),
+            evaluates : (args:.\0 != (\Array:[])),
         )),
 
 The function `not_empty::Array` results in `0bTRUE` iff its `0` argument
@@ -5237,7 +5237,7 @@ for the composing type `Array`.
             returns : ::Array,
             matches : (::Array,),
             implements : folder::'',
-            evaluates : ([]),
+            evaluates : ((\Array:[])),
         )),
 
 The function `empty::Array` results in the only zero-member `Array`
@@ -5354,7 +5354,7 @@ argument.  The removed instances of `1` are those closest to the end of
             returns : ::Array,
             matches : (::Array, ::Array),
             implements : folder::'',
-            right_identity : [],
+            right_identity : (\Array:[]),
             evaluates : (evaluates args --> \foundation::Array_except()),
         )),
 
@@ -5393,7 +5393,7 @@ aka `∩` for the composing type `Array`.
             matches : (::Array, ::Array),
             implements : folder::'',
             is_idempotent : 0bTRUE,
-            identity : [],
+            identity : (\Array:[]),
             evaluates : (evaluates args --> \foundation::Array_union()),
         )),
 
@@ -5413,7 +5413,7 @@ end of `1`.  This function implements the `Unionable` virtual function
             returns : ::Array,
             matches : (::Array, ::Array),
             implements : folder::'',
-            identity : [],
+            identity : (\Array:[]),
             evaluates : (evaluates args --> \foundation::Array_exclusive()),
         )),
 
@@ -5631,7 +5631,7 @@ corresponding member pair has 2 of the same value; otherwise it results in
             matches : (::Array, ::Array),
             implements : folder::'',
             is_associative : 0bTRUE,
-            identity : [],
+            identity : (\Array:[]),
             repeater : replicate::Array,
             evaluates : (evaluates args --> \foundation::Array_catenate()),
         )),
@@ -5729,7 +5729,7 @@ zero members, `{}`.  `Setty` is composed, directly or indirectly, by:
             evaluates : (Signature::Article_Match : (
                 label : \Set,
                 attrs : (
-                    members : [\Bag::(), \all_unique::()],
+                    members : (\Array:[\Bag::(), \all_unique::()]),
                 ),
             )),
             default : {},
@@ -7458,7 +7458,7 @@ The singleton type definer `Tuple_D0` represents the only zero-attribute
 
         Tuple_D1 : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(), \is_unary::()],
+            evaluates : (\Array:[\Tuple::(), \is_unary::()]),
             default : (0bFALSE,),
         )),
 
@@ -8469,7 +8469,7 @@ types that restrict their possible headings at the type level.*
                 attrs : [
                     (
                         heading : \Heading::(),
-                        body : [\Array::(), \all::( 1: \Tuple::() )],
+                        body : (\Array:[\Array::(), \all::( 1: \Tuple::() )]),
                     ),
                     \(args:.\0:.\body all \($args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
@@ -8502,7 +8502,7 @@ zero-tuple `Orderelation` value.
 
         Orderelation_D0C1 : (\Function : (
             is_type_definer : 0bTRUE,
-            constant : \~%[()],
+            constant : \~%(\Array:[()]),
         )),
 
 The singleton type definer `Orderelation_D0C1` represents the only zero-attribute,
@@ -8564,7 +8564,7 @@ function `select_Relational` for the composing type `Orderelation`.
                 attrs : [
                     (
                         heading : \Heading::(),
-                        body : [\Set::(), \all::( 1: \Tuple::() )],
+                        body : (\Array:[\Set::(), \all::( 1: \Tuple::() )]),
                     ),
                     \(args:.\0:.\body all \($args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
@@ -8651,7 +8651,7 @@ function `select_Relational` for the composing type `Relation`.
                 attrs : [
                     (
                         heading : \Heading::(),
-                        body : [\Bag::(), \all::( 1: \Tuple::() )],
+                        body : (\Array:[\Bag::(), \all::( 1: \Tuple::() )]),
                     ),
                     \(args:.\0:.\body all \($args:.\0 = args:.\1) <-- (1: args:.\0:.\heading,)),
                 ],
@@ -8756,7 +8756,7 @@ function `select_Relational` for the composing type `Multirelation`.
 
         Interval_Attrs : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(), ...],
+            evaluates : (\Array:[\Tuple::(), ...]),
         )),
 
 *TODO.*
@@ -8783,7 +8783,7 @@ function `select_Relational` for the composing type `Multirelation`.
             evaluates : (Signature::Article_Match : (
                 label : \Set_Of_Interval,
                 attrs : (
-                    members : [\Bag_Of_Interval::(), \all_unique::()],
+                    members : (\Array:[\Bag_Of_Interval::(), \all_unique::()]),
                 ),
             )),
             default : ...,
@@ -8801,7 +8801,7 @@ function `select_Relational` for the composing type `Multirelation`.
             evaluates : (Signature::Article_Match : (
                 label : \Bag_Of_Interval,
                 attrs : (
-                    members : [\Multirelation::(), ...],
+                    members : (\Array:[\Multirelation::(), ...]),
                 ),
             )),
             default : ...,
@@ -8831,7 +8831,7 @@ function `select_Relational` for the composing type `Multirelation`.
             evaluates : (Signature::Article_Match : (
                 label : \Quantity,
                 attrs : (
-                    0 : [\Relation::(), ...],
+                    0 : (\Array:[\Relation::(), ...]),
                 ),
             )),
             default : ...,
@@ -9111,7 +9111,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Base_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Nesting::(), \not_empty::(), \'∌'::( 1: \'' )],
+            evaluates : (\Array:[\Nesting::(), \not_empty::(), \'∌'::( 1: \'' )]),
         )),
 
 *TODO.*
@@ -9120,7 +9120,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Canon_Authority : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Text::(), \not_empty::()],
+            evaluates : (\Array:[\Text::(), \not_empty::()]),
         )),
 
 *TODO.*
@@ -9129,7 +9129,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Canon_Version_Number : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Text::(), \not_empty::()],
+            evaluates : (\Array:[\Text::(), \not_empty::()]),
         )),
 
 *TODO.*
@@ -9138,8 +9138,8 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Uses_Map : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(), \'.!?'::( 1: \'' ),
-                \all_attr_assets::( 1: \Package::Uses_Item() )],
+            evaluates : (\Array:[\Tuple::(), \'.!?'::( 1: \'' ),
+                \all_attr_assets::( 1: \Package::Uses_Item() )]),
         )),
 
 *TODO.  Each attribute name declares a single-element composing-package-local
@@ -9174,7 +9174,7 @@ Until then, this type just represents a single positive assertion.*
 
         Package::Floating : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Set::(), \all::( 1: \Absolute_Name::() )],
+            evaluates : (\Array:[\Set::(), \all::( 1: \Absolute_Name::() )]),
         )),
 
 *TODO.*
@@ -9183,8 +9183,8 @@ Until then, this type just represents a single positive assertion.*
 
         Package::Folder : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(),
-                \all_attr_assets::( 1: {\Package::Folder(), \Material::()} )],
+            evaluates : (\Array:[\Tuple::(),
+                \all_attr_assets::( 1: {\Package::Folder(), \Material::()} )]),
         )),
 
 *TODO.*
@@ -9370,7 +9370,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Conjunction : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Array::(), \all::( 1: \Signature::() )],
+            evaluates : (\Array:[\Array::(), \all::( 1: \Signature::() )]),
         )),
 
 *TODO.*
@@ -9379,7 +9379,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Disjunction : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Set::(), \all::( 1: \Signature::() )],
+            evaluates : (\Array:[\Set::(), \all::( 1: \Signature::() )]),
         )),
 
 *TODO.*
@@ -9388,7 +9388,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Tuple_Attrs_Match_Simple : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(), \all_attr_assets::( 1: \Signature::() )],
+            evaluates : (\Array:[\Tuple::(), \all_attr_assets::( 1: \Signature::() )]),
         )),
 
 *TODO.*
@@ -9400,7 +9400,7 @@ its own isolated lexical scope and its own `args` context where generally the
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    attrs : [
+                    attrs : (\Array:[
                         \Tuple::(),
                         \all_attr_assets::( 1: \(
                             attr_sig ::= args:.\0;
@@ -9414,7 +9414,7 @@ its own isolated lexical scope and its own `args` context where generally the
                                     else 0bTRUE
                             ;
                         ) )
-                    ],
+                    ]),
                 ),
             )),
         )),
@@ -9530,18 +9530,18 @@ value of the type of the variable it is assigned to.*
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : [\Array::(), \all::( 1: (
+                    0 : (\Array:[\Array::(), \all::( 1: (
                         0 : \Expression::(),  `member value`
                         1 : \Expression::(),  `multiplicity`
-                    ) )],
+                    ) )]),
                 ),
             )),
-            default : (::material : ([],)),
+            default : (::material : ((\Array:[]),)),
         )),
 
 *TODO.  This represents a selection of an Array value in terms of a list
 of multiplied members; each member value and its given multiplicity comes
-from a child expression.  Written in Plain_Text like `["hello":3,-5:2]`.
+from a child expression.  Written in Plain_Text like `(\Array:["hello":3,-5:2])`.
 This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
 
 ## Set_Selector
@@ -9551,10 +9551,10 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : [\Bag::(), \all::( 1: (
+                    0 : (\Array:[\Bag::(), \all::( 1: (
                         0 : \Expression::(),  `member value`
                         1 : \Expression::(),  `multiplicity`
-                    ) )],
+                    ) )]),
                 ),
             )),
             default : (::material : ({0:0},)),
@@ -9575,10 +9575,10 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : [\Bag::(), \all::( 1: (
+                    0 : (\Array:[\Bag::(), \all::( 1: (
                         0 : \Expression::(),  `member value`
                         1 : \Expression::(),  `multiplicity`
-                    ) )],
+                    ) )]),
                 ),
             )),
             default : (::material : ({0:0},)),
@@ -9596,7 +9596,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : [\Tuple::(), \all_attr_assets::( 1: \Expression::() )],
+                    0 : (\Array:[\Tuple::(), \all_attr_assets::( 1: \Expression::() )]),
                 ),
             )),
             default : (::material : (())),
@@ -9694,10 +9694,10 @@ written in Plain_Text with special syntax example `P or_else X`.*
                 label : ::material,
                 attrs : (
                     0 : \Expression::(),
-                    1 : [\Set::(), \all::( 1: (
+                    1 : (\Array:[\Set::(), \all::( 1: (
                         0 : \Expression::(),
                         1 : \Expression::(),
-                    ) )],
+                    ) )]),
                     2 : \Expression::(),
                 ),
             )),
@@ -9732,7 +9732,7 @@ written in Plain_Text with special syntax example `guard X`.*
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    factors : [\Tuple::(), \all_attr_assets::( 1: \Expression::() )],
+                    factors : (\Array:[\Tuple::(), \all_attr_assets::( 1: \Expression::() )]),
                     returns : \Expression::(),
                 ),
             )),
@@ -9835,7 +9835,7 @@ Note that `Current` is designed to mirror `New`, so the identity
                 ::Leave,
                 ::Iterate,
             },
-            default : (::Block : ([],)),
+            default : (::Block : ((\Array:[]),)),
         )),
 
 *TODO.  This represents a generic statement to be performed at a future date.
@@ -9848,7 +9848,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    vars : [\Tuple::(), \all_attr_assets::( 1: \Expression::() )],
+                    vars : (\Array:[\Tuple::(), \all_attr_assets::( 1: \Expression::() )]),
                 ),
             )),
             default : (::material : (vars : (),)),
@@ -9899,7 +9899,7 @@ where X denotes a Procedure_Call value.*
                 ),
             )),
             default : (::material : ((::Literal : (0bFALSE,)),
-                (::Block : ([],)), (::Block : ([],)))),
+                (::Block : ((\Array:[]),)), (::Block : ((\Array:[]),)))),
         )),
 
 *TODO.  This represents an if-then-else statement,
@@ -9915,15 +9915,15 @@ the 'else' is an empty compound statement.*
                 label : ::material,
                 attrs : (
                     0 : \Expression::(),
-                    1 : [\Set::(), \all::( 1: (
+                    1 : (\Array:[\Set::(), \all::( 1: (
                         0 : \Expression::(),
                         1 : \Statement::(),
-                    ) )],
+                    ) )]),
                     2 : \Statement::(),
                 ),
             )),
             default : (::material : ((::Literal : (0bFALSE,)),
-                {}, (::Block : ([],)))),
+                {}, (::Block : ((\Array:[]),)))),
         )),
 
 *TODO.  This represents a given-when-default statement,
@@ -9937,17 +9937,17 @@ written in Plain_Text with special syntax example
             evaluates : (Signature::Article_Match : (
                 label : ::material,
                 attrs : (Signature::Tuple_Attrs_Match : (attrs : (
-                    0 : (type : [\Array::(), \all::( 1: \Statement::() )]),
+                    0 : (type : (\Array:[\Array::(), \all::( 1: \Statement::() )])),
                     label : (type : \Attr_Name::(), optional : 0bTRUE),
                 ),)),
             )),
-            default : (::material : ([],)),
+            default : (::material : ((\Array:[]),)),
         )),
 
 *TODO.  This represents an optionally labelled statement block, which
 consists of an ordered list of 0..N statements, which optionally may be
 iterated, written in Plain_Text with special syntax example
-`[declare x: 42; print(x:&);]` or `do_work block [foo(); bar();]`.*
+`(\Array:[declare x: 42; print(x:&);])` or `do_work block (\Array:[foo(); bar();])`.*
 
 ## Leave
 
@@ -9993,7 +9993,7 @@ with special syntax examples `iterate` or `iterate do_work`.*
 
         Heading : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Tuple::(), \all_attr_assets::( 1: \True::() )],
+            evaluates : (\Array:[\Tuple::(), \all_attr_assets::( 1: \True::() )]),
         )),
 
 *TODO.*
@@ -10006,7 +10006,7 @@ a thing for opening tuples as for creating them.*
 
         Attr_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Heading::(), \is_unary::()],
+            evaluates : (\Array:[\Heading::(), \is_unary::()]),
         )),
 
 *TODO.*
@@ -10015,7 +10015,7 @@ a thing for opening tuples as for creating them.*
 
         Nesting : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Array::(), \all::( 1: \Attr_Name::() )],
+            evaluates : (\Array:[\Array::(), \all::( 1: \Attr_Name::() )]),
         )),
 
 *TODO.*
@@ -10024,7 +10024,7 @@ a thing for opening tuples as for creating them.*
 
         Local_Name : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [\Nesting::(), \not_empty::(), \(
+            evaluates : (\Array:[\Nesting::(), \not_empty::(), \(
                 given args:.\0.0
                     when \foundation then #args:.\0 = 2
                     when \used       then #args:.\0 ≥ 2  `elem 2 is pkg local alias`
@@ -10033,8 +10033,8 @@ a thing for opening tuples as for creating them.*
                     when \material   then #args:.\0 = 1
                     when \floating   then #args:.\0 ≥ 2
                     default 0bFALSE
-            )],
-            default : [\foundation, ...],
+            )]),
+            default : (\Array:[\foundation, ...]),
         )),
 
 *TODO.*
@@ -10084,10 +10084,10 @@ such manually anyhow, the runtime environment should fill them in as needed.*
 
         Function_Call : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [
+            evaluates : (\Array:[
                 \Routine_Call::(),
                 \(args:.\0:>.\asset:.\call is_a {\Local_Name::(), \Identity_Identifier::(), \Function::()}),
-            ],
+            ]),
             default : \(0bFALSE),
         )),
 
@@ -10120,10 +10120,10 @@ written in Plain_Text with special syntax example `\foo::()` or `\(...)`.*
 
         Procedure_Call : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : [
+            evaluates : (\Array:[
                 \Routine_Call::(),
                 \(args:.\0:>.\asset:.\call is_a {\Local_Name::(), \Identity_Identifier::(), \Procedure::()}),
-            ],
+            ]),
             default : \[],
         )),
 
