@@ -49,8 +49,8 @@ its part name is `Package_System`.
             version_number : "0.400.0",
         ),
     ),
-    entry : package::main,
-    floating : (\Set:[::package, used::MD, used::MD::Unicode_Aliases]),
+    entry : ::package::main,
+    floating : (\Set:[::package, ::used::MD, ::used::MD::Unicode_Aliases]),
     materials : (\Tuple:{
         `TODO: Put example routines etc here, one is a procedure named "main".`
     }),
@@ -113,7 +113,7 @@ the language would employ directly in their applications and schemas.
 The selection type definer `Any` represents the infinite *universal type*,
 which is the maximal data type of the entire Muldis Data Language
 type system and consists of all values which can possibly exist.  It also
-represents the infinite Muldis Data Language Foundation type `foundation::Any`.
+represents the infinite Muldis Data Language Foundation type `::foundation::Any`.
 It is the union of all other types.  It is a *supertype* of every other type.
 Its default value is `0bFALSE`.  Other programming languages may name their
 corresponding types *Object* or *Universal*.
@@ -137,7 +137,7 @@ It can not have a default value.
             returns : ::Boolean,
             matches : (\Tuple:{::Any, ::Any}),
             is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Any_same(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Any_same(\Tuple:{})),
         )),
 
         '=' : (\Alias : (\Tuple:{ of : ::same })),
@@ -309,7 +309,7 @@ for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
         )),
 
 The singleton type definer `Ignorance`
-represents the finite foundation type `foundation::Ignorance`.
+represents the finite foundation type `::foundation::Ignorance`.
 The `Ignorance` value represents the `Excuse` value which
 simply says that an ordinary value for any given domain is missing
 and that there is simply no excuse that has been given for this; in
@@ -531,9 +531,9 @@ comparisons or validation is typically much simpler with this foundation.
             evaluates : (0bTRUE),
         )),
 
-The 4 functions {`in_order::Before_All_Others_L`,
-`in_order::Before_All_Others_R`, `in_order::After_All_Others_L`,
-`in_order::After_All_Others_R`} implement the `Orderable` virtual
+The 4 functions {`::in_order::Before_All_Others_L`,
+`::in_order::Before_All_Others_R`, `::in_order::After_All_Others_L`,
+`::in_order::After_All_Others_R`} implement the `Orderable` virtual
 function `in_order` for the composing types `Before_All_Others`
 and `After_All_Others`, specifically for comparing either value
 with any `Orderable`.
@@ -817,12 +817,12 @@ its `0` argument, where N is its `1` argument, or in
         Boolean : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Bicessable]),
-            evaluates : \foundation::Boolean(\Tuple:{}),
+            evaluates : \::foundation::Boolean(\Tuple:{}),
             default : 0bFALSE,
         )),
 
 The selection type definer `Boolean` represents the finite
-foundation type `foundation::Boolean`.
+foundation type `::foundation::Boolean`.
 A `Boolean` value is a general purpose 2-valued logic boolean or *truth
 value*, or specifically it is one of the 2 values `0bFALSE` and `0bTRUE`.
 `Boolean` has a default value of `0bFALSE`.
@@ -839,7 +839,7 @@ typically integer types, to be *false* or *true*.
             constant : 0bFALSE,
         })),
 
-        Unicode_Aliases::'⊥' : (\Alias : (\Tuple:{ of : ::0bFALSE })),
+        Unicode_Aliases::'⊥' : (\Alias : (\Tuple:{ of : ::False })),
 
 The singleton type definer `False` aka `⊥` represents the boolean logical truth value
 *false* aka *contradiction*.  Other programming languages frequently use
@@ -852,7 +852,7 @@ the integer 0 to represent *false*.
             constant : 0bTRUE,
         })),
 
-        Unicode_Aliases::'⊤' : (\Alias : (\Tuple:{ of : ::0bTRUE })),
+        Unicode_Aliases::'⊤' : (\Alias : (\Tuple:{ of : ::True })),
 
 The singleton type definer `True` aka `⊤` represents the boolean logical truth value
 *true* aka *tautology*.  Other programming languages frequently use the
@@ -867,7 +867,7 @@ integer 1 to represent *true*.
             evaluates : (!args:.\0 or args:.\1),
         )),
 
-The function `in_order::Boolean` implements the `Orderable` virtual
+The function `::in_order::Boolean` implements the `Orderable` virtual
 function `in_order` for the composing type `Boolean`.
 
 ## asset (Boolean)
@@ -879,32 +879,32 @@ function `in_order` for the composing type `Boolean`.
             evaluates : (args:.\0),
         )),
 
-The function `asset::Boolean` simply results in its `0` argument.
+The function `::asset::Boolean` simply results in its `0` argument.
 This function implements the `Successable` virtual function `asset` for
 the composing type `Boolean`.
 
 ## nth_pred (Boolean)
 
         nth_pred::Boolean : (\Function : (
-            returns : (\Set:[::0bFALSE, ::Before_All_Others]),
+            returns : (\Set:[::False, ::Before_All_Others]),
             matches : (\Tuple:{::Boolean, ::Integer_NN}),
             implements : folder::'',
             evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and args:.\0 then 0bFALSE else (::Before_All_Others : (\Tuple:{}))),
         )),
 
-The function `nth_pred::Boolean` implements the `Bicessable` virtual
+The function `::nth_pred::Boolean` implements the `Bicessable` virtual
 function `nth_pred` for the composing type `Boolean`.
 
 ## nth_succ (Boolean)
 
         nth_succ::Boolean : (\Function : (
-            returns : (\Set:[::0bTRUE, ::After_All_Others]),
+            returns : (\Set:[::True, ::After_All_Others]),
             matches : (\Tuple:{::Boolean, ::Integer_NN}),
             implements : folder::'',
             evaluates : (if args:.\1 = 0 then args:.\0 else if args:.\1 = 1 and !args:.\0 then 0bTRUE else (::After_All_Others : (\Tuple:{}))),
         )),
 
-The function `nth_succ::Boolean` implements the `Successable` virtual
+The function `::nth_succ::Boolean` implements the `Successable` virtual
 function `nth_succ` for the composing type `Boolean`.
 
 ## not ! ¬
@@ -1100,7 +1100,7 @@ and its `1` argument is `0bTRUE`, and `0bFALSE` otherwise.
 
         Round_Meth : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Round_Meth_Attr_Name::(\Tuple:{}),
@@ -1192,7 +1192,7 @@ name their corresponding types *Numeric*.
 `Numerical` is composed, directly or indirectly, by: `Integral`,
 `Integer`, `Fractional`, `Rational`, `Quantitative`, `Quantity`.
 It is also composed by a lot of additional type definers defined by other
-Muldis Data Language packages such as `System::Math`;
+Muldis Data Language packages such as `::System::Math`;
 these include types for irrational or algebraic or complex numbers or
 quaternions or rational types with a fixed precision or scale or
 floating-point types and so on.
@@ -1680,12 +1680,12 @@ otherwise.
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Integral]),
             provides_default_for : (\Set:[::Integral]),
-            evaluates : \foundation::Integer(\Tuple:{}),
+            evaluates : \::foundation::Integer(\Tuple:{}),
             default : 0,
         )),
 
 The selection type definer `Integer` represents
-the infinite foundation type `foundation::Integer`.
+the infinite foundation type `::foundation::Integer`.
 An `Integer` value is a general purpose exact integral number of any
 magnitude, which explicitly does not represent any kind of
 thing in particular, neither cardinal nor ordinal nor nominal.
@@ -1724,10 +1724,10 @@ value is `1`; it has no maximum value.
             returns : ::Boolean,
             matches : (\Tuple:{::Integer, ::Integer}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Integer_in_order(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Integer_in_order(\Tuple:{})),
         )),
 
-The function `in_order::Integer` implements the `Orderable` virtual
+The function `::in_order::Integer` implements the `Orderable` virtual
 function `in_order` for the composing type `Integer`.
 
 ## asset (Integer)
@@ -1739,7 +1739,7 @@ function `in_order` for the composing type `Integer`.
             evaluates : (args:.\0),
         )),
 
-The function `asset::Integer` simply results in its `0` argument.
+The function `::asset::Integer` simply results in its `0` argument.
 This function implements the `Successable` virtual function `asset` for
 the composing type `Integer`.
 
@@ -1748,11 +1748,11 @@ the composing type `Integer`.
         nth_pred::Integer : (\Function : (
             returns : ::Integer,
             matches : (\Tuple:{::Integer, ::Integer_NN}),
-            implements : folder::Integral,
+            implements : ::folder::Integral,
             evaluates : (args:.\0 - args:.\1),
         )),
 
-The function `nth_pred::Integer` implements the `Bicessable`
+The function `::nth_pred::Integer` implements the `Bicessable`
 virtual function `nth_pred` for the composing type `Integer`.
 
 ## nth_succ (Integer)
@@ -1760,12 +1760,12 @@ virtual function `nth_pred` for the composing type `Integer`.
         nth_succ::Integer : (\Function : (
             returns : ::Integer,
             matches : (\Tuple:{::Integer, ::Integer_NN}),
-            implements : folder::Integral,
-            repeater : plus::Integer,
+            implements : ::folder::Integral,
+            repeater : ::plus::Integer,
             evaluates : (args:.\0 + args:.\1),
         )),
 
-The function `nth_succ::Integer` implements the `Successable`
+The function `::nth_succ::Integer` implements the `Successable`
 virtual function `nth_succ` for the composing type `Integer`.
 
 ## not_zero (Integer)
@@ -1777,7 +1777,7 @@ virtual function `nth_succ` for the composing type `Integer`.
             evaluates : (args:.\0 != 0),
         )),
 
-The function `not_zero::Integer` results in `0bTRUE` iff its `0`
+The function `::not_zero::Integer` results in `0bTRUE` iff its `0`
 argument is not `0`, and in `0bFALSE` if it is `0`.  This function
 implements the `Numerical` virtual function `not_zero`
 for the composing type `Integer`.
@@ -1791,7 +1791,7 @@ for the composing type `Integer`.
             evaluates : (0),
         )),
 
-The function `zero::Integer` simply results in `0`.  This function
+The function `::zero::Integer` simply results in `0`.  This function
 implements the `Numerical` virtual function `zero` for the composing type
 `Integer`.
 
@@ -1801,10 +1801,10 @@ implements the `Numerical` virtual function `zero` for the composing type
             returns : ::Integer,
             matches : (\Tuple:{::Integer}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Integer_opposite(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Integer_opposite(\Tuple:{})),
         )),
 
-The function `opposite::Integer` implements the `Numerical` virtual
+The function `::opposite::Integer` implements the `Numerical` virtual
 function `opposite` aka `additive_inverse` aka unary `-` aka unary `−`
 for the composing type `Integer`.
 
@@ -1817,7 +1817,7 @@ for the composing type `Integer`.
             evaluates : (1 / args:.\0),
         )),
 
-The function `reciprocal::Integer` implements the `Numerical` virtual
+The function `::reciprocal::Integer` implements the `Numerical` virtual
 function `reciprocal` aka `multiplicative_inverse` for the composing type
 `Integer`.
 
@@ -1827,10 +1827,10 @@ function `reciprocal` aka `multiplicative_inverse` for the composing type
             returns : ::Integer_NN,
             matches : (\Tuple:{::Integer}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Integer_modulus(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Integer_modulus(\Tuple:{})),
         )),
 
-The function `modulus::Integer` implements the `Numerical`
+The function `::modulus::Integer` implements the `Numerical`
 virtual function `modulus` aka `abs` for the composing type `Integer`.
 
 ## plus (Integer)
@@ -1842,11 +1842,11 @@ virtual function `modulus` aka `abs` for the composing type `Integer`.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : 0,
-            repeater : times::Integer,
-            evaluates : (evaluates args --> \foundation::Integer_plus(\Tuple:{})),
+            repeater : ::times::Integer,
+            evaluates : (evaluates args --> \::foundation::Integer_plus(\Tuple:{})),
         )),
 
-The function `plus::Integer` implements the `Numerical`
+The function `::plus::Integer` implements the `Numerical`
 virtual function `plus` aka `+` for the composing type `Integer`.
 
 ## minus (Integer)
@@ -1856,10 +1856,10 @@ virtual function `plus` aka `+` for the composing type `Integer`.
             matches : (\Tuple:{::Integer, ::Integer}),
             implements : folder::'',
             right_identity : 0,
-            evaluates : (evaluates args --> \foundation::Integer_minus(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Integer_minus(\Tuple:{})),
         )),
 
-The function `minus::Integer` implements the `Numerical` virtual function
+The function `::minus::Integer` implements the `Numerical` virtual function
 `minus` aka binary `-` aka binary `−` for the composing type `Integer`.
 
 ## times (Integer)
@@ -1871,11 +1871,11 @@ The function `minus::Integer` implements the `Numerical` virtual function
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : 1,
-            repeater : integral_nn_power::Integer,
-            evaluates : (evaluates args --> \foundation::Integer_times(\Tuple:{})),
+            repeater : ::integral_nn_power::Integer,
+            evaluates : (evaluates args --> \::foundation::Integer_times(\Tuple:{})),
         )),
 
-The function `times::Integer` implements the `Numerical` virtual function
+The function `::times::Integer` implements the `Numerical` virtual function
 `times` aka `*` aka `×` for the composing type `Integer`.
 
 ## multiple_of (Integer)
@@ -1885,10 +1885,10 @@ The function `times::Integer` implements the `Numerical` virtual function
             matches : (\Tuple:{::Integer, ::Integer}),
             implements : folder::'',
             evaluates : (if args:.\1 = 0 then (::Div_By_Zero : (\Tuple:{}))
-                else guard evaluates args --> \foundation::Integer_multiple_of(\Tuple:{})),
+                else guard evaluates args --> \::foundation::Integer_multiple_of(\Tuple:{})),
         )),
 
-The function `multiple_of::Integer` implements the `Numerical`
+The function `::multiple_of::Integer` implements the `Numerical`
 virtual function `multiple_of` for the composing type `Integer`.
 
 ## fractional_divided_by (Integer)
@@ -1913,7 +1913,7 @@ virtual function `multiple_of` for the composing type `Integer`.
             ),
         )),
 
-The function `fractional_divided_by::Integer` implements the `Numerical`
+The function `::fractional_divided_by::Integer` implements the `Numerical`
 virtual function `fractional_divided_by` aka `/` aka `÷` aka `∕` for
 the composing type `Integer`.
 
@@ -1945,7 +1945,7 @@ the composing type `Integer`.
 
                 e2 ::= (
                     real_q_is_neg ::= dividend < 0 xor divisor < 0;
-                    rtz_quotient  ::= foundation::Integer_divided_by_rtz(\Tuple:{dividend, divisor});
+                    rtz_quotient  ::= ::foundation::Integer_divided_by_rtz(\Tuple:{dividend, divisor});
                     rtz_remainder ::= dividend - (divisor * rtz_quotient);
 
                     returns if rtz_remainder = 0 then rtz_quotient else e3;
@@ -1976,7 +1976,7 @@ the composing type `Integer`.
                     " exactly one-half so we decide how to round that.";
 
                 e4 ::= (
-                    q ::= foundation::Integer_divided_by_rtz(abs::(rtz_quotient),2)
+                    q ::= ::foundation::Integer_divided_by_rtz(abs::(rtz_quotient),2)
                     r ::= abs::(rtz_quotient) - (2 * q);
                     rtz_quotient_is_even ::= r = 0;
 
@@ -1995,7 +1995,7 @@ the composing type `Integer`.
             ),
         )),
 
-The function `integral_divided_by::Integer` implements the `Numerical`
+The function `::integral_divided_by::Integer` implements the `Numerical`
 virtual function `integral_divided_by` aka `div` for the composing type
 `Integer`.
 
@@ -2009,7 +2009,7 @@ virtual function `integral_divided_by` aka `div` for the composing type
                 else guard args:.\0 / 1 ** args:.\1),
         )),
 
-The function `integral_power::Integer` implements the `Numerical` virtual
+The function `::integral_power::Integer` implements the `Numerical` virtual
 function `integral_power` aka `**` for the composing type `Integer`.
 
 ## integral_nn_power (Integer)
@@ -2019,10 +2019,10 @@ function `integral_power` aka `**` for the composing type `Integer`.
             matches : (\Tuple:{::Integer, ::Integer_NN}),
             implements : folder::'',
             evaluates : (if args:.\0 = 0 and args:.\1 = 0 then (::Zero_To_The_Zero : (\Tuple:{}))
-                else guard evaluates args --> \foundation::Integer_nn_power(\Tuple:{})),
+                else guard evaluates args --> \::foundation::Integer_nn_power(\Tuple:{})),
         )),
 
-The function `integral_nn_power::Integer` implements the `Numerical`
+The function `::integral_nn_power::Integer` implements the `Numerical`
 virtual function `integral_nn_power` aka `power` for the composing type
 `Integer`.
 
@@ -2035,7 +2035,7 @@ virtual function `integral_nn_power` aka `power` for the composing type
             evaluates : (args:.\0),
         )),
 
-The function `to_Integer::Integer` simply results in its `0` argument.
+The function `::to_Integer::Integer` simply results in its `0` argument.
 This function implements the `Integral` virtual function `to_Integer` for
 the composing type `Integer`.
 
@@ -2045,10 +2045,10 @@ the composing type `Integer`.
             returns : ::Integer_P,
             matches : (\Tuple:{::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Integer_factorial(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Integer_factorial(\Tuple:{})),
         )),
 
-The function `factorial::Integer` implements the `Integral` virtual
+The function `::factorial::Integer` implements the `Integral` virtual
 function `factorial` for the composing type `Integer`.
 
 # FRACTIONAL DATA TYPES
@@ -2135,7 +2135,7 @@ The virtual function `denominator` results in the *denominator* of its
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Fractional]),
             provides_default_for : (\Set:[::Fractional]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Rational,
                 attrs : (\Array:[
                     (
@@ -2149,7 +2149,7 @@ The virtual function `denominator` results in the *denominator* of its
         )),
 
 The selection type definer `Rational`
-represents the infinite foundation type `foundation::Rational`.
+represents the infinite foundation type `::foundation::Rational`.
 A `Rational` value is a general purpose exact rational number of any
 magnitude and precision, which explicitly does not represent any
 kind of thing in particular, neither cardinal nor ordinal nor nominal.
@@ -2196,7 +2196,7 @@ default and minmum value is `0.0`; it has no maximum value.
             ),
         )),
 
-The function `in_order::Rational` implements the `Orderable` virtual
+The function `::in_order::Rational` implements the `Orderable` virtual
 function `in_order` for the composing type `Rational`.
 
 ## not_zero (Rational)
@@ -2208,7 +2208,7 @@ function `in_order` for the composing type `Rational`.
             evaluates : (args:.\0 != 0.0),
         )),
 
-The function `not_zero::Rational` results in `0bTRUE` iff its `0`
+The function `::not_zero::Rational` results in `0bTRUE` iff its `0`
 argument is not `0.0`, and in `0bFALSE` if it is `0.0`.  This function
 implements the `Numerical` virtual function `not_zero`
 for the composing type `Rational`.
@@ -2222,7 +2222,7 @@ for the composing type `Rational`.
             evaluates : (0.0),
         )),
 
-The function `zero::Rational` simply results in `0.0`.  This function
+The function `::zero::Rational` simply results in `0.0`.  This function
 implements the `Numerical` virtual function `zero` for the composing type
 `Rational`.
 
@@ -2235,7 +2235,7 @@ implements the `Numerical` virtual function `zero` for the composing type
             evaluates : (-(numerator args:.\0) / (denominator args:.\0)),
         )),
 
-The function `opposite::Rational` implements the `Numerical` virtual
+The function `::opposite::Rational` implements the `Numerical` virtual
 function `opposite` aka `additive_inverse` aka unary `-` aka unary `−`
 for the composing type `Rational`.
 
@@ -2249,7 +2249,7 @@ for the composing type `Rational`.
                 else guard (denominator args:.\0) / (numerator args:.\0)),
         )),
 
-The function `reciprocal::Rational` implements the `Numerical` virtual
+The function `::reciprocal::Rational` implements the `Numerical` virtual
 function `reciprocal` aka `multiplicative_inverse` for the composing type
 `Rational`.
 
@@ -2262,7 +2262,7 @@ function `reciprocal` aka `multiplicative_inverse` for the composing type
             evaluates : (abs::(numerator args:.\0) / (denominator args:.\0)),
         )),
 
-The function `modulus::Rational` implements the `Numerical`
+The function `::modulus::Rational` implements the `Numerical`
 virtual function `modulus` aka `abs` for the composing type `Rational`.
 
 ## plus (Rational)
@@ -2274,7 +2274,7 @@ virtual function `modulus` aka `abs` for the composing type `Rational`.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : 0.0,
-            repeater : times::Rational_Integer,
+            repeater : ::times::Rational_Integer,
             evaluates : (
                 if (denominator args:.\0) = (denominator args:.\1)
                     then (numerator args:.\0) + (numerator args:.\1) / (denominator args:.\0)
@@ -2288,7 +2288,7 @@ virtual function `modulus` aka `abs` for the composing type `Rational`.
             ),
         )),
 
-The function `plus::Rational` implements the `Numerical`
+The function `::plus::Rational` implements the `Numerical`
 virtual function `plus` aka `+` for the composing type `Rational`.
 
 ## minus (Rational)
@@ -2301,7 +2301,7 @@ virtual function `plus` aka `+` for the composing type `Rational`.
             evaluates : (args:.\0 + -args:.\1),
         )),
 
-The function `minus::Rational` implements the `Numerical` virtual function
+The function `::minus::Rational` implements the `Numerical` virtual function
 `minus` aka binary `-` aka binary `−` for the composing type `Rational`.
 
 ## times (Rational)
@@ -2313,12 +2313,12 @@ The function `minus::Rational` implements the `Numerical` virtual function
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : 1.0,
-            repeater : integral_nn_power::Rational,
+            repeater : ::integral_nn_power::Rational,
             evaluates : (((numerator args:.\0) * (numerator args:.\1))
                 / ((denominator args:.\0) * (denominator args:.\1))),
         )),
 
-The function `times::Rational` implements the `Numerical` virtual function
+The function `::times::Rational` implements the `Numerical` virtual function
 `times` aka `*` aka `×` for the composing type `Rational`.
 
 ## times (\Tuple:{Rational, Integer})
@@ -2330,7 +2330,7 @@ The function `times::Rational` implements the `Numerical` virtual function
             evaluates : (((numerator args:.\0) * args:.\1) / (denominator args:.\0)),
         )),
 
-The function `times::Rational_Integer` implements the `Numerical` virtual
+The function `::times::Rational_Integer` implements the `Numerical` virtual
 function `times` aka `*` aka `×` for the composing type `Rational`,
 specifically for multiplying one by an `Integer`.
 
@@ -2344,7 +2344,7 @@ specifically for multiplying one by an `Integer`.
                 else guard (args:.\0 mod args:.\1) = 0.0),
         )),
 
-The function `multiple_of::Rational` implements the `Numerical`
+The function `::multiple_of::Rational` implements the `Numerical`
 virtual function `multiple_of` for the composing type `Rational`.
 
 ## fractional_divided_by (Rational)
@@ -2358,7 +2358,7 @@ virtual function `multiple_of` for the composing type `Rational`.
                 else guard args:.\0 * reciprocal::(args:.\1)),
         )),
 
-The function `fractional_divided_by::Rational` implements the `Numerical`
+The function `::fractional_divided_by::Rational` implements the `Numerical`
 virtual function `fractional_divided_by` aka `/` aka `÷` aka `∕` for
 the composing type `Rational`.
 
@@ -2378,7 +2378,7 @@ the composing type `Rational`.
             ),
         )),
 
-The function `integral_divided_by::Rational` implements the `Numerical`
+The function `::integral_divided_by::Rational` implements the `Numerical`
 virtual function `integral_divided_by` aka `div` for the composing type
 `Rational`.
 
@@ -2392,7 +2392,7 @@ virtual function `integral_divided_by` aka `div` for the composing type
                 <-- (if args:.\1 >= 0 then args else (reciprocal::(args:.\0), -args:.\1))),
         )),
 
-The function `integral_power::Rational` implements the `Numerical` virtual
+The function `::integral_power::Rational` implements the `Numerical` virtual
 function `integral_power` aka `**` for the composing type `Rational`.
 
 ## integral_nn_power (Rational)
@@ -2405,7 +2405,7 @@ function `integral_power` aka `**` for the composing type `Rational`.
                 else guard ((numerator args:.\0) ** args:.\1) / ((denominator args:.\0) ** args:.\1)),
         )),
 
-The function `integral_nn_power::Rational` implements the `Numerical`
+The function `::integral_nn_power::Rational` implements the `Numerical`
 virtual function `integral_nn_power` aka `power` for the composing type
 `Rational`.
 
@@ -2418,7 +2418,7 @@ virtual function `integral_nn_power` aka `power` for the composing type
             evaluates : (args:.\0),
         )),
 
-The function `to_Rational::Rational` simply results in its `0` argument.
+The function `::to_Rational::Rational` simply results in its `0` argument.
 This function implements the `Fractional` virtual function `to_Rational`
 for the composing type `Rational`.
 
@@ -2430,7 +2430,7 @@ for the composing type `Rational`.
             evaluates : (args:.\0:>.\numerator),
         )),
 
-The function `numerator::Rational` implements the `Fractional` virtual
+The function `::numerator::Rational` implements the `Fractional` virtual
 function `numerator` for the composing type `Rational`.
 
 ## denominator (Rational)
@@ -2441,7 +2441,7 @@ function `numerator` for the composing type `Rational`.
             evaluates : (args:.\0:>.\denominator),
         )),
 
-The function `denominator::Rational` implements the `Fractional` virtual
+The function `::denominator::Rational` implements the `Fractional` virtual
 function `denominator` for the composing type `Rational`.
 
 # COLLECTIVE DATA TYPES OVERVIEW
@@ -3751,7 +3751,7 @@ of X and Y as a whole are the same as said members.
             evaluates : ((unique_count args:.\0) = 1),
         )),
 
-The function `singular::Positional` results in `0bTRUE` iff its `0`
+The function `::singular::Positional` results in `0bTRUE` iff its `0`
 argument has exactly 1 distinct member value, and `0bFALSE` otherwise.  This
 function implements the `Homogeneous` virtual function `singular` for the
 composing type `Positional`.
@@ -3766,7 +3766,7 @@ composing type `Positional`.
             evaluates : (first args:.\0),
         )),
 
-The function `only_member::Positional` results in its `0` argument's only
+The function `::only_member::Positional` results in its `0` argument's only
 distinct member value.  This function will fail if the argument doesn't
 have exactly 1 distinct member value.  This function implements the
 `Homogeneous` virtual function `only_member` for the composing type
@@ -3781,7 +3781,7 @@ have exactly 1 distinct member value.  This function implements the
             evaluates : ((to_Bag args:.\0) subset_of (to_Bag args:.\1)),
         )),
 
-The function `subset_of::Positional` results in `0bTRUE` iff the multiset
+The function `::subset_of::Positional` results in `0bTRUE` iff the multiset
 of members of its `0` argument is a subset of the multiset of members of
 its `1` argument; otherwise it results in `0bFALSE`.  This function
 implements the `Homogeneous` virtual function `subset_of` aka `⊆` for
@@ -3797,7 +3797,7 @@ the composing type `Positional`.
             evaluates : ((to_Bag args:.\0) same_members (to_Bag args:.\1)),
         )),
 
-The function `same_members::Positional` results in `0bTRUE` iff the
+The function `::same_members::Positional` results in `0bTRUE` iff the
 multiset of members of its `0` argument is the same as the multiset of
 members of its `1` argument; otherwise it results in `0bFALSE`.  This
 function may result in `0bTRUE` for some arguments for which `same` would
@@ -3815,7 +3815,7 @@ virtual function `same_members` for the composing type `Positional`.
             evaluates : ((to_Bag args:.\0) overlaps_members (to_Bag args:.\1)),
         )),
 
-The function `overlaps_members::Positional` results in `0bTRUE` iff, given
+The function `::overlaps_members::Positional` results in `0bTRUE` iff, given
 *X* as the multiset of members of its argument `0` and *Y* as the
 multiset of members of its argument `1`, there exists at least 1 member
 that both *X* and *Y* have, and there also exists at least 1 other member
@@ -3833,7 +3833,7 @@ each of *X* and *Y* that the other doesn't have; otherwise it results in
             evaluates : ((to_Bag args:.\0) disjoint_members (to_Bag args:.\1)),
         )),
 
-The function `disjoint_members::Positional` results in `0bTRUE` iff the
+The function `::disjoint_members::Positional` results in `0bTRUE` iff the
 multiset of members of its `0` argument has no member values in common
 with the multiset of members of its `1` argument; otherwise it results in
 `0bFALSE`.  This function implements the `Homogeneous` virtual function
@@ -3849,7 +3849,7 @@ with the multiset of members of its `1` argument; otherwise it results in
             evaluates : (args:.\0 ~ args:.\1),
         )),
 
-The function `member_plus::Positional` results in the *multiset sum* of
+The function `::member_plus::Positional` results in the *multiset sum* of
 its 2 arguments `0` and `1`; it behaves identically to `catenate` aka
 `~` when given the same arguments.  This function implements the
 `Unionable` virtual function `member_plus` aka `⊎` for the composing
@@ -3864,7 +3864,7 @@ type `Positional`.
             evaluates : (count::(to_Set args:.\0)),
         )),
 
-The function `unique_count::Positional` results in the integral count of
+The function `::unique_count::Positional` results in the integral count of
 the distinct member values of its `0` argument.  This function implements
 the `Discrete` virtual function `unique_count` for the composing type
 `Positional`.
@@ -3879,7 +3879,7 @@ the `Discrete` virtual function `unique_count` for the composing type
                 and args:.\1 < first_unused_ord_pos::(args:.\0)),
         )),
 
-The function `has_any_at::Positional` results in `0bTRUE` iff its `0`
+The function `::has_any_at::Positional` results in `0bTRUE` iff its `0`
 argument has a member whose ordinal position is equal to its `1` argument;
 otherwise it results in `0bFALSE`.  This function implements the
 `Accessible` virtual function `has_any_at` aka `.?` for the composing
@@ -3894,7 +3894,7 @@ type `Positional`.
             evaluates : (args:.\0 .? (args:.\1.\0) and_then guard args:.\0.(args:.\1.\0) = (args:.\1.\1)),
         )),
 
-The function `has_mapping_at::Positional` results in `0bTRUE` iff its `0`
+The function `::has_mapping_at::Positional` results in `0bTRUE` iff its `0`
 argument has a member that is equal to its `1` argument's `1` attribute,
 where the ordinal position of that member is equal to the `1` argument's
 `0` attribute; otherwise it results in `0bFALSE`.  This function implements
@@ -3911,7 +3911,7 @@ composing type `Positional`.
             evaluates : ((\Tuple:{args:.\1, args:.\0.args:.\1})),
         )),
 
-The function `mapping_at::Positional` results in a binary `Tuple` whose
+The function `::mapping_at::Positional` results in a binary `Tuple` whose
 `0` attribute is the function's `1` argument and whose `1` attribute is
 the member value of the function's `0` argument whose ordinal position is
 equal to its `1` argument.  This function will fail if the `0` argument
@@ -3928,7 +3928,7 @@ virtual function `mapping_at` aka `.:` for the composing type
             evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else (::No_Such_Ord_Pos : (\Tuple:{}))),
         )),
 
-The function `maybe_at::Positional` results in the member value of its
+The function `::maybe_at::Positional` results in the member value of its
 `0` argument whose ordinal position is equal to its `1` argument, iff there
 is such a member; otherwise it results in `(::No_Such_Ord_Pos : (\Tuple:{}))`.  This function
 implements the `Accessible` virtual function `maybe_at` aka `.!` for the
@@ -3954,7 +3954,7 @@ composing type `Positional`.
             ),
         )),
 
-The function `replace_at::Positional` results in the value of its `0`
+The function `::replace_at::Positional` results in the value of its `0`
 argument's collection type that has all of the members of the function's
 `0` argument in the same order but that, for the 1 member of the `0`
 argument whose ordinal position *K* is equal to the function's `1`
@@ -3974,7 +3974,7 @@ function `replace_at` aka `.:=` for the composing type `Positional`.
             evaluates : (args:.\0 insert args:.\1.\1),
         )),
 
-The function `shiftless_insert_at::Positional` results in the value of its
+The function `::shiftless_insert_at::Positional` results in the value of its
 `0` argument's collection type that has all of the members of the
 function's `0` argument in the same order, plus 1 additional member *M*
 that is equal to its `1` argument's `1` attribute, where the ordinal
@@ -3995,7 +3995,7 @@ composing type `Positional`.
             evaluates : (nonlast args:.\0),
         )),
 
-The function `shiftless_remove_at::Positional` results in the value of its
+The function `::shiftless_remove_at::Positional` results in the value of its
 `0` argument's collection type that has all of the members of the
 function's `0` argument in the same order minus 1 existing element whose
 ordinal position *K* is equal to its `1` argument.  This function will fail
@@ -4015,7 +4015,7 @@ composing type `Positional`.
             evaluates : (if args:.\0 .? (args:.\1.\0) then guard args:.\0 .:= (args:.\1.\0) else guard args:.\0 .+ (args:.\1.\0)),
         )),
 
-The function `replace_or_insert_at::Positional` behaves identically in
+The function `::replace_or_insert_at::Positional` behaves identically in
 turn to each of the functions `replace_at` and `shiftless_insert_at` when
 given the same arguments, where the `0` argument does or doesn't,
 respectively, have a member whose ordinal position is equal to the `1`
@@ -4034,7 +4034,7 @@ virtual function `replace_or_insert_at` aka `.=+` for the composing type
             evaluates : (if args:.\1 = --first_unused_ord_pos::(args:.\0) then guard nonlast args:.\0 else args:.\0),
         )),
 
-The function `shiftless_maybe_remove_at::Positional` behaves identically
+The function `::shiftless_maybe_remove_at::Positional` behaves identically
 to `shiftless_remove_at` when given the same arguments but that it simply
 results in its `0` argument when that has no member whose ordinal position
 matches its `1` argument, rather than fail.  This function implements the
@@ -4364,10 +4364,10 @@ the argument.
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Positional]),
             provides_default_for : (\Set:[::Positional]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Bits,
                 attrs : (
-                    bits : \Array::Bits(\Tuple:{}),
+                    bits : \::Array::Bits(\Tuple:{}),
                 ),
             )),
             default : 0bb,
@@ -4389,7 +4389,7 @@ corresponding types *bit* or *bit varying*.
             evaluates : (\Array:[\Array::(\Tuple:{}), \all::( 1: \in::( 1: 0..1 ) )]),
         )),
 
-The selection type definer `Array::Bits` represents the infinite type
+The selection type definer `::Array::Bits` represents the infinite type
 consisting just of the `Array` values for which every one of their member
 values is an integer in the range 0..1 inclusive.
 
@@ -4402,7 +4402,7 @@ values is an integer in the range 0..1 inclusive.
             evaluates : ((Bits_to_Array_Bits args:.\0) in_order (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `in_order::Bits` implements the `Orderable` virtual
+The function `::in_order::Bits` implements the `Orderable` virtual
 function `in_order` for the composing type `Bits`.
 
 ## not_empty (Bits)
@@ -4414,7 +4414,7 @@ function `in_order` for the composing type `Bits`.
             evaluates : (args:.\0 != 0bb),
         )),
 
-The function `not_empty::Bits` results in `0bTRUE` iff its `0` argument
+The function `::not_empty::Bits` results in `0bTRUE` iff its `0` argument
 is not `0bb`, and in `0bFALSE` if it is `0bb`.  This function
 implements the `Homogeneous` virtual function `not_empty`
 for the composing type `Bits`.
@@ -4428,7 +4428,7 @@ for the composing type `Bits`.
             evaluates : (0bb),
         )),
 
-The function `empty::Bits` simply results in `0bb`.  This function
+The function `::empty::Bits` simply results in `0bb`.  This function
 implements the `Homogeneous` virtual function `empty` for the composing
 type `Bits`.
 
@@ -4441,7 +4441,7 @@ type `Bits`.
             evaluates : ((Bits_to_Array_Bits args:.\0) substring_of (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `substring_of::Bits` implements the `Positional` virtual
+The function `::substring_of::Bits` implements the `Positional` virtual
 function `substring_of` for the composing type `Bits`.
 
 ## overlaps_string (Bits)
@@ -4455,7 +4455,7 @@ function `substring_of` for the composing type `Bits`.
                 overlaps_string (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `overlaps_string::Bits` implements the `Positional` virtual
+The function `::overlaps_string::Bits` implements the `Positional` virtual
 function `overlaps_string` for the composing type `Bits`.
 
 ## disjoint_string (Bits)
@@ -4469,7 +4469,7 @@ function `overlaps_string` for the composing type `Bits`.
                 disjoint_string (Bits_to_Array_Bits args:.\1)),
         )),
 
-The function `disjoint_string::Bits` implements the `Positional` virtual
+The function `::disjoint_string::Bits` implements the `Positional` virtual
 function `disjoint_string` for the composing type `Bits`.
 
 ## catenate (Bits)
@@ -4480,12 +4480,12 @@ function `disjoint_string` for the composing type `Bits`.
             implements : folder::'',
             is_associative : 0bTRUE,
             identity : 0bb,
-            repeater : replicate::Bits,
+            repeater : ::replicate::Bits,
             evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0)
                 ~ (Bits_to_Array_Bits args:.\1))),
         )),
 
-The function `catenate::Bits` implements the `Positional` virtual function
+The function `::catenate::Bits` implements the `Positional` virtual function
 `catenate` aka `~` for the composing type `Bits`.
 
 ## replicate (Bits)
@@ -4497,14 +4497,14 @@ The function `catenate::Bits` implements the `Positional` virtual function
             evaluates : (Bits_from_Array_Bits::((Bits_to_Array_Bits args:.\0) ~# args:.\1)),
         )),
 
-The function `replicate::Bits` implements the `Positional` virtual function
+The function `::replicate::Bits` implements the `Positional` virtual function
 `replicate` aka `~#` for the composing type `Bits`.
 
 ## Bits_from_Array_Bits
 
         Bits_from_Array_Bits : (\Function : (
             returns : ::Bits,
-            matches : (\Tuple:{Array::Bits}),
+            matches : (\Tuple:{::Array::Bits}),
             evaluates : ((\Bits : (\Tuple:{bits : args:.\0}))),
         )),
 
@@ -4514,7 +4514,7 @@ in terms of the integer sequence of its `0` argument.
 ## Bits_to_Array_Bits
 
         Bits_to_Array_Bits : (\Function : (
-            returns : Array::Bits,
+            returns : ::Array::Bits,
             matches : (\Tuple:{::Bits}),
             evaluates : (args:.\0:>.\bits),
         )),
@@ -4529,10 +4529,10 @@ the bits of its `Bits`-typed `0` argument.
         Blob : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Positional]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Blob,
                 attrs : (
-                    octets : \Array::Octets(\Tuple:{}),
+                    octets : \::Array::Octets(\Tuple:{}),
                 ),
             )),
             default : 0xx,
@@ -4554,7 +4554,7 @@ corresponding types *Buf* or *byte(\Array:[])* or *bytea*.
             evaluates : (\Array:[\Array::(\Tuple:{}), \all::( 1: \in::( 1: 0..255 ) )]),
         )),
 
-The selection type definer `Array::Octets` represents the infinite type
+The selection type definer `::Array::Octets` represents the infinite type
 consisting just of the `Array` values for which every one of their member
 values is an integer in the range 0..255 inclusive.
 
@@ -4567,7 +4567,7 @@ values is an integer in the range 0..255 inclusive.
             evaluates : ((Blob_to_Octets args:.\0) in_order (Blob_to_Octets args:.\1)),
         )),
 
-The function `in_order::Blob` implements the `Orderable` virtual
+The function `::in_order::Blob` implements the `Orderable` virtual
 function `in_order` for the composing type `Blob`.
 
 ## not_empty (Blob)
@@ -4579,7 +4579,7 @@ function `in_order` for the composing type `Blob`.
             evaluates : (args:.\0 != 0xx),
         )),
 
-The function `not_empty::Blob` results in `0bTRUE` iff its `0` argument
+The function `::not_empty::Blob` results in `0bTRUE` iff its `0` argument
 is not `0xx`, and in `0bFALSE` if it is `0xx`.  This function
 implements the `Homogeneous` virtual function `not_empty`
 for the composing type `Blob`.
@@ -4593,7 +4593,7 @@ for the composing type `Blob`.
             evaluates : (0xx),
         )),
 
-The function `empty::Blob` simply results in `0xx`.  This function
+The function `::empty::Blob` simply results in `0xx`.  This function
 implements the `Homogeneous` virtual function `empty` for the composing
 type `Blob`.
 
@@ -4606,7 +4606,7 @@ type `Blob`.
             evaluates : ((Blob_to_Octets args:.\0) substring_of (Blob_to_Octets args:.\1)),
         )),
 
-The function `substring_of::Blob` implements the `Positional` virtual
+The function `::substring_of::Blob` implements the `Positional` virtual
 function `substring_of` for the composing type `Blob`.
 
 ## overlaps_string (Blob)
@@ -4619,7 +4619,7 @@ function `substring_of` for the composing type `Blob`.
             evaluates : ((Blob_to_Octets args:.\0) overlaps_string (Blob_to_Octets args:.\1)),
         )),
 
-The function `overlaps_string::Blob` implements the `Positional` virtual
+The function `::overlaps_string::Blob` implements the `Positional` virtual
 function `overlaps_string` for the composing type `Blob`.
 
 ## disjoint_string (Blob)
@@ -4632,7 +4632,7 @@ function `overlaps_string` for the composing type `Blob`.
             evaluates : ((Blob_to_Octets args:.\0) disjoint_string (Blob_to_Octets args:.\1)),
         )),
 
-The function `disjoint_string::Blob` implements the `Positional` virtual
+The function `::disjoint_string::Blob` implements the `Positional` virtual
 function `disjoint_string` for the composing type `Blob`.
 
 ## catenate (Blob)
@@ -4643,11 +4643,11 @@ function `disjoint_string` for the composing type `Blob`.
             implements : folder::'',
             is_associative : 0bTRUE,
             identity : 0xx,
-            repeater : replicate::Blob,
+            repeater : ::replicate::Blob,
             evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~ (Blob_to_Octets args:.\1))),
         )),
 
-The function `catenate::Blob` implements the `Positional` virtual function
+The function `::catenate::Blob` implements the `Positional` virtual function
 `catenate` aka `~` for the composing type `Blob`.
 
 ## replicate (Blob)
@@ -4659,14 +4659,14 @@ The function `catenate::Blob` implements the `Positional` virtual function
             evaluates : (Blob_from_Octets::((Blob_to_Octets args:.\0) ~# args:.\1)),
         )),
 
-The function `replicate::Blob` implements the `Positional` virtual function
+The function `::replicate::Blob` implements the `Positional` virtual function
 `replicate` aka `~#` for the composing type `Blob`.
 
 ## Blob_from_Octets
 
         Blob_from_Octets : (\Function : (
             returns : ::Blob,
-            matches : (\Tuple:{Array::Octets}),
+            matches : (\Tuple:{::Array::Octets}),
             evaluates : ((\Blob : (\Tuple:{octets : args:.\0}))),
         )),
 
@@ -4676,7 +4676,7 @@ terms of the integer sequence of its `0` argument.
 ## Blob_to_Octets
 
         Blob_to_Octets : (\Function : (
-            returns : Array::Octets,
+            returns : ::Array::Octets,
             matches : (\Tuple:{::Blob}),
             evaluates : (args:.\0:>.\octets),
         )),
@@ -4706,7 +4706,7 @@ way, so the latter's operators will just work like users expect.
 
 The `System` package excludes the majority of useful operators specific to
 working with character strings; see instead other Muldis Data Language packages such as
-`System::Text` for these things.  Such tasks
+`::System::Text` for these things.  Such tasks
 include like case folding, pattern matching, whitespace trimming, Unicode
 normalization, encoding to and decoding from most binary formats, and so on.
 
@@ -4754,16 +4754,16 @@ like national collations or fixed-size types.
 
 # TEXT DATA TYPES
 
-## Text Text::Unicode
+## Text ::Text::Unicode
 
         Text::'' : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Textual]),
             provides_default_for : (\Set:[::Textual]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Text,
                 attrs : (
-                    unicode_codes : \Array::Unicode_Codes(\Tuple:{}),
+                    unicode_codes : \::Array::Unicode_Codes(\Tuple:{}),
                 ),
             )),
             default : "",
@@ -4772,7 +4772,7 @@ like national collations or fixed-size types.
         Text::Unicode : (\Alias : (\Tuple:{ of : ::Text })),
 
 The selection type definer `Text`
-represents the infinite foundation type `foundation::Text`.
+represents the infinite foundation type `::foundation::Text`.
 A `Text` value is characterized by an arbitrarily-large ordered sequence of
 Unicode standard *character code points*, where each distinct code point
 corresponds to a distinct integer in the set `(\Array:[0..0xD7FF,0xE000..0x10FFFF])`,
@@ -4806,7 +4806,7 @@ instead for such character strings.
                 \all::( 1: \in::( 1: ?..(\Set:[0..0xD7FF,0xE000..0x10FFFF]) ) )]),
         )),
 
-The selection type definer `Array::Unicode_Codes` represents the infinite type
+The selection type definer `::Array::Unicode_Codes` represents the infinite type
 consisting just of the `Array` values for which every one of their member
 values is an integer in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
@@ -4814,11 +4814,11 @@ values is an integer in the range {0..0xD7FF,0xE000..0x10FFFF} inclusive.
 
         Text::ASCII : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Text::Unicode::(args:.\0) and_then guard
-                Array::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
+            evaluates : (::Text::Unicode::(args:.\0) and_then guard
+                ::Array::ASCII_Chars::(Text_from_Unicode_Codes args:.\0)),
         )),
 
-The selection type definer `Text::ASCII` represents the infinite type
+The selection type definer `::Text::ASCII` represents the infinite type
 consisting just of the `Text` values for which every one of their member
 characters is a member of the 128-character repertoire of 7-bit ASCII.
 This `Text` subtype has its own canonical representation in terms of an
@@ -4829,10 +4829,10 @@ the standard ASCII codes for the same symbols.
 
         Array::ASCII_Chars : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (\Array:[\Array::Unicode_Codes(\Tuple:{}), \all::( 1: \in::( 1: 0..127 ) )]),
+            evaluates : (\Array:[\::Array::Unicode_Codes(\Tuple:{}), \all::( 1: \in::( 1: 0..127 ) )]),
         )),
 
-The selection type definer `Array::ASCII_Chars` represents the infinite type
+The selection type definer `::Array::ASCII_Chars` represents the infinite type
 consisting just of the `Array` values for which every one of their member
 values is an integer in the range 0..127 inclusive.
 
@@ -4845,7 +4845,7 @@ values is an integer in the range 0..127 inclusive.
             evaluates : ((Text_to_Unicode_Codes args:.\0) in_order (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `in_order::Text` implements the `Orderable` virtual
+The function `::in_order::Text` implements the `Orderable` virtual
 function `in_order` for the composing type `Text`.
 
 ## not_empty (Text)
@@ -4857,7 +4857,7 @@ function `in_order` for the composing type `Text`.
             evaluates : (args:.\0 != ""),
         )),
 
-The function `not_empty::Text` results in `0bTRUE` iff its `0` argument
+The function `::not_empty::Text` results in `0bTRUE` iff its `0` argument
 is not `""`, and in `0bFALSE` if it is `""`.  This function implements the
 `Homogeneous` virtual function `not_empty` for the composing type `Text`.
 
@@ -4870,7 +4870,7 @@ is not `""`, and in `0bFALSE` if it is `""`.  This function implements the
             evaluates : (""),
         )),
 
-The function `empty::Text` simply results in `""`.  This function
+The function `::empty::Text` simply results in `""`.  This function
 implements the `Homogeneous` virtual function `empty` for the composing
 type `Text`.
 
@@ -4884,7 +4884,7 @@ type `Text`.
                 substring_of (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `substring_of::Text` implements the `Positional` virtual
+The function `::substring_of::Text` implements the `Positional` virtual
 function `substring_of` for the composing type `Text`.
 
 ## overlaps_string (Text)
@@ -4898,7 +4898,7 @@ function `substring_of` for the composing type `Text`.
                 overlaps_string (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `overlaps_string::Text` implements the `Positional` virtual
+The function `::overlaps_string::Text` implements the `Positional` virtual
 function `overlaps_string` for the composing type `Text`.
 
 ## disjoint_string (Text)
@@ -4912,7 +4912,7 @@ function `overlaps_string` for the composing type `Text`.
                 disjoint_string (Text_to_Unicode_Codes args:.\1)),
         )),
 
-The function `disjoint_string::Text` implements the `Positional` virtual
+The function `::disjoint_string::Text` implements the `Positional` virtual
 function `disjoint_string` for the composing type `Text`.
 
 ## catenate (Text)
@@ -4923,12 +4923,12 @@ function `disjoint_string` for the composing type `Text`.
             implements : folder::'',
             is_associative : 0bTRUE,
             identity : "",
-            repeater : replicate::Text,
+            repeater : ::replicate::Text,
             evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0)
                 ~ (Text_to_Unicode_Codes args:.\1))),
         )),
 
-The function `catenate::Text` implements the `Positional` virtual function
+The function `::catenate::Text` implements the `Positional` virtual function
 `catenate` aka `~` for the composing type `Text`.
 
 ## replicate (Text)
@@ -4940,7 +4940,7 @@ The function `catenate::Text` implements the `Positional` virtual function
             evaluates : (Text_from_Unicode_Codes::((Text_to_Unicode_Codes args:.\0) ~# args:.\1)),
         )),
 
-The function `replicate::Text` implements the `Positional` virtual function
+The function `::replicate::Text` implements the `Positional` virtual function
 `replicate` aka `~#` for the composing type `Text`.
 
 ## to_Text (Text)
@@ -4952,7 +4952,7 @@ The function `replicate::Text` implements the `Positional` virtual function
             evaluates : (args:.\0),
         )),
 
-The function `to_Text::Text` simply results in its `0` argument.
+The function `::to_Text::Text` simply results in its `0` argument.
 This function implements the `Textual` virtual function `to_Text`
 for the composing type `Text`.
 
@@ -4960,7 +4960,7 @@ for the composing type `Text`.
 
         Text_from_Unicode_Codes : (\Function : (
             returns : ::Text,
-            matches : (\Tuple:{Array::Unicode_Codes}),
+            matches : (\Tuple:{::Array::Unicode_Codes}),
             evaluates : ((\Text : (\Tuple:{unicode_codes : args:.\0}))),
         )),
 
@@ -4971,7 +4971,7 @@ mapping of its `0` argument.
 ## Text_to_Unicode_Codes
 
         Text_to_Unicode_Codes : (\Function : (
-            returns : Array::Unicode_Codes,
+            returns : ::Array::Unicode_Codes,
             matches : (\Tuple:{::Text}),
             evaluates : (args:.\0:>.\unicode_codes),
         )),
@@ -4983,8 +4983,8 @@ standard Unicode code point mapping that corresponds to its
 ## Text_from_ASCII_Chars
 
         Text_from_ASCII_Chars : (\Function : (
-            returns : Text::ASCII,
-            matches : (\Tuple:{Array::ASCII_Chars}),
+            returns : ::Text::ASCII,
+            matches : (\Tuple:{::Array::ASCII_Chars}),
             evaluates : (Text_from_Unicode_Codes args:.\0),
         )),
 
@@ -4995,8 +4995,8 @@ mapping of its `0` argument.
 ## Text_to_ASCII_Chars
 
         Text_to_ASCII_Chars : (\Function : (
-            returns : Array::ASCII_Chars,
-            matches : (\Tuple:{Text::ASCII}),
+            returns : ::Array::ASCII_Chars,
+            matches : (\Tuple:{::Text::ASCII}),
             evaluates : (Text_to_Unicode_Codes args:.\0),
         )),
 
@@ -5019,13 +5019,13 @@ code points in the range 0..0x1FFFFF with 4 octets (and all 0..0x7FFFFFFF
 with 6 octets), the UTF-8 standard further restricts the range to
 {0..0xD7FF,0xE000..0x10FFFF} to match the constraints of the limitations of UTF-16.*
 
-*TODO.  Note that we don't define a Blob::UTF_8 type as
+*TODO.  Note that we don't define a ::Blob::UTF_8 type as
 it is superfluous with simply trying to decode one and see if it succeeded.*
 
 ## Text_from_UTF_8_Blob
 
         Text_from_UTF_8_Blob : (\Function : (
-            returns : (\Set:[Text::Unicode, Unicode::..., ...]),
+            returns : (\Set:[::Text::Unicode, ::Unicode::..., ...]),
             matches : (\Tuple:{::Blob}),
             evaluates : (...),
         )),
@@ -5051,8 +5051,8 @@ some decoder edge case testing.*
 ## Text_from_UTF_8_Blob_with_repl_Text
 
         Text_from_UTF_8_Blob_with_repl_Text : (\Function : (
-            returns : Text::Unicode,
-            matches : (\Tuple:{::Blob, Text::Unicode}),
+            returns : ::Text::Unicode,
+            matches : (\Tuple:{::Blob, ::Text::Unicode}),
             evaluates : (...),
         )),
 
@@ -5065,7 +5065,7 @@ not one per character.*
 ## Text_from_UTF_8_Blob_with_repl_char
 
         Text_from_UTF_8_Blob_with_repl_char : (\Function : (
-            returns : Text::Unicode,
+            returns : ::Text::Unicode,
             matches : (\Tuple:{::Blob}),
             evaluates : (Text_from_UTF_8_Blob_with_repl_Text::(\Tuple:{args:.\0,"\\c<0xFFFD>"})),
         )),
@@ -5076,11 +5076,11 @@ not one per character.*
 
         Text_to_UTF_8_Blob : (\Function : (
             returns : ::Blob,
-            matches : (\Tuple:{Text::Unicode}),
+            matches : (\Tuple:{::Text::Unicode}),
             evaluates : (...),
         )),
 
-*TODO.  This should just work as Text::Unicode excludes the surrogate
+*TODO.  This should just work as ::Text::Unicode excludes the surrogate
 pairs and out of range etc stuff.*
 
 ## Blob_is_ASCII
@@ -5088,7 +5088,7 @@ pairs and out of range etc stuff.*
         Blob_is_ASCII : (\Function : (
             returns : ::Boolean,
             matches : (\Tuple:{::Blob}),
-            evaluates : (Array::ASCII_Chars(Blob_to_Octets args:.\0)),
+            evaluates : (::Array::ASCII_Chars(Blob_to_Octets args:.\0)),
         )),
 
 *TODO.*
@@ -5096,13 +5096,13 @@ pairs and out of range etc stuff.*
 ## Text_from_ASCII_Blob
 
         Text_from_ASCII_Blob : (\Function : (
-            returns : (\Set:[Text::ASCII, ASCII::High_Bit_Not_Zero]),
+            returns : (\Set:[::Text::ASCII, ::ASCII::High_Bit_Not_Zero]),
             matches : (\Tuple:{::Blob}),
             evaluates : (
                 octets ::= Blob_to_Octets args:.\0;
-                returns if Array::ASCII_Chars(octets)
+                returns if ::Array::ASCII_Chars(octets)
                     then guard Text_from_ASCII_Chars octets
-                    else ASCII::High_Bit_Not_Zero(\Tuple:{});
+                    else ::ASCII::High_Bit_Not_Zero(\Tuple:{});
             ),
         )),
 
@@ -5111,8 +5111,8 @@ pairs and out of range etc stuff.*
 ## Text_from_ASCII_Blob_with_repl_Text
 
         Text_from_ASCII_Blob_with_repl_Text : (\Function : (
-            returns : Text::ASCII,
-            matches : (\Tuple:{::Blob, Text::ASCII}),
+            returns : ::Text::ASCII,
+            matches : (\Tuple:{::Blob, ::Text::ASCII}),
             evaluates : (
                 src_octets ::= Blob_to_Octets args:.\0;
                 repl_chars ::= Text_to_ASCII_Chars args:.\1;
@@ -5143,7 +5143,7 @@ is no good implicit default in ASCII, unlike with Unicode.*
 
         Text_to_ASCII_Blob : (\Function : (
             returns : ::Blob,
-            matches : (\Tuple:{Text::ASCII}),
+            matches : (\Tuple:{::Text::ASCII}),
             evaluates : (Blob_from_Octets::(Text_to_ASCII_Chars args:.\0)),
         )),
 
@@ -5157,12 +5157,12 @@ is no good implicit default in ASCII, unlike with Unicode.*
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Positional]),
             provides_default_for : (\Set:[::Positional]),
-            evaluates : \foundation::Array(\Tuple:{}),
+            evaluates : \::foundation::Array(\Tuple:{}),
             default : (\Array:[]),
         )),
 
 The selection type definer `Array` represents the infinite Muldis Data Language Foundation
-type `foundation::Array`.  An `Array` value is a general purpose
+type `::foundation::Array`.  An `Array` value is a general purpose
 arbitrarily-long ordered sequence of any other, *member* values, which
 explicitly does not represent any kind of thing in particular, and is
 simply the sum of its members.  An `Array` value is dense; iff it has any
@@ -5209,7 +5209,7 @@ The singleton type definer `Array_C0` aka `~∅` represents the only zero-member
             ),
         )),
 
-The function `in_order::Array` implements the `Orderable` virtual
+The function `::in_order::Array` implements the `Orderable` virtual
 function `in_order` for the composing type `Array`.  This function
 will succeed iff `in_order` is also defined for the types of the members.
 
@@ -5222,7 +5222,7 @@ will succeed iff `in_order` is also defined for the types of the members.
             evaluates : (args:.\0 != (\Array:[])),
         )),
 
-The function `not_empty::Array` results in `0bTRUE` iff its `0` argument
+The function `::not_empty::Array` results in `0bTRUE` iff its `0` argument
 has any members, and in `0bFALSE` iff it has no members.  This function
 implements the `Homogeneous` virtual function `not_empty`
 for the composing type `Array`.
@@ -5236,7 +5236,7 @@ for the composing type `Array`.
             evaluates : ((\Array:[])),
         )),
 
-The function `empty::Array` results in the only zero-member `Array`
+The function `::empty::Array` results in the only zero-member `Array`
 value.  This function implements the `Homogeneous` virtual function `empty`
 aka `∅` for the composing type `Array`.
 
@@ -5246,10 +5246,10 @@ aka `∅` for the composing type `Array`.
             returns : ::Boolean,
             matches : (\Tuple:{::Array, ::Any, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_has_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_has_n(\Tuple:{})),
         )),
 
-The function `has_n::Array` results in `0bTRUE` iff its `0` argument has
+The function `::has_n::Array` results in `0bTRUE` iff its `0` argument has
 at least N members at any ordinal-positions such that each is equal to its `1`
 argument, where N is defined by its `2` argument; otherwise it results in
 `0bFALSE`.  This function implements the `Homogeneous` virtual function
@@ -5261,10 +5261,10 @@ argument, where N is defined by its `2` argument; otherwise it results in
             returns : ::Integer_NN,
             matches : (\Tuple:{::Array, ::Any}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_multiplicity(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_multiplicity(\Tuple:{})),
         )),
 
-The function `multiplicity::Array` results in the integral count
+The function `::multiplicity::Array` results in the integral count
 of members of its `0` argument such that each member value is equal to its
 `1` argument.  This function implements the `Homogeneous` virtual
 function `multiplicity` for the composing type `Array`.
@@ -5275,10 +5275,10 @@ function `multiplicity` for the composing type `Array`.
             returns : ::Boolean,
             matches : (\Tuple:{::Array}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_all_unique(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_all_unique(\Tuple:{})),
         )),
 
-The function `all_unique::Array` results in `0bTRUE` iff its `0` argument
+The function `::all_unique::Array` results in `0bTRUE` iff its `0` argument
 has no 2 members that are the same value, and `0bFALSE` otherwise.  This
 function implements the `Homogeneous` virtual function `all_unique` for
 the composing type `Array`.
@@ -5289,10 +5289,10 @@ the composing type `Array`.
             returns : ::Array,
             matches : (\Tuple:{::Array}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_unique(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_unique(\Tuple:{})),
         )),
 
-The function `unique::Array` results in the `Array` value that has, for
+The function `::unique::Array` results in the `Array` value that has, for
 every distinct member value *V* of the function's `0` argument, exactly 1
 member whose value is equal to *V*.  Each retained member is the one
 closest to the start of the argument out of those members sharing the
@@ -5305,7 +5305,7 @@ virtual function `unique` for the composing type `Array`.
             returns : ::Boolean,
             matches : (\Tuple:{::Array, ::Signature}),
             implements : folder::'',
-            evaluates : (foundation::Array_any(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (::foundation::Array_any(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 *TODO.*
@@ -5316,10 +5316,10 @@ virtual function `unique` for the composing type `Array`.
             returns : ::Array,
             matches : (\Tuple:{::Array, ::Any, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_insert_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_insert_n(\Tuple:{})),
         )),
 
-The function `insert_n::Array` results in the `Array` value that has all
+The function `::insert_n::Array` results in the `Array` value that has all
 of the members of the function's `0` argument plus N additional members
 that are each equal to its `1` argument, where N is defined by its `2`
 argument.  The result starts with all of the members of `0` in the same
@@ -5333,10 +5333,10 @@ the `Unionable` virtual function `insert_n` for the composing type
             returns : ::Array,
             matches : (\Tuple:{::Array, ::Any, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_remove_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_remove_n(\Tuple:{})),
         )),
 
-The function `remove_n::Array` results in the `Array` value that has all
+The function `::remove_n::Array` results in the `Array` value that has all
 of the members of the function's `0` argument minus N existing members
 that are each equal to its `1` argument, where N is defined as the lesser
 of its `2` argument and the count of members of `0` equal to the `1`
@@ -5351,10 +5351,10 @@ argument.  The removed instances of `1` are those closest to the end of
             matches : (\Tuple:{::Array, ::Array}),
             implements : folder::'',
             right_identity : (\Array:[]),
-            evaluates : (evaluates args --> \foundation::Array_except(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_except(\Tuple:{})),
         )),
 
-The function `except::Array` results in the *multiset difference* between
+The function `::except::Array` results in the *multiset difference* between
 its 2 arguments `0` (*minuend*) and `1` (*subtrahend*).  The result is
 the `Array` value that has all of the members of the function's `0`
 argument minus all of the matching members of its `1` argument.  The
@@ -5370,10 +5370,10 @@ of `0`.  This function implements the `Unionable` virtual function
             implements : folder::'',
             is_associative : 0bTRUE,
             is_idempotent : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Array_intersect(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_intersect(\Tuple:{})),
         )),
 
-The function `intersect::Array` results in the *multiset intersection* of
+The function `::intersect::Array` results in the *multiset intersection* of
 its 2 arguments `0` and `1`.  The result is the `Array` value that has
 all of the members of the function's `0` argument that match their own
 members of its `1` argument.  The removed instances of any distinct member
@@ -5390,10 +5390,10 @@ aka `∩` for the composing type `Array`.
             implements : folder::'',
             is_idempotent : 0bTRUE,
             identity : (\Array:[]),
-            evaluates : (evaluates args --> \foundation::Array_union(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_union(\Tuple:{})),
         )),
 
-The function `union::Array` results in the *multiset union* of its 2
+The function `::union::Array` results in the *multiset union* of its 2
 arguments `0` and `1`.  The result is the `Array` value that has all of
 the members of the function's `0` argument plus all of the nonmatching
 members of its `1` argument.  The result starts with all of the members of
@@ -5410,10 +5410,10 @@ end of `1`.  This function implements the `Unionable` virtual function
             matches : (\Tuple:{::Array, ::Array}),
             implements : folder::'',
             identity : (\Array:[]),
-            evaluates : (evaluates args --> \foundation::Array_exclusive(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_exclusive(\Tuple:{})),
         )),
 
-The function `exclusive::Array` results in the *multiset symmetric
+The function `::exclusive::Array` results in the *multiset symmetric
 difference* of its 2 arguments `0` and `1`.  The result is the `Array`
 value that has all of the members of each of the function's `0` and `1`
 arguments that do not have matching members of their counterpart argument.
@@ -5431,7 +5431,7 @@ respectively.  This function implements the `Unionable` virtual function
             matches : (\Tuple:{::Array}),
             implements : folder::'',
             accepts : (...),
-            evaluates : (evaluates args --> \foundation::Array_nest(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_nest(\Tuple:{})),
         )),
 
 *TODO.*
@@ -5443,7 +5443,7 @@ respectively.  This function implements the `Unionable` virtual function
             matches : (\Tuple:{::Array}),
             implements : folder::'',
             accepts : (...),
-            evaluates : (evaluates args --> \foundation::Array_unnest(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_unnest(\Tuple:{})),
         )),
 
 *TODO.*
@@ -5454,7 +5454,7 @@ respectively.  This function implements the `Unionable` virtual function
             returns : ::Array,
             matches : (\Tuple:{::Array, ::Signature}),
             implements : folder::'',
-            evaluates : (foundation::Array_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (::foundation::Array_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 *TODO.*
@@ -5465,7 +5465,7 @@ respectively.  This function implements the `Unionable` virtual function
             returns : ::Array,
             matches : (\Tuple:{::Array, ::Function_Call_But_0}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_map(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_map(\Tuple:{})),
         )),
 
 *TODO.*
@@ -5476,7 +5476,7 @@ respectively.  This function implements the `Unionable` virtual function
             returns : ::Any,
             matches : (\Tuple:{::Array, ::Function_Call_But_0_1}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_reduce(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_reduce(\Tuple:{})),
         )),
 
 *TODO.*
@@ -5490,7 +5490,7 @@ respectively.  This function implements the `Unionable` virtual function
             evaluates : (to_Set::(to_Bag args:.\0)),
         )),
 
-The function `to_Set::Array` results in the `Set` value that has, for
+The function `::to_Set::Array` results in the `Set` value that has, for
 every distinct member value *V* of the function's `0` argument, exactly 1
 member whose value is equal to *V*.  This function implements the
 `Discrete` virtual function `to_Set` aka `?|` for the composing type
@@ -5502,10 +5502,10 @@ member whose value is equal to *V*.  This function implements the
             returns : ::Bag,
             matches : (\Tuple:{::Array}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_to_Bag(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_to_Bag(\Tuple:{})),
         )),
 
-The function `to_Bag::Array` results in the `Bag` value that has all of
+The function `::to_Bag::Array` results in the `Bag` value that has all of
 the members of the function's `0` argument.  This function implements the
 `Discrete` virtual function `to_Bag` aka `+|` for the composing type
 `Array`.
@@ -5516,10 +5516,10 @@ the members of the function's `0` argument.  This function implements the
             returns : ::Integer_NN,
             matches : (\Tuple:{::Array}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_count(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_count(\Tuple:{})),
         )),
 
-The function `count::Array` results in the integral count of the members
+The function `::count::Array` results in the integral count of the members
 of its `0` argument.  This function implements the `Discrete` virtual
 function `count` aka `cardinality` aka `#` for the composing type
 `Array`.
@@ -5530,10 +5530,10 @@ function `count` aka `cardinality` aka `#` for the composing type
             returns : ::Array,
             matches : (\Tuple:{::Array, ::Function_Call_But_0_1}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_order_using(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_order_using(\Tuple:{})),
         )),
 
-The function `order_using::Array` results in the `Array` value that
+The function `::order_using::Array` results in the `Array` value that
 represents the same multiset of members as its `0` argument but that the
 members are arranged into a sequence in accordance with a total order
 defined by the function given in its `1` argument.  This function
@@ -5547,10 +5547,10 @@ type `Array`.
             matches : (\Tuple:{::Array, ::Integer_NN}),
             implements : folder::'',
             accepts : (args:.\0 .? args:.\1),
-            evaluates : (evaluates args --> \foundation::Array_at(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_at(\Tuple:{})),
         )),
 
-The function `at::Array` results in the member value of its `0` argument
+The function `::at::Array` results in the member value of its `0` argument
 whose ordinal position is equal to its `1` argument.  This function will
 fail if the `0` argument doesn't have such a member.  This function
 implements the `Accessible` virtual function `at` aka `.` for the
@@ -5565,7 +5565,7 @@ composing type `Array`.
             evaluates : (args:.\0),
         )),
 
-The function `to_Array::Array` simply results in its `0` argument.  This
+The function `::to_Array::Array` simply results in its `0` argument.  This
 function implements the `Positional` virtual function `to_Array` aka
 `~|` for the composing type `Array`.
 
@@ -5575,10 +5575,10 @@ function implements the `Positional` virtual function `to_Array` aka
             returns : ::Boolean,
             matches : (\Tuple:{::Array, ::Array}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_substring_of(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_substring_of(\Tuple:{})),
         )),
 
-The function `substring_of::Array` results in `0bTRUE` iff the sequence of
+The function `::substring_of::Array` results in `0bTRUE` iff the sequence of
 members of its `0` argument is a substring of the sequence of members of
 its `1` argument; otherwise it results in `0bFALSE`.  This function
 implements the `Positional` virtual function `substring_of` for the
@@ -5591,10 +5591,10 @@ composing type `Array`.
             matches : (\Tuple:{::Array, ::Array}),
             implements : folder::'',
             is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Array_overlaps_string(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_overlaps_string(\Tuple:{})),
         )),
 
-The function `overlaps_string::Array` results in `0bTRUE` iff, given *X*
+The function `::overlaps_string::Array` results in `0bTRUE` iff, given *X*
 as the sequence of members of its argument `0` and *Y* as the sequence of
 members of its argument `1`, when *X* and *Y* are overlapped to the
 greatest possible extent such that every corresponding member pair has 2 of
@@ -5610,10 +5610,10 @@ virtual function `overlaps_string` for the composing type `Array`.
             matches : (\Tuple:{::Array, ::Array}),
             implements : folder::'',
             is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Array_disjoint_string(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_disjoint_string(\Tuple:{})),
         )),
 
-The function `disjoint_string::Array` results in `0bTRUE` iff the sequence
+The function `::disjoint_string::Array` results in `0bTRUE` iff the sequence
 of members of its `0` argument can not be overlapped with the sequence of
 members of its `1` argument by at least 1 member such that every
 corresponding member pair has 2 of the same value; otherwise it results in
@@ -5628,11 +5628,11 @@ corresponding member pair has 2 of the same value; otherwise it results in
             implements : folder::'',
             is_associative : 0bTRUE,
             identity : (\Array:[]),
-            repeater : replicate::Array,
-            evaluates : (evaluates args --> \foundation::Array_catenate(\Tuple:{})),
+            repeater : ::replicate::Array,
+            evaluates : (evaluates args --> \::foundation::Array_catenate(\Tuple:{})),
         )),
 
-The function `catenate::Array` results in the catenation of its 2
+The function `::catenate::Array` results in the catenation of its 2
 arguments `0` and `1` such that the result starts with the members of
 `0` and ends with the members of `1`.  This function implements the
 `Positional` virtual function `catenate` aka `~` for the composing type
@@ -5644,10 +5644,10 @@ arguments `0` and `1` such that the result starts with the members of
             returns : ::Array,
             matches : (\Tuple:{::Array, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Array_replicate(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_replicate(\Tuple:{})),
         )),
 
-The function `replicate::Array` results in the catenation of N instances
+The function `::replicate::Array` results in the catenation of N instances
 of its `0` argument where N is defined by its `1` argument.  If the `1`
 argument is zero then the result is the only zero-member `Array`.  This
 function implements the `Positional` virtual function `replicate` aka `~#`
@@ -5662,7 +5662,7 @@ for the composing type `Array`.
             evaluates : (0),
         )),
 
-The function `first_possible_ord_pos::Array` simply results in `0`.  This
+The function `::first_possible_ord_pos::Array` simply results in `0`.  This
 function implements the `Positional` virtual function
 `first_possible_ord_pos` for the composing type `Array`.
 
@@ -5673,10 +5673,10 @@ function implements the `Positional` virtual function
             matches : (\Tuple:{::Array, ::NN_Integer, ::NN_Integer}),
             implements : folder::'',
             accepts : (args:.\1 + args:.\2 <= #args:.\0),
-            evaluates : (evaluates args --> \foundation::Array_slice_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_slice_n(\Tuple:{})),
         )),
 
-The function `slice_n::Array` results in the `Array` value that has
+The function `::slice_n::Array` results in the `Array` value that has
 exactly *N* consecutive members of the function's `0` argument *C*, in
 the same order, such that the first member existed at ordinal position *F*
 of *C* where *F* and *N* are equal to the function's `1` and `2`
@@ -5693,7 +5693,7 @@ the composing type `Array`.
             matches : (\Tuple:{::Array, ::Array}),
             implements : folder::'',
             is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Array_ord_pos_succ_all_matches(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Array_ord_pos_succ_all_matches(\Tuple:{})),
         )),
 
 *TODO.  While conceivably implementable at a higher level, make low level
@@ -5722,7 +5722,7 @@ zero members, `(\Set:[])`.  `Setty` is composed, directly or indirectly, by:
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Discrete, ::Setty]),
             provides_default_for : (\Set:[::Setty]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Set,
                 attrs : (
                     members : (\Array:[\Bag::(\Tuple:{}), \all_unique::(\Tuple:{})]),
@@ -5759,7 +5759,7 @@ The singleton type definer `Set_C0` aka `?∅` represents the only zero-member
             evaluates : (args:.\0 != (\Set:[])),
         )),
 
-The function `not_empty::Set` results in `0bTRUE` iff its `0` argument
+The function `::not_empty::Set` results in `0bTRUE` iff its `0` argument
 has any members, and in `0bFALSE` iff it has no members.  This function
 implements the `Homogeneous` virtual function `not_empty`
 for the composing type `Set`.
@@ -5773,7 +5773,7 @@ for the composing type `Set`.
             evaluates : ((\Set:[])),
         )),
 
-The function `empty::Set` results in the only zero-member `Set`
+The function `::empty::Set` results in the only zero-member `Set`
 value.  This function implements the `Homogeneous` virtual function `empty`
 aka `∅` for the composing type `Set`.
 
@@ -5786,7 +5786,7 @@ aka `∅` for the composing type `Set`.
             evaluates : (singular args:.\0:>.\members),
         )),
 
-The function `singular::Set` results in `0bTRUE` iff its `0` argument has
+The function `::singular::Set` results in `0bTRUE` iff its `0` argument has
 exactly 1 member value, and `0bFALSE` otherwise.  This function implements
 the `Homogeneous` virtual function `singular` for the composing type
 `Set`.
@@ -5801,7 +5801,7 @@ the `Homogeneous` virtual function `singular` for the composing type
             evaluates : (only_member args:.\0:>.\members),
         )),
 
-The function `only_member::Set` results in its `0` argument's only member
+The function `::only_member::Set` results in its `0` argument's only member
 value.  This function will fail if the argument doesn't have exactly 1
 member value.  This function implements the `Homogeneous` virtual function
 `only_member` for the composing type `Set`.
@@ -5815,7 +5815,7 @@ member value.  This function implements the `Homogeneous` virtual function
             evaluates : (has_n::(\Tuple:{args:.\0:>.\members, args:.\1, args:.\2})),
         )),
 
-The function `has_n::Set` results in `0bTRUE` iff either its `2` argument
+The function `::has_n::Set` results in `0bTRUE` iff either its `2` argument
 is zero or its `0` argument has a member equal to its `1` argument and
 its `2` argument is 1; otherwise it results in `0bFALSE`.  This function
 implements the `Homogeneous` virtual function `has_n` for the composing
@@ -5830,7 +5830,7 @@ type `Set`.
             evaluates : (args:.\0:>.\members multiplicity args:.\1),
         )),
 
-The function `multiplicity::Set` results in 1 if its `0` argument
+The function `::multiplicity::Set` results in 1 if its `0` argument
 has a member equal to its `1` argument; otherwise it results in 0.  This
 function implements the `Homogeneous` virtual function `multiplicity` for
 the composing type `Set`.
@@ -5844,7 +5844,7 @@ the composing type `Set`.
             evaluates : (0bTRUE),
         )),
 
-The function `all_unique::Set` simply results in `0bTRUE`.  This function
+The function `::all_unique::Set` simply results in `0bTRUE`.  This function
 implements the `Homogeneous` virtual function `all_unique` for the
 composing type `Set`.
 
@@ -5857,7 +5857,7 @@ composing type `Set`.
             evaluates : (args:.\0),
         )),
 
-The function `unique::Set` simply results in its `0` argument.  This
+The function `::unique::Set` simply results in its `0` argument.  This
 function implements the `Homogeneous` virtual function `unique` for the
 composing type `Set`.
 
@@ -5870,7 +5870,7 @@ composing type `Set`.
             evaluates : (args:.\0:>.\members subset_of args:.\1:>.\members),
         )),
 
-The function `subset_of::Set` results in `0bTRUE` iff the set of members of
+The function `::subset_of::Set` results in `0bTRUE` iff the set of members of
 its `0` argument is a subset of the set of members of its `1` argument;
 otherwise it results in `0bFALSE`.  This function implements the
 `Homogeneous` virtual function `subset_of` aka `⊆` for the composing
@@ -5886,7 +5886,7 @@ type `Set`.
             evaluates : (args:.\0 = args:.\1),
         )),
 
-The function `same_members::Set` results in `0bTRUE` iff its 2 arguments
+The function `::same_members::Set` results in `0bTRUE` iff its 2 arguments
 `0` and `1` are exactly the same `Set` value, and `0bFALSE` otherwise;
 its behaviour is identical to that of the function `same` when given the
 same arguments.  This function implements the `Homogeneous` virtual
@@ -5902,7 +5902,7 @@ function `same_members` for the composing type `Set`.
             evaluates : (args:.\0:>.\members overlaps_members args:.\1:>.\members),
         )),
 
-The function `overlaps_members::Set` results in `0bTRUE` iff, given
+The function `::overlaps_members::Set` results in `0bTRUE` iff, given
 *X* as the set of members of its argument `0` and *Y* as the
 set of members of its argument `1`, there exists at least 1 member
 that both *X* and *Y* have, and there also exists at least 1 other member
@@ -5920,7 +5920,7 @@ each of *X* and *Y* that the other doesn't have; otherwise it results in
             evaluates : (args:.\0:>.\members disjoint_members args:.\1:>.\members),
         )),
 
-The function `disjoint_members::Set` results in `0bTRUE` iff the
+The function `::disjoint_members::Set` results in `0bTRUE` iff the
 set of members of its `0` argument has no member values in common
 with the set of members of its `1` argument; otherwise it results in
 `0bFALSE`.  This function implements the `Homogeneous` virtual function
@@ -5947,7 +5947,7 @@ with the set of members of its `1` argument; otherwise it results in
                 else (\Set : (members : insert_n::(\Tuple:{args:.\0:>.\members, args:.\1, 1}),))),
         )),
 
-The function `insert_n::Set` results in the `Set` value that has all of
+The function `::insert_n::Set` results in the `Set` value that has all of
 the members of the function's `0` argument; but, if the `2` argument is
 nonzero then the result has a member equal to the `1` argument, whether or
 not `0` had it.  This function implements the `Unionable` virtual
@@ -5962,7 +5962,7 @@ function `insert_n` for the composing type `Set`.
             evaluates : ((\Set : (members : remove_n::(\Tuple:{args:.\0:>.\members, args:.\1, args:.\2}),))),
         )),
 
-The function `remove_n::Set` results in the `Set` value that has all of
+The function `::remove_n::Set` results in the `Set` value that has all of
 the members of the function's `0` argument; but, if the `2` argument is
 nonzero and `0` had a member equal to the `1` argument, the result lacks
 that member.  This function implements the `Unionable` virtual function
@@ -5981,7 +5981,7 @@ that member.  This function implements the `Unionable` virtual function
             evaluates : (args:.\0 union args:.\1),
         )),
 
-The function `member_plus::Set` results in the *set union* of its 2
+The function `::member_plus::Set` results in the *set union* of its 2
 arguments `0` and `1`; it behaves identically to `union` aka `∪` when
 given the same arguments.  This function implements the `Unionable`
 virtual function `member_plus` aka `⊎` for the composing type `Set`.
@@ -5996,7 +5996,7 @@ virtual function `member_plus` aka `⊎` for the composing type `Set`.
             evaluates : ((\Set : (\Tuple:{members : args:.\0:>.\members except args:.\1:>.\members}))),
         )),
 
-The function `except::Set` results in the *set difference* between
+The function `::except::Set` results in the *set difference* between
 its 2 arguments `0` (*minuend*) and `1` (*subtrahend*).  The result is
 the `Set` value that has all of the members of the function's `0`
 argument minus all of the matching members of its `1` argument.  This
@@ -6015,7 +6015,7 @@ for the composing type `Set`.
             evaluates : ((\Set : (\Tuple:{members : args:.\0:>.\members intersect args:.\1:>.\members}))),
         )),
 
-The function `intersect::Set` results in the *set intersection* of
+The function `::intersect::Set` results in the *set intersection* of
 its 2 arguments `0` and `1`.  The result is the `Set` value that has all
 of the members of the function's `0` argument that match their own members
 of its `1` argument.  This function implements the `Unionable` virtual
@@ -6034,7 +6034,7 @@ function `intersect` aka `∩` for the composing type `Set`.
             evaluates : ((\Set : (\Tuple:{members : args:.\0:>.\members union args:.\1:>.\members}))),
         )),
 
-The function `union::Set` results in the *set union* of its 2
+The function `::union::Set` results in the *set union* of its 2
 arguments `0` and `1`.  The result is the `Set` value that has all of
 the members of the function's `0` argument plus all of the nonmatching
 members of its `1` argument.  This function implements the `Unionable`
@@ -6052,7 +6052,7 @@ virtual function `union` aka `∪` for the composing type `Set`.
             evaluates : ((\Set : (\Tuple:{members : args:.\0:>.\members exclusive args:.\1:>.\members}))),
         )),
 
-The function `exclusive::Set` results in the *set symmetric
+The function `::exclusive::Set` results in the *set symmetric
 difference* of its 2 arguments `0` and `1`.  The result is the `Set`
 value that has all of the members of each of the function's `0` and `1`
 arguments that do not have matching members of their counterpart argument.
@@ -6125,7 +6125,7 @@ aka `symm_diff` aka `∆` for the composing type `Set`.
             evaluates : (args:.\0),
         )),
 
-The function `to_Set::Set` simply results in its `0` argument.  This
+The function `::to_Set::Set` simply results in its `0` argument.  This
 function implements the `Discrete` virtual function `to_Set` aka
 `?|` for the composing type `Set`.
 
@@ -6138,7 +6138,7 @@ function implements the `Discrete` virtual function `to_Set` aka
             evaluates : (args:.\0:>.\members),
         )),
 
-The function `to_Bag::Set` results in the `Bag` value that has all of the
+The function `::to_Bag::Set` results in the `Bag` value that has all of the
 members of the function's `0` argument.  This function implements the
 `Discrete` virtual function `to_Bag` aka `+|` for the composing type
 `Set`.
@@ -6152,7 +6152,7 @@ members of the function's `0` argument.  This function implements the
             evaluates : (count args:.\0:>.\members),
         )),
 
-The function `count::Set` results in the integral count of the members
+The function `::count::Set` results in the integral count of the members
 of its `0` argument.  This function implements the `Discrete` virtual
 function `count` aka `cardinality` aka `#` for the composing type `Set`.
 
@@ -6165,7 +6165,7 @@ function `count` aka `cardinality` aka `#` for the composing type `Set`.
             evaluates : (count args:.\0),
         )),
 
-The function `unique_count::Set` results in the integral count of the
+The function `::unique_count::Set` results in the integral count of the
 members of its `0` argument; its behaviour is identical to `count` given
 the same argument.  This function implements the `Discrete` virtual
 function `unique_count` for the composing type `Set`.
@@ -6179,7 +6179,7 @@ function `unique_count` for the composing type `Set`.
             evaluates : (args:.\0:>.\members order_using args:.\1),
         )),
 
-The function `order_using::Set` results in the `Array` value that represents
+The function `::order_using::Set` results in the `Array` value that represents
 the same set of members as its `0` argument but that the members are
 arranged into a sequence in accordance with a total order defined by the
 function given in its `1` argument.  This function implements the
@@ -6192,12 +6192,12 @@ function given in its `1` argument.  This function implements the
         Bag : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Discrete]),
-            evaluates : \foundation::Bag(\Tuple:{}),
+            evaluates : \::foundation::Bag(\Tuple:{}),
             default : (\Bag:[]),
         )),
 
 The selection type definer `Bag` represents the infinite Muldis Data Language Foundation
-type `foundation::Bag`.  A `Bag` value is a general purpose arbitrarily-large
+type `::foundation::Bag`.  A `Bag` value is a general purpose arbitrarily-large
 unordered collection of any other, *member* values, which explicitly does
 not represent any kind of thing in particular, and is simply the sum of its
 members.  A `Bag` in the general case may have multiple members that are
@@ -6226,7 +6226,7 @@ The singleton type definer `Bag_C0` aka `+∅` represents the only zero-member
             evaluates : (args:.\0 != (\Bag:[])),
         )),
 
-The function `not_empty::Bag` results in `0bTRUE` iff its `0` argument
+The function `::not_empty::Bag` results in `0bTRUE` iff its `0` argument
 has any members, and in `0bFALSE` iff it has no members.  This function
 implements the `Homogeneous` virtual function `not_empty`
 for the composing type `Bag`.
@@ -6240,7 +6240,7 @@ for the composing type `Bag`.
             evaluates : ((\Bag:[])),
         )),
 
-The function `empty::Bag` results in the only zero-member `Bag`
+The function `::empty::Bag` results in the only zero-member `Bag`
 value.  This function implements the `Homogeneous` virtual function `empty`
 aka `∅` for the composing type `Bag`.
 
@@ -6250,10 +6250,10 @@ aka `∅` for the composing type `Bag`.
             returns : ::Boolean,
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_singular(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_singular(\Tuple:{})),
         )),
 
-The function `singular::Bag` results in `0bTRUE` iff its `0` argument has
+The function `::singular::Bag` results in `0bTRUE` iff its `0` argument has
 exactly 1 distinct member value, and `0bFALSE` otherwise.  This function
 implements the `Homogeneous` virtual function `singular` for the
 composing type `Bag`.
@@ -6265,10 +6265,10 @@ composing type `Bag`.
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
             accepts : (singular args:.\0),
-            evaluates : (evaluates args --> \foundation::Bag_only_member(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_only_member(\Tuple:{})),
         )),
 
-The function `only_member::Bag` results in its `0` argument's only
+The function `::only_member::Bag` results in its `0` argument's only
 distinct member value.  This function will fail if the argument doesn't
 have exactly 1 distinct member value.  This function implements the
 `Homogeneous` virtual function `only_member` for the composing type
@@ -6280,10 +6280,10 @@ have exactly 1 distinct member value.  This function implements the
             returns : ::Boolean,
             matches : (\Tuple:{::Bag, ::Any, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_has_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_has_n(\Tuple:{})),
         )),
 
-The function `has_n::Bag` results in `0bTRUE` iff its `0` argument has at
+The function `::has_n::Bag` results in `0bTRUE` iff its `0` argument has at
 least N members such that each is equal to its `1` argument, where N is
 defined by its `2` argument; otherwise it results in `0bFALSE`.  This
 function implements the `Homogeneous` virtual function `has_n` for the
@@ -6295,10 +6295,10 @@ composing type `Bag`.
             returns : ::Integer_NN,
             matches : (\Tuple:{::Bag, ::Any}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_multiplicity(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_multiplicity(\Tuple:{})),
         )),
 
-The function `multiplicity::Bag` results in the integral count
+The function `::multiplicity::Bag` results in the integral count
 of members of its `0` argument such that each member value is equal to its
 `1` argument.  This function implements the `Homogeneous` virtual
 function `multiplicity` for the composing type `Bag`.
@@ -6309,10 +6309,10 @@ function `multiplicity` for the composing type `Bag`.
             returns : ::Boolean,
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_all_unique(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_all_unique(\Tuple:{})),
         )),
 
-The function `all_unique::Bag` results in `0bTRUE` iff its `0` argument
+The function `::all_unique::Bag` results in `0bTRUE` iff its `0` argument
 has no 2 members that are the same value, and `0bFALSE` otherwise.  This
 function implements the `Homogeneous` virtual function `all_unique` for
 the composing type `Bag`.
@@ -6323,10 +6323,10 @@ the composing type `Bag`.
             returns : ::Bag,
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_unique(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_unique(\Tuple:{})),
         )),
 
-The function `unique::Bag` results in the `Bag` value that has, for every
+The function `::unique::Bag` results in the `Bag` value that has, for every
 distinct member value *V* of the function's `0` argument, exactly 1
 member whose value is equal to *V*.  This function implements the
 `Homogeneous` virtual function `unique` for the composing type `Bag`.
@@ -6337,10 +6337,10 @@ member whose value is equal to *V*.  This function implements the
             returns : ::Boolean,
             matches : (\Tuple:{::Bag, ::Bag}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_subset_of(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_subset_of(\Tuple:{})),
         )),
 
-The function `subset_of::Bag` results in `0bTRUE` iff the multiset of
+The function `::subset_of::Bag` results in `0bTRUE` iff the multiset of
 members of its `0` argument is a subset of the multiset of members of its
 `1` argument; otherwise it results in `0bFALSE`.  This function implements
 the `Homogeneous` virtual function `subset_of` aka `⊆` for the composing
@@ -6356,7 +6356,7 @@ type `Bag`.
             evaluates : (args:.\0 = args:.\1),
         )),
 
-The function `same_members::Bag` results in `0bTRUE` iff its 2 arguments
+The function `::same_members::Bag` results in `0bTRUE` iff its 2 arguments
 `0` and `1` are exactly the same `Bag` value, and `0bFALSE` otherwise;
 its behaviour is identical to that of the function `same` when given the
 same arguments.  This function implements the `Homogeneous` virtual
@@ -6369,10 +6369,10 @@ function `same_members` for the composing type `Bag`.
             matches : (\Tuple:{::Bag, ::Bag}),
             implements : folder::'',
             is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Bag_overlaps_members(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_overlaps_members(\Tuple:{})),
         )),
 
-The function `overlaps_members::Bag` results in `0bTRUE` iff, given
+The function `::overlaps_members::Bag` results in `0bTRUE` iff, given
 *X* as the multiset of members of its argument `0` and *Y* as the
 multiset of members of its argument `1`, there exists at least 1 member
 that both *X* and *Y* have, and there also exists at least 1 other member
@@ -6387,10 +6387,10 @@ each of *X* and *Y* that the other doesn't have; otherwise it results in
             matches : (\Tuple:{::Bag, ::Bag}),
             implements : folder::'',
             is_commutative : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Bag_disjoint_members(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_disjoint_members(\Tuple:{})),
         )),
 
-The function `disjoint_members::Bag` results in `0bTRUE` iff the
+The function `::disjoint_members::Bag` results in `0bTRUE` iff the
 multiset of members of its `0` argument has no member values in common
 with the multiset of members of its `1` argument; otherwise it results in
 `0bFALSE`.  This function implements the `Homogeneous` virtual function
@@ -6402,7 +6402,7 @@ with the multiset of members of its `1` argument; otherwise it results in
             returns : ::Boolean,
             matches : (\Tuple:{::Bag, ::Signature}),
             implements : folder::'',
-            evaluates : (foundation::Bag_any(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (::foundation::Bag_any(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 *TODO.*
@@ -6413,10 +6413,10 @@ with the multiset of members of its `1` argument; otherwise it results in
             returns : ::Bag,
             matches : (\Tuple:{::Bag, ::Any, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_insert_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_insert_n(\Tuple:{})),
         )),
 
-The function `insert_n::Bag` results in the `Bag` value that has all of
+The function `::insert_n::Bag` results in the `Bag` value that has all of
 the members of the function's `0` argument plus N additional members that
 are each equal to its `1` argument, where N is defined by its `2`
 argument.  This function implements the `Unionable` virtual function
@@ -6428,10 +6428,10 @@ argument.  This function implements the `Unionable` virtual function
             returns : ::Bag,
             matches : (\Tuple:{::Bag, ::Any, ::Integer_NN}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_remove_n(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_remove_n(\Tuple:{})),
         )),
 
-The function `remove_n::Bag` results in the `Bag` value that has all of
+The function `::remove_n::Bag` results in the `Bag` value that has all of
 the members of the function's `0` argument minus N existing members that
 are each equal to its `1` argument, where N is defined as the lesser of
 its `2` argument and the count of members of `0` equal to the `1`
@@ -6447,10 +6447,10 @@ argument.  This function implements the `Unionable` virtual function
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : (\Bag:[0:0]),
-            evaluates : (evaluates args --> \foundation::Bag_member_plus(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_member_plus(\Tuple:{})),
         )),
 
-The function `member_plus::Bag` results in the *multiset sum* of its 2
+The function `::member_plus::Bag` results in the *multiset sum* of its 2
 arguments `0` and `1`.  The result is the `Bag` value that has all of
 the members of the function's `0` argument plus all of the members of its
 `1` argument.  This function implements the `Unionable` virtual
@@ -6463,10 +6463,10 @@ function `member_plus` aka `⊎` for the composing type `Bag`.
             matches : (\Tuple:{::Bag, ::Bag}),
             implements : folder::'',
             right_identity : (\Bag:[]),
-            evaluates : (evaluates args --> \foundation::Bag_except(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_except(\Tuple:{})),
         )),
 
-The function `except::Bag` results in the *multiset difference* between
+The function `::except::Bag` results in the *multiset difference* between
 its 2 arguments `0` (*minuend*) and `1` (*subtrahend*).  The result is
 the `Bag` value that has all of the members of the function's `0`
 argument minus all of the matching members of its `1` argument.  This
@@ -6482,10 +6482,10 @@ for the composing type `Bag`.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             is_idempotent : 0bTRUE,
-            evaluates : (evaluates args --> \foundation::Bag_intersect(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_intersect(\Tuple:{})),
         )),
 
-The function `intersect::Bag` results in the *multiset intersection* of
+The function `::intersect::Bag` results in the *multiset intersection* of
 its 2 arguments `0` and `1`.  The result is the `Bag` value that has all
 of the members of the function's `0` argument that match their own members
 of its `1` argument.  This function implements the `Unionable` virtual
@@ -6501,10 +6501,10 @@ function `intersect` aka `∩` for the composing type `Bag`.
             is_commutative : 0bTRUE,
             is_idempotent : 0bTRUE,
             identity : (\Bag:[]),
-            evaluates : (evaluates args --> \foundation::Bag_union(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_union(\Tuple:{})),
         )),
 
-The function `union::Bag` results in the *multiset union* of its 2
+The function `::union::Bag` results in the *multiset union* of its 2
 arguments `0` and `1`.  The result is the `Bag` value that has all of
 the members of the function's `0` argument plus all of the nonmatching
 members of its `1` argument.  This function implements the `Unionable`
@@ -6519,10 +6519,10 @@ virtual function `union` aka `∪` for the composing type `Bag`.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : (\Bag:[]),
-            evaluates : (evaluates args --> \foundation::Bag_exclusive(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_exclusive(\Tuple:{})),
         )),
 
-The function `exclusive::Bag` results in the *multiset symmetric
+The function `::exclusive::Bag` results in the *multiset symmetric
 difference* of its 2 arguments `0` and `1`.  The result is the `Bag`
 value that has all of the members of each of the function's `0` and `1`
 arguments that do not have matching members of their counterpart argument.
@@ -6536,7 +6536,7 @@ aka `symm_diff` aka `∆` for the composing type `Bag`.
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
             accepts : (...),
-            evaluates : (evaluates args --> \foundation::Bag_nest(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_nest(\Tuple:{})),
         )),
 
 *TODO.*
@@ -6548,7 +6548,7 @@ aka `symm_diff` aka `∆` for the composing type `Bag`.
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
             accepts : (...),
-            evaluates : (evaluates args --> \foundation::Bag_unnest(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_unnest(\Tuple:{})),
         )),
 
 *TODO.*
@@ -6559,7 +6559,7 @@ aka `symm_diff` aka `∆` for the composing type `Bag`.
             returns : ::Bag,
             matches : (\Tuple:{::Bag, ::Signature}),
             implements : folder::'',
-            evaluates : (foundation::Bag_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (::foundation::Bag_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 *TODO.*
@@ -6570,7 +6570,7 @@ aka `symm_diff` aka `∆` for the composing type `Bag`.
             returns : ::Bag,
             matches : (\Tuple:{::Bag, ::Function_Call_But_0}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_map(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_map(\Tuple:{})),
         )),
 
 *TODO.*
@@ -6581,7 +6581,7 @@ aka `symm_diff` aka `∆` for the composing type `Bag`.
             returns : ::Any,
             matches : (\Tuple:{::Bag, ::Function_Call_But_0_1}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_reduce(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_reduce(\Tuple:{})),
         )),
 
 *TODO.*
@@ -6595,7 +6595,7 @@ aka `symm_diff` aka `∆` for the composing type `Bag`.
             evaluates : ((\Set : (\Tuple:{members : unique args:.\0}))),
         )),
 
-The function `to_Set::Bag` results in the `Set` value that has, for every
+The function `::to_Set::Bag` results in the `Set` value that has, for every
 distinct member value *V* of the function's `0` argument, exactly 1
 member whose value is equal to *V*.  This function implements the
 `Discrete` virtual function `to_Set` aka `?|` for the composing type
@@ -6610,7 +6610,7 @@ member whose value is equal to *V*.  This function implements the
             evaluates : (args:.\0),
         )),
 
-The function `to_Bag::Bag` simply results in its `0` argument.  This
+The function `::to_Bag::Bag` simply results in its `0` argument.  This
 function implements the `Discrete` virtual function `to_Bag` aka
 `+|` for the composing type `Bag`.
 
@@ -6620,10 +6620,10 @@ function implements the `Discrete` virtual function `to_Bag` aka
             returns : ::Integer_NN,
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_count(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_count(\Tuple:{})),
         )),
 
-The function `count::Bag` results in the integral count of the members
+The function `::count::Bag` results in the integral count of the members
 of its `0` argument.  This function implements the `Discrete` virtual
 function `count` aka `cardinality` aka `#` for the composing type `Bag`.
 
@@ -6633,10 +6633,10 @@ function `count` aka `cardinality` aka `#` for the composing type `Bag`.
             returns : ::Integer_NN,
             matches : (\Tuple:{::Bag}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_unique_count(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_unique_count(\Tuple:{})),
         )),
 
-The function `unique_count::Bag` results in the integral count of the
+The function `::unique_count::Bag` results in the integral count of the
 distinct member values of its `0` argument.  This function implements the
 `Discrete` virtual function `unique_count` for the composing type `Bag`.
 
@@ -6646,10 +6646,10 @@ distinct member values of its `0` argument.  This function implements the
             returns : ::Array,
             matches : (\Tuple:{::Bag, ::Function_Call_But_0_1}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Bag_order_using(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Bag_order_using(\Tuple:{})),
         )),
 
-The function `order_using::Bag` results in the `Array` value that represents
+The function `::order_using::Bag` results in the `Array` value that represents
 the same multiset of members as its `0` argument but that the members are
 arranged into a sequence in accordance with a total order defined by the
 function given in its `1` argument.  This function implements the
@@ -6791,7 +6791,7 @@ that their headings can be reasoned about in isolation from their bodies.
         subheading_of : (\Function : (
             returns : ::Boolean,
             matches : (\Tuple:{::Attributive, ::Attributive}),
-            evaluates : (foundation::Tuple_subheading_of(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_subheading_of(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
         Unicode_Aliases::'⊆$' : (\Alias : (\Tuple:{ of : ::subheading_of })),
@@ -6866,7 +6866,7 @@ of its other argument; otherwise it results in `0bFALSE`.
             returns : ::Boolean,
             matches : (\Tuple:{::Attributive, ::Attributive}),
             is_commutative : 0bTRUE,
-            evaluates : (foundation::Tuple_overlaps_heading(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_overlaps_heading(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
 The function `overlaps_heading` results in `0bTRUE` iff, given *X* as the
@@ -6881,7 +6881,7 @@ that the other doesn't have; otherwise it results in `0bFALSE`.
             returns : ::Boolean,
             matches : (\Tuple:{::Attributive, ::Attributive}),
             is_commutative : 0bTRUE,
-            evaluates : (foundation::Tuple_disjoint_heading(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_disjoint_heading(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
 The function `disjoint_heading` results in `0bTRUE` iff the heading of its
@@ -6893,7 +6893,7 @@ argument; otherwise it results in `0bFALSE`.
         except_heading : (\Function : (
             returns : ::Heading,
             matches : (\Tuple:{::Attributive, ::Attributive}),
-            evaluates : (foundation::Tuple_except_heading(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_except_heading(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
         Unicode_Aliases::'∖$' : (\Alias : (\Tuple:{ of : ::except_heading })),
@@ -6912,7 +6912,7 @@ but not in the heading of its `1` argument.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             is_idempotent : 0bTRUE,
-            evaluates : (foundation::Tuple_intersect_heading(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_intersect_heading(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
         Unicode_Aliases::'∩$' : (\Alias : (\Tuple:{ of : ::intersect_heading })),
@@ -6933,7 +6933,7 @@ infinite number of attribute names.
             is_commutative : 0bTRUE,
             is_idempotent : 0bTRUE,
             identity : (\Tuple:{}),
-            evaluates : (foundation::Tuple_union_heading(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_union_heading(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
         Unicode_Aliases::'∪$' : (\Alias : (\Tuple:{ of : ::union_heading })),
@@ -6951,7 +6951,7 @@ the headings of the function's `0` and `1` arguments.
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : (\Tuple:{}),
-            evaluates : (foundation::Tuple_exclusive_heading(\Tuple:{$args:.\0, $args:.\1})),
+            evaluates : (::foundation::Tuple_exclusive_heading(\Tuple:{$args:.\0, $args:.\1})),
         )),
 
         symm_diff_heading : (\Alias : (\Tuple:{ of : ::exclusive_heading })),
@@ -7226,7 +7226,7 @@ corresponding attribute asset.  The default value of `Structural` is the
             evaluates : (args:.\0 $? args:.\1 and_then guard args:.\0 %= $args:.\1 = args:.\1),
         )),
 
-The function `can_project_matching::Structural` results in `0bTRUE` iff the
+The function `::can_project_matching::Structural` results in `0bTRUE` iff the
 heading of its `0` argument is a superset of the heading of its `1`
 argument and every commonly-named attribute of the two arguments also has
 the same attribute asset; otherwise it results in `0bFALSE`.  Note that by
@@ -7244,7 +7244,7 @@ function implements the `Attributive` virtual function
             evaluates : (args:.\0 $? args:.\1),
         )),
 
-The function `has_any_at::Structure` results in `0bTRUE` iff its `0`
+The function `::has_any_at::Structure` results in `0bTRUE` iff its `0`
 argument has an attribute whose attribute name is equal to its `1`
 argument; otherwise it results in `0bFALSE`.  This function implements the
 `Accessible` virtual function `has_any_at` aka `.?` for the composing
@@ -7259,7 +7259,7 @@ type `Structure`.
             evaluates : (args:.\0 .? (args:.\1.\0) and_then guard args:.\0.(args:.\1.\0) = (args:.\1.\1)),
         )),
 
-The function `has_mapping_at::Structural` results in `0bTRUE` iff its `0`
+The function `::has_mapping_at::Structural` results in `0bTRUE` iff its `0`
 argument has an attribute whose name and asset are equal to the function's
 `1` argument's `0` and `1` attribute assets, respectively; otherwise it
 results in `0bFALSE`.  This function implements the `Accessible` virtual
@@ -7275,7 +7275,7 @@ function `has_mapping_at` aka `.:?` for the composing type `Structural`.
             evaluates : ((\Tuple:{args:.\1, args:.\0.args:.\1})),
         )),
 
-The function `mapping_at::Structural` results in a binary `Tuple` whose
+The function `::mapping_at::Structural` results in a binary `Tuple` whose
 `0` attribute is the function's `1` argument and whose `1` attribute is
 the attribute asset value of the function's `0` argument whose attribute
 name is equal to its `1` argument.  This function will fail if the `0`
@@ -7292,7 +7292,7 @@ type `Structural`.
             evaluates : (if args:.\0 .? args:.\1 then guard args:.\0.args:.\1 else (::No_Such_Attr_Name : (\Tuple:{}))),
         )),
 
-The function `maybe_at::Structural` results in the attribute asset value
+The function `::maybe_at::Structural` results in the attribute asset value
 of its `0` argument whose attribute name is equal to its `1` argument,
 iff there is such an attribute; otherwise it results in `(::No_Such_Attr_Name : (\Tuple:{}))`.  This
 function implements the `Accessible` virtual function `maybe_at` aka
@@ -7308,7 +7308,7 @@ function implements the `Accessible` virtual function `maybe_at` aka
             evaluates : (args:.\0 update D1::(args:.\1)),
         )),
 
-The function `replace_at::Structure` results in the value of its `0`
+The function `::replace_at::Structure` results in the value of its `0`
 argument's collection type that has all of the attributes of the function's
 `0` argument but that, for the 1 attribute of the `0` argument whose
 attribute name is equal to the function's `1` argument's `0` attribute
@@ -7328,7 +7328,7 @@ the composing type `Structure`.
             evaluates : (args:.\0 extend D1::(args:.\1)),
         )),
 
-The function `shiftless_insert_at::Structure` results in the value of its
+The function `::shiftless_insert_at::Structure` results in the value of its
 `0` argument's collection type that has all of the attributes of the
 function's `0` argument plus 1 additional attribute whose name and asset
 are equal to the function's `1` argument's `0` and `1` attribute assets,
@@ -7347,7 +7347,7 @@ virtual function `shiftless_insert_at` aka `.+` for the composing type
             evaluates : (args:.\0 but args:.\1),
         )),
 
-The function `shiftless_remove_at::Structure` results in the value of its
+The function `::shiftless_remove_at::Structure` results in the value of its
 `0` argument's collection type that has all of the attributes of the
 function's `0` argument minus 1 existing attribute whose name is equal to
 its `1` argument.  This function will fail if the `0` argument doesn't
@@ -7364,7 +7364,7 @@ function `shiftless_remove_at` aka `.-` for the composing type
             evaluates : (args:.\0 update_or_extend D1::(args:.\1)),
         )),
 
-The function `replace_or_insert_at::Structural` behaves identically in
+The function `::replace_or_insert_at::Structural` behaves identically in
 turn to each of the functions `replace_at` and `shiftless_insert_at` when
 given the same arguments, where the `0` argument does or doesn't,
 respectively, have an attribute whose attribute name is equal to the `1`
@@ -7381,7 +7381,7 @@ virtual function `replace_or_insert_at` aka `.=+` for the composing type
             evaluates : (args:.\0 maybe_but args:.\1),
         )),
 
-The function `shiftless_maybe_remove_at::Structural` behaves identically
+The function `::shiftless_maybe_remove_at::Structural` behaves identically
 to `shiftless_remove_at` when given the same arguments but that it simply
 results in its `0` argument when that has no attribute whose attribute
 name matches its `1` argument, rather than fail.  This function implements
@@ -7411,12 +7411,12 @@ be treated abstractly as sets of attributes with minimal effort.
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Structural]),
             provides_default_for : (\Set:[::Structural]),
-            evaluates : \foundation::Tuple(\Tuple:{}),
+            evaluates : \::foundation::Tuple(\Tuple:{}),
             default : (\Tuple:{}),
         )),
 
 The selection type definer `Tuple` represents the infinite Muldis Data Language Foundation
-type `foundation::Tuple`.  A `Tuple` value is a general purpose
+type `::foundation::Tuple`.  A `Tuple` value is a general purpose
 arbitrarily-large unordered heterogeneous collection of named
 *attributes*, such that no 2 attributes have the same *attribute name*,
 which explicitly does not represent any kind of thing in particular, and is
@@ -7467,7 +7467,7 @@ has just the attribute with the name `0` and asset value of `0bFALSE`.
         D1 : (\Function : (
             returns : ::Tuple_D1,
             matches : (\Tuple:{::Attr_Name, ::Any}),
-            evaluates : (evaluates args --> \foundation::Tuple_D1_select(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_D1_select(\Tuple:{})),
         )),
 
 The function `D1` results in the `Tuple_D1` value whose sole attribute's
@@ -7483,7 +7483,7 @@ specified in its `1` argument.
             evaluates : (args:.\0 != (\Tuple:{})),
         )),
 
-The function `has_any_attrs::Tuple` results in `0bTRUE` iff its `0`
+The function `::has_any_attrs::Tuple` results in `0bTRUE` iff its `0`
 argument has any attributes, and in `0bFALSE` iff it has no attributes.
 This function implements the `Attributive` virtual function
 `has_any_attrs` aka `?$` for the composing type `Tuple`.
@@ -7497,7 +7497,7 @@ This function implements the `Attributive` virtual function
             evaluates : ((\Tuple:{})),
         )),
 
-The function `nullary::Tuple` results in the only zero-attribute `Tuple`
+The function `::nullary::Tuple` results in the only zero-attribute `Tuple`
 value.  This function implements the `Attributive` virtual function
 `nullary` for the composing type `Tuple`.
 
@@ -7510,7 +7510,7 @@ value.  This function implements the `Attributive` virtual function
             evaluates : (degree::(args:.\0) = 1),
         )),
 
-The function `is_unary::Tuple` results in `0bTRUE` iff its `0` argument
+The function `::is_unary::Tuple` results in `0bTRUE` iff its `0` argument
 has exactly 1 attribute, and `0bFALSE` otherwise.  This function implements
 the `Attributive` virtual function `is_unary` for the composing type
 `Tuple`.
@@ -7521,10 +7521,10 @@ the `Attributive` virtual function `is_unary` for the composing type
             returns : ::Integer_NN,
             matches : (\Tuple:{::Tuple}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Tuple_degree(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_degree(\Tuple:{})),
         )),
 
-The function `degree::Tuple` results in the integral count of the
+The function `::degree::Tuple` results in the integral count of the
 attributes of its `0` argument.  This function implements the
 `Attributive` virtual function `degree` aka `#$` for the composing type
 `Tuple`.
@@ -7535,10 +7535,10 @@ attributes of its `0` argument.  This function implements the
             returns : ::Heading,
             matches : (\Tuple:{::Tuple}),
             implements : folder::'',
-            evaluates : (evaluates args --> \foundation::Tuple_heading(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_heading(\Tuple:{})),
         )),
 
-The function `heading::Tuple` results in the relational *heading* of its
+The function `::heading::Tuple` results in the relational *heading* of its
 `0` argument, that is its set of distinct attribute names.  This function
 implements the `Attributive` virtual function `heading` aka `$` for the
 composing type `Tuple`.
@@ -7550,10 +7550,10 @@ composing type `Tuple`.
             matches : (\Tuple:{::Tuple, ::Renaming}),
             implements : folder::'',
             accepts : (...),
-            evaluates : (evaluates args --> \foundation::Tuple_rename(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_rename(\Tuple:{})),
         )),
 
-The function `rename::Tuple` results results in the *relational rename*
+The function `::rename::Tuple` results results in the *relational rename*
 of its `0` argument in terms of its `1` argument.  The result is a
 `Tuple` value that has all of the attributes of the function's `0`
 argument but that, for each attribute of the `0` argument whose attribute
@@ -7574,10 +7574,10 @@ renamed.  This function implements the `Attributive` virtual function
             matches : (\Tuple:{::Tuple, ::Heading}),
             implements : folder::'',
             accepts : (args:.\0 $? args:.\1),
-            evaluates : (evaluates args --> \foundation::Tuple_on(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_on(\Tuple:{})),
         )),
 
-The function `on::Tuple` results in the *relational projection* of its
+The function `::on::Tuple` results in the *relational projection* of its
 `0` argument in terms of its `1` argument.  The result is a `Tuple`
 value that has all of the attributes of the function's `0` argument whose
 names match the names of attributes of its `1` argument. The *degree* of
@@ -7594,10 +7594,10 @@ the composing type `Tuple`.
             matches : (\Tuple:{::Tuple, ::Tuple}),
             implements : folder::'',
             accepts : (args:.\0 $? args:.\1),
-            evaluates : (evaluates args --> \foundation::Tuple_update(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_update(\Tuple:{})),
         )),
 
-The function `update::Tuple` results in a `Tuple` value that has all of
+The function `::update::Tuple` results in a `Tuple` value that has all of
 the attributes of the function's `0` argument but that, for each attribute
 of the `0` argument whose attribute name *K* matches the name of an
 attribute of its `1` argument, the result takes its corresponding
@@ -7618,10 +7618,10 @@ of the *heading* of the `0` argument.  This function implements the
             is_associative : 0bTRUE,
             is_commutative : 0bTRUE,
             identity : (\Tuple:{}),
-            evaluates : (evaluates args --> \foundation::Tuple_extend(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_extend(\Tuple:{})),
         )),
 
-The function `extend::Tuple` results in the *relational extension* of its
+The function `::extend::Tuple` results in the *relational extension* of its
 `0` argument in terms of its `1` argument.  The result is a `Tuple`
 value that has all of the attributes of the function's `0` argument plus
 all of the attributes of its `1` argument.  The *degree* of the result is
@@ -7640,13 +7640,13 @@ for the composing type `Tuple`.
             evaluates : (args:.\0 :. (args:.\1)),
         )),
 
-The function `at::Tuple` results in the attribute asset value of its `0`
+The function `::at::Tuple` results in the attribute asset value of its `0`
 argument whose attribute name is equal to its `1` argument.  This function
 will fail if the `0` argument doesn't have such an attribute.  This
 function implements the `Accessible` virtual function `at` aka `.` for
 the composing type `Tuple`.
 
-Note that while the `at::Tuple` definition could have been in terms of a
+Note that while the `::at::Tuple` definition could have been in terms of a
 plain invocation of the Foundation function `Tuple_at`, it is instead in
 terms of the special-purpose expression syntax for a `Tuple` attribute
 asset accessor aka `:.`.
@@ -7660,7 +7660,7 @@ asset accessor aka `:.`.
             evaluates : (args:.\0),
         )),
 
-The function `to_Tuple::Tuple` simply results in its `0` argument.  This
+The function `::to_Tuple::Tuple` simply results in its `0` argument.  This
 function implements the `Structural` virtual function `to_Tuple` aka `%`
 for the composing type `Tuple`.
 
@@ -7669,7 +7669,7 @@ for the composing type `Tuple`.
         any_attrs : (\Function : (
             returns : ::Boolean,
             matches : (\Tuple:{::Tuple, ::Signature}),
-            evaluates : (foundation::Tuple_any_attrs(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (::foundation::Tuple_any_attrs(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 *TODO.*
@@ -7716,7 +7716,7 @@ for the composing type `Tuple`.
         attrs_where : (\Function : (
             returns : ::Tuple,
             matches : (\Tuple:{::Tuple, ::Signature}),
-            evaluates : (foundation::Tuple_attrs_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
+            evaluates : (::foundation::Tuple_attrs_where(args:.\0, Signature_to_Function_Call_But_0::(args:.\1))),
         )),
 
 *TODO.*
@@ -7726,7 +7726,7 @@ for the composing type `Tuple`.
         attrs_map : (\Function : (
             returns : ::Tuple,
             matches : (\Tuple:{::Tuple, ::Function_Call_But_0}),
-            evaluates : (evaluates args --> \foundation::Tuple_attrs_map(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_attrs_map(\Tuple:{})),
         )),
 
 *TODO.*
@@ -7736,7 +7736,7 @@ for the composing type `Tuple`.
         attrs_reduce : (\Function : (
             returns : ::Any,
             matches : (\Tuple:{::Tuple, ::Function_Call_But_0_1}),
-            evaluates : (evaluates args --> \foundation::Tuple_attrs_reduce(\Tuple:{})),
+            evaluates : (evaluates args --> \::foundation::Tuple_attrs_reduce(\Tuple:{})),
         )),
 
 *TODO.*
@@ -7769,7 +7769,7 @@ zero attributes and zero members, `\?%(\Tuple:{})`.  `Relational` is composed by
             evaluates : (? |args:.\0),
         )),
 
-The function `not_empty::Relational` results in `0bTRUE` iff its `0`
+The function `::not_empty::Relational` results in `0bTRUE` iff its `0`
 argument has any tuples, and in `0bFALSE` iff it has no tuples.  This
 function implements the `Homogeneous` virtual function `not_empty`
 for the composing type `Relational`.
@@ -7783,7 +7783,7 @@ for the composing type `Relational`.
             evaluates : (select_Relational::(\Tuple:{ like: args:.\0, heading: $args:.\0, body: empty |args:.\0 })),
         )),
 
-The function `empty::Relational` results in the only value of its `0`
+The function `::empty::Relational` results in the only value of its `0`
 argument's relational type that has the same *heading* as that argument
 and whose *body* has zero tuples.  This function implements the
 `Homogeneous` virtual function `empty` aka `∅` for the composing type
@@ -7798,7 +7798,7 @@ and whose *body* has zero tuples.  This function implements the
             evaluates : (singular |args:.\0),
         )),
 
-The function `singular::Relational` results in `0bTRUE` iff its `0`
+The function `::singular::Relational` results in `0bTRUE` iff its `0`
 argument has exactly 1 distinct tuple, and `0bFALSE` otherwise.  This
 function implements the `Homogeneous` virtual function `singular` for the
 composing type `Relational`.
@@ -7813,7 +7813,7 @@ composing type `Relational`.
             evaluates : (only_member |args:.\0),
         )),
 
-The function `only_member::Relational` results in its `0` argument's only
+The function `::only_member::Relational` results in its `0` argument's only
 distinct tuple.  This function will fail if the argument doesn't have
 exactly 1 distinct tuple.  This function implements the `Homogeneous`
 virtual function `only_member` for the composing type `Relational`.
@@ -7828,7 +7828,7 @@ virtual function `only_member` for the composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `has_n::Relational` results in `0bTRUE` iff its `0` argument
+The function `::has_n::Relational` results in `0bTRUE` iff its `0` argument
 has at least N tuples such that each is equal to its `1` argument, where N
 is defined by its `2` argument; otherwise it results in `0bFALSE`.  The
 result is always `0bTRUE` when the `2` argument is zero.  Note that having
@@ -7847,7 +7847,7 @@ function `has_n` for the composing type `Relational`.
             evaluates : (|args:.\0 multiplicity args:.\1),
         )),
 
-The function `multiplicity::Relational` results in the integral count
+The function `::multiplicity::Relational` results in the integral count
 of tuples of its `0` argument such that each tuple is equal to its
 `1` argument.  For a `Setty` typed `0` argument, the result is always
 just 0 or 1.  This function implements the `Homogeneous` virtual
@@ -7862,7 +7862,7 @@ function `multiplicity` for the composing type `Relational`.
             evaluates : (all_unique |args:.\0),
         )),
 
-The function `all_unique::Relational` results in `0bTRUE` iff its `0`
+The function `::all_unique::Relational` results in `0bTRUE` iff its `0`
 argument has no 2 members that are the same tuple, and `0bFALSE` otherwise.
 The result is always `0bTRUE` for a `Setty` argument.  This function
 implements the `Homogeneous` virtual function `all_unique` for the
@@ -7877,7 +7877,7 @@ composing type `Relational`.
             evaluates : (select_Relational::(\Tuple:{ like: args:.\0, heading: $args:.\0, body: unique |args:.\0 })),
         )),
 
-The function `unique::Relational` results in the value of its `0`
+The function `::unique::Relational` results in the value of its `0`
 argument's relational type that has, for every distinct tuple *V* of the
 function's `0` argument, exactly 1 tuple that is equal to *V*. The result
 is always the same value as its argument when that is `Setty`.  If the
@@ -7897,7 +7897,7 @@ composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `subset_of::Relational` results in `0bTRUE` iff the multiset
+The function `::subset_of::Relational` results in `0bTRUE` iff the multiset
 of tuples of its `0` argument is a subset of the multiset of tuples of its
 `1` argument; otherwise it results in `0bFALSE`.  The result is only
 *defined* when the 2 arguments have the same *heading*; it is
@@ -7915,7 +7915,7 @@ function `subset_of` aka `⊆` for the composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `same_members::Relational` results in `0bTRUE` iff the
+The function `::same_members::Relational` results in `0bTRUE` iff the
 multiset of tuples of its `0` argument is the same as the multiset of
 tuples of its `1` argument; otherwise it results in `0bFALSE`.  This
 function may result in `0bTRUE` for some `Positional` arguments for which
@@ -7937,7 +7937,7 @@ the composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `overlaps_members::Relational` results in `0bTRUE` iff, given
+The function `::overlaps_members::Relational` results in `0bTRUE` iff, given
 *X* as the multiset of tuples of its argument `0` and *Y* as the
 multiset of tuples of its argument `1`, there exists at least 1 tuple that
 both *X* and *Y* have, and there also exists at least 1 other tuple each
@@ -7958,7 +7958,7 @@ of *X* and *Y* that the other doesn't have; otherwise it results in
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `disjoint_members::Relational` results in `0bTRUE` iff the
+The function `::disjoint_members::Relational` results in `0bTRUE` iff the
 multiset of tuples of its `0` argument has no tuples in common with the
 multiset of tuples of its `1` argument; otherwise it results in `0bFALSE`.
 The result is only *defined* when the 2 arguments have the same
@@ -7988,7 +7988,7 @@ The result is only *defined* when the 2 arguments have the same
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `insert_n::Relational` results in the value of its `0`
+The function `::insert_n::Relational` results in the value of its `0`
 argument's relational type that has all of the tuples of the function's
 `0` argument plus N additional tuples that are each equal to its `1`
 argument, where N is defined by its `2` argument; however, if the result's
@@ -8013,7 +8013,7 @@ same *heading*; it is `(::Not_Same_Heading : (\Tuple:{}))` otherwise. This funct
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `remove_n::Relational` results in the value of its `0`
+The function `::remove_n::Relational` results in the value of its `0`
 argument's relational type that has all of the tuples of the function's
 `0` argument minus N existing tuples that are each equal to its `1`
 argument, where N is defined as the lesser of its `2` argument and the
@@ -8037,7 +8037,7 @@ composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `member_plus::Relational` results in the *multiset sum* of
+The function `::member_plus::Relational` results in the *multiset sum* of
 its 2 arguments `0` and `1`.  The result is the value of its `0`
 argument's relational type that has all of the tuples of the function's
 `0` argument plus all of the tuples of its `1` argument.  For every
@@ -8067,7 +8067,7 @@ virtual function `member_plus` aka `⊎` for the composing type
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `except::Relational` results in the *multiset difference*
+The function `::except::Relational` results in the *multiset difference*
 between its 2 arguments `0` (*minuend*) and `1` (*subtrahend*).  The
 result is the value of its `0` argument's relational type that has all of
 the tuples of the function's `0` argument minus all of the matching tuples
@@ -8095,7 +8095,7 @@ virtual function `except` aka `∖` for the composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `intersect::Relational` results in the *multiset
+The function `::intersect::Relational` results in the *multiset
 intersection* of its 2 arguments `0` and `1`.  The result is the value of
 its `0` argument's relational type that has all of the tuples of the
 function's `0` argument that match their own tuples of its `1` argument.
@@ -8122,7 +8122,7 @@ function `intersect` aka `∩` for the composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `union::Relational` results in the *multiset union* of its 2
+The function `::union::Relational` results in the *multiset union* of its 2
 arguments `0` and `1`.  The result is the value of its `0` argument's
 relational type that has all of the tuples of the function's `0` argument
 plus all of the nonmatching tuples of its `1` argument.  For every
@@ -8152,7 +8152,7 @@ composing type `Relational`.
                 else (::Not_Same_Heading : (\Tuple:{}))),
         )),
 
-The function `exclusive::Relational` results in the *multiset symmetric
+The function `::exclusive::Relational` results in the *multiset symmetric
 difference* of its 2 arguments `0` and `1`.  The result is the value of
 its `0` argument's relational type that has all of the tuples of each of
 the function's `0` and `1` arguments that do not have matching tuples of
@@ -8237,7 +8237,7 @@ function `exclusive` aka `symm_diff` aka `∆` for the composing type
             evaluates : ($args:.\0 != (\Tuple:{})),
         )),
 
-The function `has_any_attrs::Relational` results in `0bTRUE` iff its `0`
+The function `::has_any_attrs::Relational` results in `0bTRUE` iff its `0`
 argument has any attributes, and in `0bFALSE` iff it has no attributes.
 This function implements the `Attributive` virtual function
 `has_any_attrs` aka `?$` for the composing type `Relational`.
@@ -8251,7 +8251,7 @@ This function implements the `Attributive` virtual function
             evaluates : (args:.\0 on (\Tuple:{})),
         )),
 
-The function `nullary::Relational` results in the value of its `0`
+The function `::nullary::Relational` results in the value of its `0`
 argument's relational type that has zero attributes.  For types like
 `Multirelation`, there is a distinct result for each *cardinality*; for types
 like `Relation` there are exactly 2 possible result values.  This function
@@ -8267,7 +8267,7 @@ type `Relational`.
             evaluates : (is_unary $args:.\0),
         )),
 
-The function `is_unary::Relational` results in `0bTRUE` iff its `0`
+The function `::is_unary::Relational` results in `0bTRUE` iff its `0`
 argument has exactly 1 attribute, and `0bFALSE` otherwise.  This function
 implements the `Attributive` virtual function `is_unary` for the
 composing type `Relational`.
@@ -8281,7 +8281,7 @@ composing type `Relational`.
             evaluates : (degree $args:.\0),
         )),
 
-The function `degree::Relational` results in the integral count of the
+The function `::degree::Relational` results in the integral count of the
 attributes of its `0` argument.  This function implements the
 `Attributive` virtual function `degree` aka `#$` for the composing type
 `Relational`.
@@ -8297,7 +8297,7 @@ attributes of its `0` argument.  This function implements the
                 body: |args:.\0 map \rename::( 1: args:.\1 ) )),
         )),
 
-The function `rename::Relational` results results in the *relational
+The function `::rename::Relational` results results in the *relational
 rename* of its `0` argument in terms of its `1` argument.  The result is
 a value of the function's `0` argument's relational type that has all of
 the attributes of the function's `0` argument but that, for each attribute
@@ -8323,7 +8323,7 @@ virtual function `rename` aka `$:=` aka `ρ` for the composing type
                 and_then guard |args:.\0 all \(args:.\0 %= $args:.\1 = args:.\1) <-- (\Tuple:{1 : args:.\1})),
         )),
 
-The function `can_project_matching::Relational` results in `0bTRUE` iff the
+The function `::can_project_matching::Relational` results in `0bTRUE` iff the
 heading of its `0` argument is a superset of the heading of its `1`
 argument and every commonly-named attribute of the two arguments also has
 the same attribute asset; otherwise it results in `0bFALSE`.  Note that by
@@ -8343,7 +8343,7 @@ function implements the `Attributive` virtual function
                 body: |args:.\0 map \on::( 1: args:.\1 ) )),
         )),
 
-The function `on::Relational` results in the *relational projection* of
+The function `::on::Relational` results in the *relational projection* of
 its `0` argument in terms of its `1` argument.  The result is a value of
 the function's `0` argument's relational type that has all of the
 attributes of the function's `0` argument whose names match the names of
@@ -8370,7 +8370,7 @@ implements the `Attributive` virtual function `on` aka `project` aka
                 body: |args:.\0 map \update::( 1: args:.\1 ) )),
         )),
 
-The function `update::Relational` results in the value of its `0`
+The function `::update::Relational` results in the value of its `0`
 argument's relational type that has all of the attributes of the function's
 `0` argument but that, for each attribute of the `0` argument whose
 attribute name *K* matches the name of an attribute of its `1` argument,
@@ -8400,7 +8400,7 @@ will fail if the *heading* of the `1` argument is not a subset of the
                 body: |args:.\0 map \extend::( 1: args:.\1 ) )),
         )),
 
-The function `extend::Relational` results in the *relational extension*
+The function `::extend::Relational` results in the *relational extension*
 of its `0` argument in terms of its `1` argument.  The result is a value
 of the function's `0` argument's relational type that has all of the
 attributes of the function's `0` argument plus all of the attributes of
@@ -8437,7 +8437,7 @@ typical `Relational` value, and select that same value again.
 
         select_Relational::'' : (\Function : (
             virtual : 0bTRUE,
-            returns : (\Set:[::Relational, ::...]),
+            returns : (\Set:[::Relational, ...]),
             matches : (\Tuple:{like : ::Relational, heading : ::Heading, body : ::Unionable}),
         )),
 
@@ -8460,7 +8460,7 @@ types that restrict their possible headings at the type level.*
         Orderelation : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Relational, ::Positional]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Orderelation,
                 attrs : [
                     (
@@ -8513,7 +8513,7 @@ single-tuple `Orderelation` value.
             evaluates : (args:.\0:>.\heading),
         )),
 
-The function `heading::Orderelation` results in the relational *heading*
+The function `::heading::Orderelation` results in the relational *heading*
 of its `0` argument, that is its set of distinct attribute names.  This
 function implements the `Attributive` virtual function `heading` aka `$`
 for the composing type `Orderelation`.
@@ -8527,7 +8527,7 @@ for the composing type `Orderelation`.
             evaluates : (args:.\0:>.\body),
         )),
 
-The function `body::Orderelation` results in the relational *body* of its
+The function `::body::Orderelation` results in the relational *body* of its
 `0` argument, that is its multiset of member tuples.  This function
 implements the `Relational` virtual function `body` aka `|` for the
 composing type `Orderelation`.
@@ -8535,13 +8535,13 @@ composing type `Orderelation`.
 ## select_Relational (Orderelation)
 
         select_Relational::Orderelation : (\Function : (
-            returns : (\Set:[::Relational, ::...]),
+            returns : (\Set:[::Relational, ...]),
             matches : (\Tuple:{like : ::Orderelation, heading : ::Heading, body : ::Array}),
             implements : folder::'',
             evaluates : ((\Orderelation : (args %= ::(\Tuple:{heading,body})))),
         )),
 
-The function `select_Relational::Orderelation` results in the
+The function `::select_Relational::Orderelation` results in the
 `Orderelation` value that has the same *heading* as its `heading`
 argument and whose *body* consists of just the member *tuples* of its
 `body` argument.  This function implements the `Relational` virtual
@@ -8555,7 +8555,7 @@ function `select_Relational` for the composing type `Orderelation`.
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Relational, ::Discrete, ::Setty]),
             provides_default_for : (\Set:[::Relational]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Relation,
                 attrs : [
                     (
@@ -8601,7 +8601,7 @@ Manifesto* also refers to this value by the special name *TABLE_DEE*.
             evaluates : (args:.\0:>.\heading),
         )),
 
-The function `heading::Relation` results in the relational *heading*
+The function `::heading::Relation` results in the relational *heading*
 of its `0` argument, that is its set of distinct attribute names.  This
 function implements the `Attributive` virtual function `heading` aka `$`
 for the composing type `Relation`.
@@ -8615,7 +8615,7 @@ for the composing type `Relation`.
             evaluates : (args:.\0:>.\body),
         )),
 
-The function `body::Relation` results in the relational *body* of its
+The function `::body::Relation` results in the relational *body* of its
 `0` argument, that is its set of member tuples.  This function
 implements the `Relational` virtual function `body` aka `|` for the
 composing type `Relation`.
@@ -8623,13 +8623,13 @@ composing type `Relation`.
 ## select_Relational (Relation)
 
         select_Relational::Relation : (\Function : (
-            returns : (\Set:[::Relational, ::...]),
+            returns : (\Set:[::Relational, ...]),
             matches : (\Tuple:{like : ::Relation, heading : ::Heading, body : ::Set}),
             implements : folder::'',
             evaluates : ((\Relation : (args %= ::(\Tuple:{heading,body})))),
         )),
 
-The function `select_Relational::Relation` results in the
+The function `::select_Relational::Relation` results in the
 `Relation` value that has the same *heading* as its `heading`
 argument and whose *body* consists of just the member *tuples* of its
 `body` argument.  This function implements the `Relational` virtual
@@ -8642,7 +8642,7 @@ function `select_Relational` for the composing type `Relation`.
         Multirelation : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Relational, ::Discrete]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Multirelation,
                 attrs : [
                     (
@@ -8686,7 +8686,7 @@ single-tuple `Multirelation` value.
             evaluates : (args:.\0:>.\heading),
         )),
 
-The function `heading::Multirelation` results in the relational *heading*
+The function `::heading::Multirelation` results in the relational *heading*
 of its `0` argument, that is its set of distinct attribute names.  This
 function implements the `Attributive` virtual function `heading` aka `$`
 for the composing type `Multirelation`.
@@ -8700,7 +8700,7 @@ for the composing type `Multirelation`.
             evaluates : (args:.\0:>.\body),
         )),
 
-The function `body::Multirelation` results in the relational *body* of its
+The function `::body::Multirelation` results in the relational *body* of its
 `0` argument, that is its multiset of member tuples.  This function
 implements the `Relational` virtual function `body` aka `|` for the
 composing type `Multirelation`.
@@ -8708,13 +8708,13 @@ composing type `Multirelation`.
 ## select_Relational (Multirelation)
 
         select_Relational::Multirelation : (\Function : (
-            returns : (\Set:[::Relational, ::...]),
+            returns : (\Set:[::Relational, ...]),
             matches : (\Tuple:{like : ::Multirelation, heading : ::Heading, body : ::Bag}),
             implements : folder::'',
             evaluates : ((\Multirelation : (args %= ::(\Tuple:{heading,body})))),
         )),
 
-The function `select_Relational::Multirelation` results in the
+The function `::select_Relational::Multirelation` results in the
 `Multirelation` value that has the same *heading* as its `heading`
 argument and whose *body* consists of just the member *tuples* of its
 `body` argument.  This function implements the `Relational` virtual
@@ -8739,7 +8739,7 @@ function `select_Relational` for the composing type `Multirelation`.
         Interval : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Intervalish, ::Setty]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Interval,
                 attrs : \Interval_Attrs::(\Tuple:{}),
             )),
@@ -8776,7 +8776,7 @@ function `select_Relational` for the composing type `Multirelation`.
         Set_Of_Interval : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Unionable_Intervalish, ::Setty]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Set_Of_Interval,
                 attrs : (
                     members : (\Array:[\Bag_Of_Interval::(\Tuple:{}), \all_unique::(\Tuple:{})]),
@@ -8794,7 +8794,7 @@ function `select_Relational` for the composing type `Multirelation`.
         Bag_Of_Interval : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Unionable_Intervalish]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Bag_Of_Interval,
                 attrs : (
                     members : (\Array:[\Multirelation::(\Tuple:{}), ...]),
@@ -8824,7 +8824,7 @@ function `select_Relational` for the composing type `Multirelation`.
         Quantity : (\Function : (
             is_type_definer : 0bTRUE,
             composes : (\Set:[::Quantitative]),
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Quantity,
                 attrs : (
                     0 : (\Array:[\Relation::(\Tuple:{}), ...]),
@@ -8841,12 +8841,12 @@ function `select_Relational` for the composing type `Multirelation`.
 
         Article : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : \foundation::Article(\Tuple:{}),
+            evaluates : \::foundation::Article(\Tuple:{}),
             default : (0bFALSE : (\Tuple:{})),
         )),
 
 The selection type definer `Article` represents the infinite Muldis Data Language
-Foundation type `foundation::Article`.  An `Article` value is ...
+Foundation type `::foundation::Article`.  An `Article` value is ...
 
 A `Article` value consists of a *label* paired with a set of 0..N
 *attributes* where that set must be represented by a `Tuple`.  While
@@ -8874,11 +8874,11 @@ expression node types and concrete syntax (and Foundation functions).
 
         Handle : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : \foundation::Handle(\Tuple:{}),
+            evaluates : \::foundation::Handle(\Tuple:{}),
         )),
 
 The selection type definer `Handle` represents the infinite Muldis Data Language
-Foundation type `foundation::Handle`.  A `Handle` value is an opaque and
+Foundation type `::foundation::Handle`.  A `Handle` value is an opaque and
 transient reference to an entity or resource that potentially exists at
 arms length from the current Muldis Data Language process or language environment or
 that otherwise has the potential to mutate in a way visible to the current
@@ -8904,11 +8904,11 @@ associated with `Handle` by users to help the system manage such cycles.
 
         Variable : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : \foundation::Variable(\Tuple:{}),
+            evaluates : \::foundation::Variable(\Tuple:{}),
         )),
 
 The selection type definer `Variable` represents the infinite Muldis Data Language
-Foundation type `foundation::Variable`.  A `Variable` value is an opaque and
+Foundation type `::foundation::Variable`.  A `Variable` value is an opaque and
 transient reference to a Muldis Data Language *variable* (the latter being a container
 for an appearance of a value).  The identity of a `Variable` is just the
 identity of the (anonymous) variable that it points to, which is the
@@ -8979,11 +8979,11 @@ that this points to to hold the value of its right-hand argument.
 
         Process : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : \foundation::Process(\Tuple:{}),
+            evaluates : \::foundation::Process(\Tuple:{}),
         )),
 
 The selection type definer `Process` represents the infinite Muldis Data Language
-Foundation type `foundation::Process`.  A `Process` value is an opaque
+Foundation type `::foundation::Process`.  A `Process` value is an opaque
 and transient reference to a *process* running inside the Muldis Data Language
 environment / DBMS / virtual machine, which typically has its own
 autonomous transactional context.  Each Muldis Data Language *process*
@@ -9012,11 +9012,11 @@ for a remote execution, is done by the *database owner* Muldis Data Language pro
 
         Stream : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : \foundation::Stream(\Tuple:{}),
+            evaluates : \::foundation::Stream(\Tuple:{}),
         )),
 
 The selection type definer `Stream` represents the infinite Muldis Data Language
-Foundation type `foundation::Stream`.  A `Stream` value is an opaque and
+Foundation type `::foundation::Stream`.  A `Stream` value is an opaque and
 transient reference to a Muldis Data Language *stream*, which represents streaming
 data such as from/to user I/O or the filesystem or network services etc.
 
@@ -9024,11 +9024,11 @@ data such as from/to user I/O or the filesystem or network services etc.
 
         External::'' : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : \foundation::External(\Tuple:{}),
+            evaluates : \::foundation::External(\Tuple:{}),
         )),
 
 The selection type definer `External` represents the infinite Muldis Data Language
-Foundation type `foundation::External`.  An `External` value is an opaque and
+Foundation type `::foundation::External`.  An `External` value is an opaque and
 transient reference to an entity that is defined and managed externally to
 Muldis Data Language environment, either internally to the Muldis Data Language host
 implementation or in some peer language that it mediates.
@@ -9048,14 +9048,14 @@ Other programming languages may name their corresponding types *extern*
         External::call_function : (\Function : (
             returns : ::Any,
             matches : (\Tuple:{::Any}),
-            evaluates : (evaluates \foundation::External_call_function(\Tuple:{}) <-- args),
+            evaluates : (evaluates \::foundation::External_call_function(\Tuple:{}) <-- args),
         )),
 
-The function `External::call_function` is a proxy for invoking a function
+The function `::External::call_function` is a proxy for invoking a function
 that is defined and managed externally to Muldis Data Language
 environment.  Muldis Data Language will assume said function is completely
 deterministic, and there would likely be problems if it isn't.  Using
-`External::call_function` as a foundation, it is possible to define an
+`::External::call_function` as a foundation, it is possible to define an
 arbitrarily complex type graph involving `External` values.
 
 # SOURCE CODE BEHAVIOURAL DATA TYPES
@@ -9066,15 +9066,15 @@ arbitrarily complex type graph involving `External` values.
 
         Package : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Package,
                 attrs : (
-                    identity : \Package::Identity::(\Tuple:{}),
-                    foundation : \Package::Foundation::(\Tuple:{}),
-                    uses : \Package::Uses_Map::(\Tuple:{}),
-                    entry : \Package::Entry_Point::(\Tuple:{}),
-                    floating : \Package::Floating::(\Tuple:{}),
-                    materials : \Package::Folder::(\Tuple:{}),
+                    identity : \::Package::Identity::(\Tuple:{}),
+                    foundation : \::Package::Foundation::(\Tuple:{}),
+                    uses : \::Package::Uses_Map::(\Tuple:{}),
+                    entry : \::Package::Entry_Point::(\Tuple:{}),
+                    floating : \::Package::Floating::(\Tuple:{}),
+                    materials : \::Package::Folder::(\Tuple:{}),
                 ),
             )),
             default : ...,
@@ -9087,9 +9087,9 @@ arbitrarily complex type graph involving `External` values.
         Package::Identity : (\Function : (
             is_type_definer : 0bTRUE,
             evaluates : (
-                package_base_name : \Package::Base_Name::(\Tuple:{}),
-                authority : \Package::Canon_Authority::(\Tuple:{}),
-                version_number : \Package::Canon_Version_Number::(\Tuple:{}),
+                package_base_name : \::Package::Base_Name::(\Tuple:{}),
+                authority : \::Package::Canon_Authority::(\Tuple:{}),
+                version_number : \::Package::Canon_Version_Number::(\Tuple:{}),
             ),
         )),
 
@@ -9098,8 +9098,8 @@ arbitrarily complex type graph involving `External` values.
         Package::Foundation : (\Function : (
             is_type_definer : 0bTRUE,
             evaluates : (
-                authority : \Package::Canon_Authority::(\Tuple:{}),
-                version_number : \Package::Canon_Version_Number::(\Tuple:{}),
+                authority : \::Package::Canon_Authority::(\Tuple:{}),
+                version_number : \::Package::Canon_Version_Number::(\Tuple:{}),
             ),
         )),
 
@@ -9135,7 +9135,7 @@ arbitrarily complex type graph involving `External` values.
         Package::Uses_Map : (\Function : (
             is_type_definer : 0bTRUE,
             evaluates : (\Array:[\Tuple::(\Tuple:{}), \'.!?'::( 1: \'' ),
-                \all_attr_assets::( 1: \Package::Uses_Item(\Tuple:{}) )]),
+                \all_attr_assets::( 1: \::Package::Uses_Item(\Tuple:{}) )]),
         )),
 
 *TODO.  Each attribute name declares a single-element composing-package-local
@@ -9146,9 +9146,9 @@ alias for the used package.*
         Package::Uses_Item : (\Function : (
             is_type_definer : 0bTRUE,
             evaluates : (
-                package_base_name : \Package::Base_Name::(\Tuple:{}),
-                authority : \Package::Canon_Authority::(\Tuple:{}),
-                version_number : \Package::Canon_Version_Number::(\Tuple:{}),
+                package_base_name : \::Package::Base_Name::(\Tuple:{}),
+                authority : \::Package::Canon_Authority::(\Tuple:{}),
+                version_number : \::Package::Canon_Version_Number::(\Tuple:{}),
             ),
         )),
 
@@ -9180,7 +9180,7 @@ Until then, this type just represents a single positive assertion.*
         Package::Folder : (\Function : (
             is_type_definer : 0bTRUE,
             evaluates : (\Array:[\Tuple::(\Tuple:{}),
-                \all_attr_assets::( 1: (\Set:[\Package::Folder(\Tuple:{}), \Material::(\Tuple:{})]) )]),
+                \all_attr_assets::( 1: (\Set:[\::Package::Folder(\Tuple:{}), \Material::(\Tuple:{})]) )]),
         )),
 
 *TODO.*
@@ -9197,7 +9197,7 @@ Until then, this type just represents a single positive assertion.*
 
         Alias : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Alias,
                 attrs : (
                     of : \Identity_Identifier(\Tuple:{}),
@@ -9233,7 +9233,7 @@ Until then, this type just represents a single positive assertion.*
                         when_regular_function;
 
                 when_generalized_type_definer ::=
-                    traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
+                    traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \True::(\Tuple:{}),),
                         is_generalization : (type : \True::(\Tuple:{}),),
                         default : (type : \Expression::(\Tuple:{}), optional : 0bTRUE),
@@ -9241,7 +9241,7 @@ Until then, this type just represents a single positive assertion.*
                     and_then type_specialization_attrs_constraint;
 
                 when_singleton_type_definer ::=
-                    traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
+                    traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \True::(\Tuple:{}),),
                         is_generalization : (type : \False::(\Tuple:{}), optional : 0bTRUE),
                         constant : (type : \Expression::(\Tuple:{}),),
@@ -9249,7 +9249,7 @@ Until then, this type just represents a single positive assertion.*
                     and_then type_specialization_attrs_constraint;
 
                 when_regular_type_definer ::=
-                    traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
+                    traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \True::(\Tuple:{}),),
                         is_generalization : (type : \False::(\Tuple:{}), optional : 0bTRUE),
                         evaluates : (type : (\Set:[\Expression::(\Tuple:{}), \Signature::(\Tuple:{})]),),
@@ -9272,13 +9272,13 @@ Until then, this type just represents a single positive assertion.*
                         0bTRUE;
 
                 when_regular_function ::=
-                    traits is_a (Signature::Tuple_Attrs_Match : (attrs : (
+                    traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : \False::(\Tuple:{}), optional : 0bTRUE),
                         virtual : (type : \Boolean::(\Tuple:{}), optional : 0bTRUE),
                         commutes : (type : \Identity_Identifier::(\Tuple:{}), optional : 0bTRUE),
                         negates : (type : \Identity_Identifier::(\Tuple:{}), optional : 0bTRUE),
                         returns : (type : \Signature::(\Tuple:{}), optional : 0bTRUE),
-                        matches : (type : \Signature::Tuple_Attrs_Match_Simple(\Tuple:{}),
+                        matches : (type : \::Signature::Tuple_Attrs_Match_Simple(\Tuple:{}),
                             optional : 0bTRUE),
                         implements : (\Tuple:{type : ..., optional : 0bTRUE}),
                         overrides : (\Tuple:{type : ..., optional : 0bTRUE}),
@@ -9328,11 +9328,11 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Procedure : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Procedure,
-                attrs : (Signature::Tuple_Attrs_Match : (attrs : (
+                attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
                     virtual : (type : \Boolean::(\Tuple:{}), optional : 0bTRUE),
-                    matches : (type : \Signature::Tuple_Attrs_Match_Simple(\Tuple:{}), optional : 0bTRUE),
+                    matches : (type : \::Signature::Tuple_Attrs_Match_Simple(\Tuple:{}), optional : 0bTRUE),
                     implements : (\Tuple:{type : ..., optional : 0bTRUE}),
                     overrides : (\Tuple:{type : ..., optional : 0bTRUE}),
                     accepts : (type : \Expression::(\Tuple:{}), optional : 0bTRUE),
@@ -9351,11 +9351,11 @@ its own isolated lexical scope and its own `args` context where generally the
             is_type_definer : 0bTRUE,
             evaluates : (\Set:[
                 ::Function_Call_But_0,
-                Signature::Conjunction,
-                Signature::Disjunction,
-                Signature::Tuple_Attrs_Match_Simple,
-                Signature::Tuple_Attrs_Match,
-                Signature::Article_Match,
+                ::Signature::Conjunction,
+                ::Signature::Disjunction,
+                ::Signature::Tuple_Attrs_Match_Simple,
+                ::Signature::Tuple_Attrs_Match,
+                ::Signature::Article_Match,
             ]),
             default : \Any::(\Tuple:{}),
         )),
@@ -9393,7 +9393,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Tuple_Attrs_Match : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     attrs : (\Array:[
@@ -9421,7 +9421,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Article_Match : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : \Any::(\Tuple:{}),
                 attrs : \Signature::(\Tuple:{}),
             )),
@@ -9463,7 +9463,7 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
 
         Literal : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Any::(\Tuple:{}),
@@ -9501,7 +9501,7 @@ Written in Plain_Text with the token `args`.*
 
         Evaluates : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9523,7 +9523,7 @@ value of the type of the variable it is assigned to.*
 
         Array_Selector : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : (\Array:[\Array::(\Tuple:{}), \all::( 1: (
@@ -9544,7 +9544,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
 
         Set_Selector : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : (\Array:[\Bag::(\Tuple:{}), \all::( 1: (
@@ -9568,7 +9568,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
 
         Bag_Selector : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : (\Array:[\Bag::(\Tuple:{}), \all::( 1: (
@@ -9589,7 +9589,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
 
         Tuple_Selector : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : (\Array:[\Tuple::(\Tuple:{}), \all_attr_assets::( 1: \Expression::(\Tuple:{}) )]),
@@ -9607,15 +9607,15 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
 
         Article_Selector : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),  `label`
                     1 : \Expression::(\Tuple:{}),  `attributes`
                 ),
             )),
-            default : (::material : ((folder::Literal : (\Tuple:{\''})),
-                (folder::Literal : (\Tuple:{})))),
+            default : (::material : ((::folder::Literal : (\Tuple:{\''})),
+                (::folder::Literal : (\Tuple:{})))),
         )),
 
 *TODO.  This represents a selection of a Article value in terms of a
@@ -9627,7 +9627,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
 
         If_Then_Else_Expr : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9646,7 +9646,7 @@ written in Plain_Text with special syntax example `if P then X else Y`.*
 
         And_Then : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9666,7 +9666,7 @@ written in Plain_Text with special syntax example `P and_then X`.*
 
         Or_Else : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9686,7 +9686,7 @@ written in Plain_Text with special syntax example `P or_else X`.*
 
         Given_When_Default_Expr : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9709,7 +9709,7 @@ written in Plain_Text with special syntax example
 
         Guard : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9725,7 +9725,7 @@ written in Plain_Text with special syntax example `guard X`.*
 
         Factorization : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     factors : (\Array:[\Tuple::(\Tuple:{}), \all_attr_assets::( 1: \Expression::(\Tuple:{}) )]),
@@ -9752,7 +9752,7 @@ can be re-used in other statements.*
 
         Expansion : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     factor : \Attr_Name::(\Tuple:{}),
@@ -9786,7 +9786,7 @@ Variable has been made to reference it directly or indirectly meanwhile.*
 
         New : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9803,7 +9803,7 @@ sub-expression.  Written in Plain_Text with syntax example `new foo`.*
 
         Current : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9841,7 +9841,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
 
         Declare : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     vars : (\Array:[\Tuple::(\Tuple:{}), \all_attr_assets::( 1: \Expression::(\Tuple:{}) )]),
@@ -9867,7 +9867,7 @@ plus Or\_Else and justified keeping them; its a similar situation.
 
         Performs : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9886,7 +9886,7 @@ where X denotes a Procedure_Call value.*
 
         If_Then_Else_Stmt : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9907,7 +9907,7 @@ the 'else' is an empty compound statement.*
 
         Given_When_Default_Stmt : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     0 : \Expression::(\Tuple:{}),
@@ -9930,9 +9930,9 @@ written in Plain_Text with special syntax example
 
         Block : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
-                attrs : (Signature::Tuple_Attrs_Match : (attrs : (
+                attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
                     0 : (type : (\Array:[\Array::(\Tuple:{}), \all::( 1: \Statement::(\Tuple:{}) )])),
                     label : (type : \Attr_Name::(\Tuple:{}), optional : 0bTRUE),
                 ),)),
@@ -9949,9 +9949,9 @@ iterated, written in Plain_Text with special syntax example
 
         Leave : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
-                attrs : (Signature::Tuple_Attrs_Match : (attrs : (
+                attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
                     label : (type : \Attr_Name::(\Tuple:{}), optional : 0bTRUE),
                 ),)),
             )),
@@ -9969,9 +9969,9 @@ with special syntax examples `leave` or `leave do_work`.*
 
         Iterate : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
-                attrs : (Signature::Tuple_Attrs_Match : (attrs : (
+                attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
                     label : (type : \Attr_Name::(\Tuple:{}), optional : 0bTRUE),
                 ),)),
             )),
@@ -10049,14 +10049,14 @@ a thing for opening tuples as for creating them.*
 
         Routine_Call : (\Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (Signature::Article_Match : (
+            evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
                     call : (\Set:[\Local_Name::(\Tuple:{}), \Identity_Identifier::(\Tuple:{}), \Function::(\Tuple:{}), \Procedure::(\Tuple:{})]),
                     args : \Tuple::(\Tuple:{}),
                 ),
             )),
-            default : \foundation::0bFALSE(\Tuple:{}),
+            default : \::foundation::False(\Tuple:{}),
         )),
 
 *TODO.  This represents a specification of a function or procedure invocation,
@@ -10175,7 +10175,7 @@ A Raku corresponding operator has the name "assuming".*
                 returns
                     if Function_Call_But_0 sig then
                         sig
-                    else if Signature::Conjunction sig then guard
+                    else if ::Signature::Conjunction sig then guard
                         \(
                             topic    ::= args:.\0;
                             conj_sig ::= args:.\sig;
@@ -10183,13 +10183,13 @@ A Raku corresponding operator has the name "assuming".*
                                 or_else guard topic is_a first::(conj_sig)
                                 and_then guard topic is_a nonfirst::(conj_sig)
                         ) <-- (\Tuple:{:sig})
-                    else if Signature::Disjunction sig then guard
+                    else if ::Signature::Disjunction sig then guard
                         \(
                             topic    ::= args:.\0;
                             disj_sig ::= args:.\sig;
                             returns disj_sig any \(args:.\topic is_a args:.\0) <-- (\Tuple:{:topic})
                         ) <-- (\Tuple:{:sig})
-                    else if Signature::Tuple_Attrs_Match_Simple sig then guard
+                    else if ::Signature::Tuple_Attrs_Match_Simple sig then guard
                         \(
                             topic     ::= args:.\0;
                             tuple_sig ::= args:.\sig;
@@ -10203,7 +10203,7 @@ A Raku corresponding operator has the name "assuming".*
                                         returns topic.name is_a attr_sig;
                                     ) <-- (\Tuple:{:topic})
                         ) <-- (\Tuple:{:sig})
-                    else if Signature::Tuple_Attrs_Match sig then guard
+                    else if ::Signature::Tuple_Attrs_Match sig then guard
                         \(
                             topic     ::= args:.\0;
                             tuple_sig ::= args:.\sig;
@@ -10222,7 +10222,7 @@ A Raku corresponding operator has the name "assuming".*
                                         ;
                                     ) <-- (\Tuple:{:topic}))
                         ) <-- (\Tuple:{:sig})
-                    else if Signature::Article_Match sig then guard
+                    else if ::Signature::Article_Match sig then guard
                         \(
                             topic       ::= args:.\0;
                             article_sig ::= args:.\sig:>;
@@ -10242,7 +10242,7 @@ recognize and short-circuit the simple boolean signatures.*
 
 *WARNING/TODO.  Actually, now that regular types are largely defined in
 terms of Signature, it is very likely we would have infinite recursion at
-runtime due to for example any code asking "is this a Signature::foo" which
+runtime due to for example any code asking "is this a ::Signature::foo" which
 includes Signature_to_Function_Call_But_0 would be calling
 Signature_to_Function_Call_But_0 in order to answer that question, at least
 until something is changed that the compiler folds the type definitions to
@@ -10269,7 +10269,7 @@ the database schema version matches what the application expects.*
 # SOURCE CODE DECORATION DATA TYPES
 
 *TODO.  Generally speaking, all Decoraction types are declared by a
-package that is not System, such as in some System::Plain_Text/etc package.*
+package that is not System, such as in some ::System::Plain_Text/etc package.*
 
 *TODO:  The decoration data types may loosely resemble template defs so
 that decorations don't necessarily have to be attached to all
