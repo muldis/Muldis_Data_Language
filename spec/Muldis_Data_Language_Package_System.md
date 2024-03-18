@@ -10182,13 +10182,13 @@ A Raku corresponding operator has the name "assuming".*
                             returns empty::(conj_sig)
                                 or_else guard topic is_a first::(conj_sig)
                                 and_then guard topic is_a nonfirst::(conj_sig)
-                        ) <-- (\Tuple:{:sig})
+                        ) <-- (\Tuple:{sig : \sig})
                     else if ::Signature::Disjunction sig then guard
                         \(
                             topic    ::= args:.\0;
                             disj_sig ::= args:.\sig;
-                            returns disj_sig any \(args:.\topic is_a args:.\0) <-- (\Tuple:{:topic})
-                        ) <-- (\Tuple:{:sig})
+                            returns disj_sig any \(args:.\topic is_a args:.\0) <-- (\Tuple:{topic : \topic})
+                        ) <-- (\Tuple:{sig : \sig})
                     else if ::Signature::Tuple_Attrs_Match_Simple sig then guard
                         \(
                             topic     ::= args:.\0;
@@ -10201,8 +10201,8 @@ A Raku corresponding operator has the name "assuming".*
                                         attr_sig ::= args:.\0:.\asset;
                                         topic    ::= args:.\topic;
                                         returns topic.name is_a attr_sig;
-                                    ) <-- (\Tuple:{:topic})
-                        ) <-- (\Tuple:{:sig})
+                                    ) <-- (\Tuple:{topic : \topic})
+                        ) <-- (\Tuple:{sig : \sig})
                     else if ::Signature::Tuple_Attrs_Match sig then guard
                         \(
                             topic     ::= args:.\0;
@@ -10220,8 +10220,8 @@ A Raku corresponding operator has the name "assuming".*
                                             then guard topic.name is_a attr_sig
                                             else attr_sig.?\optional
                                         ;
-                                    ) <-- (\Tuple:{:topic}))
-                        ) <-- (\Tuple:{:sig})
+                                    ) <-- (\Tuple:{topic : \topic}))
+                        ) <-- (\Tuple:{sig : \sig})
                     else if ::Signature::Article_Match sig then guard
                         \(
                             topic       ::= args:.\0;
@@ -10229,7 +10229,7 @@ A Raku corresponding operator has the name "assuming".*
                             returns Article topic
                                 and_then guard topic:< = article_sig:.\label
                                 and_then guard topic:> is_a article_sig:.\attrs
-                        ) <-- (\Tuple:{:sig})
+                        ) <-- (\Tuple:{sig : \sig})
                     else
                         fail  `We should never get here.`
                     ;
