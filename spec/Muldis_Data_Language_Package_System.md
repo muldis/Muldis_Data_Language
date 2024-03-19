@@ -680,7 +680,7 @@ recall any of its predecessors.
 
 The default and minimum and maximum values of `Successable` are the same
 as those of `Orderable`.  `Successable` is composed, directly or
-indirectly, by: `Bicessable`, `Boolean`, `Integral`, `Integer`.
+indirectly, by: `Bicessable`, `Integral`, `Integer`.
 
 `Successable` is intended to be a generalized tool for performing *list
 comprehension* or *set comprehension*.  The typically idiomatic and more
@@ -764,7 +764,7 @@ rationals if arranged a particular way, these types would not qualify as
 `Bicessable` here when that ordering is not the same as the one used for
 the same type's `Orderable` comparisons.  The default and minimum and
 maximum values of `Bicessable` are the same as those of `Orderable`.
-`Bicessable` is composed, directly or indirectly, by: `Boolean`,
+`Bicessable` is composed, directly or indirectly, by:
 `Integral`, `Integer`.
 
 For some `Bicessable` types, there is the concept of a *quantum* or
@@ -816,7 +816,7 @@ its `0` argument, where N is its `1` argument, or in
 
         Boolean : (:Function : (
             is_type_definer : 0bTRUE,
-            composes : (:Set : [::Bicessable]),
+            composes : (:Set : [::Orderable]),
             evaluates : \::foundation::Boolean(:Tuple : {}),
             default : 0bFALSE,
         )),
@@ -826,7 +826,7 @@ foundation type `::foundation::Boolean`.
 A `Boolean` value is a general purpose 2-valued logic boolean or *truth
 value*, or specifically it is one of the 2 values `0bFALSE` and `0bTRUE`.
 `Boolean` has a default value of `0bFALSE`.
-`Boolean` is both `Orderable` and `Bicessable`;
+`Boolean` is `Orderable`;
 its minimum value is `0bFALSE` and its maximum value is `0bTRUE`.
 Other programming languages frequently don't
 have a dedicated boolean type but rather consider values of other types,
@@ -869,43 +869,6 @@ integer 1 to represent *true*.
 
 The function `::in_order::Boolean` implements the `Orderable` virtual
 function `in_order` for the composing type `Boolean`.
-
-## asset (Boolean)
-
-        asset::Boolean : (:Function : (
-            returns : ::Boolean,
-            matches : (:Tuple : {::Boolean}),
-            implements : folder::'',
-            evaluates : (args :. :0),
-        )),
-
-The function `::asset::Boolean` simply results in its `0` argument.
-This function implements the `Successable` virtual function `asset` for
-the composing type `Boolean`.
-
-## nth_pred (Boolean)
-
-        nth_pred::Boolean : (:Function : (
-            returns : (:Set : [::False, ::Before_All_Others]),
-            matches : (:Tuple : {::Boolean, ::Integer_NN}),
-            implements : folder::'',
-            evaluates : (if args :. :1 = 0 then args :. :0 else if args :. :1 = 1 and args :. :0 then 0bFALSE else (::Before_All_Others : (:Tuple : {}))),
-        )),
-
-The function `::nth_pred::Boolean` implements the `Bicessable` virtual
-function `nth_pred` for the composing type `Boolean`.
-
-## nth_succ (Boolean)
-
-        nth_succ::Boolean : (:Function : (
-            returns : (:Set : [::True, ::After_All_Others]),
-            matches : (:Tuple : {::Boolean, ::Integer_NN}),
-            implements : folder::'',
-            evaluates : (if args :. :1 = 0 then args :. :0 else if args :. :1 = 1 and !args :. :0 then 0bTRUE else (::After_All_Others : (:Tuple : {}))),
-        )),
-
-The function `::nth_succ::Boolean` implements the `Successable` virtual
-function `nth_succ` for the composing type `Boolean`.
 
 ## not ! ¬
 
