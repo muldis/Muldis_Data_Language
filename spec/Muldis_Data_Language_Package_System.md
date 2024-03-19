@@ -185,7 +185,7 @@ or `=\=`.
 The function `is_a` results in `0bTRUE` iff its `0` argument is a
 member of the type specified by its `1` argument, and `0bFALSE` otherwise.
 Note that the idiomatic syntax for simply testing if a given value `v` is
-a member of a type named `T` is `T v` or `T::(v)` or `evaluates :T::(:Tuple : {}) <-- (:Tuple : {v})`
+a member of a type named `T` is `T v` or `T::(v)` or `evaluates ::T::(:Tuple : {}) <-- (:Tuple : {v})`
 and no generic testing operator is used for the purpose.  And so, the prime
 operator name `is_a` is freed up for its current higher-level use, such
 that the type specifier it takes has more of a template format suitable in
@@ -1066,7 +1066,7 @@ and its `1` argument is `0bTRUE`, and `0bFALSE` otherwise.
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Round_Meth_Attr_Name::(:Tuple : {}),
+                    0 : ::Round_Meth_Attr_Name::(:Tuple : {}),
                 ),
             )),
             default : (::material : (:Tuple : {:To_Zero})),
@@ -1103,7 +1103,7 @@ Other programming languages may name their corresponding types
 
         Round_Meth_Attr_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Attr_Name::(:Tuple : {}), \'⊆$'::( 1:
+            evaluates : (:Array : [::Attr_Name::(:Tuple : {}), \'⊆$'::( 1:
                 ::(:Tuple : {Down,Up,To_Zero,To_Inf
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd})
@@ -1276,7 +1276,7 @@ identity element* value of a number zero.
         '-' : (:Function : (
             returns : ::Numerical,
             matches : (:Set : [(::Numerical), (:Tuple : {::Numerical, ::Numerical})]),
-            evaluates : (evaluates args --> (if degree::(args) = 1 then :opposite::(:Tuple : {}) else :minus::(:Tuple : {}))),
+            evaluates : (evaluates args --> (if degree::(args) = 1 then ::opposite::(:Tuple : {}) else ::minus::(:Tuple : {}))),
         )),
 
         Unicode_Aliases::'−' : (:Alias : ( of : '-' )),
@@ -1662,7 +1662,7 @@ or *Bignum* or *BigInteger*.
 
         Integer_NN : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Integer::(:Tuple : {}), \'>='::( 1: 0 )]),
+            evaluates : (:Array : [::Integer::(:Tuple : {}), \'>='::( 1: 0 )]),
         )),
 
 The selection type definer `Integer_NN` represents the infinite type
@@ -1673,7 +1673,7 @@ default and minmum value is `0`; it has no maximum value.
 
         Integer_P : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Integer_NN::(:Tuple : {}), \'>'::( 1: 0 )]),
+            evaluates : (:Array : [::Integer_NN::(:Tuple : {}), \'>'::( 1: 0 )]),
             default : 1,
         )),
 
@@ -2102,8 +2102,8 @@ The virtual function `denominator` results in the *denominator* of its
                 label : :Rational,
                 attrs : (:Array : [
                     (
-                        numerator : :Integer::(:Tuple : {}),
-                        denominator : :Integer_P::(:Tuple : {}),
+                        numerator : ::Integer::(:Tuple : {}),
+                        denominator : ::Integer_P::(:Tuple : {}),
                     ),
                     \(args :. :0 :. :numerator coprime args :. :0 :. :denominator),
                 ]),
@@ -2132,7 +2132,7 @@ or *Rational*.
 
         Rational_NN : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Rational::(:Tuple : {}), \'>='::( 1: 0.0 )]),
+            evaluates : (:Array : [::Rational::(:Tuple : {}), \'>='::( 1: 0.0 )]),
         )),
 
 The selection type definer `Rational_NN` represents the infinite type
@@ -2351,7 +2351,7 @@ virtual function `integral_divided_by` aka `div` for the composing type
             returns : (:Set : [::Rational, ::Zero_To_The_Zero]),
             matches : (:Tuple : {::Rational, ::Integer}),
             implements : folder::'',
-            evaluates : (evaluates :integral_nn_power::(:Tuple : {})
+            evaluates : (evaluates ::integral_nn_power::(:Tuple : {})
                 <-- (if args :. :1 >= 0 then args else (reciprocal::(args :. :0), -args :. :1))),
         )),
 
@@ -3190,7 +3190,7 @@ results for endpoints as for non-endpoints the former bound.*
         all : (:Function : (
             returns : ::Boolean,
             matches : (:Tuple : {::Homogeneous, ::Signature}),
-            evaluates : (args :. :0 none :not_is_a::( 1: args :. :1 )),
+            evaluates : (args :. :0 none ::not_is_a::( 1: args :. :1 )),
         )),
 
         for_all : (:Alias : (:Tuple : { of : ::all })),
@@ -3637,7 +3637,7 @@ distinct member values of its `0` argument.
         order : (:Function : (
             returns : ::Positional,
             matches : (:Tuple : {::Discrete}),
-            evaluates : (args :. :0 order_using :in_order::(:Tuple : {})),
+            evaluates : (args :. :0 order_using ::in_order::(:Tuple : {})),
         )),
 
 The function `order` results in the `Positional` value that represents
@@ -4349,7 +4349,7 @@ corresponding types *bit* or *bit varying*.
 
         Array::Bits : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Array::(:Tuple : {}), :all::( 1: :in::( 1: 0..1 ) )]),
+            evaluates : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::in::( 1: 0..1 ) )]),
         )),
 
 The selection type definer `::Array::Bits` represents the infinite type
@@ -4514,7 +4514,7 @@ corresponding types *Buf* or *byte(:Array : [])* or *bytea*.
 
         Array::Octets : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Array::(:Tuple : {}), :all::( 1: :in::( 1: 0..255 ) )]),
+            evaluates : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::in::( 1: 0..255 ) )]),
         )),
 
 The selection type definer `::Array::Octets` represents the infinite type
@@ -4765,8 +4765,8 @@ instead for such character strings.
 
         Array::Unicode_Codes : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Array::(:Tuple : {}),
-                :all::( 1: :in::( 1: ?..(:Set : [0..0xD7FF,0xE000..0x10FFFF]) ) )]),
+            evaluates : (:Array : [::Array::(:Tuple : {}),
+                ::all::( 1: ::in::( 1: ?..(:Set : [0..0xD7FF,0xE000..0x10FFFF]) ) )]),
         )),
 
 The selection type definer `::Array::Unicode_Codes` represents the infinite type
@@ -4792,7 +4792,7 @@ the standard ASCII codes for the same symbols.
 
         Array::ASCII_Chars : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [\::Array::Unicode_Codes(:Tuple : {}), :all::( 1: :in::( 1: 0..127 ) )]),
+            evaluates : (:Array : [\::Array::Unicode_Codes(:Tuple : {}), ::all::( 1: ::in::( 1: 0..127 ) )]),
         )),
 
 The selection type definer `::Array::ASCII_Chars` represents the infinite type
@@ -5082,7 +5082,7 @@ pairs and out of range etc stuff.*
                 result_chars ::=
                     given #repl_chars
                         when 0 then
-                            src_octets where :in::( 1: 0..127 )
+                            src_octets where ::in::( 1: 0..127 )
                         when 1 then guard
                             src_octets
                                 map \(if args :. :0 in 0..127 then args :. :0 else args :. :1)
@@ -5091,7 +5091,7 @@ pairs and out of range etc stuff.*
                             src_octets
                                 map \(if args :. :0 in 0..127 then (:Array : [args :. :0]) else args :. :1)
                                     <-- (:Tuple : {1 : repl_chars})
-                                reduce :catenate::(:Tuple : {})
+                                reduce ::catenate::(:Tuple : {})
                     ;
                 returns Text_from_ASCII_Chars result_chars;
             ),
@@ -5688,7 +5688,7 @@ zero members, `(:Set : [])`.  `Setty` is composed, directly or indirectly, by:
             evaluates : (::Signature::Article_Match : (
                 label : :Set,
                 attrs : (
-                    members : (:Array : [:Bag::(:Tuple : {}), :all_unique::(:Tuple : {})]),
+                    members : (:Array : [::Bag::(:Tuple : {}), ::all_unique::(:Tuple : {})]),
                 ),
             )),
             default : (:Set : []),
@@ -7417,7 +7417,7 @@ The singleton type definer `Tuple_D0` represents the only zero-attribute
 
         Tuple_D1 : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Tuple::(:Tuple : {}), :is_unary::(:Tuple : {})]),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}), ::is_unary::(:Tuple : {})]),
             default : (:Tuple : {0bFALSE}),
         )),
 
@@ -7650,7 +7650,7 @@ for the composing type `Tuple`.
         all_attrs : (:Function : (
             returns : ::Boolean,
             matches : (:Tuple : {::Tuple, ::Signature}),
-            evaluates : (args :. :0 none_of_attrs :not_is_a::( 1: args :. :1 )),
+            evaluates : (args :. :0 none_of_attrs ::not_is_a::( 1: args :. :1 )),
         )),
 
 *TODO.*
@@ -8257,7 +8257,7 @@ attributes of its `0` argument.  This function implements the
             implements : folder::'',
             accepts : (...),
             evaluates : (select_Relational::( like: args :. :0, heading: $args :. :0 rename args :. :1,
-                body: |args :. :0 map :rename::( 1: args :. :1 ) )),
+                body: |args :. :0 map ::rename::( 1: args :. :1 ) )),
         )),
 
 The function `::rename::Relational` results results in the *relational
@@ -8303,7 +8303,7 @@ function implements the `Attributive` virtual function
             implements : folder::'',
             accepts : (args :. :0 $? args :. :1),
             evaluates : (select_Relational::( like: args :. :0, heading: $args :. :0 on args :. :1,
-                body: |args :. :0 map :on::( 1: args :. :1 ) )),
+                body: |args :. :0 map ::on::( 1: args :. :1 ) )),
         )),
 
 The function `::on::Relational` results in the *relational projection* of
@@ -8330,7 +8330,7 @@ implements the `Attributive` virtual function `on` aka `project` aka
             implements : folder::'',
             accepts : (args :. :0 $? args :. :1),
             evaluates : (select_Relational::( like: args :. :0, heading: $args :. :0,
-                body: |args :. :0 map :update::( 1: args :. :1 ) )),
+                body: |args :. :0 map ::update::( 1: args :. :1 ) )),
         )),
 
 The function `::update::Relational` results in the value of its `0`
@@ -8360,7 +8360,7 @@ will fail if the *heading* of the `1` argument is not a subset of the
             implements : folder::'',
             accepts : (args :. :0 disjoint_heading args :. :1),
             evaluates : (select_Relational::( like: args :. :0, heading: $args :. :0 extend args :. :1,
-                body: |args :. :0 map :extend::( 1: args :. :1 ) )),
+                body: |args :. :0 map ::extend::( 1: args :. :1 ) )),
         )),
 
 The function `::extend::Relational` results in the *relational extension*
@@ -8427,8 +8427,8 @@ types that restrict their possible headings at the type level.*
                 label : :Orderelation,
                 attrs : [
                     (
-                        heading : :Heading::(:Tuple : {}),
-                        body : (:Array : [:Array::(:Tuple : {}), :all::( 1: :Tuple::(:Tuple : {}) )]),
+                        heading : ::Heading::(:Tuple : {}),
+                        body : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Tuple::(:Tuple : {}) )]),
                     ),
                     \(args :. :0 :. :body all \($args :. :0 = args :. :1) <-- (:Tuple : {1: args :. :0 :. :heading})),
                 ],
@@ -8522,8 +8522,8 @@ function `select_Relational` for the composing type `Orderelation`.
                 label : :Relation,
                 attrs : [
                     (
-                        heading : :Heading::(:Tuple : {}),
-                        body : (:Array : [:Set::(:Tuple : {}), :all::( 1: :Tuple::(:Tuple : {}) )]),
+                        heading : ::Heading::(:Tuple : {}),
+                        body : (:Array : [::Set::(:Tuple : {}), ::all::( 1: ::Tuple::(:Tuple : {}) )]),
                     ),
                     \(args :. :0 :. :body all \($args :. :0 = args :. :1) <-- (:Tuple : {1: args :. :0 :. :heading})),
                 ],
@@ -8609,8 +8609,8 @@ function `select_Relational` for the composing type `Relation`.
                 label : :Multirelation,
                 attrs : [
                     (
-                        heading : :Heading::(:Tuple : {}),
-                        body : (:Array : [:Bag::(:Tuple : {}), :all::( 1: :Tuple::(:Tuple : {}) )]),
+                        heading : ::Heading::(:Tuple : {}),
+                        body : (:Array : [::Bag::(:Tuple : {}), ::all::( 1: ::Tuple::(:Tuple : {}) )]),
                     ),
                     \(args :. :0 :. :body all \($args :. :0 = args :. :1) <-- (:Tuple : {1: args :. :0 :. :heading})),
                 ],
@@ -8704,7 +8704,7 @@ function `select_Relational` for the composing type `Multirelation`.
             composes : (:Set : [::Intervalish, ::Setty]),
             evaluates : (::Signature::Article_Match : (
                 label : :Interval,
-                attrs : :Interval_Attrs::(:Tuple : {}),
+                attrs : ::Interval_Attrs::(:Tuple : {}),
             )),
             default : ((::Before_All_Others : (:Tuple : {}))..(::After_All_Others : (:Tuple : {}))),
         )),
@@ -8715,7 +8715,7 @@ function `select_Relational` for the composing type `Multirelation`.
 
         Interval_Attrs : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Tuple::(:Tuple : {}), ...]),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}), ...]),
         )),
 
 *TODO.*
@@ -8742,7 +8742,7 @@ function `select_Relational` for the composing type `Multirelation`.
             evaluates : (::Signature::Article_Match : (
                 label : :Set_Of_Interval,
                 attrs : (
-                    members : (:Array : [:Bag_Of_Interval::(:Tuple : {}), :all_unique::(:Tuple : {})]),
+                    members : (:Array : [::Bag_Of_Interval::(:Tuple : {}), ::all_unique::(:Tuple : {})]),
                 ),
             )),
             default : ...,
@@ -8760,7 +8760,7 @@ function `select_Relational` for the composing type `Multirelation`.
             evaluates : (::Signature::Article_Match : (
                 label : :Bag_Of_Interval,
                 attrs : (
-                    members : (:Array : [:Multirelation::(:Tuple : {}), ...]),
+                    members : (:Array : [::Multirelation::(:Tuple : {}), ...]),
                 ),
             )),
             default : ...,
@@ -8790,7 +8790,7 @@ function `select_Relational` for the composing type `Multirelation`.
             evaluates : (::Signature::Article_Match : (
                 label : :Quantity,
                 attrs : (
-                    0 : (:Array : [:Relation::(:Tuple : {}), ...]),
+                    0 : (:Array : [::Relation::(:Tuple : {}), ...]),
                 ),
             )),
             default : ...,
@@ -9070,7 +9070,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Base_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Nesting::(:Tuple : {}), :not_empty::(:Tuple : {}), \'∌'::( 1: \'' )]),
+            evaluates : (:Array : [::Nesting::(:Tuple : {}), ::not_empty::(:Tuple : {}), \'∌'::( 1: \'' )]),
         )),
 
 *TODO.*
@@ -9079,7 +9079,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Canon_Authority : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Text::(:Tuple : {}), :not_empty::(:Tuple : {})]),
+            evaluates : (:Array : [::Text::(:Tuple : {}), ::not_empty::(:Tuple : {})]),
         )),
 
 *TODO.*
@@ -9088,7 +9088,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Canon_Version_Number : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Text::(:Tuple : {}), :not_empty::(:Tuple : {})]),
+            evaluates : (:Array : [::Text::(:Tuple : {}), ::not_empty::(:Tuple : {})]),
         )),
 
 *TODO.*
@@ -9097,8 +9097,8 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Uses_Map : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Tuple::(:Tuple : {}), \'.!?'::( 1: \'' ),
-                :all_attr_assets::( 1: \::Package::Uses_Item(:Tuple : {}) )]),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}), \'.!?'::( 1: \'' ),
+                ::all_attr_assets::( 1: \::Package::Uses_Item(:Tuple : {}) )]),
         )),
 
 *TODO.  Each attribute name declares a single-element composing-package-local
@@ -9124,7 +9124,7 @@ Until then, this type just represents a single positive assertion.*
 
         Package::Entry_Point : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : :Absolute_Name::(:Tuple : {}),
+            evaluates : ::Absolute_Name::(:Tuple : {}),
         )),
 
 *TODO.  This type is subject to be expanded to some collection or have alternatives.*
@@ -9133,7 +9133,7 @@ Until then, this type just represents a single positive assertion.*
 
         Package::Floating : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Set::(:Tuple : {}), :all::( 1: :Absolute_Name::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Set::(:Tuple : {}), ::all::( 1: ::Absolute_Name::(:Tuple : {}) )]),
         )),
 
 *TODO.*
@@ -9142,8 +9142,8 @@ Until then, this type just represents a single positive assertion.*
 
         Package::Folder : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Tuple::(:Tuple : {}),
-                :all_attr_assets::( 1: (:Set : [\::Package::Folder(:Tuple : {}), :Material::(:Tuple : {})]) )]),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}),
+                ::all_attr_assets::( 1: (:Set : [\::Package::Folder(:Tuple : {}), ::Material::(:Tuple : {})]) )]),
         )),
 
 *TODO.*
@@ -9197,34 +9197,34 @@ Until then, this type just represents a single positive assertion.*
 
                 when_generalized_type_definer ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : :True::(:Tuple : {}),),
-                        is_generalization : (type : :True::(:Tuple : {}),),
-                        default : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
+                        is_type_definer : (type : ::True::(:Tuple : {}),),
+                        is_generalization : (type : ::True::(:Tuple : {}),),
+                        default : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                     ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 when_singleton_type_definer ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : :True::(:Tuple : {}),),
-                        is_generalization : (type : :False::(:Tuple : {}), optional : 0bTRUE),
-                        constant : (type : :Expression::(:Tuple : {}),),
+                        is_type_definer : (type : ::True::(:Tuple : {}),),
+                        is_generalization : (type : ::False::(:Tuple : {}), optional : 0bTRUE),
+                        constant : (type : ::Expression::(:Tuple : {}),),
                     ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 when_regular_type_definer ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : :True::(:Tuple : {}),),
-                        is_generalization : (type : :False::(:Tuple : {}), optional : 0bTRUE),
-                        evaluates : (type : (:Set : [:Expression::(:Tuple : {}), :Signature::(:Tuple : {})]),),
-                        default : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
+                        is_type_definer : (type : ::True::(:Tuple : {}),),
+                        is_generalization : (type : ::False::(:Tuple : {}), optional : 0bTRUE),
+                        evaluates : (type : (:Set : [::Expression::(:Tuple : {}), ::Signature::(:Tuple : {})]),),
+                        default : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                     ) %+ type_specialization_attrs_template,))
                     and_then type_specialization_attrs_constraint;
 
                 type_specialization_attrs_template ::=
                     (
-                        composes : (type : :Set_of_Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
+                        composes : (type : ::Set_of_Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
                         provides_default_for :
-                            (type : :Set_of_Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
+                            (type : ::Set_of_Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
                     );
 
                 type_specialization_attrs_constraint ::=
@@ -9236,29 +9236,29 @@ Until then, this type just represents a single positive assertion.*
 
                 when_regular_function ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
-                        is_type_definer : (type : :False::(:Tuple : {}), optional : 0bTRUE),
-                        virtual : (type : :Boolean::(:Tuple : {}), optional : 0bTRUE),
-                        commutes : (type : :Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
-                        negates : (type : :Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
-                        returns : (type : :Signature::(:Tuple : {}), optional : 0bTRUE),
+                        is_type_definer : (type : ::False::(:Tuple : {}), optional : 0bTRUE),
+                        virtual : (type : ::Boolean::(:Tuple : {}), optional : 0bTRUE),
+                        commutes : (type : ::Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
+                        negates : (type : ::Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
+                        returns : (type : ::Signature::(:Tuple : {}), optional : 0bTRUE),
                         matches : (type : \::Signature::Tuple_Attrs_Match_Simple(:Tuple : {}),
                             optional : 0bTRUE),
                         implements : (:Tuple : {type : ..., optional : 0bTRUE}),
                         overrides : (:Tuple : {type : ..., optional : 0bTRUE}),
-                        accepts : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
-                        intends : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
-                        is_associative : (type : :Boolean::(:Tuple : {}), optional : 0bTRUE),
+                        accepts : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
+                        intends : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
+                        is_associative : (type : ::Boolean::(:Tuple : {}), optional : 0bTRUE),
                             `two-way associative`
-                        is_commutative : (type : :Boolean::(:Tuple : {}), optional : 0bTRUE),
-                        is_idempotent : (type : :Boolean::(:Tuple : {}), optional : 0bTRUE),
-                        identity : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
+                        is_commutative : (type : ::Boolean::(:Tuple : {}), optional : 0bTRUE),
+                        is_idempotent : (type : ::Boolean::(:Tuple : {}), optional : 0bTRUE),
+                        identity : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                             `iff two-sided identity element exists`
-                        left_identity : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
+                        left_identity : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                             `iff only left-identity element exists`
-                        right_identity : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
+                        right_identity : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                             `iff only right-identity element exists`
                         repeater : (:Tuple : {type : ..., optional : 0bTRUE}),
-                        evaluates : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
+                        evaluates : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                     ),));
             ),
             default : ...,
@@ -9294,13 +9294,13 @@ its own isolated lexical scope and its own `args` context where generally the
             evaluates : (::Signature::Article_Match : (
                 label : :Procedure,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
-                    virtual : (type : :Boolean::(:Tuple : {}), optional : 0bTRUE),
+                    virtual : (type : ::Boolean::(:Tuple : {}), optional : 0bTRUE),
                     matches : (type : \::Signature::Tuple_Attrs_Match_Simple(:Tuple : {}), optional : 0bTRUE),
                     implements : (:Tuple : {type : ..., optional : 0bTRUE}),
                     overrides : (:Tuple : {type : ..., optional : 0bTRUE}),
-                    accepts : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
-                    intends : (type : :Expression::(:Tuple : {}), optional : 0bTRUE),
-                    performs : (type : :Statement::(:Tuple : {}), optional : 0bTRUE),
+                    accepts : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
+                    intends : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
+                    performs : (type : ::Statement::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : ...,
@@ -9320,7 +9320,7 @@ its own isolated lexical scope and its own `args` context where generally the
                 ::Signature::Tuple_Attrs_Match,
                 ::Signature::Article_Match,
             ]),
-            default : :Any::(:Tuple : {}),
+            default : ::Any::(:Tuple : {}),
         )),
 
 *TODO.*
@@ -9329,7 +9329,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Conjunction : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Array::(:Tuple : {}), :all::( 1: :Signature::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Signature::(:Tuple : {}) )]),
         )),
 
 *TODO.*
@@ -9338,7 +9338,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Disjunction : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Set::(:Tuple : {}), :all::( 1: :Signature::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Set::(:Tuple : {}), ::all::( 1: ::Signature::(:Tuple : {}) )]),
         )),
 
 *TODO.*
@@ -9347,7 +9347,7 @@ its own isolated lexical scope and its own `args` context where generally the
 
         Signature::Tuple_Attrs_Match_Simple : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Tuple::(:Tuple : {}), :all_attr_assets::( 1: :Signature::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::Signature::(:Tuple : {}) )]),
         )),
 
 *TODO.*
@@ -9360,8 +9360,8 @@ its own isolated lexical scope and its own `args` context where generally the
                 label : ::material,
                 attrs : (
                     attrs : (:Array : [
-                        :Tuple::(:Tuple : {}),
-                        :all_attr_assets::( 1: \(
+                        ::Tuple::(:Tuple : {}),
+                        ::all_attr_assets::( 1: \(
                             attr_sig ::= args :. :0;
                             returns
                                 attr_sig ⊆$ ::(:Tuple : {type,optional})
@@ -9385,8 +9385,8 @@ its own isolated lexical scope and its own `args` context where generally the
         Signature::Article_Match : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (::Signature::Article_Match : (
-                label : :Any::(:Tuple : {}),
-                attrs : :Signature::(:Tuple : {}),
+                label : ::Any::(:Tuple : {}),
+                attrs : ::Signature::(:Tuple : {}),
             )),
         )),
 
@@ -9429,7 +9429,7 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Any::(:Tuple : {}),
+                    0 : ::Any::(:Tuple : {}),
                 ),
             )),
             default : (::material : (:Tuple : {0bFALSE})),
@@ -9467,7 +9467,7 @@ Written in Plain_Text with the token `args`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ...),
@@ -9489,9 +9489,9 @@ value of the type of the variable it is assigned to.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : (:Array : [:Array::(:Tuple : {}), :all::( 1: (
-                        0 : :Expression::(:Tuple : {}),  `member value`
-                        1 : :Expression::(:Tuple : {}),  `multiplicity`
+                    0 : (:Array : [::Array::(:Tuple : {}), ::all::( 1: (
+                        0 : ::Expression::(:Tuple : {}),  `member value`
+                        1 : ::Expression::(:Tuple : {}),  `multiplicity`
                     ) )]),
                 ),
             )),
@@ -9510,9 +9510,9 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : (:Array : [:Bag::(:Tuple : {}), :all::( 1: (
-                        0 : :Expression::(:Tuple : {}),  `member value`
-                        1 : :Expression::(:Tuple : {}),  `multiplicity`
+                    0 : (:Array : [::Bag::(:Tuple : {}), ::all::( 1: (
+                        0 : ::Expression::(:Tuple : {}),  `member value`
+                        1 : ::Expression::(:Tuple : {}),  `multiplicity`
                     ) )]),
                 ),
             )),
@@ -9534,9 +9534,9 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : (:Array : [:Bag::(:Tuple : {}), :all::( 1: (
-                        0 : :Expression::(:Tuple : {}),  `member value`
-                        1 : :Expression::(:Tuple : {}),  `multiplicity`
+                    0 : (:Array : [::Bag::(:Tuple : {}), ::all::( 1: (
+                        0 : ::Expression::(:Tuple : {}),  `member value`
+                        1 : ::Expression::(:Tuple : {}),  `multiplicity`
                     ) )]),
                 ),
             )),
@@ -9555,7 +9555,7 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : (:Array : [:Tuple::(:Tuple : {}), :all_attr_assets::( 1: :Expression::(:Tuple : {}) )]),
+                    0 : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::Expression::(:Tuple : {}) )]),
                 ),
             )),
             default : (::material : ((:Tuple : {}))),
@@ -9573,8 +9573,8 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),  `label`
-                    1 : :Expression::(:Tuple : {}),  `attributes`
+                    0 : ::Expression::(:Tuple : {}),  `label`
+                    1 : ::Expression::(:Tuple : {}),  `attributes`
                 ),
             )),
             default : (::material : ((::folder::Literal : (:Tuple : {\''})),
@@ -9593,9 +9593,9 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
-                    1 : :Expression::(:Tuple : {}),
-                    2 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
+                    1 : ::Expression::(:Tuple : {}),
+                    2 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
@@ -9612,8 +9612,8 @@ written in Plain_Text with special syntax example `if P then X else Y`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
-                    1 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
+                    1 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
@@ -9632,8 +9632,8 @@ written in Plain_Text with special syntax example `P and_then X`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
-                    1 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
+                    1 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
@@ -9652,12 +9652,12 @@ written in Plain_Text with special syntax example `P or_else X`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
-                    1 : (:Array : [:Set::(:Tuple : {}), :all::( 1: (
-                        0 : :Expression::(:Tuple : {}),
-                        1 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
+                    1 : (:Array : [::Set::(:Tuple : {}), ::all::( 1: (
+                        0 : ::Expression::(:Tuple : {}),
+                        1 : ::Expression::(:Tuple : {}),
                     ) )]),
-                    2 : :Expression::(:Tuple : {}),
+                    2 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
@@ -9675,7 +9675,7 @@ written in Plain_Text with special syntax example
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),)),
@@ -9691,8 +9691,8 @@ written in Plain_Text with special syntax example `guard X`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    factors : (:Array : [:Tuple::(:Tuple : {}), :all_attr_assets::( 1: :Expression::(:Tuple : {}) )]),
-                    returns : :Expression::(:Tuple : {}),
+                    factors : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::Expression::(:Tuple : {}) )]),
+                    returns : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : (factors : (:Tuple : {}), returns : (::Literal : (:Tuple : {0bFALSE})))),
@@ -9718,7 +9718,7 @@ can be re-used in other statements.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    factor : :Attr_Name::(:Tuple : {}),
+                    factor : ::Attr_Name::(:Tuple : {}),
                 ),
             )),
             default : (::material : (:Tuple : {factor : \''})),
@@ -9752,7 +9752,7 @@ Variable has been made to reference it directly or indirectly meanwhile.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
                 )
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),)),
@@ -9769,7 +9769,7 @@ sub-expression.  Written in Plain_Text with syntax example `new foo`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::New : ((::Literal : (:Tuple : {0bFALSE})),)),)),
@@ -9807,7 +9807,7 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    vars : (:Array : [:Tuple::(:Tuple : {}), :all_attr_assets::( 1: :Expression::(:Tuple : {}) )]),
+                    vars : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::Expression::(:Tuple : {}) )]),
                 ),
             )),
             default : (::material : (vars : (:Tuple : {}),)),
@@ -9833,7 +9833,7 @@ plus Or\_Else and justified keeping them; its a similar situation.
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
                 ),
             )),
             default : (::material : ...),
@@ -9852,9 +9852,9 @@ where X denotes a Procedure_Call value.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
-                    1 : :Statement::(:Tuple : {}),
-                    2 : :Statement::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
+                    1 : ::Statement::(:Tuple : {}),
+                    2 : ::Statement::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
@@ -9873,12 +9873,12 @@ the 'else' is an empty compound statement.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : :Expression::(:Tuple : {}),
-                    1 : (:Array : [:Set::(:Tuple : {}), :all::( 1: (
-                        0 : :Expression::(:Tuple : {}),
-                        1 : :Statement::(:Tuple : {}),
+                    0 : ::Expression::(:Tuple : {}),
+                    1 : (:Array : [::Set::(:Tuple : {}), ::all::( 1: (
+                        0 : ::Expression::(:Tuple : {}),
+                        1 : ::Statement::(:Tuple : {}),
                     ) )]),
-                    2 : :Statement::(:Tuple : {}),
+                    2 : ::Statement::(:Tuple : {}),
                 ),
             )),
             default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
@@ -9896,8 +9896,8 @@ written in Plain_Text with special syntax example
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
-                    0 : (type : (:Array : [:Array::(:Tuple : {}), :all::( 1: :Statement::(:Tuple : {}) )])),
-                    label : (type : :Attr_Name::(:Tuple : {}), optional : 0bTRUE),
+                    0 : (type : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Statement::(:Tuple : {}) )])),
+                    label : (type : ::Attr_Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : (::material : ((:Array : []),)),
@@ -9915,7 +9915,7 @@ iterated, written in Plain_Text with special syntax example
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
-                    label : (type : :Attr_Name::(:Tuple : {}), optional : 0bTRUE),
+                    label : (type : ::Attr_Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : (::material : (:Tuple : {})),
@@ -9935,7 +9935,7 @@ with special syntax examples `leave` or `leave do_work`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
-                    label : (type : :Attr_Name::(:Tuple : {}), optional : 0bTRUE),
+                    label : (type : ::Attr_Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : (::material : (:Tuple : {})),
@@ -9952,7 +9952,7 @@ with special syntax examples `iterate` or `iterate do_work`.*
 
         Heading : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Tuple::(:Tuple : {}), :all_attr_assets::( 1: :True::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::True::(:Tuple : {}) )]),
         )),
 
 *TODO.*
@@ -9965,7 +9965,7 @@ a thing for opening tuples as for creating them.*
 
         Attr_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Heading::(:Tuple : {}), :is_unary::(:Tuple : {})]),
+            evaluates : (:Array : [::Heading::(:Tuple : {}), ::is_unary::(:Tuple : {})]),
         )),
 
 *TODO.*
@@ -9974,7 +9974,7 @@ a thing for opening tuples as for creating them.*
 
         Nesting : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Array::(:Tuple : {}), :all::( 1: :Attr_Name::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Attr_Name::(:Tuple : {}) )]),
         )),
 
 *TODO.*
@@ -9983,7 +9983,7 @@ a thing for opening tuples as for creating them.*
 
         Local_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [:Nesting::(:Tuple : {}), :not_empty::(:Tuple : {}), \(
+            evaluates : (:Array : [::Nesting::(:Tuple : {}), ::not_empty::(:Tuple : {}), \(
                 given args :. :0.0
                     when :foundation then #args :. :0 = 2
                     when :used       then #args :. :0 ≥ 2  `elem 2 is pkg local alias`
@@ -10015,8 +10015,8 @@ a thing for opening tuples as for creating them.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    call : (:Set : [:Local_Name::(:Tuple : {}), :Identity_Identifier::(:Tuple : {}), :Function::(:Tuple : {}), :Procedure::(:Tuple : {})]),
-                    args : :Tuple::(:Tuple : {}),
+                    call : (:Set : [::Local_Name::(:Tuple : {}), ::Identity_Identifier::(:Tuple : {}), ::Function::(:Tuple : {}), ::Procedure::(:Tuple : {})]),
+                    args : ::Tuple::(:Tuple : {}),
                 ),
             )),
             default : \::foundation::False(:Tuple : {}),
@@ -10044,8 +10044,8 @@ such manually anyhow, the runtime environment should fill them in as needed.*
         Function_Call : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (:Array : [
-                :Routine_Call::(:Tuple : {}),
-                \(args :. :0 :>. :asset :. :call is_a (:Set : [:Local_Name::(:Tuple : {}), :Identity_Identifier::(:Tuple : {}), :Function::(:Tuple : {})])),
+                ::Routine_Call::(:Tuple : {}),
+                \(args :. :0 :>. :asset :. :call is_a (:Set : [::Local_Name::(:Tuple : {}), ::Identity_Identifier::(:Tuple : {}), ::Function::(:Tuple : {})])),
             ]),
             default : \(0bFALSE),
         )),
@@ -10080,8 +10080,8 @@ written in Plain_Text with special syntax example `\foo::(:Tuple : {})` or `\(..
         Procedure_Call : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (:Array : [
-                :Routine_Call::(:Tuple : {}),
-                \(args :. :0 :>. :asset :. :call is_a (:Set : [:Local_Name::(:Tuple : {}), :Identity_Identifier::(:Tuple : {}), :Procedure::(:Tuple : {})])),
+                ::Routine_Call::(:Tuple : {}),
+                \(args :. :0 :>. :asset :. :call is_a (:Set : [::Local_Name::(:Tuple : {}), ::Identity_Identifier::(:Tuple : {}), ::Procedure::(:Tuple : {})])),
             ]),
             default : \[],
         )),
