@@ -140,7 +140,7 @@ It can not have a default value.
             evaluates : (evaluates args --> \::foundation::Any_same(:Tuple : {})),
         )),
 
-        '=' : (:Alias : (:Tuple : { of : ::same })),
+        "=" : (:Alias : (:Tuple : { of : ::same })),
 
 The function `same` aka `=` results in `0bTRUE` iff its 2 arguments `0`
 and `1` are exactly the same value, and `0bFALSE` otherwise.  Other
@@ -164,9 +164,9 @@ and not if two distinct containers have the same content.
             is_commutative : 0bTRUE,
         })),
 
-        '!=' : (:Alias : (:Tuple : { of : ::not_same })),
+        "!=" : (:Alias : (:Tuple : { of : ::not_same })),
 
-        Unicode_Aliases::'≠' : (:Alias : (:Tuple : { of : ::not_same })),
+        Unicode_Aliases::"≠" : (:Alias : (:Tuple : { of : ::not_same })),
 
 The function `not_same` aka `!=` aka `≠` results in `0bFALSE` iff its 2
 arguments `0` and `1` are exactly the same value, and `0bTRUE` otherwise.
@@ -266,7 +266,7 @@ automatically halt blocks of code.*
             evaluates : (if Excuse args :. :0 then args :. :1 else args :. :0),
         )),
 
-        '??' : (:Alias : (:Tuple : { of : ::coalesce })),
+        "??" : (:Alias : (:Tuple : { of : ::coalesce })),
 
 The function `coalesce` aka `??` results in its `0` argument iff the
 latter is not an `Excuse`, and results in its `1` argument otherwise.
@@ -289,7 +289,7 @@ operators `?:` or `//` or *NVL* or *ISNULL*.
             evaluates : (if Excuse args :. :0 then args :. :0 else args :. :1),
         )),
 
-        '!!' : (:Alias : (:Tuple : { of : ::anticoalesce })),
+        "!!" : (:Alias : (:Tuple : { of : ::anticoalesce })),
 
 The function `anticoalesce` aka `!!` results in its `0` argument iff the
 latter is an `Excuse`, and results in its `1` argument otherwise.
@@ -544,7 +544,7 @@ with any `Orderable`.
             commutes : ::after,
         })),
 
-        '<' : (:Alias : (:Tuple : { of : ::before })),
+        "<" : (:Alias : (:Tuple : { of : ::before })),
 
 The function `before` aka `<` results in `0bTRUE` iff its `0`
 argument is *before* its `1` argument; otherwise it results in `0bFALSE`.
@@ -556,7 +556,7 @@ Other programming languages may name this operator *lt*.
             negates : ::before_or_same,
         })),
 
-        '>' : (:Alias : (:Tuple : { of : ::after })),
+        ">" : (:Alias : (:Tuple : { of : ::after })),
 
 The function `after` aka `>` results in `0bTRUE` iff its `0`
 argument is *after* its `1` argument; otherwise it results in `0bFALSE`.
@@ -566,9 +566,9 @@ Other programming languages may name this operator *gt*.
 
         before_or_same : (:Alias : (:Tuple : { of : ::in_order })),
 
-        '<=' : (:Alias : (:Tuple : { of : ::before_or_same })),
+        "<=" : (:Alias : (:Tuple : { of : ::before_or_same })),
 
-        Unicode_Aliases::'≤' : (:Alias : (:Tuple : { of : ::before_or_same })),
+        Unicode_Aliases::"≤" : (:Alias : (:Tuple : { of : ::before_or_same })),
 
 The function `before_or_same` aka `<=` aka `≤` results in `0bTRUE`
 iff its `0` argument is *before* its `1` argument or they are the same
@@ -581,9 +581,9 @@ name this operator *le*.
             commutes : ::before_or_same,
         })),
 
-        '>=' : (:Alias : (:Tuple : { of : ::after_or_same })),
+        ">=" : (:Alias : (:Tuple : { of : ::after_or_same })),
 
-        Unicode_Aliases::'≥' : (:Alias : (:Tuple : { of : ::after_or_same })),
+        Unicode_Aliases::"≥" : (:Alias : (:Tuple : { of : ::after_or_same })),
 
 The function `after_or_same` aka `>=` aka `≥` results in `0bTRUE`
 iff its `0` argument is *after* its `1` argument or they are the same
@@ -839,7 +839,7 @@ typically integer types, to be *false* or *true*.
             constant : 0bFALSE,
         })),
 
-        Unicode_Aliases::'⊥' : (:Alias : (:Tuple : { of : ::False })),
+        Unicode_Aliases::"⊥" : (:Alias : (:Tuple : { of : ::False })),
 
 The singleton type definer `False` aka `⊥` represents the boolean logical truth value
 *false* aka *contradiction*.  Other programming languages frequently use
@@ -852,7 +852,7 @@ the integer 0 to represent *false*.
             constant : 0bTRUE,
         })),
 
-        Unicode_Aliases::'⊤' : (:Alias : (:Tuple : { of : ::True })),
+        Unicode_Aliases::"⊤" : (:Alias : (:Tuple : { of : ::True })),
 
 The singleton type definer `True` aka `⊤` represents the boolean logical truth value
 *true* aka *tautology*.  Other programming languages frequently use the
@@ -878,9 +878,9 @@ function `in_order` for the composing type `Boolean`.
             evaluates : (if args :. :0 then 0bFALSE else 0bTRUE),
         )),
 
-        '!' : (:Alias : (:Tuple : { of : ::not })),
+        "!" : (:Alias : (:Tuple : { of : ::not })),
 
-        Unicode_Aliases::'¬' : (:Alias : (:Tuple : { of : ::not })),
+        Unicode_Aliases::"¬" : (:Alias : (:Tuple : { of : ::not })),
 
 The function `not` aka `!` aka `¬` performs a logical *negation* or
 *logical complement*; it results in `0bTRUE` iff its `0` argument is
@@ -899,7 +899,7 @@ corresponding operators `~` or `^` or *N*.
             evaluates : (args :. :0 and_then args :. :1),
         )),
 
-        Unicode_Aliases::'∧' : (:Alias : (:Tuple : { of : ::and })),
+        Unicode_Aliases::"∧" : (:Alias : (:Tuple : { of : ::and })),
 
 The function `and` aka `∧` performs a logical *conjunction*; it results
 in `0bTRUE` iff its 2 arguments `0` and `1` are both `0bTRUE`, and `0bFALSE`
@@ -915,8 +915,8 @@ operators `&` or `&&` or *K*.
 
         not_and : (:Alias : (:Tuple : { of : ::nand })),
 
-        Unicode_Aliases::'⊼' : (:Alias : (:Tuple : { of : ::nand })),
-        Unicode_Aliases::'↑' : (:Alias : (:Tuple : { of : ::nand })),
+        Unicode_Aliases::"⊼" : (:Alias : (:Tuple : { of : ::nand })),
+        Unicode_Aliases::"↑" : (:Alias : (:Tuple : { of : ::nand })),
 
 The function `nand` aka `not_and` aka `⊼` aka `↑` performs a logical
 *alternative denial*; it results in `0bFALSE` iff its 2 arguments `0` and
@@ -934,7 +934,7 @@ The function `nand` aka `not_and` aka `⊼` aka `↑` performs a logical
             evaluates : (args :. :0 or_else args :. :1),
         )),
 
-        Unicode_Aliases::'∨' : (:Alias : (:Tuple : { of : ::or })),
+        Unicode_Aliases::"∨" : (:Alias : (:Tuple : { of : ::or })),
 
 The function `or` aka `∨` performs a logical *disjunction*; it results
 in `0bTRUE` iff at least one of its 2 arguments `0` and `1` is `0bTRUE`,
@@ -950,8 +950,8 @@ corresponding operators `|` or `||` or *A*.
 
         not_or : (:Alias : (:Tuple : { of : ::nor })),
 
-        Unicode_Aliases::'⊽' : (:Alias : (:Tuple : { of : ::nor })),
-        Unicode_Aliases::'↓' : (:Alias : (:Tuple : { of : ::nor })),
+        Unicode_Aliases::"⊽" : (:Alias : (:Tuple : { of : ::nor })),
+        Unicode_Aliases::"↓" : (:Alias : (:Tuple : { of : ::nor })),
 
 The function `nor` aka `not_or` aka `⊽` aka `↓` performs a logical
 *joint denial*; it results in `0bFALSE` iff at least one of its 2 arguments
@@ -970,7 +970,7 @@ The function `nor` aka `not_or` aka `⊽` aka `↓` performs a logical
 
         iff : (:Alias : (:Tuple : { of : ::xnor })),
 
-        Unicode_Aliases::'↔' : (:Alias : (:Tuple : { of : ::xnor })),
+        Unicode_Aliases::"↔" : (:Alias : (:Tuple : { of : ::xnor })),
 
 The function `xnor` aka `iff` aka `↔` performs a logical
 *biconditional* or *material equivalence* or *even parity*; it results
@@ -989,8 +989,8 @@ name their corresponding operators *E*.
             identity : 0bFALSE,
         })),
 
-        Unicode_Aliases::'⊻' : (:Alias : (:Tuple : { of : ::xor })),
-        Unicode_Aliases::'↮' : (:Alias : (:Tuple : { of : ::xor })),
+        Unicode_Aliases::"⊻" : (:Alias : (:Tuple : { of : ::xor })),
+        Unicode_Aliases::"↮" : (:Alias : (:Tuple : { of : ::xor })),
 
 The function `xor` aka `⊻` aka `↮` performs a logical *exclusive
 disjunction* or *odd parity*; it results in `0bFALSE` iff its 2 arguments
@@ -1010,7 +1010,7 @@ corresponding operators `^`.
 
         implies : (:Alias : (:Tuple : { of : ::imp })),
 
-        Unicode_Aliases::'→' : (:Alias : (:Tuple : { of : ::imp })),
+        Unicode_Aliases::"→" : (:Alias : (:Tuple : { of : ::imp })),
 
 The function `imp` aka `implies` aka `→` performs a logical *material
 implication*; it results in `0bFALSE` when its `0` argument is `0bTRUE` and
@@ -1024,7 +1024,7 @@ its `1` argument is `0bFALSE`, and `0bTRUE` otherwise.
 
         not_implies : (:Alias : (:Tuple : { of : ::nimp })),
 
-        Unicode_Aliases::'↛' : (:Alias : (:Tuple : { of : ::nimp })),
+        Unicode_Aliases::"↛" : (:Alias : (:Tuple : { of : ::nimp })),
 
 The function `nimp` aka `not_implies` aka `↛` performs a logical
 *material nonimplication*; it results in `0bTRUE` when its `0` argument is
@@ -1036,7 +1036,7 @@ The function `nimp` aka `not_implies` aka `↛` performs a logical
             commutes : ::imp,
         })),
 
-        Unicode_Aliases::'←' : (:Alias : (:Tuple : { of : ::if })),
+        Unicode_Aliases::"←" : (:Alias : (:Tuple : { of : ::if })),
 
 The function `if` aka `←` performs a logical *converse implication* or
 *reverse material implication*; it results in `0bFALSE` when its `0`
@@ -1051,7 +1051,7 @@ otherwise.
 
         not_if : (:Alias : (:Tuple : { of : ::nif })),
 
-        Unicode_Aliases::'↚' : (:Alias : (:Tuple : { of : ::nif })),
+        Unicode_Aliases::"↚" : (:Alias : (:Tuple : { of : ::nif })),
 
 The function `nif` aka `not_if` aka `↚` performs a logical *converse
 nonimplication*; it results in `0bTRUE` when its `0` argument is `0bFALSE`
@@ -1103,7 +1103,7 @@ Other programming languages may name their corresponding types
 
         Round_Meth_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Name::(:Tuple : {}), \'⊆$'::( 1:
+            evaluates : (:Array : [::Name::(:Tuple : {}), ::"⊆$"::( 1:
                 ::(:Tuple : {Down,Up,To_Zero,To_Inf
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd})
@@ -1252,7 +1252,7 @@ mathematical notion writes this operator in circumfix like *|n|*.
             repeater : ::times,
         )),
 
-        '+' : (:Alias : (:Tuple : { of : ::plus })),
+        "+" : (:Alias : (:Tuple : { of : ::plus })),
 
 The virtual function `plus` aka `+` results in the numeric *sum* from
 performing *addition* of its 2 *summand* arguments `0` (*augend*) and
@@ -1273,13 +1273,13 @@ identity element* value of a number zero.
 
 ## - −
 
-        '-' : (:Function : (
+        "-" : (:Function : (
             returns : ::Numerical,
             matches : (:Set : [(::Numerical), (:Tuple : {::Numerical, ::Numerical})]),
             evaluates : (evaluates args --> (if degree::(args) = 1 then ::opposite::(:Tuple : {}) else ::minus::(:Tuple : {}))),
         )),
 
-        Unicode_Aliases::'−' : (:Alias : ( of : '-' )),
+        Unicode_Aliases::"−" : (:Alias : ( of : ::"-" )),
 
 The function `-` aka `−` is a proxy for either of the virtual functions
 unary `opposite` and binary `minus`, depending on how many arguments it
@@ -1295,9 +1295,9 @@ was invoked with.
         )),
 
         abs_minus : (:Alias : (:Tuple : { of : ::modulus_minus })),
-        '|-|'     : (:Alias : (:Tuple : { of : ::modulus_minus })),
+        "|-|"     : (:Alias : (:Tuple : { of : ::modulus_minus })),
 
-        Unicode_Aliases::'|−|' : (:Alias : (:Tuple : { of : ::modulus_minus })),
+        Unicode_Aliases::"|−|" : (:Alias : (:Tuple : { of : ::modulus_minus })),
 
 The function `modulus_minus` aka `abs_minus` aka `|-|` aka `|−|`
 results in the numeric *absolute difference* of its 2 arguments `0` and
@@ -1314,9 +1314,9 @@ results in the numeric *absolute difference* of its 2 arguments `0` and
             repeater : ::integral_nn_power,
         )),
 
-        '*' : (:Alias : (:Tuple : { of : ::times })),
+        "*" : (:Alias : (:Tuple : { of : ::times })),
 
-        Unicode_Aliases::'×' : (:Alias : (:Tuple : { of : ::times })),
+        Unicode_Aliases::"×" : (:Alias : (:Tuple : { of : ::times })),
 
 The virtual function `times` aka `*` aka `×` results in the numeric
 *product* from performing *multiplication* of its 2 *factor* arguments
@@ -1369,10 +1369,10 @@ other things, some of which would always round to a multiple of one.
             matches : (:Tuple : {::Numerical, ::Numerical}),
         )),
 
-        '/' : (:Alias : (:Tuple : { of : ::fractional_divided_by })),
+        "/" : (:Alias : (:Tuple : { of : ::fractional_divided_by })),
 
-        Unicode_Aliases::'÷' : (:Alias : (:Tuple : { of : ::fractional_divided_by })),
-        Unicode_Aliases::'∕' : (:Alias : (:Tuple : { of : ::fractional_divided_by })),
+        Unicode_Aliases::"÷" : (:Alias : (:Tuple : { of : ::fractional_divided_by })),
+        Unicode_Aliases::"∕" : (:Alias : (:Tuple : { of : ::fractional_divided_by })),
 
 The virtual function `fractional_divided_by` aka `/` aka `÷` aka `∕`
 results in the typically-fractional numeric *quotient* from performing
@@ -1449,7 +1449,7 @@ same arguments.  This function is a shorthand for invoking the other two.
             matches : (:Tuple : {::Numerical, ::Integral}),
         )),
 
-        '**' : (:Alias : (:Tuple : { of : ::integral_power })),
+        "**" : (:Alias : (:Tuple : { of : ::integral_power })),
 
 The virtual function `integral_power` aka `**` results in a
 typically-fractional number from performing *exponentiation* of its 2
@@ -1531,7 +1531,7 @@ default and minmum value is `1`; it has no maximum value.
 
 ## --
 
-        '--' : (:Function : (
+        "--" : (:Function : (
             returns : (:Set : [::Integral, ::Before_All_Others]),
             matches : (:Tuple : {::Integral}),
             evaluates : (pred args :. :0),
@@ -1544,7 +1544,7 @@ programming languages may name their corresponding operators *decrement*.
 
 ## ++
 
-        '++' : (:Function : (
+        "++" : (:Function : (
             returns : (:Set : [::Integral, ::After_All_Others]),
             matches : (:Tuple : {::Integral}),
             evaluates : (succ args :. :0),
@@ -1662,7 +1662,7 @@ or *Bignum* or *BigInteger*.
 
         Integer_NN : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Integer::(:Tuple : {}), \'>='::( 1: 0 )]),
+            evaluates : (:Array : [::Integer::(:Tuple : {}), ::">="::( 1: 0 )]),
         )),
 
 The selection type definer `Integer_NN` represents the infinite type
@@ -1673,7 +1673,7 @@ default and minmum value is `0`; it has no maximum value.
 
         Integer_P : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Integer_NN::(:Tuple : {}), \'>'::( 1: 0 )]),
+            evaluates : (:Array : [::Integer_NN::(:Tuple : {}), ::">"::( 1: 0 )]),
             default : 1,
         )),
 
@@ -2132,7 +2132,7 @@ or *Rational*.
 
         Rational_NN : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Rational::(:Tuple : {}), \'>='::( 1: 0.0 )]),
+            evaluates : (:Array : [::Rational::(:Tuple : {}), ::">="::( 1: 0.0 )]),
         )),
 
 The selection type definer `Rational_NN` represents the infinite type
@@ -2552,7 +2552,7 @@ Note that this interface type definer could have as easily been mamed
             matches : (:Tuple : {::Accessible, ::Any}),
         )),
 
-        '.?' : (:Alias : (:Tuple : { of : ::has_any_at })),
+        ".?" : (:Alias : (:Tuple : { of : ::has_any_at })),
 
 The virtual function `has_any_at` aka `.?` results in `0bTRUE` iff its
 `0` argument has a mapping whose key is equal to its `1` argument;
@@ -2566,7 +2566,7 @@ their corresponding operators *ContainsKey* or *has_key?* or *key?* or
             negates : ::has_any_at,
         })),
 
-        '.!?' : (:Alias : (:Tuple : { of : ::not_has_any_at })),
+        ".!?" : (:Alias : (:Tuple : { of : ::not_has_any_at })),
 
 The function `not_has_any_at` aka `.!?` results in `0bTRUE` iff its `0`
 argument does not have any mapping whose key is equal to its `1` argument;
@@ -2580,7 +2580,7 @@ otherwise it results in `0bFALSE`.
             matches : (Accessible, (:Tuple : {Any, Any})),
         )),
 
-        '.:?' : (:Alias : (:Tuple : { of : ::has_mapping_at })),
+        ".:?" : (:Alias : (:Tuple : { of : ::has_mapping_at })),
 
 The virtual function `has_mapping_at` aka `.:?` results in `0bTRUE` iff
 its `0` argument has a mapping that is equal to its `1` argument;
@@ -2596,7 +2596,7 @@ whose `0` and `1` attributes are the mapping key and asset respectively.
             accepts : (args :. :0 .? args :. :1),
         )),
 
-        '.:' : (:Alias : (:Tuple : { of : ::mapping_at })),
+        ".:" : (:Alias : (:Tuple : { of : ::mapping_at })),
 
 The virtual function `mapping_at` aka `.:` results in a binary `Tuple`
 whose `0` attribute is the function's `1` argument and whose `1`
@@ -2613,7 +2613,7 @@ may name their corresponding operators *assoc*.
             accepts : (args :. :0 .? args :. :1),
         )),
 
-        '.' : (:Alias : (:Tuple : { of : ::at })),
+        "." : (:Alias : (:Tuple : { of : ::at })),
 
 The virtual function `at` aka `.` results in the asset value of the
 mapping of its `0` argument where that mapping's key is equal to its `1`
@@ -2630,7 +2630,7 @@ subscript/postcircumfix syntax.
             matches : (:Tuple : {::Accessible, ::Any}),
         )),
 
-        '.!' : (:Alias : (:Tuple : { of : ::maybe_at })),
+        ".!" : (:Alias : (:Tuple : { of : ::maybe_at })),
 
 The virtual function `maybe_at` aka `.!` results in the asset value of
 the mapping of its `0` argument where that mapping's key is equal to its
@@ -2648,7 +2648,7 @@ common to use subscript/postcircumfix syntax.
             accepts : (args :. :0 .? (args :. :1 . :0)),
         )),
 
-        '.:=' : (:Alias : (:Tuple : { of : ::replace_at })),
+        ".:=" : (:Alias : (:Tuple : { of : ::replace_at })),
 
 The virtual function `replace_at` aka `.:=` results in the value of its
 `0` argument's collection type that has all of the mappings of the
@@ -2668,7 +2668,7 @@ assignment syntax.
             accepts : (not args :. :0 .? (args :. :1 . :0)),
         )),
 
-        '.+' : (:Alias : (:Tuple : { of : ::shiftless_insert_at })),
+        ".+" : (:Alias : (:Tuple : { of : ::shiftless_insert_at })),
 
 The virtual function `shiftless_insert_at` aka `.+` results in the value
 of its `0` argument's collection type that has all of the mappings of the
@@ -2688,7 +2688,7 @@ also common to use assignment syntax.
             accepts : (args :. :0 .? args :. :1),
         )),
 
-        '.-' : (:Alias : (:Tuple : { of : ::shiftless_remove_at })),
+        ".-" : (:Alias : (:Tuple : { of : ::shiftless_remove_at })),
 
 The virtual function `shiftless_remove_at` aka `.-` results in the value
 of its `0` argument's collection type that has all of the mappings of the
@@ -2705,7 +2705,7 @@ operators *del* or *delete_at*.
             matches : (Accessible, (:Tuple : {Any, Any})),
         )),
 
-        '.=+' : (:Alias : (:Tuple : { of : ::replace_or_insert_at })),
+        ".=+" : (:Alias : (:Tuple : { of : ::replace_or_insert_at })),
 
 The virtual function `replace_or_insert_at` aka `.=+` behaves identically
 in turn to each of the functions `replace_at` and `shiftless_insert_at`
@@ -2723,7 +2723,7 @@ common to use subscript/postcircumfix syntax plus assignment syntax.
             matches : (:Tuple : {::Accessible, ::Any}),
         )),
 
-        '.?-' : (:Alias : (:Tuple : { of : ::shiftless_maybe_remove_at })),
+        ".?-" : (:Alias : (:Tuple : { of : ::shiftless_maybe_remove_at })),
 
 The virtual function `shiftless_maybe_remove_at` aka `.?-` behaves
 identically to `shiftless_remove_at` when given the same arguments but
@@ -2800,7 +2800,7 @@ baggy count or ordinal position, its for a problem best solved differently.*
 
         has_any_members : (:Alias : (:Tuple : { of : ::not_empty })),
 
-        Unicode_Aliases::'∅!?' : (:Alias : (:Tuple : { of : ::is_empty })),
+        Unicode_Aliases::"∅!?" : (:Alias : (:Tuple : { of : ::is_empty })),
 
 The virtual function `not_empty` aka `has_any_members` aka `∅!?`
 results in `0bTRUE` iff its `0` argument has any members, and in `0bFALSE`
@@ -2812,7 +2812,7 @@ iff it has no members.
             negates : ::not_empty,
         })),
 
-        Unicode_Aliases::'∅?' : (:Alias : (:Tuple : { of : ::is_empty })),
+        Unicode_Aliases::"∅?" : (:Alias : (:Tuple : { of : ::is_empty })),
 
 The function `is_empty` aka `∅?` results in `0bTRUE` iff its `0` argument
 has no members, and in `0bFALSE` iff it has any members.
@@ -2826,7 +2826,7 @@ Other programming languages may name their corresponding operators *empty?*.
             matches : (:Tuple : {::Homogeneous}),
         )),
 
-        Unicode_Aliases::'∅' : (:Alias : (:Tuple : { of : ::empty })),
+        Unicode_Aliases::"∅" : (:Alias : (:Tuple : { of : ::empty })),
 
 The virtual function `empty` aka `∅` results in the value of its `0`
 argument's collection type that has zero members.  For many types like
@@ -2873,7 +2873,7 @@ for simply picking *a* member would give an effectively random one.
             commutes : ::has,
         })),
 
-        Unicode_Aliases::'∈' : (:Alias : (:Tuple : { of : ::in })),
+        Unicode_Aliases::"∈" : (:Alias : (:Tuple : { of : ::in })),
 
 The function `in` aka `∈` results in `0bTRUE` iff its `0` argument is
 equal to at least 1 member value of its `1` argument; otherwise it results
@@ -2887,7 +2887,7 @@ Other programming languages may name their corresponding operators
             commutes : ::not_has,
         })),
 
-        Unicode_Aliases::'∉' : (:Alias : (:Tuple : { of : ::not_in })),
+        Unicode_Aliases::"∉" : (:Alias : (:Tuple : { of : ::not_in })),
 
 The function `not_in` aka `∉` results in `0bTRUE` iff its `0` argument is
 equal to no member value of its `1` argument; otherwise it results in
@@ -2901,7 +2901,7 @@ equal to no member value of its `1` argument; otherwise it results in
             evaluates : (has_n::(:Tuple : {args :. :0, args :. :1, 1})),
         )),
 
-        Unicode_Aliases::'∋' : (:Alias : (:Tuple : { of : ::has })),
+        Unicode_Aliases::"∋" : (:Alias : (:Tuple : { of : ::has })),
 
 The function `has` aka `∋` results in `0bTRUE` iff its `0` argument has
 at least 1 member whose value is equal to its `1` argument; otherwise it
@@ -2914,7 +2914,7 @@ corresponding operators *contains* or *exists* or *includes*.
             negates : ::has,
         })),
 
-        Unicode_Aliases::'∌' : (:Alias : (:Tuple : { of : ::not_has })),
+        Unicode_Aliases::"∌" : (:Alias : (:Tuple : { of : ::not_has })),
 
 The function `not_has` aka `∌` results in `0bTRUE` iff its `0` argument
 does not have any member whose value is equal to its `1` argument;
@@ -2984,7 +2984,7 @@ retained member's value.  See also the `Positional` function `squish`.
             evaluates : (args :. :0 != args :. :1 and (args :. :0 subset_of args :. :1)),
         )),
 
-        Unicode_Aliases::'⊂' : (:Alias : (:Tuple : { of : ::proper_subset_of })),
+        Unicode_Aliases::"⊂" : (:Alias : (:Tuple : { of : ::proper_subset_of })),
 
 The function `proper_subset_of` aka `⊂` results in `0bTRUE` iff the
 multiset of members of its `0` argument is a proper subset of the
@@ -2997,7 +2997,7 @@ Note that this operation is also known as *strict multiset inclusion*.
             negates : ::proper_subset_of,
         })),
 
-        Unicode_Aliases::'⊄' : (:Alias : (:Tuple : { of : ::not_proper_subset_of })),
+        Unicode_Aliases::"⊄" : (:Alias : (:Tuple : { of : ::not_proper_subset_of })),
 
 The function `not_proper_subset_of` aka `⊄` results in `0bTRUE` iff the
 multiset of members of its `0` argument is not a proper subset of the
@@ -3009,7 +3009,7 @@ multiset of members of its `1` argument; otherwise it results in `0bFALSE`.
             commutes : ::proper_subset_of,
         })),
 
-        Unicode_Aliases::'⊃' : (:Alias : (:Tuple : { of : ::proper_superset_of })),
+        Unicode_Aliases::"⊃" : (:Alias : (:Tuple : { of : ::proper_superset_of })),
 
 The function `proper_superset_of` aka `⊃` results in `0bTRUE` iff the
 multiset of members of its `0` argument is a proper superset of the
@@ -3021,7 +3021,7 @@ multiset of members of its `1` argument; otherwise it results in `0bFALSE`.
             negates : ::proper_superset_of,
         })),
 
-        Unicode_Aliases::'⊅' : (:Alias : (:Tuple : { of : ::not_proper_superset_of })),
+        Unicode_Aliases::"⊅" : (:Alias : (:Tuple : { of : ::not_proper_superset_of })),
 
 The function `not_proper_superset_of` aka `⊅` results in `0bTRUE` iff the
 multiset of members of its `0` argument is not a proper superset of the
@@ -3035,7 +3035,7 @@ multiset of members of its `1` argument; otherwise it results in `0bFALSE`.
             matches : (:Tuple : {::Homogeneous, ::Homogeneous}),
         )),
 
-        Unicode_Aliases::'⊆' : (:Alias : (:Tuple : { of : ::subset_of })),
+        Unicode_Aliases::"⊆" : (:Alias : (:Tuple : { of : ::subset_of })),
 
 The function `subset_of` aka `⊆` results in `0bTRUE` iff the multiset of
 members of its `0` argument is a subset of the multiset of members of
@@ -3048,7 +3048,7 @@ operation is also known as *multiset inclusion*.
             negates : ::subset_of,
         })),
 
-        Unicode_Aliases::'⊈' : (:Alias : (:Tuple : { of : ::not_subset_of })),
+        Unicode_Aliases::"⊈" : (:Alias : (:Tuple : { of : ::not_subset_of })),
 
 The function `not_subset_of` aka `⊈` results in `0bTRUE` iff the multiset
 of members of its `0` argument is not a subset of the multiset of
@@ -3060,7 +3060,7 @@ members of its `1` argument; otherwise it results in `0bFALSE`.
             commutes : ::subset_of,
         })),
 
-        Unicode_Aliases::'⊇' : (:Alias : (:Tuple : { of : ::superset_of })),
+        Unicode_Aliases::"⊇" : (:Alias : (:Tuple : { of : ::superset_of })),
 
 The function `superset_of` aka `⊇` results in `0bTRUE` iff the multiset of
 members of its `0` argument is a superset of the multiset of members of
@@ -3072,7 +3072,7 @@ its `1` argument; otherwise it results in `0bFALSE`.
             negates : ::superset_of,
         })),
 
-        Unicode_Aliases::'⊉' : (:Alias : (:Tuple : { of : ::not_superset_of })),
+        Unicode_Aliases::"⊉" : (:Alias : (:Tuple : { of : ::not_superset_of })),
 
 The function `not_superset_of` aka `⊉` results in `0bTRUE` iff the
 multiset of members of its `0` argument is not a superset of the multiset
@@ -3160,7 +3160,7 @@ multiset of members of its `1` argument; otherwise it results in `0bFALSE`.
 
         there_exists : (:Alias : (:Tuple : { of : ::any })),
 
-        Unicode_Aliases::'∃' : (:Alias : (:Tuple : { of : ::any })),
+        Unicode_Aliases::"∃" : (:Alias : (:Tuple : { of : ::any })),
 
 *TODO.  Result is true when at least one member evaluates to true.
 This is logically equivalent to testing if a same-source 'where' result is nonempty,
@@ -3181,7 +3181,7 @@ results for endpoints as for non-endpoints the former bound.*
 
         there_does_not_exist : (:Alias : (:Tuple : { of : ::none })),
 
-        Unicode_Aliases::'∄' : (:Alias : (:Tuple : { of : ::none })),
+        Unicode_Aliases::"∄" : (:Alias : (:Tuple : { of : ::none })),
 
 *TODO.  Result is true when no member evaluates to true.*
 
@@ -3195,7 +3195,7 @@ results for endpoints as for non-endpoints the former bound.*
 
         for_all : (:Alias : (:Tuple : { of : ::all })),
 
-        Unicode_Aliases::'∀' : (:Alias : (:Tuple : { of : ::all })),
+        Unicode_Aliases::"∀" : (:Alias : (:Tuple : { of : ::all })),
 
 *TODO.  Result is true when no member evaluates to false.*
 
@@ -3309,7 +3309,7 @@ with a `Setty` `c` that already has an `x` element with a nonzero `n`.
             is_associative : 0bTRUE,
         )),
 
-        Unicode_Aliases::'⊎' : (:Alias : (:Tuple : { of : ::member_plus })),
+        Unicode_Aliases::"⊎" : (:Alias : (:Tuple : { of : ::member_plus })),
 
 The virtual function `member_plus` aka `⊎` results in the *multiset sum*
 of its 2 arguments `0` and `1`.  The result is a value of the function's
@@ -3336,7 +3336,7 @@ operators *union all* or `+`.
             matches : (:Tuple : {::Unionable, ::Unionable}),
         )),
 
-        Unicode_Aliases::'∖' : (:Alias : (:Tuple : { of : ::except })),
+        Unicode_Aliases::"∖" : (:Alias : (:Tuple : { of : ::except })),
 
 The virtual function `except` aka `∖` results in the *multiset
 difference* or *multiset relative complement*
@@ -3368,7 +3368,7 @@ or `--` etc or *subtract*.
             is_idempotent : 0bTRUE,
         )),
 
-        Unicode_Aliases::'∩' : (:Alias : (:Tuple : { of : ::intersect })),
+        Unicode_Aliases::"∩" : (:Alias : (:Tuple : { of : ::intersect })),
 
 The virtual function `intersect` aka `∩` results in the *multiset
 intersection* of its 2 arguments `0` and `1`.  The result is a value of
@@ -3395,7 +3395,7 @@ corresponding operators `&` or `*`.
             is_idempotent : 0bTRUE,
         )),
 
-        Unicode_Aliases::'∪' : (:Alias : (:Tuple : { of : ::union })),
+        Unicode_Aliases::"∪" : (:Alias : (:Tuple : { of : ::union })),
 
 The virtual function `union` aka `∪` results in the *multiset union* of
 its 2 arguments `0` and `1`.  The result is a value of the function's
@@ -3424,7 +3424,7 @@ languages may name their corresponding operators `|` or `+`.
 
         symm_diff : (:Alias : (:Tuple : { of : ::exclusive })),
 
-        Unicode_Aliases::'∆' : (:Alias : (:Tuple : { of : ::exclusive })),
+        Unicode_Aliases::"∆" : (:Alias : (:Tuple : { of : ::exclusive })),
 
 The virtual function `exclusive` aka `symm_diff` aka `∆` results in the
 *multiset symmetric difference* of its 2 arguments `0` and `1`.  The
@@ -3481,7 +3481,7 @@ Other programming languages may name their corresponding operators
             matches : (:Tuple : {::Unionable, ::Signature}),
         )),
 
-        Unicode_Aliases::'σ' : (:Alias : (:Tuple : { of : ::where })),
+        Unicode_Aliases::"σ" : (:Alias : (:Tuple : { of : ::where })),
 
 *TODO.  The function-call is expected to be a Article with 2 attributes
 named 'call' and 'args', which are a Function_Name and a Tuple respectively.
@@ -3582,7 +3582,7 @@ value with zero members, `(:Array : [])`.
             matches : (:Tuple : {::Discrete}),
         )),
 
-        '?|' : (:Alias : (:Tuple : { of : ::to_Set })),
+        "?|" : (:Alias : (:Tuple : { of : ::to_Set })),
 
 The virtual function `to_Set` aka `?|` results in the `Set` value
 that represents the same set of distinct member values as its `0`
@@ -3598,7 +3598,7 @@ operations where neither multiplicity nor order is significant.
             matches : (:Tuple : {::Discrete}),
         )),
 
-        '+|' : (:Alias : (:Tuple : { of : ::to_Bag })),
+        "+|" : (:Alias : (:Tuple : { of : ::to_Bag })),
 
 The virtual function `to_Bag` aka `+|` results in the `Bag` value
 that represents the same multiset of members as its `0` argument.  The
@@ -3615,7 +3615,7 @@ multiplicity possibly is significant but order isn't.
         )),
 
         cardinality : (:Alias : (:Tuple : { of : ::count })),
-        '#'         : (:Alias : (:Tuple : { of : ::count })),
+        "#"         : (:Alias : (:Tuple : { of : ::count })),
 
 The virtual function `count` aka `cardinality` aka `#` results in the
 integral count of the members of its `0` argument; when multiple members
@@ -4012,7 +4012,7 @@ the composing type `Positional`.
             matches : (:Tuple : {::Positional}),
         )),
 
-        '~|' : (:Alias : (:Tuple : { of : ::to_Array })),
+        "~|" : (:Alias : (:Tuple : { of : ::to_Array })),
 
 The virtual function `to_Array` aka `~|` results in the `Array`
 value that represents the same sequence of members as its `0` argument.
@@ -4118,7 +4118,7 @@ corresponding member pair has 2 of the same value; otherwise it results in
             repeater : ::replicate,
         )),
 
-        '~' : (:Alias : (:Tuple : { of : ::catenate })),
+        "~" : (:Alias : (:Tuple : { of : ::catenate })),
 
 The virtual function `catenate` aka `~` results in the catenation of its
 2 arguments `0` and `1` such that the result starts with the members of
@@ -4137,7 +4137,7 @@ which logically does the same thing without an explicit operator.
             matches : (:Tuple : {::Positional, ::Integer_NN}),
         )),
 
-        '~#' : (:Alias : (:Tuple : { of : ::replicate })),
+        "~#" : (:Alias : (:Tuple : { of : ::replicate })),
 
 The virtual function `replicate` aka `~#` results in the catenation of N
 instances of its `0` argument where N is defined by its `1` argument.  If
@@ -5146,7 +5146,7 @@ languages may name their corresponding types *List*.
             constant : (:Array : []),
         )),
 
-        Unicode_Aliases::'~∅' : (:Alias : (:Tuple : { of : ::Array_C0 })),
+        Unicode_Aliases::"~∅" : (:Alias : (:Tuple : { of : ::Array_C0 })),
 
 The singleton type definer `Array_C0` aka `~∅` represents the only zero-member
 `Array` value, `(:Array : [])`.
@@ -5708,7 +5708,7 @@ the only zero-member `Set` value.
             constant : (:Set : []),
         )),
 
-        Unicode_Aliases::'?∅' : (:Alias : (:Tuple : { of : ::Set_C0 })),
+        Unicode_Aliases::"?∅" : (:Alias : (:Tuple : { of : ::Set_C0 })),
 
 The singleton type definer `Set_C0` aka `?∅` represents the only zero-member
 `Set` value, `(:Set : [])`.
@@ -6175,7 +6175,7 @@ corresponding types *Multiset*.
             constant : (:Bag : []),
         )),
 
-        Unicode_Aliases::'+∅' : (:Alias : (:Tuple : { of : ::Bag_C0 })),
+        Unicode_Aliases::"+∅" : (:Alias : (:Tuple : { of : ::Bag_C0 })),
 
 The singleton type definer `Bag_C0` aka `+∅` represents the only zero-member
 `Bag` value, `(:Bag : [])`.
@@ -6678,7 +6678,7 @@ isomorphic to a `Homogeneous` collection each of whose *members* is a
             matches : (:Tuple : {::Attributive}),
         )),
 
-        '?$' : (:Alias : (:Tuple : { of : ::has_any_attrs })),
+        "?$" : (:Alias : (:Tuple : { of : ::has_any_attrs })),
 
 The virtual function `has_any_attrs` aka `?$` results in `0bTRUE` iff its
 `0` argument has any attributes, and in `0bFALSE` iff it has no attributes.
@@ -6689,7 +6689,7 @@ The virtual function `has_any_attrs` aka `?$` results in `0bTRUE` iff its
             negates : ::has_any_attrs,
         })),
 
-        '!?$' : (:Alias : (:Tuple : { of : ::is_nullary })),
+        "!?$" : (:Alias : (:Tuple : { of : ::is_nullary })),
 
 The function `is_nullary` aka `!?$` results in `0bTRUE` iff its `0`
 argument has no attributes, and in `0bFALSE` iff it has any attributes.
@@ -6727,7 +6727,7 @@ has exactly 1 attribute, and `0bFALSE` otherwise.
             matches : (:Tuple : {::Attributive}),
         )),
 
-        '#$' : (:Alias : (:Tuple : { of : ::degree })),
+        "#$" : (:Alias : (:Tuple : { of : ::degree })),
 
 The virtual function `degree` aka `#$` results in the integral count of
 the attributes of its `0` argument.
@@ -6740,7 +6740,7 @@ the attributes of its `0` argument.
             matches : (:Tuple : {::Attributive}),
         )),
 
-        '$' : (:Alias : (:Tuple : { of : ::heading })),
+        "$" : (:Alias : (:Tuple : { of : ::heading })),
 
 The virtual function `heading` aka `$` results in the
 relational *heading* of its `0` argument, that is its set of distinct
@@ -6757,7 +6757,7 @@ that their headings can be reasoned about in isolation from their bodies.
             evaluates : (::foundation::Tuple_subheading_of(:Tuple : {$args :. :0, $args :. :1})),
         )),
 
-        Unicode_Aliases::'⊆$' : (:Alias : (:Tuple : { of : ::subheading_of })),
+        Unicode_Aliases::"⊆$" : (:Alias : (:Tuple : { of : ::subheading_of })),
 
 The function `subheading_of` aka `⊆$` results in `0bTRUE` iff the heading
 of its `0` argument is a subset of the heading of its `1` argument;
@@ -6770,9 +6770,9 @@ otherwise it results in `0bFALSE`.
         })),
 
         has_subheading : (:Alias : (:Tuple : { of : ::superheading_of })),
-        '$?'           : (:Alias : (:Tuple : { of : ::superheading_of })),
+        "$?"           : (:Alias : (:Tuple : { of : ::superheading_of })),
 
-        Unicode_Aliases::'⊇$' : (:Alias : (:Tuple : { of : ::superheading_of })),
+        Unicode_Aliases::"⊇$" : (:Alias : (:Tuple : { of : ::superheading_of })),
 
 The function `superheading_of` aka `has_subheading` aka `$?` aka `⊇$`
 results in `0bTRUE` iff the heading of its `0` argument is a superset of
@@ -6791,7 +6791,7 @@ exactly 1 name.
             evaluates : ($args :. :0 = $args :. :1),
         )),
 
-        '=$' : (:Alias : (:Tuple : { of : ::same_heading })),
+        "=$" : (:Alias : (:Tuple : { of : ::same_heading })),
 
 The function `same_heading` aka `=$` results in `0bTRUE` iff the heading
 of its `0` argument is the same as the heading of its `1` argument;
@@ -6859,7 +6859,7 @@ argument; otherwise it results in `0bFALSE`.
             evaluates : (::foundation::Tuple_except_heading(:Tuple : {$args :. :0, $args :. :1})),
         )),
 
-        Unicode_Aliases::'∖$' : (:Alias : (:Tuple : { of : ::except_heading })),
+        Unicode_Aliases::"∖$" : (:Alias : (:Tuple : { of : ::except_heading })),
 
 The function `except_heading` aka `∖$` results in the *set difference*
 between the *headings* of its 2 arguments `0` (*minuend*) and `1`
@@ -6878,7 +6878,7 @@ but not in the heading of its `1` argument.
             evaluates : (::foundation::Tuple_intersect_heading(:Tuple : {$args :. :0, $args :. :1})),
         )),
 
-        Unicode_Aliases::'∩$' : (:Alias : (:Tuple : { of : ::intersect_heading })),
+        Unicode_Aliases::"∩$" : (:Alias : (:Tuple : { of : ::intersect_heading })),
 
 The function `intersect_heading` aka `∩$` results in the *set
 intersection* of the *headings* of its 2 arguments `0` and `1`.  The
@@ -6899,7 +6899,7 @@ infinite number of attribute names.
             evaluates : (::foundation::Tuple_union_heading(:Tuple : {$args :. :0, $args :. :1})),
         )),
 
-        Unicode_Aliases::'∪$' : (:Alias : (:Tuple : { of : ::union_heading })),
+        Unicode_Aliases::"∪$" : (:Alias : (:Tuple : { of : ::union_heading })),
 
 The function `union_heading` aka `∪$` results in the *set union* of the
 *headings* of its 2 arguments `0` and `1`.  The result is the `Heading`
@@ -6919,7 +6919,7 @@ the headings of the function's `0` and `1` arguments.
 
         symm_diff_heading : (:Alias : (:Tuple : { of : ::exclusive_heading })),
 
-        Unicode_Aliases::'∆$' : (:Alias : (:Tuple : { of : ::exclusive_heading })),
+        Unicode_Aliases::"∆$" : (:Alias : (:Tuple : { of : ::exclusive_heading })),
 
 The function `exclusive_heading` aka `symm_diff_heading` aka `∆$`
 results in the *set symmetric difference* of the *headings* of its 2
@@ -6936,9 +6936,9 @@ function's `0` or `1` arguments.
             accepts : (...),
         )),
 
-        '$:=' : (:Alias : (:Tuple : { of : ::rename })),
+        "$:=" : (:Alias : (:Tuple : { of : ::rename })),
 
-        Unicode_Aliases::'ρ' : (:Alias : (:Tuple : { of : ::rename })),
+        Unicode_Aliases::"ρ" : (:Alias : (:Tuple : { of : ::rename })),
 
 The virtual function `rename` aka `$:=` aka `ρ` results results in the
 *relational rename* of its `0` argument in terms of its `1` argument.
@@ -6974,7 +6974,7 @@ given the same arguments in swapped positions.
             matches : (:Tuple : {::Attributive, ::Structural}),
         )),
 
-        '%=?' : (:Alias : (:Tuple : { of : ::can_project_matching })),
+        "%=?" : (:Alias : (:Tuple : { of : ::can_project_matching })),
 
 The virtual function `can_project_matching` aka `%=?` results in `0bTRUE`
 iff the heading of its `0` argument is a superset of the heading of its
@@ -6993,9 +6993,9 @@ aka `a %:= s %=? s = 0bTRUE` should hold for all valid `a` and `s`.
         )),
 
         project : (:Alias : (:Tuple : { of : ::on })),
-        '%='    : (:Alias : (:Tuple : { of : ::on })),
+        "%="    : (:Alias : (:Tuple : { of : ::on })),
 
-        Unicode_Aliases::'π' : (:Alias : (:Tuple : { of : ::on })),
+        Unicode_Aliases::"π" : (:Alias : (:Tuple : { of : ::on })),
 
 The virtual function `on` aka `project` aka `%=` aka `π` results in the
 *relational projection* of its `0` argument in terms of its `1`
@@ -7031,7 +7031,7 @@ when given the same arguments in swapped positions.
             evaluates : (args :. :0 on (args :. :0 intersect_heading args :. :1)),
         )),
 
-        '%!' : (:Alias : (:Tuple : { of : ::maybe_on })),
+        "%!" : (:Alias : (:Tuple : { of : ::maybe_on })),
 
 The function `maybe_on` aka `%!` behaves identically to `on`
 when given the same arguments but that it simply ignores the existence of
@@ -7047,7 +7047,7 @@ attributes of its `1` argument whose names don't match attributes of its
             accepts : (args :. :0 $? args :. :1),
         )),
 
-        '%:=' : (:Alias : (:Tuple : { of : ::update })),
+        "%:=" : (:Alias : (:Tuple : { of : ::update })),
 
 The virtual function `update` aka `%:=` results in the value of its `0`
 argument's collection type that has all of the attributes of the function's
@@ -7077,7 +7077,7 @@ subscript/postcircumfix syntax plus assignment syntax.
             accepts : (args :. :0 disjoint_heading args :. :1),
         )),
 
-        '%+' : (:Alias : (:Tuple : { of : ::extend })),
+        "%+" : (:Alias : (:Tuple : { of : ::extend })),
 
 The virtual function `extend` aka `%+` results in the *relational
 extension* of its `0` argument in terms of its `1` argument.  The result
@@ -7111,7 +7111,7 @@ The Structural version is commutative and associative, but not Attributive in ge
         )),
 
         project_all_but : (:Alias : (:Tuple : { of : ::but })),
-        '%-'            : (:Alias : (:Tuple : { of : ::but })),
+        "%-"            : (:Alias : (:Tuple : { of : ::but })),
 
 The function `but` aka `project_all_but` aka `%-` results in the
 *relational projection* of its `0` argument in terms of its `1`
@@ -7138,7 +7138,7 @@ operators *remove*.
             evaluates : (args :. :0 on (args :. :0 except_heading args :. :1) extend args :. :1),
         )),
 
-        '%=+' : (:Alias : (:Tuple : { of : ::update_or_extend })),
+        "%=+" : (:Alias : (:Tuple : { of : ::update_or_extend })),
 
 The function `update_or_extend` aka `%=+` is a hybrid of the 2
 functions `update` and `extend`.  The result is a value of the function's
@@ -7155,7 +7155,7 @@ latter's names don't match.
             evaluates : (args :. :0 but (args :. :0 intersect_heading args :. :1)),
         )),
 
-        '%?-' : (:Alias : (:Tuple : { of : ::maybe_but })),
+        "%?-" : (:Alias : (:Tuple : { of : ::maybe_but })),
 
 The function `maybe_but` aka `%?-` behaves identically to `but`
 when given the same arguments but that it simply ignores the existence of
@@ -7359,7 +7359,7 @@ for the composing type `Structural`.
             matches : (:Tuple : {::Structural}),
         )),
 
-        '%' : (:Alias : (:Tuple : { of : ::to_Tuple })),
+        "%" : (:Alias : (:Tuple : { of : ::to_Tuple })),
 
 The virtual function `to_Tuple` aka `%` results in the `Tuple` value
 that represents the same set of attributes as its `0` argument.  The
@@ -8386,7 +8386,7 @@ This function implements the `Attributive` virtual function `extend` aka
             matches : (:Tuple : {::Relational}),
         )),
 
-        '|' : (:Alias : (:Tuple : { of : ::body })),
+        "|" : (:Alias : (:Tuple : { of : ::body })),
 
 The virtual function `body` aka `|` results in the relational *body* of
 its `0` argument, that is its multiset of member tuples.  The form that
@@ -9070,7 +9070,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Base_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Nesting::(:Tuple : {}), ::not_empty::(:Tuple : {}), \'∌'::( 1: \'' )]),
+            evaluates : (:Array : [::Nesting::(:Tuple : {}), ::not_empty::(:Tuple : {}), ::"∌"::( 1: \'' )]),
         )),
 
 *TODO.*
@@ -9097,7 +9097,7 @@ arbitrarily complex type graph involving `External` values.
 
         Package::Uses_Map : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Tuple::(:Tuple : {}), \'.!?'::( 1: \'' ),
+            evaluates : (:Array : [::Tuple::(:Tuple : {}), ::".!?"::( 1: \'' ),
                 ::all_attr_assets::( 1: \::Package::Uses_Item(:Tuple : {}) )]),
         )),
 
@@ -10114,7 +10114,7 @@ written in Plain_Text with special syntax example `\foo::(:Tuple : {})` or `\[..
             })),
         )),
 
-        '<--' : (:Alias : (:Tuple : { of : ::with_args })),
+        "<--" : (:Alias : (:Tuple : { of : ::with_args })),
 
 *TODO.  This adds to the list of arguments for routine call.  It is
 functionally equivalent to "priming" or "partial function application".
@@ -10126,7 +10126,7 @@ A Raku corresponding operator has the name "assuming".*
             commutes : ::assuming,
         })),
 
-        '-->' : (:Alias : (:Tuple : { of : ::priming })),
+        "-->" : (:Alias : (:Tuple : { of : ::priming })),
 
 *TODO.  This also adds to the list of arguments for a routine call.*
 
