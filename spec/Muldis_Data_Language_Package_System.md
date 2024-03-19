@@ -1066,7 +1066,7 @@ and its `1` argument is `0bTRUE`, and `0bFALSE` otherwise.
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    0 : ::Round_Meth_Attr_Name::(:Tuple : {}),
+                    0 : ::Round_Meth_Name::(:Tuple : {}),
                 ),
             )),
             default : (::material : (:Tuple : {:To_Zero})),
@@ -1099,11 +1099,11 @@ The default value of `Round_Meth` is `To_Zero`, which is the simplest.
 Other programming languages may name their corresponding types
 *RoundingMode* (Java) or *MidpointRounding* (C#).
 
-## Round_Meth_Attr_Name
+## Round_Meth_Name
 
-        Round_Meth_Attr_Name : (:Function : (
+        Round_Meth_Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Attr_Name::(:Tuple : {}), \'⊆$'::( 1:
+            evaluates : (:Array : [::Name::(:Tuple : {}), \'⊆$'::( 1:
                 ::(:Tuple : {Down,Up,To_Zero,To_Inf
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd})
@@ -1111,20 +1111,20 @@ Other programming languages may name their corresponding types
             default : :To_Zero,
         )),
 
-The selection type definer `Round_Meth_Attr_Name` represents the finite type
-consisting just of the `Attr_Name` values that are valid Article attribute
+The selection type definer `Round_Meth_Name` represents the finite type
+consisting just of the `Name` values that are valid Article attribute
 assets of `Round_Meth` values.
 
 ## RM
 
         RM : (:Function : (
             returns : ::Round_Meth,
-            matches : (:Tuple : {::Round_Meth_Attr_Name}),
+            matches : (:Tuple : {::Round_Meth_Name}),
             evaluates : ((::Round_Meth : (:Tuple : {args :. :0}))),
         )),
 
 The function `RM` results in the `Round_Meth` value selected in
-terms of the `Attr_Name` of its `0` argument.
+terms of the `Name` of its `0` argument.
 
 # NUMERICAL DATA TYPES
 
@@ -4717,7 +4717,7 @@ like national collations or fixed-size types.
 
 # TEXT DATA TYPES
 
-## Text ::Text::Unicode
+## Text Text::Unicode
 
         Text::'' : (:Function : (
             is_type_definer : 0bTRUE,
@@ -4742,7 +4742,7 @@ corresponds to a distinct integer in the set `(:Array : [0..0xD7FF,0xE000..0x10F
 which explicitly does not represent any kind of thing in particular.
 Each character is taken from a finite repertoire having 0x10F7FF members,
 but `Text` imposes no limit on the length of each character sequence.
-A `Text` value is isomorphic to an `Attr_Name` value.
+A `Text` value is isomorphic to an `Name` value.
 `Text` has a default value of `""` (the empty character string).
 `Text` is `Orderable`; its minimum value is `""`; it has no maximum value;
 its ordering algorithm corresponds directly to that of `Array`,
@@ -6656,7 +6656,7 @@ conceptually a name-asset pair.  An *attribute name* is characterized by
 an arbitrarily-long sequence of Unicode 12.1 standard *character
 code points* but it is not a `Text` value; every distinct *attribute name*
 is represented canonically in the type system by a distinct
-`Attr_Name` value.  More precisely, an *attribute name* is an unqualified
+`Name` value.  More precisely, an *attribute name* is an unqualified
 program identifier and forms the basis for Muldis Data Language identifiers.
 
 If an `Attributive` value is also `Structural`, it has exactly 1 member,
@@ -7202,7 +7202,7 @@ function implements the `Attributive` virtual function
 
         has_any_at::Structure : (:Function : (
             returns : ::Boolean,
-            matches : (:Tuple : {::Structure, ::Attr_Name}),
+            matches : (:Tuple : {::Structure, ::Name}),
             implements : folder::'',
             evaluates : (args :. :0 $? args :. :1),
         )),
@@ -7217,7 +7217,7 @@ type `Structure`.
 
         has_mapping_at::Structural : (:Function : (
             returns : ::Boolean,
-            matches : (Structural, (:Tuple : {Attr_Name, Any})),
+            matches : (Structural, (:Tuple : {Name, Any})),
             implements : folder::'',
             evaluates : (args :. :0 .? (args :. :1 . :0) and_then guard args :. :0 . (args :. :1 . :0) = (args :. :1 . :1)),
         )),
@@ -7231,8 +7231,8 @@ function `has_mapping_at` aka `.:?` for the composing type `Structural`.
 ## mapping_at (Structural)
 
         mapping_at::Structural : (:Function : (
-            returns : (:Tuple : {::Attr_Name, ::Any}),
-            matches : (:Tuple : {::Structural, ::Attr_Name}),
+            returns : (:Tuple : {::Name, ::Any}),
+            matches : (:Tuple : {::Structural, ::Name}),
             implements : folder::'',
             accepts : (args :. :0 .? args :. :1),
             evaluates : ((:Tuple : {args :. :1, args :. :0 . args :. :1})),
@@ -7250,7 +7250,7 @@ type `Structural`.
 
         maybe_at::Structural : (:Function : (
             returns : ::Any,
-            matches : (:Tuple : {::Structural, ::Attr_Name}),
+            matches : (:Tuple : {::Structural, ::Name}),
             implements : folder::'',
             evaluates : (if args :. :0 .? args :. :1 then guard args :. :0 . args :. :1 else (::No_Such_Attr_Name : (:Tuple : {}))),
         )),
@@ -7265,7 +7265,7 @@ function implements the `Accessible` virtual function `maybe_at` aka
 
         replace_at::Structure : (:Function : (
             returns : ::Structure,
-            matches : (Structure, (:Tuple : {Attr_Name, Any})),
+            matches : (Structure, (:Tuple : {Name, Any})),
             implements : folder::'',
             accepts : (args :. :0 .? (args :. :1 . :0)),
             evaluates : (args :. :0 update D1::(args :. :1)),
@@ -7285,7 +7285,7 @@ the composing type `Structure`.
 
         shiftless_insert_at::Structure : (:Function : (
             returns : ::Structure,
-            matches : (Structure, (:Tuple : {Attr_Name, Any})),
+            matches : (Structure, (:Tuple : {Name, Any})),
             implements : folder::'',
             accepts : (not args :. :0 .? (args :. :1 . :0)),
             evaluates : (args :. :0 extend D1::(args :. :1)),
@@ -7304,7 +7304,7 @@ virtual function `shiftless_insert_at` aka `.+` for the composing type
 
         shiftless_remove_at::Structure : (:Function : (
             returns : ::Structure,
-            matches : (:Tuple : {::Structure, ::Attr_Name}),
+            matches : (:Tuple : {::Structure, ::Name}),
             implements : folder::'',
             accepts : (args :. :0 .? args :. :1),
             evaluates : (args :. :0 but args :. :1),
@@ -7322,7 +7322,7 @@ function `shiftless_remove_at` aka `.-` for the composing type
 
         replace_or_insert_at::Structural : (:Function : (
             returns : ::Structural,
-            matches : (Structural, (:Tuple : {Attr_Name, Any})),
+            matches : (Structural, (:Tuple : {Name, Any})),
             implements : folder::'',
             evaluates : (args :. :0 update_or_extend D1::(args :. :1)),
         )),
@@ -7339,7 +7339,7 @@ virtual function `replace_or_insert_at` aka `.=+` for the composing type
 
         shiftless_maybe_remove_at::Structural : (:Function : (
             returns : ::Structural,
-            matches : (:Tuple : {::Structural, ::Attr_Name}),
+            matches : (:Tuple : {::Structural, ::Name}),
             implements : folder::'',
             evaluates : (args :. :0 maybe_but args :. :1),
         )),
@@ -7429,7 +7429,7 @@ has just the attribute with the name `0` and asset value of `0bFALSE`.
 
         D1 : (:Function : (
             returns : ::Tuple_D1,
-            matches : (:Tuple : {::Attr_Name, ::Any}),
+            matches : (:Tuple : {::Name, ::Any}),
             evaluates : (evaluates args --> \::foundation::Tuple_D1_select(:Tuple : {})),
         )),
 
@@ -7597,7 +7597,7 @@ for the composing type `Tuple`.
 
         at::Tuple : (:Function : (
             returns : ::Any,
-            matches : (:Tuple : {::Tuple, ::Attr_Name}),
+            matches : (:Tuple : {::Tuple, ::Name}),
             implements : folder::'',
             accepts : (args :. :0 .? args :. :1),
             evaluates : (args :. :0 :. (args :. :1)),
@@ -9718,7 +9718,7 @@ can be re-used in other statements.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (
-                    factor : ::Attr_Name::(:Tuple : {}),
+                    factor : ::Name::(:Tuple : {}),
                 ),
             )),
             default : (::material : (:Tuple : {factor : \''})),
@@ -9897,7 +9897,7 @@ written in Plain_Text with special syntax example
                 label : ::material,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
                     0 : (type : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Statement::(:Tuple : {}) )])),
-                    label : (type : ::Attr_Name::(:Tuple : {}), optional : 0bTRUE),
+                    label : (type : ::Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : (::material : ((:Array : []),)),
@@ -9915,7 +9915,7 @@ iterated, written in Plain_Text with special syntax example
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
-                    label : (type : ::Attr_Name::(:Tuple : {}), optional : 0bTRUE),
+                    label : (type : ::Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : (::material : (:Tuple : {})),
@@ -9935,7 +9935,7 @@ with special syntax examples `leave` or `leave do_work`.*
             evaluates : (::Signature::Article_Match : (
                 label : ::material,
                 attrs : (::Signature::Tuple_Attrs_Match : (attrs : (
-                    label : (type : ::Attr_Name::(:Tuple : {}), optional : 0bTRUE),
+                    label : (type : ::Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
             default : (::material : (:Tuple : {})),
@@ -9961,20 +9961,22 @@ with special syntax examples `iterate` or `iterate do_work`.*
 instead whereupon keywords analagous to name/asset are used, if we had such
 a thing for opening tuples as for creating them.*
 
-## Attr_Name
+## Name
 
-        Attr_Name : (:Function : (
+        Name : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Heading::(:Tuple : {}), ::is_unary::(:Tuple : {})]),
+            evaluates : \::foundation::Name(:Tuple : {}),
+            default : :"",
         )),
 
-*TODO.*
+The selection type definer `Name`
+represents the infinite foundation type `::foundation::Name`.
 
 ## Nesting
 
         Nesting : (:Function : (
             is_type_definer : 0bTRUE,
-            evaluates : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Attr_Name::(:Tuple : {}) )]),
+            evaluates : (:Array : [::Array::(:Tuple : {}), ::all::( 1: ::Name::(:Tuple : {}) )]),
         )),
 
 *TODO.*
