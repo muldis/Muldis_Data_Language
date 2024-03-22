@@ -468,7 +468,7 @@ comprising `Orderable` itself only has a partial order, but users can
 define a cross-composer total order for their own use cases as desired.
 
 `Orderable` is composed, directly or indirectly, by:
-`Before_All_Others`, `After_All_Others`, `Bicessable`,
+`Before_All_Others`, `After_All_Others`,
 `Boolean`, `Integral`, `Integer`, `Fractional`, `Rational`,
 `Positional`, `Bits`, `Blob`, `Textual`, `Text`, `Array`, `Orderelation`.
 
@@ -501,7 +501,7 @@ partly to keep its core type system simpler (it would have gone the
 enumeration route) and partly because the logic for doing sorting or
 comparisons or validation is typically much simpler with this foundation.
 
-## in_order (:Tuple : {Before_All_Others, After_All_Others})
+## in_order {Before_All_Others, After_All_Others}
 
         in_order::Before_All_Others_L : (:Function : (
             returns : ::Boolean,
@@ -637,178 +637,6 @@ The function `minmax` results in a binary `Tuple` containing its 2
 arguments sorted *in order*; the function's result is the same as its
 source when the arguments are already in order, and the reverse of that
 otherwise, meaning the values of `0` and `1` are swapped.
-
-# SUCCESSABLE DATA TYPES
-
-## Successable
-
-        Successable : (:Function : (:Tuple : {
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-        })),
-
-The interface type definer `Successable` is semifinite.  A `Successable` value
-is a member of a conceptually noncontiguous totally ordered type; it has a
-definitive *successor* value of that type, at least where the given value
-isn't the last value.
-
-The primary reason for `Successable` is to provide an easy consistent and
-terse API for a generator of arbitrary sequences of values of any type.  In
-this context, a `Successable` value defines a complete self-contained
-*state* for a sequence generator, which is everything the generator needs
-to know to both emit a *current* value, which we call the *asset*, as
-well as determine all subsequent values of the sequence without any further
-input.  To keep the fundamental general case API simple, there is just the
-a monadic function to derive the next state from the current one, and a
-monadic function to extract the asset from the current state, so actually
-reading a sequence of values requires 2 function calls per value in the
-general case.  For some trivial cases of `Successable`, the *state* and
-*asset* are one and the same, so just 1 function call per value is needed.
-Keep in mind that asset values may repeat in a sequence, so it is not them
-but rather the state values that have the total order property.  Other
-programming languages may name their corresponding types *sequence* or
-*iterator* or *enumerator*.
-
-`Successable` is a less rigorous analogy to `Bicessable`, where the
-latter also requires the ability to produce the *predecessor* value of the
-given value, as well as the ability to determine if 2 arbitrary values are
-in order.  While conceptually a `Successable` has those features, formally
-it is not required to because for some types it may be onerous or
-unnecessary for its mandate to support those features; for example,
-producing a successor state may disgard information otherwise needed to
-recall any of its predecessors.
-
-The default and minimum and maximum values of `Successable` are the same
-as those of `Orderable`.  `Successable` is composed, directly or
-indirectly, by: `Bicessable`, `Integral`, `Integer`.
-
-`Successable` is intended to be a generalized tool for performing *list
-comprehension* or *set comprehension*.  The typically idiomatic and more
-efficient way to do many kinds of such *comprehensions* is to use the
-features of various `Homogeneous` types to map an existing list or set to
-another using generic member mapping and filtering functions, such as a
-list of even integers less than a hundred.  With those cases, the
-map/filter approach can permit processing members in any order or in
-parallel, and avoiding unnecessary intermediate values.  In contrast, the
-primary intended uses of `Successable` is when either you want to produce
-or process a potentially infinite-sized list (lazily) or especially produce
-a sequence with uneven step sizes, such as an arbitrary number of
-Fibonacci.  This is for cases where it may be necessary to calculate all
-the intermediate values in order to arrive at a desired nth one, and doing
-them out of sequence or in parallel may not be an option.
-
-## asset
-
-        asset::'' : (:Function : (
-            virtual : 0bTRUE,
-            returns : ::Any,
-            matches : (:Tuple : {::Successable}),
-        )),
-
-The virtual function `asset` results in the *asset* of its `0` argument,
-which for trivial cases may simply be that same argument.  Other
-programming languages may name their corresponding operators *Current*.
-
-## succ
-
-        succ : (:Function : (
-            returns : (:Set : [::Successable, ::After_All_Others]),
-            matches : (:Tuple : {::Successable}),
-            evaluates : (args :. :0 nth_succ 1),
-        )),
-
-The function `succ` results in the *successor* value of its `0`
-argument, or in `(::After_All_Others : (:Tuple : {}))` if there is none.  Other
-programming languages may name their corresponding operators *next* or
-*MoveNext*.
-
-## nth_succ
-
-        nth_succ::'' : (:Function : (
-            virtual : 0bTRUE,
-            returns : (:Set : [::Successable, ::After_All_Others]),
-            matches : (:Tuple : {::Successable, ::Integer_NN}),
-        )),
-
-The virtual function `nth_succ` results in the Nth *successor* value of
-its `0` argument, where N is its `1` argument, or in
-`(::After_All_Others : (:Tuple : {}))` if there is none.
-
-# BICESSABLE DATA TYPES
-
-## Bicessable
-
-        Bicessable : (:Function : (
-            is_type_definer : 0bTRUE,
-            is_generalization : 0bTRUE,
-            composes : (:Set : [::Orderable, ::Successable]),
-            provides_default_for : (:Set : [::Orderable, ::Successable]),
-        )),
-
-The interface type definer `Bicessable` is semifinite.  A `Bicessable` value
-is an `Orderable` value for which, using the same canonical total order
-for its type, there exists definitive *predecessor* and *successor*
-values, at least where the given value isn't the first or last value on the
-line respectively.  Similarly, one can take any two values of a
-`Bicessable` type and produce an ordered list of all of that type's values
-which are on the line between those two values.  A primary quality of a
-type that is `Orderable` but not `Bicessable` is that you can take any
-two values of that type and then find a third value of that type which lies
-between the first two on the line; by definition for a `Bicessable` type,
-there is no third value between one of its values and that value's
-predecessor or successor value.  Other programming languages may name their
-corresponding types *ordinal* or categorically as *enum*.  Note that
-while a generic rational numeric type may qualify as an ordinal type by
-some definitions of *ordinal*, since it is possible to count all the
-rationals if arranged a particular way, these types would not qualify as
-`Bicessable` here when that ordering is not the same as the one used for
-the same type's `Orderable` comparisons.  The default and minimum and
-maximum values of `Bicessable` are the same as those of `Orderable`.
-`Bicessable` is composed, directly or indirectly, by:
-`Integral`, `Integer`.
-
-For some `Bicessable` types, there is the concept of a *quantum* or
-*step size*, where every consecutive pair of values on that type's value
-line are conceptually spaced apart at equal distances; this distance would
-be the quantum, and all steps along the value line are at exact multiples
-of that quantum.  However, `Bicessable` types in general don't need to be
-like this, and there can be different amounts of conceivable distance
-between consecutive values; a `Bicessable` type is just required to know
-where all the values are.  For example, `Integer` has a quantum while a
-type consisting just of prime integers does not.
-
-Note that while mathematics formally defines *predecessor* and
-*successor* for non-negative integers only, and some other programming
-languages extend this concept to real numbers with the meaning *minus one*
-and *plus one* respectively, Muldis Data Language only formally associates these terms
-with the quantum of *one* for types specifically representing integers;
-for `Bicessable` types in general, the terms just mean prior or next
-values and should not be conceptualized as mathematical operations.
-
-## pred
-
-        pred : (:Function : (
-            returns : (:Set : [::Bicessable, ::Before_All_Others]),
-            matches : (:Tuple : {::Bicessable}),
-            evaluates : (args :. :0 nth_pred 1),
-        )),
-
-The function `pred` results in the *predecessor* value of its `0`
-argument, or in `(::Before_All_Others : (:Tuple : {}))` if there is none.  Other
-programming languages may name their corresponding operators *prior* or
-*previous*.
-
-## nth_pred
-
-        nth_pred::'' : (:Function : (
-            virtual : 0bTRUE,
-            returns : (:Set : [::Bicessable, ::Before_All_Others]),
-            matches : (:Tuple : {::Bicessable, ::Integer_NN}),
-        )),
-
-The virtual function `nth_pred` results in the Nth *predecessor* value of
-its `0` argument, where N is its `1` argument, or in
-`(::Before_All_Others : (:Tuple : {}))` if there is none.
 
 # BOOLEAN DATA TYPES
 
@@ -1484,8 +1312,8 @@ otherwise.
         Integral::'' : (:Function : (
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
-            composes : (:Set : [::Bicessable, ::Numerical]),
-            provides_default_for : (:Set : [::Bicessable, ::Numerical]),
+            composes : (:Set : [::Numerical]),
+            provides_default_for : (:Set : [::Numerical]),
         )),
 
 The interface type definer `Integral` is semifinite.  An `Integral` value
@@ -1495,12 +1323,10 @@ represent any kind of thing in particular, neither cardinal nor ordinal nor
 nominal; however some types which do represent such a particular kind of
 thing may choose to compose `Integral` because it makes sense to provide
 its operators.  The default value of `Integral` is the `Integer` value
-`0`.  `Integral` is both `Orderable` and `Bicessable`.  For each type
+`0`.  `Integral` is `Orderable`.  For each type
 composing `Integral`, a value closer to negative infinity is ordered
-before a value closer to positive infinity, and the definition of
-*predecessor* and *successor* is exactly equal to subtracting or adding
-an integer positive-one respectively, while other `Bicessable` don't
-generally mean that.  In the general case, `Integral` has no minimum or
+before a value closer to positive infinity.
+In the general case, `Integral` has no minimum or
 maximum value, but often a type that is `Integral` will have them.
 `Integral` is composed by `Integer`.
 
@@ -1529,30 +1355,32 @@ The selection type definer `Integral_P` represents the infinite type
 consisting just of the `Integral_NN` values that are positive.  Its
 default and minmum value is `1`; it has no maximum value.
 
-## --
+## minus_one --
 
-        "--" : (:Function : (
+        minus_one : (:Function : (
             returns : (:Set : [::Integral, ::Before_All_Others]),
             matches : (:Tuple : {::Integral}),
-            evaluates : (pred args :. :0),
+            evaluates : (args :. :0 - 1),
         )),
 
-The function `--` results in the *predecessor* value of its `0`
-argument, or in `(::Before_All_Others : (:Tuple : {}))` if there is none.  It is an integral numeric
-specific alias for the `Bicessable` virtual function `pred`.  Other
+        "--" : (:Alias : (:Tuple : { of : ::minus_one })),
+
+The function `minus_one` aka `--` results in the *predecessor* value of its `0`
+argument, or in `(::Before_All_Others : (:Tuple : {}))` if there is none.  Other
 programming languages may name their corresponding operators *decrement*.
 
-## ++
+## plus_one ++
 
-        "++" : (:Function : (
+        plus_one : (:Function : (
             returns : (:Set : [::Integral, ::After_All_Others]),
             matches : (:Tuple : {::Integral}),
-            evaluates : (succ args :. :0),
+            evaluates : (args :. :0 + 1),
         )),
 
-The function `++` results in the *successor* value of its `0` argument,
-or in `(::After_All_Others : (:Tuple : {}))` if there is none.  It is an integral numeric specific
-alias for the `Successable` virtual function `succ`.  Other programming
+        "++" : (:Alias : (:Tuple : { of : ::plus_one })),
+
+The function `plus_one` aka `++` results in the *successor* value of its `0` argument,
+or in `(::After_All_Others : (:Tuple : {}))` if there is none.  Other programming
 languages may name their corresponding operators *increment*.
 
 ## to_Integer
@@ -1653,7 +1481,7 @@ An `Integer` value is a general purpose exact integral number of any
 magnitude, which explicitly does not represent any kind of
 thing in particular, neither cardinal nor ordinal nor nominal.
 `Integer` has a default value of `0`.
-`Integer` is both `Orderable` and `Bicessable`;
+`Integer` is `Orderable`;
 it has no minimum or maximum value.
 Other programming languages may name their corresponding types *BigInt*
 or *Bignum* or *BigInteger*.
@@ -1692,44 +1520,6 @@ value is `1`; it has no maximum value.
 
 The function `::in_order::Integer` implements the `Orderable` virtual
 function `in_order` for the composing type `Integer`.
-
-## asset (Integer)
-
-        asset::Integer : (:Function : (
-            returns : ::Integer,
-            matches : (:Tuple : {::Integer}),
-            implements : folder::'',
-            evaluates : (args :. :0),
-        )),
-
-The function `::asset::Integer` simply results in its `0` argument.
-This function implements the `Successable` virtual function `asset` for
-the composing type `Integer`.
-
-## nth_pred (Integer)
-
-        nth_pred::Integer : (:Function : (
-            returns : ::Integer,
-            matches : (:Tuple : {::Integer, ::Integer_NN}),
-            implements : ::folder::Integral,
-            evaluates : (args :. :0 - args :. :1),
-        )),
-
-The function `::nth_pred::Integer` implements the `Bicessable`
-virtual function `nth_pred` for the composing type `Integer`.
-
-## nth_succ (Integer)
-
-        nth_succ::Integer : (:Function : (
-            returns : ::Integer,
-            matches : (:Tuple : {::Integer, ::Integer_NN}),
-            implements : ::folder::Integral,
-            repeater : ::plus::Integer,
-            evaluates : (args :. :0 + args :. :1),
-        )),
-
-The function `::nth_succ::Integer` implements the `Successable`
-virtual function `nth_succ` for the composing type `Integer`.
 
 ## not_zero (Integer)
 
@@ -2035,7 +1825,7 @@ compose `Fractional` because it makes sense to provide its operators.  The
 default value of `Fractional` is the `Rational` value `0.0`.
 `Fractional` is `Orderable`; for each type composing `Fractional`, a
 value closer to negative infinity is ordered before a value closer to
-positive infinity.  In the general case it is not `Bicessable` nor does it
+positive infinity.  In the general case it does not
 have a minimum or maximum value, but sometimes a type that is `Fractional`
 will have either of those.  `Fractional` is composed by `Rational`.
 
@@ -2423,7 +2213,7 @@ however it is still possible to test the membership of a value in such a
 collective.  `Interval` is an example of a typically-continuous type while
 most collective types provided by `System` are discrete; however, an
 `Interval` can be treated as a discrete type iff the types it ranges over
-are `Bicessable`.
+are `Integral`.
 
 Some *collective* values are *positional* and define an explicit total
 order for their components which does not necessarily depend on any order
@@ -3520,7 +3310,7 @@ what the function argument does or on the given member types.*
 *TODO.  For the general case of intervalish types, the result of map would
 only be valid when the function argument is order-preserving, for example a
 plain function that adds 3 to all members or multiplies all members by 2,
-etc.  Also note that for intervals over successable types, some operations
+etc.  Also note that for intervals over integral types, some operations
 may result in every member becoming discontinuous from the others, such as
 multiply with integers.*
 
