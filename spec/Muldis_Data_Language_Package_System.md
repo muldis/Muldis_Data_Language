@@ -107,7 +107,6 @@ the language would employ directly in their applications and schemas.
         Any : (:Function : (:Tuple : {
             is_type_definer : 0bTRUE,
             evaluates : 0bTRUE,
-            default : 0bFALSE,
         })),
 
 The selection type definer `Any` represents the infinite *universal type*,
@@ -304,7 +303,6 @@ for `0bFALSE` and `0bTRUE` respectively but it has the opposite associativity.
         Ignorance : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Excuse]),
-            provides_default_for : (:Set : [::Excuse]),
             constant : 0iIGNORANCE,
         )),
 
@@ -646,7 +644,6 @@ otherwise, meaning the values of `0` and `1` are swapped.
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Orderable]),
             evaluates : \::foundation::Boolean(:Tuple : {}),
-            default : 0bFALSE,
         )),
 
 The selection type definer `Boolean` represents the finite
@@ -908,7 +905,6 @@ and its `1` argument is `0bTRUE`, and `0bFALSE` otherwise.
                     0 : ::Round_Meth_Name::(:Tuple : {}),
                 ),
             )),
-            default : (::material : (:Tuple : {:To_Zero})),
         )),
 
 The selection type definer `Round_Meth` is finite.  When a value of some
@@ -947,7 +943,6 @@ Other programming languages may name their corresponding types
                 ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
                 ,Half_Even,Half_Odd})
             )]),
-            default : :To_Zero,
         )),
 
 The selection type definer `Round_Meth_Name` represents the finite type
@@ -1324,7 +1319,6 @@ otherwise.
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
             composes : (:Set : [::Numerical]),
-            provides_default_for : (:Set : [::Numerical]),
         )),
 
 The interface type definer `Integral` is semifinite.  An `Integral` value
@@ -1359,7 +1353,6 @@ default and minmum value is `0`; it has no maximum value.
             is_type_definer : 0bTRUE,
             evaluates : (Integral_NN::(args :. :0) and_then guard
                 args :. :0 > zero::(args :. :0)),
-            default : (succ::(Integral::(:Tuple : {}))),
         )),
 
 The selection type definer `Integral_P` represents the infinite type
@@ -1481,9 +1474,7 @@ otherwise.
         Integer::'' : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Integral]),
-            provides_default_for : (:Set : [::Integral]),
             evaluates : \::foundation::Integer(:Tuple : {}),
-            default : 0,
         )),
 
 The selection type definer `Integer` represents
@@ -1513,7 +1504,6 @@ default and minmum value is `0`; it has no maximum value.
         Integer_P : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (:Array : [::Integer_NN::(:Tuple : {}), ::">"::( 1: 0 )]),
-            default : 1,
         )),
 
 The selection type definer `Integer_P` represents the infinite type consisting
@@ -1898,7 +1888,6 @@ The virtual function `denominator` results in the *denominator* of its
         Rational::'' : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Fractional]),
-            provides_default_for : (:Set : [::Fractional]),
             evaluates : (::Signature::Article_Match : (
                 label : :Rational,
                 attrs : (:Array : [
@@ -1909,7 +1898,6 @@ The virtual function `denominator` results in the *denominator* of its
                     \(args :. :0 :. :numerator coprime args :. :0 :. :denominator),
                 ]),
             )),
-            default : 0.0,
         )),
 
 The selection type definer `Rational`
@@ -3363,7 +3351,6 @@ otherwise the reduce is a serial operation, at least naively.*
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
             composes : (:Set : [::Unionable]),
-            provides_default_for : (:Set : [::Unionable]),
         )),
 
 The interface type definer `Discrete` is semifinite.  A `Discrete` value is a
@@ -3472,7 +3459,6 @@ of any type, both `Orderable` or not.
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
             composes : (:Set : [::Orderable, ::Discrete, ::Accessible]),
-            provides_default_for : (:Set : [::Discrete]),
         )),
 
 The interface type definer `Positional` is semifinite.  A `Positional` value is
@@ -4127,14 +4113,12 @@ the argument.
         Bits : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Positional]),
-            provides_default_for : (:Set : [::Positional]),
             evaluates : (::Signature::Article_Match : (
                 label : :Bits,
                 attrs : (
                     bits : \::Array::Bits(:Tuple : {}),
                 ),
             )),
-            default : 0bb,
         )),
 
 The selection type definer `Bits` is infinite.  A `Bits` value is an
@@ -4299,7 +4283,6 @@ the bits of its `Bits`-typed `0` argument.
                     octets : \::Array::Octets(:Tuple : {}),
                 ),
             )),
-            default : 0xx,
         )),
 
 The selection type definer `Blob` is infinite.  A `Blob` value is an
@@ -4523,14 +4506,12 @@ like national collations or fixed-size types.
         Text::'' : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Textual]),
-            provides_default_for : (:Set : [::Textual]),
             evaluates : (::Signature::Article_Match : (
                 label : :Text,
                 attrs : (
                     unicode_codes : \::Array::Unicode_Codes(:Tuple : {}),
                 ),
             )),
-            default : "",
         )),
 
         Text::Unicode : (:Alias : (:Tuple : { of : ::Text })),
@@ -4920,9 +4901,7 @@ is no good implicit default in ASCII, unlike with Unicode.*
         Array::'' : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Positional]),
-            provides_default_for : (:Set : [::Positional]),
             evaluates : \::foundation::Array(:Tuple : {}),
-            default : (:Array : []),
         )),
 
 The selection type definer `Array` represents the infinite Muldis Data Language Foundation
@@ -5485,14 +5464,12 @@ zero members, `(:Set : [])`.  `Setty` is composed, directly or indirectly, by:
         Set : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Discrete, ::Setty]),
-            provides_default_for : (:Set : [::Setty]),
             evaluates : (::Signature::Article_Match : (
                 label : :Set,
                 attrs : (
                     members : (:Array : [::Bag::(:Tuple : {}), ::all_unique::(:Tuple : {})]),
                 ),
             )),
-            default : (:Set : []),
         )),
 
 The selection type definer `Set` is infinite.  A `Set` value is a general
@@ -5957,7 +5934,6 @@ function given in its `1` argument.  This function implements the
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Discrete]),
             evaluates : \::foundation::Bag(:Tuple : {}),
-            default : (:Bag : []),
         )),
 
 The selection type definer `Bag` represents the infinite Muldis Data Language Foundation
@@ -6971,7 +6947,6 @@ attributes of its `1` argument whose names don't match attributes of its
             is_type_definer : 0bTRUE,
             is_generalization : 0bTRUE,
             composes : (:Set : [::Attributive, ::Accessible]),
-            provides_default_for : (:Set : [::Attributive, ::Accessible]),
         )),
 
 The interface type definer `Structural` is semifinite.  A `Structural` value is
@@ -7174,9 +7149,7 @@ be treated abstractly as sets of attributes with minimal effort.
         Tuple::'' : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Structural]),
-            provides_default_for : (:Set : [::Structural]),
             evaluates : \::foundation::Tuple(:Tuple : {}),
-            default : (:Tuple : {}),
         )),
 
 The selection type definer `Tuple` represents the infinite Muldis Data Language Foundation
@@ -7219,7 +7192,6 @@ The singleton type definer `Tuple_D0` represents the only zero-attribute
         Tuple_D1 : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (:Array : [::Tuple::(:Tuple : {}), ::is_unary::(:Tuple : {})]),
-            default : (:Tuple : {0bFALSE}),
         )),
 
 The selection type definer `Tuple_D1` represents the infinite type consisting
@@ -8234,7 +8206,6 @@ types that restrict their possible headings at the type level.*
                     \(args :. :0 :. :body all \($args :. :0 = args :. :1) <-- (:Tuple : {1: args :. :0 :. :heading})),
                 ],
             )),
-            default : (Orderelation : {}),
         )),
 
 *TODO.*
@@ -8318,7 +8289,6 @@ function `select_Relational` for the composing type `Orderelation`.
         Relation : (:Function : (
             is_type_definer : 0bTRUE,
             composes : (:Set : [::Relational, ::Discrete, ::Setty]),
-            provides_default_for : (:Set : [::Relational]),
             evaluates : (::Signature::Article_Match : (
                 label : :Relation,
                 attrs : [
@@ -8329,7 +8299,6 @@ function `select_Relational` for the composing type `Orderelation`.
                     \(args :. :0 :. :body all \($args :. :0 = args :. :1) <-- (:Tuple : {1: args :. :0 :. :heading})),
                 ],
             )),
-            default : (Relation : {}),
         )),
 
 *TODO.  See also definition of Set in terms of Bag, which Relation mirrors.*
@@ -8416,7 +8385,6 @@ function `select_Relational` for the composing type `Relation`.
                     \(args :. :0 :. :body all \($args :. :0 = args :. :1) <-- (:Tuple : {1: args :. :0 :. :heading})),
                 ],
             )),
-            default : (Multirelation : {}),
         )),
 
 *TODO.*
@@ -8507,7 +8475,6 @@ function `select_Relational` for the composing type `Multirelation`.
                 label : :Interval,
                 attrs : ::Interval_Attrs::(:Tuple : {}),
             )),
-            default : ((::Before_All_Others : (:Tuple : {}))..(::After_All_Others : (:Tuple : {}))),
         )),
 
 *TODO.*
@@ -8546,7 +8513,6 @@ function `select_Relational` for the composing type `Multirelation`.
                     members : (:Array : [::Bag_Of_Interval::(:Tuple : {}), ::all_unique::(:Tuple : {})]),
                 ),
             )),
-            default : ...,
         )),
 
 *TODO.  See also definition of Set in terms of Bag, which Set_Of_Interval mirrors.*
@@ -8564,7 +8530,6 @@ function `select_Relational` for the composing type `Multirelation`.
                     members : (:Array : [::Multirelation::(:Tuple : {}), ...]),
                 ),
             )),
-            default : ...,
         )),
 
 *TODO.*
@@ -8594,7 +8559,6 @@ function `select_Relational` for the composing type `Multirelation`.
                     0 : (:Array : [::Relation::(:Tuple : {}), ...]),
                 ),
             )),
-            default : ...,
         )),
 
 *TODO.*
@@ -8606,7 +8570,6 @@ function `select_Relational` for the composing type `Multirelation`.
         Article : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : \::foundation::Article(:Tuple : {}),
-            default : (0bFALSE : (:Tuple : {})),
         )),
 
 The selection type definer `Article` represents the infinite Muldis Data Language
@@ -8841,7 +8804,6 @@ arbitrarily complex type graph involving `External` values.
                     materials : \::Package::Folder::(:Tuple : {}),
                 ),
             )),
-            default : ...,
         )),
 
 *TODO.*
@@ -8954,7 +8916,6 @@ Until then, this type just represents a single positive assertion.*
         Material : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (:Set : [::Alias, ::Function, ::Procedure]),
-            default : ...,
         )),
 
 ## Alias
@@ -8967,7 +8928,6 @@ Until then, this type just represents a single positive assertion.*
                     of : :Identity_Identifier(:Tuple : {}),
                 ),
             )),
-            default : ((:Alias : (of : Identity_Identifier::(:Tuple : {}),))),
         )),
 
 *TODO.  Also possibly use something other than Identity_Identifier as payload.*
@@ -9000,40 +8960,26 @@ Until then, this type just represents a single positive assertion.*
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : ::True::(:Tuple : {}),),
                         is_generalization : (type : ::True::(:Tuple : {}),),
-                        default : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
-                    ) %+ type_specialization_attrs_template,))
-                    and_then type_specialization_attrs_constraint;
+                    ) %+ type_specialization_attrs_template,));
 
                 when_singleton_type_definer ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : ::True::(:Tuple : {}),),
                         is_generalization : (type : ::False::(:Tuple : {}), optional : 0bTRUE),
                         constant : (type : ::Expression::(:Tuple : {}),),
-                    ) %+ type_specialization_attrs_template,))
-                    and_then type_specialization_attrs_constraint;
+                    ) %+ type_specialization_attrs_template,));
 
                 when_regular_type_definer ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
                         is_type_definer : (type : ::True::(:Tuple : {}),),
                         is_generalization : (type : ::False::(:Tuple : {}), optional : 0bTRUE),
                         evaluates : (type : (:Set : [::Expression::(:Tuple : {}), ::Signature::(:Tuple : {})]),),
-                        default : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
-                    ) %+ type_specialization_attrs_template,))
-                    and_then type_specialization_attrs_constraint;
+                    ) %+ type_specialization_attrs_template,));
 
                 type_specialization_attrs_template ::=
                     (
                         composes : (type : ::Set_of_Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
-                        provides_default_for :
-                            (type : ::Set_of_Identity_Identifier::(:Tuple : {}), optional : 0bTRUE),
                     );
-
-                type_specialization_attrs_constraint ::=
-                    if traits .? :provides_default_for then
-                        traits .? :composes
-                        and_then guard traits :. :provides_default_for ⊆ traits :. :composes
-                    else
-                        0bTRUE;
 
                 when_regular_function ::=
                     traits is_a (::Signature::Tuple_Attrs_Match : (attrs : (
@@ -9062,7 +9008,6 @@ Until then, this type just represents a single positive assertion.*
                         evaluates : (type : ::Expression::(:Tuple : {}), optional : 0bTRUE),
                     ),));
             ),
-            default : ...,
         )),
 
 *TODO.*
@@ -9104,7 +9049,6 @@ its own isolated lexical scope and its own `args` context where generally the
                     performs : (type : ::Statement::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
-            default : ...,
         )),
 
 *TODO.*
@@ -9121,7 +9065,6 @@ its own isolated lexical scope and its own `args` context where generally the
                 ::Signature::Tuple_Attrs_Match,
                 ::Signature::Article_Match,
             ]),
-            default : ::Any::(:Tuple : {}),
         )),
 
 *TODO.*
@@ -9217,7 +9160,6 @@ its own isolated lexical scope and its own `args` context where generally the
                 ::New,
                 ::Current,
             ]),
-            default : (::Literal : (:Tuple : {0bFALSE})),
         )),
 
 *TODO.  This represents a generic expression to be evaluated at a future date.
@@ -9233,7 +9175,6 @@ Its lexical scope and `args` context is the innermost Function/Procedure (trait)
                     0 : ::Any::(:Tuple : {}),
                 ),
             )),
-            default : (::material : (:Tuple : {0bFALSE})),
         )),
 
 *TODO.  This represents an expression that evaluates to yield the exact
@@ -9271,7 +9212,6 @@ Written in Plain_Text with the token `args`.*
                     0 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ...),
         )),
 
 *TODO.  This represents a generic function invocation expression,
@@ -9296,7 +9236,6 @@ value of the type of the variable it is assigned to.*
                     ) )]),
                 ),
             )),
-            default : (::material : ((:Array : []),)),
         )),
 
 *TODO.  This represents a selection of an Array value in terms of a list
@@ -9317,7 +9256,6 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
                     ) )]),
                 ),
             )),
-            default : (::material : ((:Bag : []),)),
         )),
 
 *TODO.  This represents a selection of an Set value in terms of a list
@@ -9341,7 +9279,6 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
                     ) )]),
                 ),
             )),
-            default : (::material : ((:Bag : []),)),
         )),
 
 *TODO.  This represents a selection of an Bag value in terms of a list
@@ -9359,7 +9296,6 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
                     0 : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::Expression::(:Tuple : {}) )]),
                 ),
             )),
-            default : (::material : ((:Tuple : {}))),
         )),
 
 *TODO.  This represents a selection of a Tuple value in terms of a list
@@ -9378,8 +9314,6 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
                     1 : ::Expression::(:Tuple : {}),  `attributes`
                 ),
             )),
-            default : (::material : ((::folder::Literal : (:Tuple : {\''})),
-                (::folder::Literal : (:Tuple : {})))),
         )),
 
 *TODO.  This represents a selection of a Article value in terms of a
@@ -9399,8 +9333,6 @@ This is intended as a convenient shorthand for a tree of Literal+Evaluates.*
                     2 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
-                (::Literal : (:Tuple : {0bFALSE})), (::Literal : (:Tuple : {0bFALSE})))),
         )),
 
 *TODO.  This represents an if-then-else expression,
@@ -9417,8 +9349,6 @@ written in Plain_Text with special syntax example `if P then X else Y`.*
                     1 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
-                (::Literal : (:Tuple : {0bFALSE})))),
         )),
 
 *TODO.  This represents an and-then expression,
@@ -9437,8 +9367,6 @@ written in Plain_Text with special syntax example `P and_then X`.*
                     1 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
-                (::Literal : (:Tuple : {0bFALSE})))),
         )),
 
 *TODO.  This represents an or-else expression,
@@ -9461,8 +9389,6 @@ written in Plain_Text with special syntax example `P or_else X`.*
                     2 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
-                (:Set : []), (::Literal : (:Tuple : {0bFALSE})))),
         )),
 
 *TODO.  This represents a given-when-default expression,
@@ -9479,7 +9405,6 @@ written in Plain_Text with special syntax example
                     0 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),)),
         )),
 
 *TODO.  This represents a guard expression,
@@ -9496,7 +9421,6 @@ written in Plain_Text with special syntax example `guard X`.*
                     returns : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : (factors : (:Tuple : {}), returns : (::Literal : (:Tuple : {0bFALSE})))),
         )),
 
 TODO.  This represents a compound expression, which consists of a single
@@ -9522,7 +9446,6 @@ can be re-used in other statements.*
                     factor : ::Name::(:Tuple : {}),
                 ),
             )),
-            default : (::material : (:Tuple : {factor : \''})),
         )),
 
 *TODO.  This represents a logical expansion of an expression factor at this
@@ -9556,7 +9479,6 @@ Variable has been made to reference it directly or indirectly meanwhile.*
                     0 : ::Expression::(:Tuple : {}),
                 )
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),)),
         )),
 
 *TODO.  This represents a procedure expression that evaluates to a newly
@@ -9573,7 +9495,6 @@ sub-expression.  Written in Plain_Text with syntax example `new foo`.*
                     0 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::New : ((::Literal : (:Tuple : {0bFALSE})),)),)),
         )),
 
 TODO.  This represents a procedure expression that evaluates to the
@@ -9595,7 +9516,6 @@ Note that `Current` is designed to mirror `New`, so the identity
                 ::Leave,
                 ::Iterate,
             ]),
-            default : (::Block : ((:Array : []),)),
         )),
 
 *TODO.  This represents a generic statement to be performed at a future date.
@@ -9611,7 +9531,6 @@ Its lexical scope and `args` context is the innermost Procedure (trait) containi
                     vars : (:Array : [::Tuple::(:Tuple : {}), ::all_attr_assets::( 1: ::Expression::(:Tuple : {}) )]),
                 ),
             )),
-            default : (::material : (vars : (:Tuple : {}),)),
         )),
 
 TODO.  This represents a procedure body statement that declares 0..N
@@ -9637,7 +9556,6 @@ plus Or\_Else and justified keeping them; its a similar situation.
                     0 : ::Expression::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ...),
         )),
 
 *TODO.  This represents a generic procedure invocation statement,
@@ -9658,8 +9576,6 @@ where X denotes a Procedure_Call value.*
                     2 : ::Statement::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
-                (::Block : ((:Array : []),)), (::Block : ((:Array : []),)))),
         )),
 
 *TODO.  This represents an if-then-else statement,
@@ -9682,8 +9598,6 @@ the 'else' is an empty compound statement.*
                     2 : ::Statement::(:Tuple : {}),
                 ),
             )),
-            default : (::material : ((::Literal : (:Tuple : {0bFALSE})),
-                (:Set : []), (::Block : ((:Array : []),)))),
         )),
 
 *TODO.  This represents a given-when-default statement,
@@ -9701,7 +9615,6 @@ written in Plain_Text with special syntax example
                     label : (type : ::Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
-            default : (::material : ((:Array : []),)),
         )),
 
 *TODO.  This represents an optionally labelled statement block, which
@@ -9719,7 +9632,6 @@ iterated, written in Plain_Text with special syntax example
                     label : (type : ::Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
-            default : (::material : (:Tuple : {})),
         )),
 
 *TODO.  This represents an instruction to abnormally exit the statement
@@ -9739,7 +9651,6 @@ with special syntax examples `leave` or `leave do_work`.*
                     label : (type : ::Name::(:Tuple : {}), optional : 0bTRUE),
                 ),)),
             )),
-            default : (::material : (:Tuple : {})),
         )),
 
 *TODO.  This represents an instruction to immediately exit, and then
@@ -9767,7 +9678,6 @@ a thing for opening tuples as for creating them.*
         Name : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : \::foundation::Name(:Tuple : {}),
-            default : :"",
         )),
 
 The selection type definer `Name`
@@ -9796,7 +9706,6 @@ represents the infinite foundation type `::foundation::Name`.
                     when :floating   then #args :. :0 ≥ 2
                     default 0bFALSE
             )]),
-            default : (:Array : [:foundation, ...]),
         )),
 
 *TODO.*
@@ -9822,7 +9731,6 @@ represents the infinite foundation type `::foundation::Name`.
                     args : ::Tuple::(:Tuple : {}),
                 ),
             )),
-            default : \::foundation::False(:Tuple : {}),
         )),
 
 *TODO.  This represents a specification of a function or procedure invocation,
@@ -9850,7 +9758,6 @@ such manually anyhow, the runtime environment should fill them in as needed.*
                 ::Routine_Call::(:Tuple : {}),
                 \(args :. :0 :>. :asset :. :call is_a (:Set : [::Local_Name::(:Tuple : {}), ::Identity_Identifier::(:Tuple : {}), ::Function::(:Tuple : {})])),
             ]),
-            default : \(0bFALSE),
         )),
 
 *TODO.  This represents a specification of a function invocation,
@@ -9886,7 +9793,6 @@ written in Plain_Text with special syntax example `\foo::(:Tuple : {})` or `\(..
                 ::Routine_Call::(:Tuple : {}),
                 \(args :. :0 :>. :asset :. :call is_a (:Set : [::Local_Name::(:Tuple : {}), ::Identity_Identifier::(:Tuple : {}), ::Procedure::(:Tuple : {})])),
             ]),
-            default : \[],
         )),
 
 *TODO.  This represents a specification of a procedure invocation,
