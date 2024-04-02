@@ -698,12 +698,23 @@ integer 1 to represent *true*.
 The function `::in_order::Boolean` implements the `Orderable` virtual
 function `in_order` for the composing type `Boolean`.
 
+## so ?
+
+        so : (:Function : (
+            returns : ::Boolean,
+            matches : (:Tuple : {::Boolean}),
+            evaluates : (args :. :0),
+        )),
+
+        '?' : (:Alias : ( of : ::so, )),
+
+The function `so` aka `?` performs a logical *proposition*;
+it simply results in its `0` argument.
+
 ## not ! ¬
 
         not : (:Function : (
-            returns : ::Boolean,
-            matches : (:Tuple : {::Boolean}),
-            evaluates : (if args :. :0 then 0bFALSE else 0bTRUE),
+            negates : ::so,
         )),
 
         "!" : (:Alias : (:Tuple : { of : ::not })),
