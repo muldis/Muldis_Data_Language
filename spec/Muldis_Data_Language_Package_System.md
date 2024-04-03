@@ -939,9 +939,9 @@ Other programming languages may name their corresponding types
         Round_Meth_Name : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (:Array : [::Name::(:Tuple : {}), ::"⊆$"::( 1:
-                ::(:Tuple : {Down,Up,To_Zero,To_Inf
-                ,Half_Down,Half_Up,Half_To_Zero,Half_To_Inf
-                ,Half_Even,Half_Odd})
+                ::(:Tuple : {:Down,:Up,:To_Zero,:To_Inf
+                ,:Half_Down,:Half_Up,:Half_To_Zero,:Half_To_Inf
+                ,:Half_Even,:Half_Odd})
             )]),
         )),
 
@@ -2073,7 +2073,7 @@ The function `::minus::Rational` implements the `Numerical` virtual function
 The function `::times::Rational` implements the `Numerical` virtual function
 `times` aka `*` aka `×` for the composing type `Rational`.
 
-## times (:Tuple : {Rational, Integer})
+## times {Rational, Integer}
 
         times::Rational_Integer : (:Function : (
             returns : ::Rational,
@@ -2366,7 +2366,7 @@ otherwise it results in `0bFALSE`.
         has_mapping_at::'' : (:Function : (
             virtual : 0bTRUE,
             returns : ::Boolean,
-            matches : (Accessible, (:Tuple : {Any, Any})),
+            matches : (::Accessible, (:Tuple : {::Any, ::Any})),
         )),
 
         ".:?" : (:Alias : (:Tuple : { of : ::has_mapping_at })),
@@ -2433,7 +2433,7 @@ common to use subscript/postcircumfix syntax.
         replace_at::'' : (:Function : (
             virtual : 0bTRUE,
             returns : ::Accessible,
-            matches : (Accessible, (:Tuple : {Any, Any})),
+            matches : (::Accessible, (:Tuple : {::Any, ::Any})),
             accepts : (args :. :0 .? (args :. :1 . :0)),
         )),
 
@@ -2453,7 +2453,7 @@ assignment syntax.
         shiftless_insert_at::'' : (:Function : (
             virtual : 0bTRUE,
             returns : ::Accessible,
-            matches : (Accessible, (:Tuple : {Any, Any})),
+            matches : (::Accessible, (:Tuple : {::Any, ::Any})),
             accepts : (not args :. :0 .? (args :. :1 . :0)),
         )),
 
@@ -2491,7 +2491,7 @@ operators *del* or *delete_at*.
         replace_or_insert_at::'' : (:Function : (
             virtual : 0bTRUE,
             returns : ::Accessible,
-            matches : (Accessible, (:Tuple : {Any, Any})),
+            matches : (::Accessible, (:Tuple : {::Any, ::Any})),
         )),
 
         ".=+" : (:Alias : (:Tuple : { of : ::replace_or_insert_at })),
@@ -3639,7 +3639,7 @@ type `Positional`.
 
         has_mapping_at::Positional : (:Function : (
             returns : ::Boolean,
-            matches : (Positional, (:Tuple : {Integer, Any})),
+            matches : (::Positional, (:Tuple : {::Integer, ::Any})),
             implements : folder::'',
             evaluates : (args :. :0 .? (args :. :1 . :0) and_then guard args :. :0 . (args :. :1 . :0) = (args :. :1 . :1)),
         )),
@@ -3688,7 +3688,7 @@ composing type `Positional`.
 
         replace_at::Positional : (:Function : (
             returns : ::Positional,
-            matches : (Positional, (:Tuple : {Integer, Any})),
+            matches : (::Positional, (:Tuple : {::Integer, ::Any})),
             implements : folder::'',
             accepts : (args :. :0 .? (args :. :1 . :0)),
             evaluates : (
@@ -3718,7 +3718,7 @@ function `replace_at` aka `.:=` for the composing type `Positional`.
 
         shiftless_insert_at::Positional : (:Function : (
             returns : ::Positional,
-            matches : (Positional, (:Tuple : {Integer, Any})),
+            matches : (::Positional, (:Tuple : {::Integer, ::Any})),
             implements : folder::'',
             accepts : (args :. :1 . :0 = first_unused_ord_pos::(args :. :0)),
             evaluates : (args :. :0 insert args :. :1 . :1),
@@ -3758,7 +3758,7 @@ composing type `Positional`.
 
         replace_or_insert_at::Positional : (:Function : (
             returns : ::Positional,
-            matches : (Positional, (:Tuple : {Integer, Any})),
+            matches : (::Positional, (:Tuple : {::Integer, ::Any})),
             implements : folder::'',
             accepts : (args :. :1 >= first_possible_ord_pos::(args :. :0)
                 and args :. :1 <= first_unused_ord_pos::(args :. :0)),
@@ -6993,7 +6993,7 @@ type `Structure`.
 
         has_mapping_at::Structural : (:Function : (
             returns : ::Boolean,
-            matches : (Structural, (:Tuple : {Name, Any})),
+            matches : (::Structural, (:Tuple : {::Name, ::Any})),
             implements : folder::'',
             evaluates : (args :. :0 .? (args :. :1 . :0) and_then guard args :. :0 . (args :. :1 . :0) = (args :. :1 . :1)),
         )),
@@ -7041,7 +7041,7 @@ function implements the `Accessible` virtual function `maybe_at` aka
 
         replace_at::Structure : (:Function : (
             returns : ::Structure,
-            matches : (Structure, (:Tuple : {Name, Any})),
+            matches : (::Structure, (:Tuple : {::Name, ::Any})),
             implements : folder::'',
             accepts : (args :. :0 .? (args :. :1 . :0)),
             evaluates : (args :. :0 update D1::(args :. :1)),
@@ -7061,7 +7061,7 @@ the composing type `Structure`.
 
         shiftless_insert_at::Structure : (:Function : (
             returns : ::Structure,
-            matches : (Structure, (:Tuple : {Name, Any})),
+            matches : (::Structure, (:Tuple : {::Name, ::Any})),
             implements : folder::'',
             accepts : (not args :. :0 .? (args :. :1 . :0)),
             evaluates : (args :. :0 extend D1::(args :. :1)),
@@ -7098,7 +7098,7 @@ function `shiftless_remove_at` aka `.-` for the composing type
 
         replace_or_insert_at::Structural : (:Function : (
             returns : ::Structural,
-            matches : (Structural, (:Tuple : {Name, Any})),
+            matches : (::Structural, (:Tuple : {::Name, ::Any})),
             implements : folder::'',
             evaluates : (args :. :0 update_or_extend D1::(args :. :1)),
         )),
@@ -8210,10 +8210,10 @@ types that restrict their possible headings at the type level.*
 
 *TODO.*
 
-*Note:  The in_order(:Tuple : {TA,TA}) inherited via Positional, which Orderelation
+*Note:  The in_order(:Tuple : {::TA,::TA}) inherited via Positional, which Orderelation
 implements just for convenience and consistency with Array but doesn't
 expect to be meaningful any more than say the Boolean version...
-It needs to inline the in_order(:Tuple : {Tuple,Tuple}) used for its heading and for
+It needs to inline the in_order(:Tuple : {::Tuple,::Tuple}) used for its heading and for
 its first nonmatching member, rather than Tuple implementing an in_order(:Tuple : {}),
 since we don't want to infect the generic Tuple with all the Orderable ops.*
 *Note: This type structurally resembles a spreadsheet or a .NET DataTable,
@@ -8273,7 +8273,7 @@ composing type `Orderelation`.
             returns : (:Set : [::Relational, ...]),
             matches : (:Tuple : {like : ::Orderelation, heading : ::Heading, body : ::Array}),
             implements : folder::'',
-            evaluates : ((:Orderelation : (args %= ::(:Tuple : {heading,body})))),
+            evaluates : ((:Orderelation : (args %= ::(:Tuple : {:heading,:body})))),
         )),
 
 The function `::select_Relational::Orderelation` results in the
@@ -8359,7 +8359,7 @@ composing type `Relation`.
             returns : (:Set : [::Relational, ...]),
             matches : (:Tuple : {like : ::Relation, heading : ::Heading, body : ::Set}),
             implements : folder::'',
-            evaluates : ((:Relation : (args %= ::(:Tuple : {heading,body})))),
+            evaluates : ((:Relation : (args %= ::(:Tuple : {:heading,:body})))),
         )),
 
 The function `::select_Relational::Relation` results in the
@@ -8443,7 +8443,7 @@ composing type `Multirelation`.
             returns : (:Set : [::Relational, ...]),
             matches : (:Tuple : {like : ::Multirelation, heading : ::Heading, body : ::Bag}),
             implements : folder::'',
-            evaluates : ((:Multirelation : (args %= ::(:Tuple : {heading,body})))),
+            evaluates : ((:Multirelation : (args %= ::(:Tuple : {:heading,:body})))),
         )),
 
 The function `::select_Relational::Multirelation` results in the
@@ -9108,7 +9108,7 @@ its own isolated lexical scope and its own `args` context where generally the
                         ::all_attr_assets::( 1: \(
                             attr_sig ::= args :. :0;
                             returns
-                                attr_sig ⊆$ ::(:Tuple : {type,optional})
+                                attr_sig ⊆$ ::(:Tuple : {:type,:optional})
                                 and
                                 (attr_sig .? :type and_then guard Signature attr_sig . :type)
                                 and
@@ -9715,7 +9715,7 @@ represents the infinite foundation type `::foundation::Name`.
         Absolute_Name : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (Local_Name args :. :0 and_then guard
-                args :. :0.0 ⊆$ ::(:Tuple : {foundation,used,package})),
+                args :. :0.0 ⊆$ ::(:Tuple : {:foundation,:used,:package})),
         )),
 
 *TODO.*
@@ -9805,7 +9805,7 @@ written in Plain_Text with special syntax example `\foo::(:Tuple : {})` or `\[..
         Key_Asset_Pair : (:Function : (
             is_type_definer : 0bTRUE,
             evaluates : (Tuple args :. :0 and_then guard
-                $args :. :0 = ::(:Tuple : {key,asset})),
+                $args :. :0 = ::(:Tuple : {:key,:asset})),
         )),
 
 *TODO.  Note, this type currently isn't used anywhere.*
@@ -9872,7 +9872,7 @@ A Raku corresponding operator has the name "assuming".*
                                         name     ::= args :. :0 :. :name;
                                         attr_sig ::= args :. :0 :. :asset;
                                         topic    ::= args :. :topic;
-                                        returns topic.name is_a attr_sig;
+                                        returns topic . name is_a attr_sig;
                                     ) <-- (:Tuple : {topic : :topic})
                         ) <-- (:Tuple : {sig : :sig})
                     else if ::Signature::Tuple_Attrs_Match sig then guard
@@ -9888,8 +9888,8 @@ A Raku corresponding operator has the name "assuming".*
                                         name     ::= args :. :0 :. :name;
                                         attr_sig ::= args :. :0 :. :asset;
                                         topic    ::= args :. :topic;
-                                        returns if topic.?name
-                                            then guard topic.name is_a attr_sig
+                                        returns if topic .? name
+                                            then guard topic . name is_a attr_sig
                                             else attr_sig .? :optional
                                         ;
                                     ) <-- (:Tuple : {topic : :topic}))
